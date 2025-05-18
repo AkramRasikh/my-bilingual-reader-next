@@ -1,18 +1,20 @@
 'use client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { getFirebaseVideoURL } from './get-firebase-media-url';
 import { getGeneralTopicName } from './get-general-topic-name';
 import { japanese } from './languages';
 
-export default function VideoPlayer({ url }) {
+export default function VideoPlayer({ url, handleTimeUpdate, ref }) {
   const videoUrl = url;
 
   return (
     <div className='flex justify-center items-center h-screen'>
       <video
+        ref={ref}
         src={videoUrl}
         controls
         className='w-full max-w-3xl rounded-lg shadow-lg'
+        onTimeUpdate={handleTimeUpdate}
       >
         Your browser does not support the video tag.
       </video>
@@ -20,16 +22,32 @@ export default function VideoPlayer({ url }) {
   );
 }
 
-const LearningScreen = ({ selectedContentState }) => {
+const LearningScreen = ({
+  selectedContentState,
+  handlePlayFromHere,
+  handleTimeUpdate,
+  ref,
+}) => {
   const generalTopic = getGeneralTopicName(selectedContentState.title);
   const videoUrl = getFirebaseVideoURL(generalTopic, japanese);
   const content = selectedContentState.content;
+  const realStartTime = selectedContentState.realStartTime;
+
+  const handleFromHere = (time) => {
+    const thisStartTime = realStartTime + time;
+    handlePlayFromHere(thisStartTime);
+  };
+
   return (
     <div>
       <h1>{selectedContentState?.title}</h1>
       <div style={{ display: 'flex', gap: 20 }}>
         <div>
-          <VideoPlayer url={videoUrl} />
+          <VideoPlayer
+            url={videoUrl}
+            handleTimeUpdate={handleTimeUpdate}
+            ref={ref}
+          />
         </div>
         <ul>
           {content.map((contentItem, index) => {
@@ -37,9 +55,17 @@ const LearningScreen = ({ selectedContentState }) => {
             const baseLang = contentItem.baseLang;
             const targetLang = contentItem.targetLang;
             const id = contentItem.id;
+            const thisTime = contentItem.time;
+
             return (
               <li key={id}>
                 <p>
+                  <button
+                    style={{ padding: 5, background: 'grey' }}
+                    onClick={() => handleFromHere(thisTime)}
+                  >
+                    PLAY
+                  </button>
                   <span>{numberOrder}</span>
                   {baseLang}
                 </p>
@@ -59,6 +85,9 @@ export const HomeContainer = ({
   targetLanguageLoadedSnippetsWithSavedTag,
   sortedContent,
 }) => {
+  const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
+  const [currentTime, setCurrentTime] = useState(0);
+
   const [snippetsState, setSnippetsState] = useState(
     targetLanguageLoadedSnippetsWithSavedTag,
   );
@@ -70,6 +99,20 @@ export const HomeContainer = ({
   );
 
   const [selectedContentState, setSelectedContentState] = useState(null);
+
+  const handlePlayFromHere = (time: number) => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = time;
+      videoRef.current.play();
+    }
+  };
+
+  // Update current time as video plays
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTime(videoRef.current.currentTime);
+    }
+  };
 
   const handleSelectedContent = (thisYoutubeTitle) => {
     const thisContent = learningContentState.find(
@@ -115,7 +158,12 @@ export const HomeContainer = ({
           })}
       </ul>
       {selectedContentState && (
-        <LearningScreen selectedContentState={selectedContentState} />
+        <LearningScreen
+          selectedContentState={selectedContentState}
+          handlePlayFromHere={handlePlayFromHere}
+          handleTimeUpdate={handleTimeUpdate}
+          ref={videoRef}
+        />
       )}
     </div>
   );
