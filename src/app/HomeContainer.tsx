@@ -1,8 +1,9 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getFirebaseVideoURL } from './get-firebase-media-url';
 import { getGeneralTopicName } from './get-general-topic-name';
 import { japanese } from './languages';
+import { useHighlightWordToWordBank } from './useHighlightWordToWordBank';
 
 export default function VideoPlayer({ url, handleTimeUpdate, ref }) {
   const videoUrl = url;
@@ -26,21 +27,47 @@ const LearningScreen = ({
   selectedContentState,
   handlePlayFromHere,
   handleTimeUpdate,
+  wordsState,
   ref,
+  pureWords,
+  clearTopic,
 }) => {
+  const [formattedTranscriptState, setFormattedTranscriptState] = useState();
   const generalTopic = getGeneralTopicName(selectedContentState.title);
   const videoUrl = getFirebaseVideoURL(generalTopic, japanese);
   const content = selectedContentState.content;
   const realStartTime = selectedContentState.realStartTime;
+
+  const { underlineWordsInSentence } = useHighlightWordToWordBank({
+    pureWordsUnique: pureWords,
+  });
 
   const handleFromHere = (time) => {
     const thisStartTime = realStartTime + time;
     handlePlayFromHere(thisStartTime);
   };
 
+  useEffect(() => {
+    const formattedTranscript = content.map((item) => {
+      return {
+        ...item,
+        targetLangformatted: underlineWordsInSentence(item.targetLang),
+      };
+    });
+
+    setFormattedTranscriptState(formattedTranscript);
+  }, [wordsState]);
+
+  if (!formattedTranscriptState) {
+    return null;
+  }
+
   return (
     <div>
-      <h1>{selectedContentState?.title}</h1>
+      <h1>
+        {selectedContentState?.title}
+        <button onClick={clearTopic}>BACK</button>
+      </h1>
       <div style={{ display: 'flex', gap: 20 }}>
         <div>
           <VideoPlayer
@@ -50,12 +77,30 @@ const LearningScreen = ({
           />
         </div>
         <ul>
-          {content.map((contentItem, index) => {
+          {formattedTranscriptState.map((contentItem, index) => {
             const numberOrder = index + 1 + ') ';
             const baseLang = contentItem.baseLang;
-            const targetLang = contentItem.targetLang;
+            const targetLangformatted = contentItem.targetLangformatted;
             const id = contentItem.id;
             const thisTime = contentItem.time;
+
+            const formattedSentence = (
+              <p>
+                {targetLangformatted.map((item) => {
+                  const isUnderlined = item?.style?.textDecorationLine;
+                  const text = item?.text;
+                  return (
+                    <span
+                      style={{
+                        textDecorationLine: isUnderlined ? 'underline' : 'none',
+                      }}
+                    >
+                      {text}
+                    </span>
+                  );
+                })}
+              </p>
+            );
 
             return (
               <li key={id}>
@@ -69,7 +114,8 @@ const LearningScreen = ({
                   <span>{numberOrder}</span>
                   {baseLang}
                 </p>
-                <p>{targetLang}</p>
+
+                {formattedSentence}
               </li>
             );
           })}
@@ -84,6 +130,7 @@ export const HomeContainer = ({
   targetLanguageLoadedWords,
   targetLanguageLoadedSnippetsWithSavedTag,
   sortedContent,
+  pureWords,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
   const [currentTime, setCurrentTime] = useState(0);
@@ -106,6 +153,8 @@ export const HomeContainer = ({
       videoRef.current.play();
     }
   };
+
+  const clearTopic = () => setSelectedContentState(null);
 
   // Update current time as video plays
   const handleTimeUpdate = () => {
@@ -163,6 +212,8 @@ export const HomeContainer = ({
           handlePlayFromHere={handlePlayFromHere}
           handleTimeUpdate={handleTimeUpdate}
           ref={videoRef}
+          pureWords={pureWords}
+          clearTopic={clearTopic}
         />
       )}
     </div>

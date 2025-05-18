@@ -1,6 +1,7 @@
 import { getOnLoadData } from './get-on-load-data';
 
 import { HomeContainer } from './HomeContainer';
+import { makeArrayUnique } from './useHighlightWordToWordBank';
 
 export default async function Home() {
   const allStudyDataRes = await getOnLoadData();
@@ -24,6 +25,41 @@ export default async function Home() {
       contentIndex: contentIndex,
     }));
 
+  const wordsFromSentences = [];
+  let pureWords = [];
+
+  const getPureWords = () => {
+    targetLanguageLoadedWords?.forEach((wordData) => {
+      if (wordData?.baseForm) {
+        pureWords.push(wordData.baseForm);
+      }
+      if (wordData?.surfaceForm) {
+        pureWords.push(wordData.surfaceForm);
+      }
+    });
+
+    targetLanguageLoadedSentences?.forEach((sentence) => {
+      if (sentence?.matchedWordsSurface) {
+        sentence?.matchedWordsSurface.forEach((item, index) => {
+          if (item && !pureWords.includes(item)) {
+            pureWords.push(item);
+            wordsFromSentences.push({
+              wordId: sentence?.matchedWordsId[index],
+              word: item,
+            });
+          }
+        });
+      }
+    });
+    const pureWordsUnique =
+      pureWords?.length > 0 ? makeArrayUnique(pureWords) : [];
+    return pureWordsUnique;
+  };
+
+  getPureWords();
+
+  console.log('## pureWords', pureWords[0]);
+
   return (
     <HomeContainer
       targetLanguageLoadedSentences={targetLanguageLoadedSentences}
@@ -32,6 +68,7 @@ export default async function Home() {
         targetLanguageLoadedSnippetsWithSavedTag
       }
       sortedContent={sortedContent}
+      pureWords={pureWords}
     />
   );
 }
