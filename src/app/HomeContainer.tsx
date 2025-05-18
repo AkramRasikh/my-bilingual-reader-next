@@ -82,19 +82,33 @@ export const HomeContainer = ({
 
   learningContentState.forEach((contentItem) => {
     if (contentItem?.origin === 'youtube' && contentItem?.hasVideo) {
-      youtubeContentTags.push(contentItem.title);
+      youtubeContentTags.push({
+        title: contentItem.title,
+        reviewed: contentItem?.reviewHistory,
+      });
     }
   });
 
   return (
     <div style={{ padding: 10 }}>
-      <ul>
+      <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
         {!selectedContentState &&
           youtubeContentTags.map((youtubeTag, index) => {
+            const title = youtubeTag.title;
+            const reviewed = youtubeTag.reviewed;
+
             return (
               <li key={index}>
-                <button onClick={() => handleSelectedContent(youtubeTag)}>
-                  {youtubeTag}
+                <button
+                  onClick={() => handleSelectedContent(title)}
+                  style={{
+                    border: '1px solid grey',
+                    padding: 3,
+                    backgroundColor: reviewed ? 'red' : 'lightgray',
+                    borderRadius: 5,
+                  }}
+                >
+                  {title}
                 </button>
               </li>
             );
