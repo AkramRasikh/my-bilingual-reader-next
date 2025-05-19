@@ -4,6 +4,7 @@ import { getFirebaseVideoURL } from './get-firebase-media-url';
 import { getGeneralTopicName } from './get-general-topic-name';
 import { japanese } from './languages';
 import { useHighlightWordToWordBank } from './useHighlightWordToWordBank';
+import { mapSentenceIdsToSeconds } from './map-sentence-ids-to-seconds';
 
 export default function VideoPlayer({ url, handleTimeUpdate, ref }) {
   const videoUrl = url;
@@ -31,12 +32,33 @@ const LearningScreen = ({
   ref,
   pureWords,
   clearTopic,
+  currentTime,
 }) => {
   const [formattedTranscriptState, setFormattedTranscriptState] = useState();
+  const [secondsState, setSecondsState] = useState();
+
   const generalTopic = getGeneralTopicName(selectedContentState.title);
   const videoUrl = getFirebaseVideoURL(generalTopic, japanese);
   const content = selectedContentState.content;
   const realStartTime = selectedContentState.realStartTime;
+
+  useEffect(() => {
+    if (ref.current?.duration && !secondsState) {
+      const arrOfSeconds = mapSentenceIdsToSeconds({
+        content,
+        duration: ref.current?.duration,
+        isVideoModeState: true,
+        realStartTime,
+      });
+
+      setSecondsState(arrOfSeconds);
+    }
+  }, [ref.current, secondsState, content, realStartTime]);
+
+  const masterPlay =
+    currentTime &&
+    secondsState?.length > 0 &&
+    secondsState[Math.floor(currentTime)];
 
   const { underlineWordsInSentence } = useHighlightWordToWordBank({
     pureWordsUnique: pureWords,
@@ -68,7 +90,14 @@ const LearningScreen = ({
         {selectedContentState?.title}
         <button onClick={clearTopic}>BACK</button>
       </h1>
-      <div style={{ display: 'flex', gap: 20 }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 20,
+          width: 'fit-content',
+          margin: 'auto',
+        }}
+      >
         <div>
           <VideoPlayer
             url={videoUrl}
@@ -76,13 +105,20 @@ const LearningScreen = ({
             ref={ref}
           />
         </div>
-        <ul>
+        <ul
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 5,
+          }}
+        >
           {formattedTranscriptState.map((contentItem, index) => {
             const numberOrder = index + 1 + ') ';
             const baseLang = contentItem.baseLang;
             const targetLangformatted = contentItem.targetLangformatted;
             const id = contentItem.id;
             const thisTime = contentItem.time;
+            const thisSentenceIsPlaying = contentItem.id === masterPlay;
 
             const formattedSentence = (
               <p>
@@ -103,19 +139,30 @@ const LearningScreen = ({
             );
 
             return (
-              <li key={id}>
-                <p>
-                  <button
-                    style={{ padding: 5, background: 'grey' }}
-                    onClick={() => handleFromHere(thisTime)}
-                  >
-                    PLAY
-                  </button>
-                  <span>{numberOrder}</span>
+              <li
+                key={id}
+                style={{
+                  display: 'flex',
+                  gap: 5,
+                }}
+              >
+                <button
+                  style={{ padding: 5, background: 'grey', borderRadius: 5 }}
+                  onClick={() => handleFromHere(thisTime)}
+                >
+                  PLAY
+                </button>
+                <div
+                  style={{
+                    background: thisSentenceIsPlaying ? 'yellow' : 'none',
+                  }}
+                >
+                  <p style={{ display: 'flex', gap: 3 }}>
+                    <span>{numberOrder}</span>
+                    {formattedSentence}
+                  </p>
                   {baseLang}
-                </p>
-
-                {formattedSentence}
+                </div>
               </li>
             );
           })}
@@ -133,6 +180,7 @@ export const HomeContainer = ({
   pureWords,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
+
   const [currentTime, setCurrentTime] = useState(0);
 
   const [snippetsState, setSnippetsState] = useState(
@@ -214,6 +262,7 @@ export const HomeContainer = ({
           ref={videoRef}
           pureWords={pureWords}
           clearTopic={clearTopic}
+          currentTime={currentTime}
         />
       )}
     </div>

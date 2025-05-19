@@ -5,8 +5,6 @@ export const adhocSentences = 'adhocSentences';
 export const sentences = 'sentences';
 
 const getFormattedData = (loadedData) => {
-  console.log('## loadedData', loadedData);
-
   const getNestedObjectData = (thisRef) => {
     return loadedData.find((el) => {
       const dataKeys = Object.keys(el);

@@ -58,8 +58,6 @@ export default async function Home() {
 
   getPureWords();
 
-  console.log('## pureWords', pureWords[0]);
-
   return (
     <HomeContainer
       targetLanguageLoadedSentences={targetLanguageLoadedSentences}
