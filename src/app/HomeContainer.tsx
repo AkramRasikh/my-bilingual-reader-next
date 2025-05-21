@@ -78,15 +78,21 @@ const LearningScreen = ({
     }
   }, [ref.current, secondsState, content, realStartTime]);
 
+  const isNumber = (value) => {
+    return typeof value === 'number';
+  };
+
   const masterPlay =
     currentTime &&
     secondsState?.length > 0 &&
     secondsState[Math.floor(currentTime)];
 
+  const handlePause = () => ref.current.pause();
+
   const handleJumpToSentenceViaKeys = (nextIndex: number) => {
     // defo revisit this
     const currentMasterPlay =
-      currentTime &&
+      isNumber(currentTime) &&
       secondsState?.length > 0 &&
       secondsState[Math.floor(ref.current.currentTime)];
 
@@ -96,7 +102,7 @@ const LearningScreen = ({
     const isLastIndex =
       thisSentenceIndex + 1 === formattedTranscriptState.length;
 
-    if (thisSentenceIndex === 0) {
+    if (thisSentenceIndex === 0 && nextIndex === -1) {
       handleFromHere(formattedTranscriptState[thisSentenceIndex]?.time);
     } else if (isLastIndex) {
       handleFromHere(formattedTranscriptState[thisSentenceIndex]?.time);
@@ -198,10 +204,25 @@ const LearningScreen = ({
                 }}
               >
                 <button
-                  style={{ padding: 5, background: 'grey', borderRadius: 5 }}
-                  onClick={() => handleFromHere(thisTime)}
+                  style={{
+                    padding: 5,
+                    background: 'grey',
+                    borderRadius: 5,
+                    margin: 'auto 0',
+                  }}
+                  onClick={
+                    thisSentenceIsPlaying && isVideoPlaying
+                      ? handlePause
+                      : () => handleFromHere(thisTime)
+                  }
                 >
-                  PLAY
+                  <span
+                    style={{
+                      height: 16,
+                    }}
+                  >
+                    {thisSentenceIsPlaying && isVideoPlaying ? 'Pause' : 'Play'}
+                  </span>
                 </button>
                 <div
                   style={{
@@ -247,6 +268,10 @@ export const HomeContainer = ({
   const [selectedContentState, setSelectedContentState] = useState(null);
 
   const handlePlayFromHere = (time: number) => {
+    // console.log('## handlePlayFromHere ', {
+    //   time,
+    //   videoRef: videoRef.current.currentTime,
+    // });
     if (videoRef.current) {
       videoRef.current.currentTime = time;
       videoRef.current.play();
