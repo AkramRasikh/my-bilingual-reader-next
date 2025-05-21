@@ -5,9 +5,27 @@ import { getGeneralTopicName } from './get-general-topic-name';
 import { japanese } from './languages';
 import { useHighlightWordToWordBank } from './useHighlightWordToWordBank';
 import { mapSentenceIdsToSeconds } from './map-sentence-ids-to-seconds';
+import KeyListener from './KeyListener';
 
-export default function VideoPlayer({ url, handleTimeUpdate, ref }) {
+const VideoPlayer = ({ url, ref, handleTimeUpdate, setIsVideoPlaying }) => {
   const videoUrl = url;
+
+  useEffect(() => {
+    const video = ref?.current;
+
+    if (!video) return;
+
+    const handlePlay = () => setIsVideoPlaying(true);
+    const handlePause = () => setIsVideoPlaying(false);
+
+    video.addEventListener('play', handlePlay);
+    video.addEventListener('pause', handlePause);
+
+    return () => {
+      video.removeEventListener('play', handlePlay);
+      video.removeEventListener('pause', handlePause);
+    };
+  }, []);
 
   return (
     <div className='flex justify-center items-center h-screen'>
@@ -22,25 +40,30 @@ export default function VideoPlayer({ url, handleTimeUpdate, ref }) {
       </video>
     </div>
   );
-}
+};
 
 const LearningScreen = ({
+  ref,
   selectedContentState,
   handlePlayFromHere,
   handleTimeUpdate,
   wordsState,
-  ref,
   pureWords,
   clearTopic,
   currentTime,
 }) => {
   const [formattedTranscriptState, setFormattedTranscriptState] = useState();
   const [secondsState, setSecondsState] = useState();
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   const generalTopic = getGeneralTopicName(selectedContentState.title);
   const videoUrl = getFirebaseVideoURL(generalTopic, japanese);
   const content = selectedContentState.content;
   const realStartTime = selectedContentState.realStartTime;
+
+  const { underlineWordsInSentence } = useHighlightWordToWordBank({
+    pureWordsUnique: pureWords,
+  });
 
   useEffect(() => {
     if (ref.current?.duration && !secondsState) {
@@ -59,10 +82,6 @@ const LearningScreen = ({
     currentTime &&
     secondsState?.length > 0 &&
     secondsState[Math.floor(currentTime)];
-
-  const { underlineWordsInSentence } = useHighlightWordToWordBank({
-    pureWordsUnique: pureWords,
-  });
 
   const handleFromHere = (time) => {
     const thisStartTime = realStartTime + time;
@@ -100,10 +119,12 @@ const LearningScreen = ({
       >
         <div>
           <VideoPlayer
+            ref={ref}
             url={videoUrl}
             handleTimeUpdate={handleTimeUpdate}
-            ref={ref}
+            setIsVideoPlaying={setIsVideoPlaying}
           />
+          <KeyListener isVideoPlaying={isVideoPlaying} />
         </div>
         <ul
           style={{
@@ -123,11 +144,12 @@ const LearningScreen = ({
 
             const formattedSentence = (
               <p>
-                {targetLangformatted.map((item) => {
+                {targetLangformatted.map((item, index) => {
                   const isUnderlined = item?.style?.textDecorationLine;
                   const text = item?.text;
                   return (
                     <span
+                      key={index}
                       style={{
                         textDecorationLine: isUnderlined ? 'underline' : 'none',
                       }}
@@ -264,6 +286,7 @@ export const HomeContainer = ({
           pureWords={pureWords}
           clearTopic={clearTopic}
           currentTime={currentTime}
+          wordsState={wordsState}
         />
       )}
     </div>
