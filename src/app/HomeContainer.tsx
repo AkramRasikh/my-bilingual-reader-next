@@ -83,8 +83,34 @@ const LearningScreen = ({
     secondsState?.length > 0 &&
     secondsState[Math.floor(currentTime)];
 
+  const handleJumpToSentenceViaKeys = (nextIndex: number) => {
+    const thisSentenceIndex = formattedTranscriptState.findIndex(
+      (item) => item.id === masterPlay,
+    );
+    const isLastIndex =
+      thisSentenceIndex + 1 === formattedTranscriptState.length;
+
+    console.log('## handleJumpToSentenceViaKeys', {
+      thisSentenceIndex,
+      isLastIndex,
+      nextIndex,
+    });
+
+    if (thisSentenceIndex === 0) {
+      handleFromHere(formattedTranscriptState[thisSentenceIndex]?.time);
+    } else if (isLastIndex) {
+      handleFromHere(formattedTranscriptState[thisSentenceIndex]?.time);
+    } else {
+      handleFromHere(
+        formattedTranscriptState[thisSentenceIndex + nextIndex]?.time,
+      );
+    }
+  };
+
   const handleFromHere = (time) => {
     const thisStartTime = realStartTime + time;
+    console.log('## handleFromHere thisStartTime', thisStartTime);
+
     handlePlayFromHere(thisStartTime);
   };
 
@@ -124,7 +150,10 @@ const LearningScreen = ({
             handleTimeUpdate={handleTimeUpdate}
             setIsVideoPlaying={setIsVideoPlaying}
           />
-          <KeyListener isVideoPlaying={isVideoPlaying} />
+          <KeyListener
+            isVideoPlaying={isVideoPlaying}
+            handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}
+          />
         </div>
         <ul
           style={{
@@ -143,7 +172,7 @@ const LearningScreen = ({
             const thisSentenceIsPlaying = contentItem.id === masterPlay;
 
             const formattedSentence = (
-              <p>
+              <span>
                 {targetLangformatted.map((item, index) => {
                   const isUnderlined = item?.style?.textDecorationLine;
                   const text = item?.text;
@@ -158,7 +187,7 @@ const LearningScreen = ({
                     </span>
                   );
                 })}
-              </p>
+              </span>
             );
 
             return (

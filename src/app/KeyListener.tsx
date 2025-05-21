@@ -6,7 +6,10 @@ type Props = {
   isVideoPlaying: boolean;
 };
 
-const KeyListener = ({ isVideoPlaying }: Props) => {
+const KeyListener = ({
+  isVideoPlaying,
+  handleJumpToSentenceViaKeys,
+}: Props) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       console.log('## handleKeyDown?? isVideoPlaying', isVideoPlaying);
@@ -15,12 +18,15 @@ const KeyListener = ({ isVideoPlaying }: Props) => {
 
       switch (e.key.toLowerCase()) {
         case 'a':
+          handleJumpToSentenceViaKeys(-1);
           console.log('Pressed A - action A triggered');
           break;
         case 's':
+          handleJumpToSentenceViaKeys(0);
           console.log('Pressed S - action S triggered');
           break;
         case 'd':
+          handleJumpToSentenceViaKeys(1);
           console.log('Pressed D - action D triggered');
           break;
         default:
