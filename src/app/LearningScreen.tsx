@@ -68,9 +68,10 @@ const LearningScreen = ({
     const isLastIndex =
       thisSentenceIndex + 1 === formattedTranscriptState.length;
 
-    if (thisSentenceIndex === 0 && nextIndex === -1) {
-      handleFromHere(formattedTranscriptState[thisSentenceIndex]?.time);
-    } else if (isLastIndex) {
+    if (thisSentenceIndex === -1) {
+      return;
+    }
+    if ((thisSentenceIndex === 0 && nextIndex === -1) || isLastIndex) {
       handleFromHere(formattedTranscriptState[thisSentenceIndex]?.time);
     } else {
       handleFromHere(
@@ -147,92 +148,96 @@ const LearningScreen = ({
             handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}
           />
         </div>
-        <div style={{ maxHeight: '600px', margin: 'auto', overflowY: 'auto' }}>
-          <ul
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 5,
-              margin: 'auto',
-              overflow: 'scroll',
-            }}
+        {secondsState && (
+          <div
+            style={{ maxHeight: '600px', margin: 'auto', overflowY: 'auto' }}
           >
-            {formattedTranscriptState.map((contentItem, index) => {
-              const numberOrder = index + 1 + ') ';
-              const baseLang = contentItem.baseLang;
-              const targetLangformatted = contentItem.targetLangformatted;
-              const id = contentItem.id;
-              const thisTime = contentItem.time;
-              const thisSentenceIsPlaying = contentItem.id === masterPlay;
+            <ul
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 5,
+                margin: 'auto',
+                overflow: 'scroll',
+              }}
+            >
+              {formattedTranscriptState.map((contentItem, index) => {
+                const numberOrder = index + 1 + ') ';
+                const baseLang = contentItem.baseLang;
+                const targetLangformatted = contentItem.targetLangformatted;
+                const id = contentItem.id;
+                const thisTime = contentItem.time;
+                const thisSentenceIsPlaying = contentItem.id === masterPlay;
 
-              const formattedSentence = (
-                <span>
-                  {targetLangformatted.map((item, index) => {
-                    const isUnderlined = item?.style?.textDecorationLine;
-                    const text = item?.text;
-                    return (
+                const formattedSentence = (
+                  <span>
+                    {targetLangformatted.map((item, index) => {
+                      const isUnderlined = item?.style?.textDecorationLine;
+                      const text = item?.text;
+                      return (
+                        <span
+                          key={index}
+                          style={{
+                            textDecorationLine: isUnderlined
+                              ? 'underline'
+                              : 'none',
+                          }}
+                        >
+                          {text}
+                        </span>
+                      );
+                    })}
+                  </span>
+                );
+
+                return (
+                  <li
+                    key={id}
+                    style={{
+                      display: 'flex',
+                      gap: 5,
+                    }}
+                  >
+                    <button
+                      style={{
+                        padding: 5,
+                        background: 'grey',
+                        borderRadius: 5,
+                        margin: 'auto 0',
+                      }}
+                      onClick={
+                        thisSentenceIsPlaying && isVideoPlaying
+                          ? handlePause
+                          : () => handleFromHere(thisTime)
+                      }
+                    >
                       <span
-                        key={index}
                         style={{
-                          textDecorationLine: isUnderlined
-                            ? 'underline'
-                            : 'none',
+                          height: 16,
                         }}
                       >
-                        {text}
+                        {thisSentenceIsPlaying && isVideoPlaying
+                          ? 'Pause'
+                          : 'Play'}
                       </span>
-                    );
-                  })}
-                </span>
-              );
-
-              return (
-                <li
-                  key={id}
-                  style={{
-                    display: 'flex',
-                    gap: 5,
-                  }}
-                >
-                  <button
-                    style={{
-                      padding: 5,
-                      background: 'grey',
-                      borderRadius: 5,
-                      margin: 'auto 0',
-                    }}
-                    onClick={
-                      thisSentenceIsPlaying && isVideoPlaying
-                        ? handlePause
-                        : () => handleFromHere(thisTime)
-                    }
-                  >
-                    <span
+                    </button>
+                    <div
                       style={{
-                        height: 16,
+                        background: thisSentenceIsPlaying ? 'yellow' : 'none',
                       }}
                     >
-                      {thisSentenceIsPlaying && isVideoPlaying
-                        ? 'Pause'
-                        : 'Play'}
-                    </span>
-                  </button>
-                  <div
-                    style={{
-                      background: thisSentenceIsPlaying ? 'yellow' : 'none',
-                    }}
-                  >
-                    <p style={{ display: 'flex', gap: 3 }}>
-                      <span>{numberOrder}</span>
-                      {formattedSentence}
-                    </p>
-                    {baseLang}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+                      <p style={{ display: 'flex', gap: 3 }}>
+                        <span>{numberOrder}</span>
+                        {formattedSentence}
+                      </p>
+                      {baseLang}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
