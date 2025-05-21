@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import useData from './useData';
 import PopUpWordCard from './PopUpWordCard';
+import LoadingSpinner from './LoadingSpinner';
 
 const TranscriptItem = ({
   contentItem,
@@ -13,10 +14,11 @@ const TranscriptItem = ({
   const ulRef = useRef<HTMLUListElement>(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [isLoadingState, setIsLoadingState] = useState(false);
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const { targetLanguageLoadedWords, pureWords } = useData();
+  const { targetLanguageLoadedWords, handleSaveWord } = useData();
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -67,6 +69,22 @@ const TranscriptItem = ({
     }
   };
 
+  const handleSaveFunc = async () => {
+    try {
+      setIsLoadingState(true);
+      await handleSaveWord({
+        highlightedWord: highlightedTextState,
+        highlightedWordSentenceId: contentItem.id,
+        contextSentence: contentItem.baseLang,
+        reviewData: null,
+        meaning: contentItem?.meaning,
+      });
+    } catch (error) {
+    } finally {
+      setIsLoadingState(true);
+    }
+  };
+
   const formattedSentence = (
     <span>
       {targetLangformatted.map((item, indexNested) => {
@@ -100,7 +118,10 @@ const TranscriptItem = ({
         <ul>
           {wordPopUpState?.map((item) => (
             <li key={item.id}>
-              <PopUpWordCard word={item} />
+              <PopUpWordCard
+                word={item}
+                onClose={() => setWordPopUpState([])}
+              />
             </li>
           ))}
         </ul>
@@ -154,14 +175,40 @@ const TranscriptItem = ({
               alignItems: 'center',
             }}
           >
-            Add to Word bank!: {highlightedTextState}{' '}
-            <button
-              style={{ padding: 5, background: 'grey', borderRadius: 5 }}
-              onClick={() => setHighlightedTextState('')}
-            >
-              CLEAR
-            </button>
+            Highlighted word: {highlightedTextState}{' '}
           </p>
+          <div className='flex gap-1.5'>
+            {isLoadingState ? (
+              <div
+                style={{
+                  position: 'absolute',
+                  width: '100%',
+                }}
+              >
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <>
+                <button
+                  style={{
+                    padding: 5,
+                    background: 'green',
+                    color: 'white',
+                    borderRadius: 5,
+                  }}
+                  onClick={handleSaveFunc}
+                >
+                  ADD
+                </button>
+                <button
+                  style={{ padding: 5, background: 'grey', borderRadius: 5 }}
+                  onClick={() => setHighlightedTextState('')}
+                >
+                  CLEAR
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
     </li>

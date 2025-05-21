@@ -1,6 +1,6 @@
+import { DataProvider } from './DataProvider';
 import { getOnLoadData } from './get-on-load-data';
-
-import { DataProvider, HomeContainer } from './HomeContainer';
+import { HomeContainer } from './HomeContainer';
 import { makeArrayUnique } from './useHighlightWordToWordBank';
 
 export default async function Home() {

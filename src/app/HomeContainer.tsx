@@ -1,25 +1,7 @@
 'use client';
-import { createContext, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import LearningScreen from './LearningScreen';
-
-export const DataContext = createContext(null);
-
-export const DataProvider = ({
-  targetLanguageLoadedWords,
-  pureWords,
-  children,
-}: PropsWithChildren<object>) => {
-  return (
-    <DataContext.Provider
-      value={{
-        targetLanguageLoadedWords,
-        pureWords,
-      }}
-    >
-      {children}
-    </DataContext.Provider>
-  );
-};
+import useData from './useData';
 
 export const HomeContainer = ({
   targetLanguageLoadedSentences,
@@ -37,11 +19,12 @@ export const HomeContainer = ({
   );
   const [learningContentState, setLearningContentState] =
     useState(sortedContent);
-  const [wordsState, setWordsState] = useState(targetLanguageLoadedWords);
+
   const [sentencesState, setSentencesState] = useState(
     targetLanguageLoadedSentences,
   );
 
+  const { wordsState } = useData();
   const [selectedContentState, setSelectedContentState] = useState(null);
 
   const handlePlayFromHere = (time: number) => {
