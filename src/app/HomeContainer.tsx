@@ -84,17 +84,17 @@ const LearningScreen = ({
     secondsState[Math.floor(currentTime)];
 
   const handleJumpToSentenceViaKeys = (nextIndex: number) => {
+    // defo revisit this
+    const currentMasterPlay =
+      currentTime &&
+      secondsState?.length > 0 &&
+      secondsState[Math.floor(ref.current.currentTime)];
+
     const thisSentenceIndex = formattedTranscriptState.findIndex(
-      (item) => item.id === masterPlay,
+      (item) => item.id === currentMasterPlay,
     );
     const isLastIndex =
       thisSentenceIndex + 1 === formattedTranscriptState.length;
-
-    console.log('## handleJumpToSentenceViaKeys', {
-      thisSentenceIndex,
-      isLastIndex,
-      nextIndex,
-    });
 
     if (thisSentenceIndex === 0) {
       handleFromHere(formattedTranscriptState[thisSentenceIndex]?.time);
@@ -109,7 +109,6 @@ const LearningScreen = ({
 
   const handleFromHere = (time) => {
     const thisStartTime = realStartTime + time;
-    console.log('## handleFromHere thisStartTime', thisStartTime);
 
     handlePlayFromHere(thisStartTime);
   };
