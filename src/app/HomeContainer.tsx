@@ -1,6 +1,25 @@
 'use client';
-import { useRef, useState } from 'react';
+import { createContext, useRef, useState } from 'react';
 import LearningScreen from './LearningScreen';
+
+export const DataContext = createContext(null);
+
+export const DataProvider = ({
+  targetLanguageLoadedWords,
+  pureWords,
+  children,
+}: PropsWithChildren<object>) => {
+  return (
+    <DataContext.Provider
+      value={{
+        targetLanguageLoadedWords,
+        pureWords,
+      }}
+    >
+      {children}
+    </DataContext.Provider>
+  );
+};
 
 export const HomeContainer = ({
   targetLanguageLoadedSentences,

@@ -1,6 +1,6 @@
 import { getOnLoadData } from './get-on-load-data';
 
-import { HomeContainer } from './HomeContainer';
+import { DataProvider, HomeContainer } from './HomeContainer';
 import { makeArrayUnique } from './useHighlightWordToWordBank';
 
 export default async function Home() {
@@ -59,14 +59,19 @@ export default async function Home() {
   getPureWords();
 
   return (
-    <HomeContainer
-      targetLanguageLoadedSentences={targetLanguageLoadedSentences}
+    <DataProvider
       targetLanguageLoadedWords={targetLanguageLoadedWords}
-      targetLanguageLoadedSnippetsWithSavedTag={
-        targetLanguageLoadedSnippetsWithSavedTag
-      }
-      sortedContent={sortedContent}
       pureWords={pureWords}
-    />
+    >
+      <HomeContainer
+        targetLanguageLoadedSentences={targetLanguageLoadedSentences}
+        targetLanguageLoadedWords={targetLanguageLoadedWords}
+        targetLanguageLoadedSnippetsWithSavedTag={
+          targetLanguageLoadedSnippetsWithSavedTag
+        }
+        sortedContent={sortedContent}
+        pureWords={pureWords}
+      />
+    </DataProvider>
   );
 }

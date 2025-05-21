@@ -7,6 +7,7 @@ import { useHighlightWordToWordBank } from './useHighlightWordToWordBank';
 import { mapSentenceIdsToSeconds } from './map-sentence-ids-to-seconds';
 import KeyListener from './KeyListener';
 import VideoPlayer from './VideoPlayer';
+import TranscriptItem from './TranscriptItem';
 
 const LearningScreen = ({
   ref,
@@ -150,89 +151,33 @@ const LearningScreen = ({
         </div>
         {secondsState && (
           <div
-            style={{ maxHeight: '600px', margin: 'auto', overflowY: 'auto' }}
+            style={{
+              maxHeight: '600px',
+              margin: 'auto',
+              overflowY: 'auto',
+              maxWidth: 600,
+            }}
           >
             <ul
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 5,
+                gap: 10,
                 margin: 'auto',
                 overflow: 'scroll',
               }}
             >
               {formattedTranscriptState.map((contentItem, index) => {
-                const numberOrder = index + 1 + ') ';
-                const baseLang = contentItem.baseLang;
-                const targetLangformatted = contentItem.targetLangformatted;
-                const id = contentItem.id;
-                const thisTime = contentItem.time;
-                const thisSentenceIsPlaying = contentItem.id === masterPlay;
-
-                const formattedSentence = (
-                  <span>
-                    {targetLangformatted.map((item, index) => {
-                      const isUnderlined = item?.style?.textDecorationLine;
-                      const text = item?.text;
-                      return (
-                        <span
-                          key={index}
-                          style={{
-                            textDecorationLine: isUnderlined
-                              ? 'underline'
-                              : 'none',
-                          }}
-                        >
-                          {text}
-                        </span>
-                      );
-                    })}
-                  </span>
-                );
-
                 return (
-                  <li
-                    key={id}
-                    style={{
-                      display: 'flex',
-                      gap: 5,
-                    }}
-                  >
-                    <button
-                      style={{
-                        padding: 5,
-                        background: 'grey',
-                        borderRadius: 5,
-                        margin: 'auto 0',
-                      }}
-                      onClick={
-                        thisSentenceIsPlaying && isVideoPlaying
-                          ? handlePause
-                          : () => handleFromHere(thisTime)
-                      }
-                    >
-                      <span
-                        style={{
-                          height: 16,
-                        }}
-                      >
-                        {thisSentenceIsPlaying && isVideoPlaying
-                          ? 'Pause'
-                          : 'Play'}
-                      </span>
-                    </button>
-                    <div
-                      style={{
-                        background: thisSentenceIsPlaying ? 'yellow' : 'none',
-                      }}
-                    >
-                      <p style={{ display: 'flex', gap: 3 }}>
-                        <span>{numberOrder}</span>
-                        {formattedSentence}
-                      </p>
-                      {baseLang}
-                    </div>
-                  </li>
+                  <TranscriptItem
+                    key={index}
+                    index={index}
+                    contentItem={contentItem}
+                    isVideoPlaying={isVideoPlaying}
+                    handlePause={handlePause}
+                    handleFromHere={handleFromHere}
+                    masterPlay={masterPlay}
+                  />
                 );
               })}
             </ul>
