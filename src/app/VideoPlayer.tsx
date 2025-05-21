@@ -21,18 +21,19 @@ const VideoPlayer = ({ url, ref, handleTimeUpdate, setIsVideoPlaying }) => {
     };
   }, []);
 
+  {
+    /* <div className='flex justify-center items-center h-screen'> */
+  }
   return (
-    <div className='flex justify-center items-center h-screen'>
-      <video
-        ref={ref}
-        src={videoUrl}
-        controls
-        className='w-full max-w-3xl rounded-lg shadow-lg'
-        onTimeUpdate={handleTimeUpdate}
-      >
-        Your browser does not support the video tag.
-      </video>
-    </div>
+    <video
+      ref={ref}
+      src={videoUrl}
+      controls
+      className='w-full max-w-3xl rounded-lg shadow-lg'
+      onTimeUpdate={handleTimeUpdate}
+    >
+      Your browser does not support the video tag.
+    </video>
   );
 };
 
