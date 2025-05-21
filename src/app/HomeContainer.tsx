@@ -86,9 +86,9 @@ const LearningScreen = ({
 
   return (
     <div>
-      <h1>
-        {selectedContentState?.title}
+      <h1 style={{ textAlign: 'center' }}>
         <button onClick={clearTopic}>BACK</button>
+        {selectedContentState?.title}
       </h1>
       <div
         style={{
@@ -110,6 +110,7 @@ const LearningScreen = ({
             display: 'flex',
             flexDirection: 'column',
             gap: 5,
+            margin: 'auto',
           }}
         >
           {formattedTranscriptState.map((contentItem, index) => {
