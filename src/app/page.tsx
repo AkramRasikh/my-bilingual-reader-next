@@ -1,7 +1,6 @@
 import { DataProvider } from './DataProvider';
 import { getOnLoadData } from './get-on-load-data';
 import { HomeContainer } from './HomeContainer';
-import { makeArrayUnique } from './useHighlightWordToWordBank';
 
 export default async function Home() {
   const allStudyDataRes = await getOnLoadData();
