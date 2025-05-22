@@ -7,7 +7,15 @@ const HighlightedTextSection = ({
   highlightedTextState,
 }) => {
   return (
-    <div style={{ margin: 'auto', display: 'flex', gap: 10 }}>
+    <div
+      style={{
+        margin: 'auto',
+        marginTop: 5,
+        display: 'flex',
+        gap: 10,
+        justifyContent: 'flex-end',
+      }}
+    >
       <p
         style={{
           textAlign: 'right',

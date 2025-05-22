@@ -117,19 +117,8 @@ const TranscriptItem = ({
       style={{
         gap: 5,
       }}
+      onMouseLeave={() => setWordPopUpState([])}
     >
-      {wordPopUpState?.length > 0 ? (
-        <ul>
-          {wordPopUpState?.map((item) => (
-            <li key={item.id}>
-              <PopUpWordCard
-                word={item}
-                onClose={() => setWordPopUpState([])}
-              />
-            </li>
-          ))}
-        </ul>
-      ) : null}
       <div
         style={{
           display: 'flex',
@@ -143,6 +132,7 @@ const TranscriptItem = ({
               thisSentenceIsPlaying && isVideoPlaying ? 'green' : 'grey',
             borderRadius: 5,
             margin: 'auto 0',
+            marginTop: 0,
           }}
           onClick={
             thisSentenceIsPlaying && isVideoPlaying
@@ -179,6 +169,18 @@ const TranscriptItem = ({
           ) : null}
         </div>
       </div>
+      {wordPopUpState?.length > 0 ? (
+        <ul>
+          {wordPopUpState?.map((item) => (
+            <li key={item.id}>
+              <PopUpWordCard
+                word={item}
+                onClose={() => setWordPopUpState([])}
+              />
+            </li>
+          ))}
+        </ul>
+      ) : null}
       {highlightedTextState && (
         <HighlightedTextSection
           isLoadingState={isLoadingState}
