@@ -87,7 +87,7 @@ const TranscriptItem = ({
   };
 
   const formattedSentence = (
-    <span>
+    <span ref={ulRef}>
       {targetLangformatted.map((item, indexNested) => {
         const isUnderlined = item?.style?.textDecorationLine;
         const text = item?.text;
@@ -160,7 +160,7 @@ const TranscriptItem = ({
             background: thisSentenceIsPlaying ? 'yellow' : 'none',
           }}
         >
-          <p style={{ display: 'flex', gap: 3 }} ref={ulRef}>
+          <p style={{ display: 'flex', gap: 3 }}>
             <span>{numberOrder}</span>
             {formattedSentence}
           </p>
