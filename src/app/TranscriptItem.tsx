@@ -76,12 +76,13 @@ const TranscriptItem = ({
         highlightedWord: highlightedTextState,
         highlightedWordSentenceId: contentItem.id,
         contextSentence: contentItem.baseLang,
-        reviewData: null,
         meaning: contentItem?.meaning,
       });
     } catch (error) {
     } finally {
-      setIsLoadingState(true);
+      setHighlightedTextState('');
+      setWordPopUpState([]);
+      setIsLoadingState(false);
     }
   };
 

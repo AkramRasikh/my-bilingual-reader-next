@@ -1,14 +1,11 @@
 'use client';
 import { useRef, useState } from 'react';
 import LearningScreen from './LearningScreen';
-import useData from './useData';
 
 export const HomeContainer = ({
   targetLanguageLoadedSentences,
-  targetLanguageLoadedWords,
   targetLanguageLoadedSnippetsWithSavedTag,
   sortedContent,
-  pureWords,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
 
@@ -24,7 +21,6 @@ export const HomeContainer = ({
     targetLanguageLoadedSentences,
   );
 
-  const { wordsState } = useData();
   const [selectedContentState, setSelectedContentState] = useState(null);
 
   const handlePlayFromHere = (time: number) => {
@@ -92,10 +88,8 @@ export const HomeContainer = ({
           handlePlayFromHere={handlePlayFromHere}
           handleTimeUpdate={handleTimeUpdate}
           ref={videoRef}
-          pureWords={pureWords}
           clearTopic={clearTopic}
           currentTime={currentTime}
-          wordsState={wordsState}
         />
       )}
     </div>

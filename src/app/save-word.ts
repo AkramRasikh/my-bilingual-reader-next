@@ -9,10 +9,8 @@ const saveWordAPI = async ({
   // isGoogle,
   // language,
 }) => {
-  const baseUrl = process.env.NEXT_PUBLIC_ADD_WORD_URL as string;
-
   try {
-    const response = await fetch(baseUrl, {
+    const response = await fetch('/api/addWord', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

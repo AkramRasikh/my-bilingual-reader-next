@@ -25,43 +25,10 @@ export default async function Home() {
       contentIndex: contentIndex,
     }));
 
-  const wordsFromSentences = [];
-  let pureWords = [];
-
-  const getPureWords = () => {
-    targetLanguageLoadedWords?.forEach((wordData) => {
-      if (wordData?.baseForm) {
-        pureWords.push(wordData.baseForm);
-      }
-      if (wordData?.surfaceForm) {
-        pureWords.push(wordData.surfaceForm);
-      }
-    });
-
-    targetLanguageLoadedSentences?.forEach((sentence) => {
-      if (sentence?.matchedWordsSurface) {
-        sentence?.matchedWordsSurface.forEach((item, index) => {
-          if (item && !pureWords.includes(item)) {
-            pureWords.push(item);
-            wordsFromSentences.push({
-              wordId: sentence?.matchedWordsId[index],
-              word: item,
-            });
-          }
-        });
-      }
-    });
-    const pureWordsUnique =
-      pureWords?.length > 0 ? makeArrayUnique(pureWords) : [];
-    return pureWordsUnique;
-  };
-
-  getPureWords();
-
   return (
     <DataProvider
       targetLanguageLoadedWords={targetLanguageLoadedWords}
-      pureWords={pureWords}
+      targetLanguageLoadedSentences={targetLanguageLoadedSentences}
     >
       <HomeContainer
         targetLanguageLoadedSentences={targetLanguageLoadedSentences}
@@ -70,7 +37,6 @@ export default async function Home() {
           targetLanguageLoadedSnippetsWithSavedTag
         }
         sortedContent={sortedContent}
-        pureWords={pureWords}
       />
     </DataProvider>
   );

@@ -8,14 +8,13 @@ import { mapSentenceIdsToSeconds } from './map-sentence-ids-to-seconds';
 import KeyListener from './KeyListener';
 import VideoPlayer from './VideoPlayer';
 import TranscriptItem from './TranscriptItem';
+import useData from './useData';
 
 const LearningScreen = ({
   ref,
   selectedContentState,
   handlePlayFromHere,
   handleTimeUpdate,
-  wordsState,
-  pureWords,
   clearTopic,
   currentTime,
 }) => {
@@ -27,6 +26,7 @@ const LearningScreen = ({
   const videoUrl = getFirebaseVideoURL(generalTopic, japanese);
   const content = selectedContentState.content;
   const realStartTime = selectedContentState.realStartTime;
+  const { pureWords } = useData();
 
   const { underlineWordsInSentence } = useHighlightWordToWordBank({
     pureWordsUnique: pureWords,
@@ -90,7 +90,7 @@ const LearningScreen = ({
     handlePlayFromHere(thisStartTime);
   };
 
-  useEffect(() => {
+  const getFormattedData = () => {
     const formattedTranscript = content.map((item) => {
       return {
         ...item,
@@ -99,7 +99,10 @@ const LearningScreen = ({
     });
 
     setFormattedTranscriptState(formattedTranscript);
-  }, [wordsState]);
+  };
+  useEffect(() => {
+    getFormattedData();
+  }, [pureWords]);
 
   if (!formattedTranscriptState) {
     return null;
