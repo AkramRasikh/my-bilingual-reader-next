@@ -19,7 +19,6 @@ export default function PopUpWordCard({
     } finally {
       setIsLoadingState(false);
     }
-    console.log('## handleDeleteFunc');
   };
   return (
     <div className='border rounded-lg p-4 shadow-sm max-w-sm space-y-2 gap-1.5 relative'>

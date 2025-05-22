@@ -21,11 +21,8 @@ const TranscriptItem = ({
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const {
-    targetLanguageLoadedWords,
-    handleSaveWord,
-    handleDeleteWordDataProvider,
-  } = useData();
+  const { wordsState, handleSaveWord, handleDeleteWordDataProvider } =
+    useData();
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -56,14 +53,12 @@ const TranscriptItem = ({
   const handleMouseEnter = (text) => {
     hoverTimer.current = setTimeout(() => {
       setShowModal(true); // Open modal
-      const wordsAmongstHighlightedText = targetLanguageLoadedWords?.filter(
-        (item) => {
-          if (item.baseForm === text || item.surfaceForm === text) {
-            return true;
-          }
-          return false;
-        },
-      );
+      const wordsAmongstHighlightedText = wordsState?.filter((item) => {
+        if (item.baseForm === text || item.surfaceForm === text) {
+          return true;
+        }
+        return false;
+      });
 
       setWordPopUpState(wordsAmongstHighlightedText);
     }, 300);
