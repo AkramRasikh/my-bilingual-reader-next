@@ -136,7 +136,8 @@ const TranscriptItem = ({
         <button
           style={{
             padding: 5,
-            background: 'grey',
+            background:
+              thisSentenceIsPlaying && isVideoPlaying ? 'green' : 'grey',
             borderRadius: 5,
             margin: 'auto 0',
           }}
@@ -151,7 +152,7 @@ const TranscriptItem = ({
               height: 16,
             }}
           >
-            {thisSentenceIsPlaying && isVideoPlaying ? 'Pause' : 'Play'}
+            {thisSentenceIsPlaying && isVideoPlaying ? '⏸️' : '▶️'}
           </span>
         </button>
         <div
