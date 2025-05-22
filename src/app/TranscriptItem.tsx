@@ -167,7 +167,7 @@ const TranscriptItem = ({
         </div>
       </div>
       {highlightedTextState && (
-        <div style={{ margin: 'auto' }}>
+        <div style={{ margin: 'auto', display: 'flex', gap: 10 }}>
           <p
             style={{
               textAlign: 'right',
@@ -178,37 +178,31 @@ const TranscriptItem = ({
           >
             Highlighted word: {highlightedTextState}{' '}
           </p>
-          <div className='flex gap-1.5'>
-            {isLoadingState ? (
-              <div
-                style={{
-                  position: 'absolute',
-                  width: '100%',
-                }}
-              >
+          <div className='flex gap-1.5 relative'>
+            {isLoadingState && (
+              <div className='absolute inset-0 flex items-center justify-center bg-white/70 rounded'>
                 <LoadingSpinner />
               </div>
-            ) : (
-              <>
-                <button
-                  style={{
-                    padding: 5,
-                    background: 'green',
-                    color: 'white',
-                    borderRadius: 5,
-                  }}
-                  onClick={handleSaveFunc}
-                >
-                  ADD
-                </button>
-                <button
-                  style={{ padding: 5, background: 'grey', borderRadius: 5 }}
-                  onClick={() => setHighlightedTextState('')}
-                >
-                  CLEAR
-                </button>
-              </>
             )}
+            <div className='flex gap-1.5 m-auto'>
+              <button
+                style={{
+                  padding: 5,
+                  background: 'green',
+                  color: 'white',
+                  borderRadius: 5,
+                }}
+                onClick={handleSaveFunc}
+              >
+                ADD
+              </button>
+              <button
+                style={{ padding: 5, background: 'grey', borderRadius: 5 }}
+                onClick={() => setHighlightedTextState('')}
+              >
+                CLEAR
+              </button>
+            </div>
           </div>
         </div>
       )}
