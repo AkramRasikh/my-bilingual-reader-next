@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import useData from './useData';
 import PopUpWordCard from './PopUpWordCard';
 import HighlightedTextSection from './HighlightedTextSection';
+import SentenceBreakdown from './SentenceBreakdown';
 
 const TranscriptItem = ({
   contentItem,
@@ -14,6 +15,8 @@ const TranscriptItem = ({
   const ulRef = useRef<HTMLUListElement>(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showSentenceBreakdownState, setShowSentenceBreakdownState] =
+    useState(false);
   const [isLoadingState, setIsLoadingState] = useState(false);
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
@@ -160,11 +163,20 @@ const TranscriptItem = ({
             background: thisSentenceIsPlaying ? 'yellow' : 'none',
           }}
         >
-          <p style={{ display: 'flex', gap: 3 }}>
+          <p style={{ display: 'flex', gap: 10 }}>
             <span>{numberOrder}</span>
             {formattedSentence}
           </p>
-          {baseLang}
+          <p>{baseLang}</p>
+          {contentItem?.sentenceStructure ? (
+            <SentenceBreakdown
+              vocab={contentItem.vocab}
+              meaning={contentItem.meaning}
+              sentenceStructure={contentItem.sentenceStructure}
+              showSentenceBreakdownState={showSentenceBreakdownState}
+              setShowSentenceBreakdownState={setShowSentenceBreakdownState}
+            />
+          ) : null}
         </div>
       </div>
       {highlightedTextState && (

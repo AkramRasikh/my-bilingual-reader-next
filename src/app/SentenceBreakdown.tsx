@@ -1,18 +1,43 @@
-const SentenceBreakdown = ({ vocab, meaning, sentenceStructure }) => {
-  console.log('## SentenceBreakdown', {
-    vocab,
-    meaning,
-    sentenceStructure,
-  });
+const SentenceBreakdown = ({
+  vocab,
+  meaning,
+  sentenceStructure,
+  showSentenceBreakdownState,
+  setShowSentenceBreakdownState,
+}) => {
+  if (!showSentenceBreakdownState) {
+    return (
+      <button onClick={() => setShowSentenceBreakdownState(true)}>🔨</button>
+    );
+  }
 
-  return null;
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'right',
+      }}
+    >
+      <button onClick={() => setShowSentenceBreakdownState(false)}>❌</button>
+      <ul>
+        {vocab?.map(({ surfaceForm, meaning }, index) => {
+          return (
+            <li key={index}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  gap: 10,
+                }}
+              >
+                <span>{surfaceForm}</span> <span>{meaning}</span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
 };
 
 export default SentenceBreakdown;
-// <SentenceBreakdown
-//   vocab={topicSentence.vocab}
-//   meaning={topicSentence.meaning}
-//   sentenceStructure={topicSentence.sentenceStructure}
-//   textSegments={topicSentence.safeText.props.textSegments}
-//   handleSaveWordInBreakdown={handleSaveWordInBreakdown}
-// />
