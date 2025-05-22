@@ -7,6 +7,8 @@ import {
   srsRetentionKeyTypes,
 } from './srs-algo';
 import { makeArrayUnique } from './useHighlightWordToWordBank';
+import { deleteWordAPI } from './delete-word';
+import { japanese } from './languages';
 
 export const DataContext = createContext(null);
 
@@ -81,6 +83,21 @@ export const DataProvider = ({
     return savedWord;
   };
 
+  const handleDeleteWordDataProvider = async ({ wordId, wordBaseForm }) => {
+    try {
+      await deleteWordAPI({ wordId, language: japanese });
+      const targetLanguageWordsStateUpdated = wordsState.filter(
+        (item) => item.id !== wordId,
+      );
+      setWordsState(targetLanguageWordsStateUpdated);
+      return true;
+    } catch (error) {
+      // setUpdatePromptState(`Error deleting ${wordBaseForm} 😟!`);
+      // setTimeout(() => setUpdatePromptState(''), 3000);
+      console.log('## handleDeleteWordDataProvider deleteWord', { error });
+    }
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -89,6 +106,7 @@ export const DataProvider = ({
         handleSaveWord,
         wordsState,
         setWordsState,
+        handleDeleteWordDataProvider,
       }}
     >
       {children}

@@ -21,7 +21,11 @@ const TranscriptItem = ({
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const { targetLanguageLoadedWords, handleSaveWord } = useData();
+  const {
+    targetLanguageLoadedWords,
+    handleSaveWord,
+    handleDeleteWordDataProvider,
+  } = useData();
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -86,6 +90,18 @@ const TranscriptItem = ({
       setHighlightedTextState('');
       setWordPopUpState([]);
       setIsLoadingState(false);
+    }
+  };
+
+  const handleDeleteFunc = async (wordData) => {
+    try {
+      const resBool = await handleDeleteWordDataProvider(wordData);
+      if (resBool) {
+        setWordPopUpState([]);
+      }
+      return resBool;
+    } catch (error) {
+      console.log('## handleDeleteFunc error', error);
     }
   };
 
@@ -176,6 +192,7 @@ const TranscriptItem = ({
               <PopUpWordCard
                 word={item}
                 onClose={() => setWordPopUpState([])}
+                handleDelete={handleDeleteFunc}
               />
             </li>
           ))}

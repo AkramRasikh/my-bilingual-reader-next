@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LoadingSpinner from './LoadingSpinner';
 
 export default function PopUpWordCard({
   word,
@@ -8,13 +9,28 @@ export default function PopUpWordCard({
   word: any;
 }) {
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isLoadingState, setIsLoadingState] = useState(false);
 
   const handleDeleteFunc = async () => {
+    try {
+      setIsLoadingState(true);
+      await handleDelete({ wordId: word.id, wordBaseForm: word.baseForm });
+    } catch (error) {
+    } finally {
+      setIsLoadingState(false);
+    }
     console.log('## handleDeleteFunc');
   };
   return (
-    <div className='border rounded-lg p-4 shadow-sm max-w-sm space-y-2 gap-1.5'>
-      <div className='flex gap-1.5'>
+    <div className='border rounded-lg p-4 shadow-sm max-w-sm space-y-2 gap-1.5 relative'>
+      <div>
+        {isLoadingState && (
+          <div className='absolute inset-0 flex items-center justify-center bg-white/70 rounded'>
+            <LoadingSpinner />
+          </div>
+        )}
+      </div>
+      <div className='flex gap-1.5 justify-between'>
         <p>
           {word.baseForm}, {word.surfaceForm}, {word.definition},{' '}
           {word.phonetic}, {word?.transliteration}
