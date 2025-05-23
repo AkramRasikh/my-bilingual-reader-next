@@ -4,6 +4,7 @@ import PopUpWordCard from './PopUpWordCard';
 import HighlightedTextSection from './HighlightedTextSection';
 import SentenceBreakdown from './SentenceBreakdown';
 import clsx from 'clsx';
+import MenuSection from './MenuSection';
 
 const TranscriptItem = ({
   contentItem,
@@ -16,6 +17,7 @@ const TranscriptItem = ({
   const ulRef = useRef<HTMLUListElement>(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showMenuState, setShowMenuState] = useState(false);
   const [showSentenceBreakdownState, setShowSentenceBreakdownState] =
     useState(false);
   const [isLoadingState, setIsLoadingState] = useState(false);
@@ -168,6 +170,7 @@ const TranscriptItem = ({
               'rounded-lg p-1',
               hasBeenReviewed && 'border-2 border-amber-700',
             )}
+            onClick={() => setShowMenuState(!showMenuState)}
           >
             🍔
           </button>
@@ -185,22 +188,15 @@ const TranscriptItem = ({
             </p>
             <p>{baseLang}</p>
           </div>
-
-          {contentItem?.sentenceStructure && !showSentenceBreakdownState ? (
-            <div>
-              <button onClick={() => setShowSentenceBreakdownState(true)}>
-                🔨
-              </button>
-            </div>
-          ) : contentItem?.sentenceStructure ? (
-            <div>
-              <button onClick={() => setShowSentenceBreakdownState(false)}>
-                close
-              </button>
-            </div>
-          ) : null}
         </div>
       </div>
+      {showMenuState && (
+        <MenuSection
+          contentItem={contentItem}
+          setShowSentenceBreakdownState={setShowSentenceBreakdownState}
+          showSentenceBreakdownState={showSentenceBreakdownState}
+        />
+      )}
       {showSentenceBreakdownState && contentItem?.sentenceStructure ? (
         <SentenceBreakdown
           vocab={contentItem.vocab}
