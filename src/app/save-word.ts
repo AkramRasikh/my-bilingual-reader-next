@@ -6,7 +6,7 @@ const saveWordAPI = async ({
   contextSentence,
   reviewData,
   meaning,
-  // isGoogle,
+  isGoogle,
   // language,
 }) => {
   try {
@@ -20,7 +20,7 @@ const saveWordAPI = async ({
         word: highlightedWord,
         context: highlightedWordSentenceId,
         contextSentence,
-        isGoogle: true,
+        isGoogle,
         reviewData,
         meaning,
       }),

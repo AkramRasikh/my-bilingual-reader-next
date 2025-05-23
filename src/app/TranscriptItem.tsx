@@ -71,7 +71,7 @@ const TranscriptItem = ({
     }
   };
 
-  const handleSaveFunc = async () => {
+  const handleSaveFunc = async (isGoogle) => {
     try {
       setIsLoadingState(true);
       await handleSaveWord({
@@ -79,6 +79,7 @@ const TranscriptItem = ({
         highlightedWordSentenceId: contentItem.id,
         contextSentence: contentItem.baseLang,
         meaning: contentItem?.meaning,
+        isGoogle,
       });
     } catch (error) {
     } finally {

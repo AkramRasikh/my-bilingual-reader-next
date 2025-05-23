@@ -34,15 +34,24 @@ const HighlightedTextSection = ({
         )}
         <div className='flex gap-1.5 m-auto'>
           <button
+            className='border'
             style={{
               padding: 5,
-              background: 'green',
-              color: 'white',
               borderRadius: 5,
             }}
-            onClick={handleSaveFunc}
+            onClick={() => handleSaveFunc(false)}
           >
-            ADD
+            <img src='/deepseek.png' alt='Deepseek logo' className='h-5' />
+          </button>
+          <button
+            className='border'
+            style={{
+              padding: 5,
+              borderRadius: 5,
+            }}
+            onClick={() => handleSaveFunc(true)}
+          >
+            <img src='/google.png' alt='Google logo' className='h-5' />
           </button>
           <button
             style={{ padding: 5, background: 'grey', borderRadius: 5 }}

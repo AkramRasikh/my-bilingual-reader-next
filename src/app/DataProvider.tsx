@@ -61,6 +61,7 @@ export const DataProvider = ({
     highlightedWordSentenceId,
     contextSentence,
     meaning,
+    isGoogle,
   }) => {
     const cardDataRelativeToNow = getEmptyCard();
     const nextScheduledOptions = getNextScheduledOptions({
@@ -74,6 +75,7 @@ export const DataProvider = ({
       contextSentence,
       reviewData: nextScheduledOptions['1'].card,
       meaning,
+      isGoogle,
     });
 
     if (savedWord) {
