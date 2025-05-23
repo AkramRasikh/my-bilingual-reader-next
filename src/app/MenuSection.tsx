@@ -4,6 +4,7 @@ const MenuSection = ({
   contentItem,
   setShowSentenceBreakdownState,
   showSentenceBreakdownState,
+  handleReviewFunc,
 }) => {
   const handleCopy = async () => {
     try {
@@ -29,7 +30,31 @@ const MenuSection = ({
           </button>
         </div>
       ) : null}
-      {hasBeenReviewed && <button>Reviewed!</button>}
+      {hasBeenReviewed ? (
+        <button
+          className='border rounded-lg p-1 transition active:scale-95 cursor-pointer'
+          onClick={async () =>
+            await handleReviewFunc({
+              sentenceId: contentItem.id,
+              isRemoveReview: true,
+            })
+          }
+        >
+          Reviewed! (remove it?)
+        </button>
+      ) : (
+        <button
+          onClick={async () =>
+            await handleReviewFunc({
+              sentenceId: contentItem.id,
+              isRemoveReview: false,
+            })
+          }
+          className='border rounded-lg p-1 transition active:scale-95 cursor-pointer'
+        >
+          Review ⏰
+        </button>
+      )}
       <button
         className='border rounded-lg p-1 transition active:scale-95 cursor-pointer'
         onClick={handleCopy}

@@ -22,6 +22,7 @@ export const DataProvider = ({
   const [wordsState, setWordsState] = useState(targetLanguageLoadedWords);
   const [contentState, setContentState] = useState(sortedContent);
   const [pureWordsState, setPureWordsState] = useState([]);
+  const [selectedContentState, setSelectedContentState] = useState(null);
 
   const wordsFromSentences = [];
 
@@ -60,17 +61,19 @@ export const DataProvider = ({
   }, [wordsState]);
 
   const removeReviewFromContentStateFunc = ({ sentenceId, contentIndex }) => {
-    const thisTopicData = contentState[contentIndex];
-    const sentenceIndex = thisTopicData.content.findIndex(
-      (s) => s.id === sentenceId,
-    );
+    setContentState((prev) => {
+      const newContent = [...prev]; // clone top-level array
 
-    if (sentenceIndex !== -1) {
-      const { reviewData, ...updatedSentence } =
-        thisTopicData.content[sentenceIndex]; // Remove `reviewData`
-      thisTopicData.content[sentenceIndex] = updatedSentence; // Replace with updated object
-    }
-    setContentState(thisTopicData);
+      const topic = { ...newContent[contentIndex] }; // clone topic object
+      const updatedContent = topic.content.map((s) =>
+        s.id === sentenceId ? (({ reviewData, ...rest }) => rest)(s) : s,
+      );
+
+      topic.content = updatedContent;
+      newContent[contentIndex] = topic;
+
+      return newContent;
+    });
   };
 
   const updateSentenceDataFromContent = ({
@@ -89,6 +92,19 @@ export const DataProvider = ({
       return newContent;
     });
   };
+
+  console.log(
+    '## content[131]',
+    contentState[131]?.content[0]?.reviewData?.due,
+  );
+
+  useEffect(() => {
+    if (selectedContentState) {
+      console.log('## Updating!!!');
+
+      setSelectedContentState(contentState[selectedContentState.contentIndex]);
+    }
+  }, [selectedContentState, contentState]);
 
   const updateSentenceData = async ({
     topicName,
@@ -163,8 +179,6 @@ export const DataProvider = ({
       setWordsState(targetLanguageWordsStateUpdated);
       return true;
     } catch (error) {
-      // setUpdatePromptState(`Error deleting ${wordBaseForm} 😟!`);
-      // setTimeout(() => setUpdatePromptState(''), 3000);
       console.log('## handleDeleteWordDataProvider deleteWord', { error });
     }
   };
@@ -179,6 +193,9 @@ export const DataProvider = ({
         setWordsState,
         handleDeleteWordDataProvider,
         updateSentenceData,
+        contentState,
+        selectedContentState,
+        setSelectedContentState,
       }}
     >
       {children}

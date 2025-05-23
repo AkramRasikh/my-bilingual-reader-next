@@ -9,6 +9,11 @@ import KeyListener from './KeyListener';
 import VideoPlayer from './VideoPlayer';
 import TranscriptItem from './TranscriptItem';
 import useData from './useData';
+import {
+  getEmptyCard,
+  getNextScheduledOptions,
+  srsRetentionKeyTypes,
+} from './srs-algo';
 
 const LearningScreen = ({
   ref,
@@ -26,7 +31,8 @@ const LearningScreen = ({
   const videoUrl = getFirebaseVideoURL(generalTopic, japanese);
   const content = selectedContentState.content;
   const realStartTime = selectedContentState.realStartTime;
-  const { pureWords } = useData();
+  const contentIndex = selectedContentState.contentIndex;
+  const { pureWords, updateSentenceData } = useData();
 
   const { underlineWordsInSentence } = useHighlightWordToWordBank({
     pureWordsUnique: pureWords,
@@ -55,6 +61,28 @@ const LearningScreen = ({
     secondsState[Math.floor(currentTime)];
 
   const handlePause = () => ref.current.pause();
+
+  const handleReviewFunc = async ({ sentenceId, isRemoveReview }) => {
+    const cardDataRelativeToNow = getEmptyCard();
+    const nextScheduledOptions = getNextScheduledOptions({
+      card: cardDataRelativeToNow,
+      contentType: srsRetentionKeyTypes.sentences,
+    });
+
+    try {
+      await updateSentenceData({
+        topicName: selectedContentState.title,
+        sentenceId,
+        fieldToUpdate: {
+          reviewData: isRemoveReview ? null : nextScheduledOptions['1'].card,
+        },
+        contentIndex,
+        isRemoveReview,
+      });
+    } catch (error) {
+      console.log('## handleReviewFunc error', error);
+    }
+  };
 
   const handleJumpToSentenceViaKeys = (nextIndex: number) => {
     // defo revisit this
@@ -102,7 +130,7 @@ const LearningScreen = ({
   };
   useEffect(() => {
     getFormattedData();
-  }, [pureWords]);
+  }, [pureWords, content]);
 
   if (!formattedTranscriptState) {
     return null;
@@ -180,6 +208,7 @@ const LearningScreen = ({
                     handlePause={handlePause}
                     handleFromHere={handleFromHere}
                     masterPlay={masterPlay}
+                    handleReviewFunc={handleReviewFunc}
                   />
                 );
               })}

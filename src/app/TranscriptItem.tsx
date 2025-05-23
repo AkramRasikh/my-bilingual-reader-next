@@ -12,6 +12,7 @@ const TranscriptItem = ({
   handlePause,
   handleFromHere,
   masterPlay,
+  handleReviewFunc,
   index,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -195,6 +196,7 @@ const TranscriptItem = ({
           contentItem={contentItem}
           setShowSentenceBreakdownState={setShowSentenceBreakdownState}
           showSentenceBreakdownState={showSentenceBreakdownState}
+          handleReviewFunc={handleReviewFunc}
         />
       )}
       {showSentenceBreakdownState && contentItem?.sentenceStructure ? (

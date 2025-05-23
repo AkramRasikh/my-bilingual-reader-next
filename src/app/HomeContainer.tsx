@@ -1,16 +1,15 @@
 'use client';
 import { useRef, useState } from 'react';
 import LearningScreen from './LearningScreen';
+import useData from './useData';
 
-export const HomeContainer = ({ sortedContent }) => {
+export const HomeContainer = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
 
   const [currentTime, setCurrentTime] = useState(0);
 
-  const [learningContentState, setLearningContentState] =
-    useState(sortedContent);
-
-  const [selectedContentState, setSelectedContentState] = useState(null);
+  const { contentState, selectedContentState, setSelectedContentState } =
+    useData();
 
   const handlePlayFromHere = (time: number) => {
     if (videoRef.current) {
@@ -29,7 +28,7 @@ export const HomeContainer = ({ sortedContent }) => {
   };
 
   const handleSelectedContent = (thisYoutubeTitle) => {
-    const thisContent = learningContentState.find(
+    const thisContent = contentState.find(
       (item) => item?.title === thisYoutubeTitle,
     );
     setSelectedContentState(thisContent);
@@ -37,7 +36,7 @@ export const HomeContainer = ({ sortedContent }) => {
 
   const youtubeContentTags = [];
 
-  learningContentState.forEach((contentItem) => {
+  contentState.forEach((contentItem) => {
     if (contentItem?.origin === 'youtube' && contentItem?.hasVideo) {
       youtubeContentTags.push({
         title: contentItem.title,
