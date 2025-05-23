@@ -14,6 +14,7 @@ import {
   getNextScheduledOptions,
   srsRetentionKeyTypes,
 } from './srs-algo';
+import ContentActionBar from './ContentActionBar';
 
 const LearningScreen = ({
   ref,
@@ -32,7 +33,13 @@ const LearningScreen = ({
   const content = selectedContentState.content;
   const realStartTime = selectedContentState.realStartTime;
   const contentIndex = selectedContentState.contentIndex;
-  const { pureWords, updateSentenceData } = useData();
+  const hasContentToReview = content?.some(
+    (sentenceWidget) => sentenceWidget?.reviewData,
+  );
+
+  console.log('## hasContentToReview', hasContentToReview);
+
+  const { pureWords, updateSentenceData, sentenceReviewBulk } = useData();
 
   const { underlineWordsInSentence } = useHighlightWordToWordBank({
     pureWordsUnique: pureWords,
@@ -82,6 +89,24 @@ const LearningScreen = ({
     } catch (error) {
       console.log('## handleReviewFunc error', error);
     }
+  };
+
+  const handleBulkReviews = async () => {
+    const emptyCard = getEmptyCard();
+
+    const nextScheduledOptions = getNextScheduledOptions({
+      card: emptyCard,
+      contentType: srsRetentionKeyTypes.sentences,
+    });
+    const nextDueCard = nextScheduledOptions['2'].card;
+    await sentenceReviewBulk({
+      topicName: selectedContentState.title,
+      fieldToUpdate: {
+        reviewData: nextDueCard,
+      },
+      contentIndex: contentIndex,
+      removeReview: hasContentToReview,
+    });
   };
 
   const handleJumpToSentenceViaKeys = (nextIndex: number) => {
@@ -153,14 +178,18 @@ const LearningScreen = ({
         </button>
         {selectedContentState?.title}
       </h1>
-      {/* Actions here */}
+
+      <ContentActionBar
+        handleBulkReviews={handleBulkReviews}
+        hasContentToReview={hasContentToReview}
+      />
       <div
         style={{
           display: 'flex',
           gap: 20,
           width: 'fit-content',
           margin: 'auto',
-          marginTop: 100,
+          marginTop: 50,
         }}
       >
         <div

@@ -10,6 +10,7 @@ import { makeArrayUnique } from './useHighlightWordToWordBank';
 import { deleteWordAPI } from './delete-word';
 import { japanese } from './languages';
 import { updateSentenceDataAPI } from './update-sentence-api';
+import { sentenceReviewBulkAPI } from './bulk-sentence-review';
 
 export const DataContext = createContext(null);
 
@@ -176,6 +177,36 @@ export const DataProvider = ({
     }
   };
 
+  const sentenceReviewBulk = async ({
+    fieldToUpdate,
+    topicName,
+    contentIndex,
+    removeReview,
+  }) => {
+    try {
+      const updatedContentRes = await sentenceReviewBulkAPI({
+        title: topicName,
+        fieldToUpdate,
+        language: japanese,
+        removeReview,
+      });
+
+      if (updatedContentRes) {
+        const updatedState = [...contentState];
+        const thisTopicData = updatedState[contentIndex];
+        const newTopicState = { ...thisTopicData, ...updatedContentRes };
+        updatedState[contentIndex] = {
+          ...newTopicState,
+        };
+        setContentState(updatedState);
+
+        return newTopicState;
+      }
+    } catch (error) {
+      console.log('## sentenceReviewBulk error', error);
+    }
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -189,6 +220,7 @@ export const DataProvider = ({
         contentState,
         selectedContentState,
         setSelectedContentState,
+        sentenceReviewBulk,
       }}
     >
       {children}
