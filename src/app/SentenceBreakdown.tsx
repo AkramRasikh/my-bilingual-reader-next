@@ -12,37 +12,44 @@ const SentenceBreakdown = ({
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-      <button
-        onClick={() => setShowSentenceBreakdownState(false)}
-        style={{ marginBottom: 'auto' }}
-      >
-        ❌
-      </button>
+    <div>
       <div
-        style={{
-          display: 'flex',
-        }}
+        className='border-b-1 m-1'
+        style={{ display: 'flex', justifyContent: 'space-around' }}
       >
-        <ul>
-          {vocab?.map(({ surfaceForm, meaning }, index) => {
-            const leftSideText = (index + 1).toString() + ') ' + surfaceForm;
-            return (
-              <li key={index}>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    gap: 10,
-                  }}
-                >
-                  <span>{leftSideText}</span> <span>{meaning}</span>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <button
+          onClick={() => setShowSentenceBreakdownState(false)}
+          style={{ marginBottom: 'auto' }}
+        >
+          ❌
+        </button>
+        <div
+          style={{
+            display: 'flex',
+          }}
+        >
+          <ul>
+            {vocab?.map(({ surfaceForm, meaning }, index) => {
+              const leftSideText = (index + 1).toString() + ') ' + surfaceForm;
+              return (
+                <li key={index}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      gap: 10,
+                    }}
+                  >
+                    <span>{leftSideText}</span> <span>{meaning}</span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
+      <p>{meaning}</p>
+      <p>{sentenceStructure}</p>
     </div>
   );
 };
