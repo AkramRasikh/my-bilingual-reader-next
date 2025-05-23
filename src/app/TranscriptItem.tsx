@@ -3,6 +3,7 @@ import useData from './useData';
 import PopUpWordCard from './PopUpWordCard';
 import HighlightedTextSection from './HighlightedTextSection';
 import SentenceBreakdown from './SentenceBreakdown';
+import clsx from 'clsx';
 
 const TranscriptItem = ({
   contentItem,
@@ -46,6 +47,7 @@ const TranscriptItem = ({
   const numberOrder = index + 1 + ') ';
   const baseLang = contentItem.baseLang;
   const targetLangformatted = contentItem.targetLangformatted;
+  const hasBeenReviewed = contentItem?.reviewData?.due;
 
   const thisTime = contentItem.time;
   const thisSentenceIsPlaying = contentItem.id === masterPlay;
@@ -160,6 +162,16 @@ const TranscriptItem = ({
             {thisSentenceIsPlaying && isVideoPlaying ? '⏸️' : '▶️'}
           </span>
         </button>
+        <div>
+          <button
+            className={clsx(
+              'rounded-lg p-1',
+              hasBeenReviewed && 'border-2 border-amber-700',
+            )}
+          >
+            🍔
+          </button>
+        </div>
         <div
           style={{
             background: thisSentenceIsPlaying ? 'yellow' : 'none',
