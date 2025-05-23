@@ -9,15 +9,18 @@ import {
 import { makeArrayUnique } from './useHighlightWordToWordBank';
 import { deleteWordAPI } from './delete-word';
 import { japanese } from './languages';
+import { updateSentenceDataAPI } from './update-sentence-api';
 
 export const DataContext = createContext(null);
 
 export const DataProvider = ({
+  sortedContent,
   targetLanguageLoadedSentences,
   targetLanguageLoadedWords,
   children,
 }: PropsWithChildren<object>) => {
   const [wordsState, setWordsState] = useState(targetLanguageLoadedWords);
+  const [contentState, setContentState] = useState(sortedContent);
   const [pureWordsState, setPureWordsState] = useState([]);
 
   const wordsFromSentences = [];
@@ -55,6 +58,72 @@ export const DataProvider = ({
     const pureWords = getPureWords();
     setPureWordsState(pureWords);
   }, [wordsState]);
+
+  const removeReviewFromContentStateFunc = ({ sentenceId, contentIndex }) => {
+    const thisTopicData = contentState[contentIndex];
+    const sentenceIndex = thisTopicData.content.findIndex(
+      (s) => s.id === sentenceId,
+    );
+
+    if (sentenceIndex !== -1) {
+      const { reviewData, ...updatedSentence } =
+        thisTopicData.content[sentenceIndex]; // Remove `reviewData`
+      thisTopicData.content[sentenceIndex] = updatedSentence; // Replace with updated object
+    }
+    setContentState(thisTopicData);
+  };
+
+  const updateSentenceDataFromContent = ({
+    sentenceId,
+    fieldToUpdate,
+    contentIndex,
+  }) => {
+    setContentState((prev) => {
+      const newContent = [...prev]; // clone top-level array
+      const thisTopicData = { ...newContent[contentIndex] }; // clone topic
+      const newContentList = thisTopicData.content.map((s) =>
+        s.id === sentenceId ? { ...s, ...fieldToUpdate } : s,
+      );
+      thisTopicData.content = newContentList;
+      newContent[contentIndex] = thisTopicData;
+      return newContent;
+    });
+  };
+
+  const updateSentenceData = async ({
+    topicName,
+    sentenceId,
+    fieldToUpdate,
+    contentIndex,
+    isRemoveReview,
+  }) => {
+    try {
+      // setUpdatingSentenceState(sentenceId);
+      const updatedFieldFromDB = await updateSentenceDataAPI({
+        topicName,
+        sentenceId,
+        fieldToUpdate,
+        language: japanese,
+      });
+
+      if (isRemoveReview) {
+        removeReviewFromContentStateFunc({ sentenceId, contentIndex });
+      } else {
+        updateSentenceDataFromContent({
+          sentenceId,
+          fieldToUpdate: updatedFieldFromDB,
+          contentIndex,
+        });
+      }
+
+      return updatedFieldFromDB;
+    } catch (error) {
+      console.log('## updateSentenceData', { error });
+      // updatePromptFunc(`Error updating sentence for ${topicName}`);
+    } finally {
+      // setUpdatingSentenceState('');
+    }
+  };
 
   const handleSaveWord = async ({
     highlightedWord,
@@ -109,6 +178,7 @@ export const DataProvider = ({
         wordsState,
         setWordsState,
         handleDeleteWordDataProvider,
+        updateSentenceData,
       }}
     >
       {children}

@@ -23,7 +23,7 @@ const MenuSection = ({
           </button>
         </div>
       ) : contentItem?.sentenceStructure ? (
-        <div>
+        <div className='mt-auto mb-auto'>
           <button onClick={() => setShowSentenceBreakdownState(false)}>
             close
           </button>

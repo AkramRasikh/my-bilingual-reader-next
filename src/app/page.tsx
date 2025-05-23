@@ -28,15 +28,9 @@ export default async function Home() {
     <DataProvider
       targetLanguageLoadedWords={targetLanguageLoadedWords}
       targetLanguageLoadedSentences={targetLanguageLoadedSentences}
+      sortedContent={sortedContent}
     >
-      <HomeContainer
-        targetLanguageLoadedSentences={targetLanguageLoadedSentences}
-        targetLanguageLoadedWords={targetLanguageLoadedWords}
-        targetLanguageLoadedSnippetsWithSavedTag={
-          targetLanguageLoadedSnippetsWithSavedTag
-        }
-        sortedContent={sortedContent}
-      />
+      <HomeContainer sortedContent={sortedContent} />
     </DataProvider>
   );
 }

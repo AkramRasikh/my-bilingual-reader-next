@@ -2,24 +2,13 @@
 import { useRef, useState } from 'react';
 import LearningScreen from './LearningScreen';
 
-export const HomeContainer = ({
-  targetLanguageLoadedSentences,
-  targetLanguageLoadedSnippetsWithSavedTag,
-  sortedContent,
-}) => {
+export const HomeContainer = ({ sortedContent }) => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
 
   const [currentTime, setCurrentTime] = useState(0);
 
-  const [snippetsState, setSnippetsState] = useState(
-    targetLanguageLoadedSnippetsWithSavedTag,
-  );
   const [learningContentState, setLearningContentState] =
     useState(sortedContent);
-
-  const [sentencesState, setSentencesState] = useState(
-    targetLanguageLoadedSentences,
-  );
 
   const [selectedContentState, setSelectedContentState] = useState(null);
 
