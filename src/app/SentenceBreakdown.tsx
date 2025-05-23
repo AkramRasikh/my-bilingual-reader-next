@@ -2,15 +2,8 @@ const SentenceBreakdown = ({
   vocab,
   meaning,
   sentenceStructure,
-  showSentenceBreakdownState,
   setShowSentenceBreakdownState,
 }) => {
-  if (!showSentenceBreakdownState) {
-    return (
-      <button onClick={() => setShowSentenceBreakdownState(true)}>🔨</button>
-    );
-  }
-
   return (
     <div>
       <div

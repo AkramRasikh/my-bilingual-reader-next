@@ -163,24 +163,41 @@ const TranscriptItem = ({
         <div
           style={{
             background: thisSentenceIsPlaying ? 'yellow' : 'none',
+            display: 'flex',
           }}
         >
-          <p style={{ display: 'flex', gap: 10 }}>
-            <span>{numberOrder}</span>
-            {formattedSentence}
-          </p>
-          <p>{baseLang}</p>
-          {contentItem?.sentenceStructure ? (
-            <SentenceBreakdown
-              vocab={contentItem.vocab}
-              meaning={contentItem.meaning}
-              sentenceStructure={contentItem.sentenceStructure}
-              showSentenceBreakdownState={showSentenceBreakdownState}
-              setShowSentenceBreakdownState={setShowSentenceBreakdownState}
-            />
+          <div>
+            <p style={{ display: 'flex', gap: 10 }}>
+              <span>{numberOrder}</span>
+              {formattedSentence}
+            </p>
+            <p>{baseLang}</p>
+          </div>
+
+          {contentItem?.sentenceStructure && !showSentenceBreakdownState ? (
+            <div>
+              <button onClick={() => setShowSentenceBreakdownState(true)}>
+                🔨
+              </button>
+            </div>
+          ) : contentItem?.sentenceStructure ? (
+            <div>
+              <button onClick={() => setShowSentenceBreakdownState(false)}>
+                close
+              </button>
+            </div>
           ) : null}
         </div>
       </div>
+      {showSentenceBreakdownState && contentItem?.sentenceStructure ? (
+        <SentenceBreakdown
+          vocab={contentItem.vocab}
+          meaning={contentItem.meaning}
+          sentenceStructure={contentItem.sentenceStructure}
+          showSentenceBreakdownState={showSentenceBreakdownState}
+          setShowSentenceBreakdownState={setShowSentenceBreakdownState}
+        />
+      ) : null}
       {wordPopUpState?.length > 0 ? (
         <ul>
           {wordPopUpState?.map((item) => (
