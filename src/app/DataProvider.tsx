@@ -93,15 +93,8 @@ export const DataProvider = ({
     });
   };
 
-  console.log(
-    '## content[131]',
-    contentState[131]?.content[0]?.reviewData?.due,
-  );
-
   useEffect(() => {
     if (selectedContentState) {
-      console.log('## Updating!!!');
-
       setSelectedContentState(contentState[selectedContentState.contentIndex]);
     }
   }, [selectedContentState, contentState]);
