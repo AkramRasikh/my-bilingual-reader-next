@@ -11,6 +11,7 @@ import { deleteWordAPI } from './delete-word';
 import { japanese } from './languages';
 import { updateSentenceDataAPI } from './update-sentence-api';
 import { sentenceReviewBulkAPI } from './bulk-sentence-review';
+import { breakdownSentenceAPI } from './breakdown-sentence';
 
 export const DataContext = createContext(null);
 
@@ -207,6 +208,47 @@ export const DataProvider = ({
     }
   };
 
+  const breakdownSentence = async ({
+    topicName,
+    sentenceId,
+    language,
+    targetLang,
+    contentIndex,
+  }) => {
+    try {
+      const resObj = await breakdownSentenceAPI({
+        topicName,
+        sentenceId,
+        targetLang,
+        language,
+      });
+
+      const updatedState = [...contentState];
+      const thisTopicData = updatedState[contentIndex];
+
+      const updatedContent = thisTopicData.content.map((sentenceData) => {
+        if (sentenceData.id === sentenceId) {
+          return {
+            ...sentenceData,
+            ...resObj,
+          };
+        }
+        return sentenceData;
+      });
+
+      updatedState[contentIndex] = {
+        ...thisTopicData,
+        content: updatedContent,
+      };
+
+      setContentState(updatedState);
+
+      return true;
+    } catch (error) {
+      console.log('## breakdownSentence', { error });
+    }
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -221,6 +263,7 @@ export const DataProvider = ({
         selectedContentState,
         setSelectedContentState,
         sentenceReviewBulk,
+        breakdownSentence,
       }}
     >
       {children}

@@ -37,9 +37,12 @@ const LearningScreen = ({
     (sentenceWidget) => sentenceWidget?.reviewData,
   );
 
-  console.log('## hasContentToReview', hasContentToReview);
-
-  const { pureWords, updateSentenceData, sentenceReviewBulk } = useData();
+  const {
+    pureWords,
+    updateSentenceData,
+    sentenceReviewBulk,
+    breakdownSentence,
+  } = useData();
 
   const { underlineWordsInSentence } = useHighlightWordToWordBank({
     pureWordsUnique: pureWords,
@@ -106,6 +109,16 @@ const LearningScreen = ({
       },
       contentIndex: contentIndex,
       removeReview: hasContentToReview,
+    });
+  };
+
+  const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {
+    await breakdownSentence({
+      topicName: selectedContentState.title,
+      sentenceId,
+      language: japanese,
+      targetLang,
+      contentIndex,
     });
   };
 
@@ -238,6 +251,7 @@ const LearningScreen = ({
                     handleFromHere={handleFromHere}
                     masterPlay={masterPlay}
                     handleReviewFunc={handleReviewFunc}
+                    handleBreakdownSentence={handleBreakdownSentence}
                   />
                 );
               })}
