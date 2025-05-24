@@ -184,12 +184,6 @@ export const DataProvider = ({
     fieldToUpdate,
     contentIndex,
   }) => {
-    console.log('## updateContentMetaData DATAProvider', {
-      topicName,
-      fieldToUpdate,
-      contentIndex,
-    });
-
     try {
       const resObj = await updateContentMetaDataAPI({
         title: topicName,
