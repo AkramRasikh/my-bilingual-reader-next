@@ -51,7 +51,7 @@ export const HomeContainer = () => {
         {!selectedContentState &&
           youtubeContentTags.map((youtubeTag, index) => {
             const title = youtubeTag.title;
-            const reviewed = youtubeTag.reviewed;
+            const reviewed = youtubeTag.reviewed?.length > 0;
 
             return (
               <li key={index}>
