@@ -33,6 +33,9 @@ const LearningScreen = ({
   const content = selectedContentState.content;
   const realStartTime = selectedContentState.realStartTime;
   const contentIndex = selectedContentState.contentIndex;
+
+  const nextReview = selectedContentState?.nextReview;
+  const reviewHistory = selectedContentState?.reviewHistory;
   const hasContentToReview = content?.some(
     (sentenceWidget) => sentenceWidget?.reviewData,
   );
@@ -42,6 +45,7 @@ const LearningScreen = ({
     updateSentenceData,
     sentenceReviewBulk,
     breakdownSentence,
+    updateContentMetaData,
   } = useData();
 
   const { underlineWordsInSentence } = useHighlightWordToWordBank({
@@ -195,6 +199,11 @@ const LearningScreen = ({
       <ContentActionBar
         handleBulkReviews={handleBulkReviews}
         hasContentToReview={hasContentToReview}
+        updateContentMetaData={updateContentMetaData}
+        topicName={selectedContentState.title}
+        nextReview={nextReview}
+        reviewHistory={reviewHistory}
+        contentIndex={contentIndex}
       />
       <div
         style={{

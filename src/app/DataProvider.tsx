@@ -12,6 +12,7 @@ import { japanese } from './languages';
 import { updateSentenceDataAPI } from './update-sentence-api';
 import { sentenceReviewBulkAPI } from './bulk-sentence-review';
 import { breakdownSentenceAPI } from './breakdown-sentence';
+import { updateContentMetaDataAPI } from './update-content-meta-data';
 
 export const DataContext = createContext(null);
 
@@ -178,6 +179,40 @@ export const DataProvider = ({
     }
   };
 
+  const updateContentMetaData = async ({
+    topicName,
+    fieldToUpdate,
+    contentIndex,
+  }) => {
+    console.log('## updateContentMetaData DATAProvider', {
+      topicName,
+      fieldToUpdate,
+      contentIndex,
+    });
+
+    try {
+      const resObj = await updateContentMetaDataAPI({
+        title: topicName,
+        fieldToUpdate,
+        language: japanese,
+      });
+
+      if (resObj) {
+        const updatedState = [...contentState];
+        const thisTopicData = updatedState[contentIndex];
+        const newTopicState = { ...thisTopicData, ...resObj };
+        updatedState[contentIndex] = {
+          ...newTopicState,
+        };
+        setContentState(updatedState);
+
+        return newTopicState;
+      }
+    } catch (error) {
+      console.log('## updateContentMetaData', error);
+    }
+  };
+
   const sentenceReviewBulk = async ({
     fieldToUpdate,
     topicName,
@@ -264,6 +299,7 @@ export const DataProvider = ({
         setSelectedContentState,
         sentenceReviewBulk,
         breakdownSentence,
+        updateContentMetaData,
       }}
     >
       {children}
