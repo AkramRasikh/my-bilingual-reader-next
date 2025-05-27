@@ -83,7 +83,7 @@ const TranscriptItem = ({
       await handleSaveWord({
         highlightedWord: highlightedTextState,
         highlightedWordSentenceId: contentItem.id,
-        contextSentence: contentItem.baseLang,
+        contextSentence: contentItem.targetLang,
         meaning: contentItem?.meaning,
         isGoogle,
       });
