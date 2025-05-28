@@ -1,10 +1,15 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import LearningScreen from './LearningScreen';
 import useData from './useData';
+import { getFirebaseVideoURL } from './get-firebase-media-url';
+import { getGeneralTopicName } from './get-general-topic-name';
+import { japanese } from './languages';
+import checkIfVideoExists from './check-if-video-exists';
 
 export const HomeContainer = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
+  const [youtubeContentTagsState, setYoutubeContentTags] = useState();
 
   const [currentTime, setCurrentTime] = useState(0);
 
@@ -33,23 +38,52 @@ export const HomeContainer = () => {
     );
     setSelectedContentState(thisContent);
   };
+  useEffect(() => {
+    const loadYoutubeTags = async () => {
+      const generalTopicNameTags: string[] = [];
+      const youtubeContentTags: { title: string; reviewed?: any }[] = [];
 
-  const youtubeContentTags = [];
+      for (const contentItem of contentState) {
+        const generalTopicName = getFirebaseVideoURL(
+          getGeneralTopicName(contentItem.title),
+          japanese,
+        );
 
-  contentState.forEach((contentItem) => {
-    if (contentItem?.origin === 'youtube' && contentItem?.hasVideo) {
-      youtubeContentTags.push({
-        title: contentItem.title,
-        reviewed: contentItem?.reviewHistory,
-      });
-    }
-  });
+        if (generalTopicNameTags.includes(generalTopicName)) {
+          youtubeContentTags.push({
+            title: contentItem.title,
+            reviewed: contentItem?.reviewHistory,
+          });
+        } else if (contentItem?.origin === 'youtube' && contentItem?.hasVideo) {
+          youtubeContentTags.push({
+            title: contentItem.title,
+            reviewed: contentItem?.reviewHistory,
+          });
+          generalTopicNameTags.push(generalTopicName);
+        } else if (
+          contentItem?.origin === 'youtube' &&
+          (await checkIfVideoExists(generalTopicName))
+        ) {
+          youtubeContentTags.push({
+            title: contentItem.title,
+            reviewed: contentItem?.reviewHistory,
+          });
+          generalTopicNameTags.push(generalTopicName);
+        }
+      }
+
+      setYoutubeContentTags(youtubeContentTags);
+    };
+
+    loadYoutubeTags();
+  }, []);
 
   return (
     <div style={{ padding: 10 }}>
       <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
         {!selectedContentState &&
-          youtubeContentTags.map((youtubeTag, index) => {
+          youtubeContentTagsState?.length > 0 &&
+          youtubeContentTagsState.map((youtubeTag, index) => {
             const title = youtubeTag.title;
             const reviewed = youtubeTag.reviewed?.length > 0;
 
