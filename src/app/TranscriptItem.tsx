@@ -86,6 +86,7 @@ const TranscriptItem = ({
         contextSentence: contentItem.targetLang,
         meaning: contentItem?.meaning,
         isGoogle,
+        // meaning: thisWordMeaning,
       });
     } catch (error) {
     } finally {

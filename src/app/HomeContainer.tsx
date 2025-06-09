@@ -43,6 +43,27 @@ export const HomeContainer = () => {
       const generalTopicNameTags: string[] = [];
       const youtubeContentTags: { title: string; reviewed?: any }[] = [];
 
+      let youtubeTagsWithoutVideoBoolean: string[] = [];
+      for (const contentItem of contentState) {
+        if (!contentItem?.hasVideo && contentItem?.origin === 'youtube') {
+          const generalTopicName = getFirebaseVideoURL(
+            getGeneralTopicName(contentItem.title),
+            japanese,
+          );
+          if (!youtubeTagsWithoutVideoBoolean.includes(generalTopicName)) {
+            youtubeTagsWithoutVideoBoolean.push(generalTopicName);
+            const videoExists = await checkIfVideoExists(generalTopicName);
+            if (videoExists) {
+              youtubeContentTags.push({
+                title: contentItem.title,
+                reviewed: contentItem?.reviewHistory,
+              });
+              generalTopicNameTags.push(generalTopicName);
+            }
+          }
+        }
+      }
+
       for (const contentItem of contentState) {
         const generalTopicName = getFirebaseVideoURL(
           getGeneralTopicName(contentItem.title),
@@ -55,15 +76,6 @@ export const HomeContainer = () => {
             reviewed: contentItem?.reviewHistory,
           });
         } else if (contentItem?.origin === 'youtube' && contentItem?.hasVideo) {
-          youtubeContentTags.push({
-            title: contentItem.title,
-            reviewed: contentItem?.reviewHistory,
-          });
-          generalTopicNameTags.push(generalTopicName);
-        } else if (
-          contentItem?.origin === 'youtube' &&
-          (await checkIfVideoExists(generalTopicName))
-        ) {
           youtubeContentTags.push({
             title: contentItem.title,
             reviewed: contentItem?.reviewHistory,
