@@ -10,6 +10,12 @@ import checkIfVideoExists from './check-if-video-exists';
 export const HomeContainer = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
   const [youtubeContentTagsState, setYoutubeContentTags] = useState();
+  const [generalTopicDisplayNameState, setGeneralTopicDisplayNameState] =
+    useState([]);
+  const [
+    generalTopicDisplayNameSelectedState,
+    setGeneralTopicDisplayNameSelectedState,
+  ] = useState();
 
   const [currentTime, setCurrentTime] = useState(0);
 
@@ -41,6 +47,7 @@ export const HomeContainer = () => {
   useEffect(() => {
     const loadYoutubeTags = async () => {
       const generalTopicNameTags: string[] = [];
+      const generalTopicDisplayName: string[] = [];
       const youtubeContentTags: { title: string; reviewed?: any }[] = [];
 
       let youtubeTagsWithoutVideoBoolean: string[] = [];
@@ -59,6 +66,9 @@ export const HomeContainer = () => {
                 reviewed: contentItem?.reviewHistory,
               });
               generalTopicNameTags.push(generalTopicName);
+              generalTopicDisplayName.push(
+                getGeneralTopicName(contentItem.title),
+              );
             }
           }
         }
@@ -81,9 +91,11 @@ export const HomeContainer = () => {
             reviewed: contentItem?.reviewHistory,
           });
           generalTopicNameTags.push(generalTopicName);
+          generalTopicDisplayName.push(getGeneralTopicName(contentItem.title));
         }
       }
 
+      setGeneralTopicDisplayNameState(generalTopicDisplayName);
       setYoutubeContentTags(youtubeContentTags);
     };
 
@@ -93,11 +105,45 @@ export const HomeContainer = () => {
   return (
     <div style={{ padding: 10 }}>
       <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+        {!generalTopicDisplayNameSelectedState &&
+          generalTopicDisplayNameState?.length > 0 &&
+          generalTopicDisplayNameState.map((youtubeTag, index) => {
+            return (
+              <li key={index}>
+                <button
+                  onClick={() =>
+                    setGeneralTopicDisplayNameSelectedState(youtubeTag)
+                  }
+                  style={{
+                    border: '1px solid grey',
+                    padding: 3,
+                    borderRadius: 5,
+                  }}
+                >
+                  {youtubeTag}
+                </button>
+              </li>
+            );
+          })}
+      </ul>
+      <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
         {!selectedContentState &&
+          generalTopicDisplayNameSelectedState &&
+          youtubeContentTagsState?.length > 0 && (
+            <button onClick={() => setGeneralTopicDisplayNameSelectedState('')}>
+              Clear
+            </button>
+          )}
+        {!selectedContentState &&
+          generalTopicDisplayNameSelectedState &&
           youtubeContentTagsState?.length > 0 &&
           youtubeContentTagsState.map((youtubeTag, index) => {
             const title = youtubeTag.title;
             const reviewed = youtubeTag.reviewed?.length > 0;
+            const isPartOfGeneralList = getGeneralTopicName(title);
+            if (isPartOfGeneralList !== generalTopicDisplayNameSelectedState) {
+              return null;
+            }
 
             return (
               <li key={index}>
