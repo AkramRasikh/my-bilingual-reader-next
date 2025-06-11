@@ -135,6 +135,8 @@ const TranscriptItem = ({
     <li
       style={{
         gap: 5,
+        opacity: 0,
+        animation: 'fadeIn 0.5s ease-out forwards',
       }}
       onMouseLeave={() => setWordPopUpState([])}
     >
@@ -232,6 +234,17 @@ const TranscriptItem = ({
           highlightedTextState={highlightedTextState}
         />
       )}
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+      `}</style>
     </li>
   );
 };
