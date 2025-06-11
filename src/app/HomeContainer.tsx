@@ -6,16 +6,19 @@ import { getFirebaseVideoURL } from './get-firebase-media-url';
 import { getGeneralTopicName } from './get-general-topic-name';
 import { japanese } from './languages';
 import checkIfVideoExists from './check-if-video-exists';
+import ContentSelection from './ContentSelection';
+import LoadingSpinner from './LoadingSpinner';
 
 export const HomeContainer = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
   const [youtubeContentTagsState, setYoutubeContentTags] = useState();
+  const [isLoadingState, setIsLoadingState] = useState(false);
   const [generalTopicDisplayNameState, setGeneralTopicDisplayNameState] =
     useState([]);
   const [
     generalTopicDisplayNameSelectedState,
     setGeneralTopicDisplayNameSelectedState,
-  ] = useState();
+  ] = useState('');
 
   const [currentTime, setCurrentTime] = useState(0);
 
@@ -46,57 +49,68 @@ export const HomeContainer = () => {
   };
   useEffect(() => {
     const loadYoutubeTags = async () => {
-      const generalTopicNameTags: string[] = [];
-      const generalTopicDisplayName: string[] = [];
-      const youtubeContentTags: { title: string; reviewed?: any }[] = [];
+      try {
+        setIsLoadingState(true);
+        const generalTopicNameTags: string[] = [];
+        const generalTopicDisplayName: string[] = [];
+        const youtubeContentTags: { title: string; reviewed?: any }[] = [];
 
-      let youtubeTagsWithoutVideoBoolean: string[] = [];
-      for (const contentItem of contentState) {
-        if (!contentItem?.hasVideo && contentItem?.origin === 'youtube') {
+        let youtubeTagsWithoutVideoBoolean: string[] = [];
+        for (const contentItem of contentState) {
+          if (!contentItem?.hasVideo && contentItem?.origin === 'youtube') {
+            const generalTopicName = getFirebaseVideoURL(
+              getGeneralTopicName(contentItem.title),
+              japanese,
+            );
+            if (!youtubeTagsWithoutVideoBoolean.includes(generalTopicName)) {
+              youtubeTagsWithoutVideoBoolean.push(generalTopicName);
+              const videoExists = await checkIfVideoExists(generalTopicName);
+              if (videoExists) {
+                youtubeContentTags.push({
+                  title: contentItem.title,
+                  reviewed: contentItem?.reviewHistory,
+                });
+                generalTopicNameTags.push(generalTopicName);
+                generalTopicDisplayName.push(
+                  getGeneralTopicName(contentItem.title),
+                );
+              }
+            }
+          }
+        }
+
+        for (const contentItem of contentState) {
           const generalTopicName = getFirebaseVideoURL(
             getGeneralTopicName(contentItem.title),
             japanese,
           );
-          if (!youtubeTagsWithoutVideoBoolean.includes(generalTopicName)) {
-            youtubeTagsWithoutVideoBoolean.push(generalTopicName);
-            const videoExists = await checkIfVideoExists(generalTopicName);
-            if (videoExists) {
-              youtubeContentTags.push({
-                title: contentItem.title,
-                reviewed: contentItem?.reviewHistory,
-              });
-              generalTopicNameTags.push(generalTopicName);
-              generalTopicDisplayName.push(
-                getGeneralTopicName(contentItem.title),
-              );
-            }
+
+          if (generalTopicNameTags.includes(generalTopicName)) {
+            youtubeContentTags.push({
+              title: contentItem.title,
+              reviewed: contentItem?.reviewHistory,
+            });
+          } else if (
+            contentItem?.origin === 'youtube' &&
+            contentItem?.hasVideo
+          ) {
+            youtubeContentTags.push({
+              title: contentItem.title,
+              reviewed: contentItem?.reviewHistory,
+            });
+            generalTopicNameTags.push(generalTopicName);
+            generalTopicDisplayName.push(
+              getGeneralTopicName(contentItem.title),
+            );
           }
         }
+
+        setGeneralTopicDisplayNameState(generalTopicDisplayName);
+        setYoutubeContentTags(youtubeContentTags);
+      } catch (error) {
+      } finally {
+        setIsLoadingState(false);
       }
-
-      for (const contentItem of contentState) {
-        const generalTopicName = getFirebaseVideoURL(
-          getGeneralTopicName(contentItem.title),
-          japanese,
-        );
-
-        if (generalTopicNameTags.includes(generalTopicName)) {
-          youtubeContentTags.push({
-            title: contentItem.title,
-            reviewed: contentItem?.reviewHistory,
-          });
-        } else if (contentItem?.origin === 'youtube' && contentItem?.hasVideo) {
-          youtubeContentTags.push({
-            title: contentItem.title,
-            reviewed: contentItem?.reviewHistory,
-          });
-          generalTopicNameTags.push(generalTopicName);
-          generalTopicDisplayName.push(getGeneralTopicName(contentItem.title));
-        }
-      }
-
-      setGeneralTopicDisplayNameState(generalTopicDisplayName);
-      setYoutubeContentTags(youtubeContentTags);
     };
 
     loadYoutubeTags();
@@ -104,64 +118,36 @@ export const HomeContainer = () => {
 
   return (
     <div style={{ padding: 10 }}>
-      <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-        {!generalTopicDisplayNameSelectedState &&
-          generalTopicDisplayNameState?.length > 0 &&
-          generalTopicDisplayNameState.map((youtubeTag, index) => {
-            return (
-              <li key={index}>
-                <button
-                  onClick={() =>
-                    setGeneralTopicDisplayNameSelectedState(youtubeTag)
-                  }
-                  style={{
-                    border: '1px solid grey',
-                    padding: 3,
-                    borderRadius: 5,
-                  }}
-                >
-                  {youtubeTag}
-                </button>
-              </li>
-            );
-          })}
-      </ul>
-      <ul style={{}}>
-        {!selectedContentState &&
-          generalTopicDisplayNameSelectedState &&
-          youtubeContentTagsState?.length > 0 && (
-            <button onClick={() => setGeneralTopicDisplayNameSelectedState('')}>
-              Clear
-            </button>
-          )}
-        {!selectedContentState &&
-          generalTopicDisplayNameSelectedState &&
-          youtubeContentTagsState?.length > 0 &&
-          youtubeContentTagsState.map((youtubeTag, index) => {
-            const title = youtubeTag.title;
-            const reviewed = youtubeTag.reviewed?.length > 0;
-            const isPartOfGeneralList = getGeneralTopicName(title);
-            if (isPartOfGeneralList !== generalTopicDisplayNameSelectedState) {
-              return null;
-            }
-
-            return (
-              <li key={index} style={{ padding: 5 }}>
-                <button
-                  onClick={() => handleSelectedContent(title)}
-                  style={{
-                    border: '1px solid grey',
-                    padding: 3,
-                    backgroundColor: reviewed ? 'red' : 'lightgray',
-                    borderRadius: 5,
-                  }}
-                >
-                  {title}
-                </button>
-              </li>
-            );
-          })}
-      </ul>
+      {!selectedContentState &&
+        generalTopicDisplayNameSelectedState &&
+        youtubeContentTagsState?.length > 0 && (
+          <button onClick={() => setGeneralTopicDisplayNameSelectedState('')}>
+            Clear
+          </button>
+        )}
+      {isLoadingState && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+          }}
+        >
+          <LoadingSpinner />
+        </div>
+      )}
+      <ContentSelection
+        generalTopicDisplayNameSelectedState={
+          generalTopicDisplayNameSelectedState
+        }
+        generalTopicDisplayNameState={generalTopicDisplayNameState}
+        setGeneralTopicDisplayNameSelectedState={
+          setGeneralTopicDisplayNameSelectedState
+        }
+        selectedContentState={selectedContentState}
+        youtubeContentTagsState={youtubeContentTagsState}
+        handleSelectedContent={handleSelectedContent}
+      />
       {selectedContentState && (
         <LearningScreen
           selectedContentState={selectedContentState}
