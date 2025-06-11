@@ -126,7 +126,7 @@ export const HomeContainer = () => {
             );
           })}
       </ul>
-      <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+      <ul style={{}}>
         {!selectedContentState &&
           generalTopicDisplayNameSelectedState &&
           youtubeContentTagsState?.length > 0 && (
@@ -146,7 +146,7 @@ export const HomeContainer = () => {
             }
 
             return (
-              <li key={index}>
+              <li key={index} style={{ padding: 5 }}>
                 <button
                   onClick={() => handleSelectedContent(title)}
                   style={{
