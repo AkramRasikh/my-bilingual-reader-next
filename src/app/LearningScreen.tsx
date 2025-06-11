@@ -18,7 +18,6 @@ import ContentActionBar from './ContentActionBar';
 
 const LearningScreen = ({
   ref,
-  selectedContentState,
   handlePlayFromHere,
   handleTimeUpdate,
   clearTopic,
@@ -27,6 +26,17 @@ const LearningScreen = ({
   const [formattedTranscriptState, setFormattedTranscriptState] = useState();
   const [secondsState, setSecondsState] = useState();
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
+  const {
+    pureWords,
+    updateSentenceData,
+    sentenceReviewBulk,
+    breakdownSentence,
+    updateContentMetaData,
+    getNextTranscript,
+    selectedContentState,
+    checkIsThereFollowingContent,
+  } = useData();
 
   const generalTopic = getGeneralTopicName(selectedContentState.title);
   const videoUrl = getFirebaseVideoURL(generalTopic, japanese);
@@ -39,14 +49,6 @@ const LearningScreen = ({
   const hasContentToReview = content?.some(
     (sentenceWidget) => sentenceWidget?.reviewData,
   );
-
-  const {
-    pureWords,
-    updateSentenceData,
-    sentenceReviewBulk,
-    breakdownSentence,
-    updateContentMetaData,
-  } = useData();
 
   const { underlineWordsInSentence } = useHighlightWordToWordBank({
     pureWordsUnique: pureWords,
@@ -178,6 +180,12 @@ const LearningScreen = ({
     return null;
   }
 
+  const hasPreviousVideo = !selectedContentState.isFirst;
+  const hasFollowingVideo = checkIsThereFollowingContent(
+    selectedContentState.contentIndex,
+    selectedContentState.generalTopicName,
+  );
+
   return (
     <div>
       <h1 style={{ textAlign: 'center' }}>
@@ -234,37 +242,61 @@ const LearningScreen = ({
         {secondsState && (
           <div
             style={{
-              maxHeight: '600px',
               margin: 'auto',
-              overflowY: 'auto',
               maxWidth: 600,
             }}
           >
-            <ul
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 10,
-                margin: 'auto',
-                overflow: 'scroll',
-              }}
-            >
-              {formattedTranscriptState.map((contentItem, index) => {
-                return (
-                  <TranscriptItem
-                    key={index}
-                    index={index}
-                    contentItem={contentItem}
-                    isVideoPlaying={isVideoPlaying}
-                    handlePause={handlePause}
-                    handleFromHere={handleFromHere}
-                    masterPlay={masterPlay}
-                    handleReviewFunc={handleReviewFunc}
-                    handleBreakdownSentence={handleBreakdownSentence}
-                  />
-                );
-              })}
-            </ul>
+            <div>
+              {hasPreviousVideo && (
+                <button
+                  className='m-auto flex p-2.5'
+                  onClick={() => {
+                    getNextTranscript();
+                  }}
+                >
+                  ⏫⏫⏫⏫⏫
+                </button>
+              )}
+              <ul
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10,
+                  margin: 'auto',
+                  overflow: 'scroll',
+                  maxHeight: '600px',
+                  overflowY: 'auto',
+                }}
+              >
+                {formattedTranscriptState.map((contentItem, index) => {
+                  return (
+                    <TranscriptItem
+                      key={index}
+                      index={index}
+                      contentItem={contentItem}
+                      isVideoPlaying={isVideoPlaying}
+                      handlePause={handlePause}
+                      handleFromHere={handleFromHere}
+                      masterPlay={masterPlay}
+                      handleReviewFunc={handleReviewFunc}
+                      handleBreakdownSentence={handleBreakdownSentence}
+                    />
+                  );
+                })}
+              </ul>
+              <div>
+                {hasFollowingVideo && (
+                  <button
+                    className='m-auto flex p-2.5'
+                    onClick={() => {
+                      getNextTranscript(true);
+                    }}
+                  >
+                    ⏬⏬⏬⏬⏬
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>

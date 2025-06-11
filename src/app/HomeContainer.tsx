@@ -150,7 +150,6 @@ export const HomeContainer = () => {
       />
       {selectedContentState && (
         <LearningScreen
-          selectedContentState={selectedContentState}
           handlePlayFromHere={handlePlayFromHere}
           handleTimeUpdate={handleTimeUpdate}
           ref={videoRef}

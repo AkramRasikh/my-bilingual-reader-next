@@ -96,11 +96,26 @@ export const DataProvider = ({
     });
   };
 
+  const checkIsThereFollowingContent = (contentIndex, generalTitle) => {
+    const isOfSameTopic =
+      contentState[contentIndex + 1]?.generalTopicName === generalTitle;
+    return isOfSameTopic;
+  };
+
   useEffect(() => {
     if (selectedContentState) {
       setSelectedContentState(contentState[selectedContentState.contentIndex]);
     }
   }, [selectedContentState, contentState]);
+
+  const getNextTranscript = (isNext) => {
+    const nextIndex = selectedContentState.contentIndex + (isNext ? +1 : -1);
+
+    const thisContent = contentState.find(
+      (item) => item?.title === contentState[nextIndex]?.title,
+    );
+    setSelectedContentState(thisContent);
+  };
 
   const updateSentenceData = async ({
     topicName,
@@ -294,6 +309,8 @@ export const DataProvider = ({
         sentenceReviewBulk,
         breakdownSentence,
         updateContentMetaData,
+        getNextTranscript,
+        checkIsThereFollowingContent,
       }}
     >
       {children}
