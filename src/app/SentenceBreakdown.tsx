@@ -23,7 +23,7 @@ const SentenceBreakdown = ({
 }) => {
   return (
     <div>
-      <ul className='flex flex-wrap gap-2'>
+      <ul className='flex flex-wrap gap-2 justify-center'>
         {vocab.map(({ surfaceForm, meaning }, index) => {
           const wordIsSaved = thisSentencesSavedWords?.some(
             (item) => item.text === surfaceForm,

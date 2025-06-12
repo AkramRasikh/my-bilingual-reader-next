@@ -35,6 +35,7 @@ const Transcript = ({
           </button>
         )}
         <ul
+          className='border rounded-lg p-1'
           style={{
             display: 'flex',
             flexDirection: 'column',
