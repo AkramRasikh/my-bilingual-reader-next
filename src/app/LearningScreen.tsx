@@ -24,7 +24,7 @@ const LearningScreen = ({
   currentTime,
 }) => {
   const [formattedTranscriptState, setFormattedTranscriptState] = useState();
-  const [secondsState, setSecondsState] = useState();
+  const [secondsState, setSecondsState] = useState([]);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   const {
@@ -55,7 +55,7 @@ const LearningScreen = ({
   });
 
   useEffect(() => {
-    if (!ref.current?.duration || !secondsState) {
+    if (!ref.current?.duration || secondsState?.length > 0) {
       return;
     }
 
