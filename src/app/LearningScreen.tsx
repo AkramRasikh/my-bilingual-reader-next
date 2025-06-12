@@ -55,16 +55,18 @@ const LearningScreen = ({
   });
 
   useEffect(() => {
-    if (ref.current?.duration && !secondsState) {
-      const arrOfSeconds = mapSentenceIdsToSeconds({
-        content,
-        duration: ref.current?.duration,
-        isVideoModeState: true,
-        realStartTime,
-      });
-
-      setSecondsState(arrOfSeconds);
+    if (!ref.current?.duration || !secondsState) {
+      return;
     }
+
+    const arrOfSeconds = mapSentenceIdsToSeconds({
+      content,
+      duration: ref.current?.duration,
+      isVideoModeState: true,
+      realStartTime,
+    });
+
+    setSecondsState(arrOfSeconds);
   }, [ref.current, secondsState, content, realStartTime]);
 
   const isNumber = (value) => {
@@ -252,6 +254,7 @@ const LearningScreen = ({
                   className='m-auto flex p-2.5'
                   onClick={() => {
                     getNextTranscript();
+                    setSecondsState();
                   }}
                 >
                   ⏫⏫⏫⏫⏫
@@ -290,6 +293,7 @@ const LearningScreen = ({
                     className='m-auto flex p-2.5'
                     onClick={() => {
                       getNextTranscript(true);
+                      setSecondsState();
                     }}
                   >
                     ⏬⏬⏬⏬⏬
