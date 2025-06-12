@@ -151,6 +151,10 @@ const TranscriptItem = ({
 
   return (
     <li
+      className={clsx(
+        showMenuState &&
+          'rounded-lg px-2 py-1 shadow h-fit border-2 border-blue-200',
+      )}
       style={{
         gap: 5,
         opacity: 0,
