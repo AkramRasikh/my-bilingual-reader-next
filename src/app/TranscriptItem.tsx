@@ -55,7 +55,7 @@ const TranscriptItem = ({
     if (sentenceHighlightingState !== contentItem.id && highlightedTextState) {
       setHighlightedTextState('');
     }
-  }, [sentenceHighlightingState]);
+  }, [sentenceHighlightingState, highlightedTextState]);
 
   const numberOrder = index + 1 + ') ';
   const baseLang = contentItem.baseLang;
