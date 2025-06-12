@@ -56,6 +56,10 @@ const TranscriptItem = ({
   const thisTime = contentItem.time;
   const thisSentenceIsPlaying = contentItem.id === masterPlay;
 
+  const thisSentencesSavedWords = contentItem.targetLangformatted.filter(
+    (item) => item?.id === 'targetWord',
+  );
+
   const handleMouseEnter = (text) => {
     hoverTimer.current = setTimeout(() => {
       setShowModal(true); // Open modal
@@ -77,16 +81,15 @@ const TranscriptItem = ({
     }
   };
 
-  const handleSaveFunc = async (isGoogle) => {
+  const handleSaveFunc = async (isGoogle, thisWord, thisWordMeaning) => {
     try {
       setIsLoadingState(true);
       await handleSaveWord({
-        highlightedWord: highlightedTextState,
+        highlightedWord: highlightedTextState || thisWord,
         highlightedWordSentenceId: contentItem.id,
         contextSentence: contentItem.targetLang,
-        meaning: contentItem?.meaning,
+        meaning: thisWordMeaning,
         isGoogle,
-        // meaning: thisWordMeaning,
       });
     } catch (error) {
     } finally {
@@ -109,7 +112,7 @@ const TranscriptItem = ({
   };
 
   const formattedSentence = (
-    <span ref={ulRef}>
+    <span ref={ulRef} className='mt-auto mb-auto'>
       {targetLangformatted.map((item, indexNested) => {
         const isUnderlined = item?.style?.textDecorationLine;
         const text = item?.text;
@@ -169,17 +172,7 @@ const TranscriptItem = ({
             {thisSentenceIsPlaying && isVideoPlaying ? '⏸️' : '▶️'}
           </span>
         </button>
-        <div>
-          <button
-            className={clsx(
-              'rounded-lg p-1',
-              hasBeenReviewed && 'border-2 border-amber-700',
-            )}
-            onClick={() => setShowMenuState(!showMenuState)}
-          >
-            🍔
-          </button>
-        </div>
+        <div></div>
         <div
           style={{
             background: thisSentenceIsPlaying ? 'yellow' : 'none',
@@ -188,7 +181,15 @@ const TranscriptItem = ({
         >
           <div>
             <p style={{ display: 'flex', gap: 10 }}>
-              <span>{numberOrder}</span>
+              <button
+                className={clsx(
+                  'rounded-lg bg-blue-400 text-white px-2 py-1 shadow h-fit',
+                  hasBeenReviewed && 'border-2 border-amber-700',
+                )}
+                onClick={() => setShowMenuState(!showMenuState)}
+              >
+                <span>{numberOrder}</span>
+              </button>
               {formattedSentence}
             </p>
             <p>{baseLang}</p>
@@ -208,9 +209,8 @@ const TranscriptItem = ({
         <SentenceBreakdown
           vocab={contentItem.vocab}
           meaning={contentItem.meaning}
-          sentenceStructure={contentItem.sentenceStructure}
-          showSentenceBreakdownState={showSentenceBreakdownState}
-          setShowSentenceBreakdownState={setShowSentenceBreakdownState}
+          thisSentencesSavedWords={thisSentencesSavedWords}
+          handleSaveFunc={handleSaveFunc}
         />
       ) : null}
       {wordPopUpState?.length > 0 ? (
