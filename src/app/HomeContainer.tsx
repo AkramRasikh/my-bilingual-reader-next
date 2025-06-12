@@ -84,15 +84,22 @@ export const HomeContainer = () => {
             getGeneralTopicName(contentItem.title),
             japanese,
           );
+          const isInYoutubeContent = youtubeContentTags.some(
+            (item) => item.title === contentItem.title,
+          );
 
-          if (generalTopicNameTags.includes(generalTopicName)) {
+          if (
+            generalTopicNameTags.includes(generalTopicName) &&
+            !isInYoutubeContent
+          ) {
             youtubeContentTags.push({
               title: contentItem.title,
               reviewed: contentItem?.reviewHistory,
             });
           } else if (
             contentItem?.origin === 'youtube' &&
-            contentItem?.hasVideo
+            contentItem?.hasVideo &&
+            !isInYoutubeContent
           ) {
             youtubeContentTags.push({
               title: contentItem.title,
@@ -106,7 +113,7 @@ export const HomeContainer = () => {
         }
 
         setGeneralTopicDisplayNameState(generalTopicDisplayName);
-        setYoutubeContentTags(youtubeContentTags);
+        setYoutubeContentTags([...new Set(youtubeContentTags)]);
       } catch (error) {
       } finally {
         setIsLoadingState(false);
