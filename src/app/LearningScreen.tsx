@@ -26,6 +26,8 @@ const LearningScreen = ({
   const [formattedTranscriptState, setFormattedTranscriptState] = useState();
   const [secondsState, setSecondsState] = useState([]);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [sentenceHighlightingState, setSentenceHighlightingState] =
+    useState('');
 
   const {
     pureWords,
@@ -254,6 +256,8 @@ const LearningScreen = ({
             masterPlay={masterPlay}
             handleReviewFunc={handleReviewFunc}
             handleBreakdownSentence={handleBreakdownSentence}
+            sentenceHighlightingState={sentenceHighlightingState}
+            setSentenceHighlightingState={setSentenceHighlightingState}
           />
         )}
       </div>

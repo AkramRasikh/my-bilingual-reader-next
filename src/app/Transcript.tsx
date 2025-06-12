@@ -12,6 +12,8 @@ const Transcript = ({
   masterPlay,
   handleReviewFunc,
   handleBreakdownSentence,
+  sentenceHighlightingState,
+  setSentenceHighlightingState,
 }) => {
   return (
     <div
@@ -55,6 +57,8 @@ const Transcript = ({
                 masterPlay={masterPlay}
                 handleReviewFunc={handleReviewFunc}
                 handleBreakdownSentence={handleBreakdownSentence}
+                sentenceHighlightingState={sentenceHighlightingState}
+                setSentenceHighlightingState={setSentenceHighlightingState}
               />
             );
           })}

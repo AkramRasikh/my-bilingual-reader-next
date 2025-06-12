@@ -15,6 +15,8 @@ const TranscriptItem = ({
   handleReviewFunc,
   index,
   handleBreakdownSentence,
+  sentenceHighlightingState,
+  setSentenceHighlightingState,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
@@ -39,6 +41,7 @@ const TranscriptItem = ({
       const anchorNode = selection?.anchorNode;
       if (!anchorNode || !ulRef.current?.contains(anchorNode)) return;
 
+      setSentenceHighlightingState(contentItem.id);
       setHighlightedTextState(selectedText);
     };
 
@@ -47,6 +50,12 @@ const TranscriptItem = ({
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, []);
+
+  useEffect(() => {
+    if (sentenceHighlightingState !== contentItem.id && highlightedTextState) {
+      setHighlightedTextState('');
+    }
+  }, [sentenceHighlightingState]);
 
   const numberOrder = index + 1 + ') ';
   const baseLang = contentItem.baseLang;
