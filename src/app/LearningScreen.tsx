@@ -7,7 +7,6 @@ import { useHighlightWordToWordBank } from './useHighlightWordToWordBank';
 import { mapSentenceIdsToSeconds } from './map-sentence-ids-to-seconds';
 import KeyListener from './KeyListener';
 import VideoPlayer from './VideoPlayer';
-import TranscriptItem from './TranscriptItem';
 import useData from './useData';
 import {
   getEmptyCard,
@@ -15,6 +14,7 @@ import {
   srsRetentionKeyTypes,
 } from './srs-algo';
 import ContentActionBar from './ContentActionBar';
+import Transcript from './Transcript';
 
 const LearningScreen = ({
   ref,
@@ -242,66 +242,19 @@ const LearningScreen = ({
           />
         </div>
         {secondsState && (
-          <div
-            style={{
-              margin: 'auto',
-              maxWidth: 600,
-            }}
-          >
-            <div>
-              {hasPreviousVideo && (
-                <button
-                  className='m-auto flex p-2.5'
-                  onClick={() => {
-                    getNextTranscript();
-                    setSecondsState();
-                  }}
-                >
-                  ⏫⏫⏫⏫⏫
-                </button>
-              )}
-              <ul
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 10,
-                  margin: 'auto',
-                  overflow: 'scroll',
-                  maxHeight: '600px',
-                  overflowY: 'auto',
-                }}
-              >
-                {formattedTranscriptState.map((contentItem, index) => {
-                  return (
-                    <TranscriptItem
-                      key={index}
-                      index={index}
-                      contentItem={contentItem}
-                      isVideoPlaying={isVideoPlaying}
-                      handlePause={handlePause}
-                      handleFromHere={handleFromHere}
-                      masterPlay={masterPlay}
-                      handleReviewFunc={handleReviewFunc}
-                      handleBreakdownSentence={handleBreakdownSentence}
-                    />
-                  );
-                })}
-              </ul>
-              <div>
-                {hasFollowingVideo && (
-                  <button
-                    className='m-auto flex p-2.5'
-                    onClick={() => {
-                      getNextTranscript(true);
-                      setSecondsState();
-                    }}
-                  >
-                    ⏬⏬⏬⏬⏬
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+          <Transcript
+            hasPreviousVideo={hasPreviousVideo}
+            hasFollowingVideo={hasFollowingVideo}
+            getNextTranscript={getNextTranscript}
+            setSecondsState={setSecondsState}
+            formattedTranscriptState={formattedTranscriptState}
+            isVideoPlaying={isVideoPlaying}
+            handlePause={handlePause}
+            handleFromHere={handleFromHere}
+            masterPlay={masterPlay}
+            handleReviewFunc={handleReviewFunc}
+            handleBreakdownSentence={handleBreakdownSentence}
+          />
         )}
       </div>
     </div>

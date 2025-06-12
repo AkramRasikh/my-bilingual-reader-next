@@ -1,0 +1,80 @@
+import TranscriptItem from './TranscriptItem';
+
+const Transcript = ({
+  hasPreviousVideo,
+  hasFollowingVideo,
+  getNextTranscript,
+  setSecondsState,
+  formattedTranscriptState,
+  isVideoPlaying,
+  handlePause,
+  handleFromHere,
+  masterPlay,
+  handleReviewFunc,
+  handleBreakdownSentence,
+}) => {
+  return (
+    <div
+      style={{
+        margin: 'auto',
+        maxWidth: 600,
+      }}
+    >
+      <div>
+        {hasPreviousVideo && (
+          <button
+            className='m-auto flex p-2.5'
+            onClick={() => {
+              getNextTranscript();
+              setSecondsState();
+            }}
+          >
+            ⏫⏫⏫⏫⏫
+          </button>
+        )}
+        <ul
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 10,
+            margin: 'auto',
+            overflow: 'scroll',
+            maxHeight: '600px',
+            overflowY: 'auto',
+          }}
+        >
+          {formattedTranscriptState.map((contentItem, index) => {
+            return (
+              <TranscriptItem
+                key={index}
+                index={index}
+                contentItem={contentItem}
+                isVideoPlaying={isVideoPlaying}
+                handlePause={handlePause}
+                handleFromHere={handleFromHere}
+                masterPlay={masterPlay}
+                handleReviewFunc={handleReviewFunc}
+                handleBreakdownSentence={handleBreakdownSentence}
+              />
+            );
+          })}
+        </ul>
+        <div>
+          {hasFollowingVideo && (
+            <button
+              className='m-auto flex p-2.5'
+              onClick={() => {
+                getNextTranscript(true);
+                setSecondsState();
+              }}
+            >
+              ⏬⏬⏬⏬⏬
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Transcript;
