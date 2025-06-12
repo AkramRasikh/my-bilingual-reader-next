@@ -52,6 +52,12 @@ const TranscriptItem = ({
   }, []);
 
   useEffect(() => {
+    if (!showMenuState) {
+      setShowSentenceBreakdownState(false);
+    }
+  }, [showMenuState]);
+
+  useEffect(() => {
     if (sentenceHighlightingState !== contentItem.id && highlightedTextState) {
       setHighlightedTextState('');
     }
