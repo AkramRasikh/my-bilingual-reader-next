@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 
+const qRewindTime = 3;
+
 type Props = {
   isVideoPlaying: boolean;
 };
@@ -9,6 +11,7 @@ type Props = {
 const KeyListener = ({
   isVideoPlaying,
   handleJumpToSentenceViaKeys,
+  handleRewind,
 }: Props) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -23,6 +26,9 @@ const KeyListener = ({
           break;
         case 'd':
           handleJumpToSentenceViaKeys(1);
+          break;
+        case 'q':
+          handleRewind(qRewindTime);
           break;
         default:
           break;

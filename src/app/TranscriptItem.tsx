@@ -35,13 +35,11 @@ const TranscriptItem = ({
       const selection = window.getSelection();
       const selectedText = selection?.toString().trim();
 
-      if (!selectedText) return;
-
       const anchorNode = selection?.anchorNode;
       if (!anchorNode || !ulRef.current?.contains(anchorNode)) return;
 
       setSentenceHighlightingState(contentItem.id);
-      setHighlightedTextState(selectedText);
+      setHighlightedTextState(selectedText || '');
     };
 
     document.addEventListener('mouseup', handleMouseUp);

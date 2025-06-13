@@ -157,6 +157,9 @@ const LearningScreen = ({
     }
   };
 
+  const handleRewind = () =>
+    (ref.current.currentTime = ref.current.currentTime - 3);
+
   const handleFromHere = (time) => {
     if (!isNumber(time)) {
       return null;
@@ -241,6 +244,7 @@ const LearningScreen = ({
           <KeyListener
             isVideoPlaying={isVideoPlaying}
             handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}
+            handleRewind={handleRewind}
           />
         </div>
         {secondsState && (
