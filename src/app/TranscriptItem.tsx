@@ -13,7 +13,6 @@ const TranscriptItem = ({
   handleFromHere,
   masterPlay,
   handleReviewFunc,
-  index,
   handleBreakdownSentence,
   sentenceHighlightingState,
   setSentenceHighlightingState,
@@ -63,7 +62,6 @@ const TranscriptItem = ({
     }
   }, [sentenceHighlightingState, highlightedTextState]);
 
-  const numberOrder = index + 1 + ') ';
   const baseLang = contentItem.baseLang;
   const targetLangformatted = contentItem.targetLangformatted;
   const hasBeenReviewed = contentItem?.reviewData?.due;
@@ -111,6 +109,13 @@ const TranscriptItem = ({
       setHighlightedTextState('');
       setWordPopUpState([]);
       setIsLoadingState(false);
+    }
+  };
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(contentItem.targetLang);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
     }
   };
 
@@ -168,51 +173,91 @@ const TranscriptItem = ({
           gap: 5,
         }}
       >
-        <button
-          style={{
-            padding: 5,
-            background:
-              thisSentenceIsPlaying && isVideoPlaying ? 'green' : 'grey',
-            borderRadius: 5,
-            margin: 'auto 0',
-            marginTop: 0,
-          }}
-          onClick={
-            thisSentenceIsPlaying && isVideoPlaying
-              ? handlePause
-              : () => handleFromHere(thisTime)
-          }
-        >
-          <span
+        <div className='flex flex-col gap-1 h-fit'>
+          <button
             style={{
-              height: 16,
+              padding: 5,
+              background:
+                thisSentenceIsPlaying && isVideoPlaying ? 'green' : 'grey',
+              borderRadius: 5,
+              margin: 'auto 0',
+              marginTop: 0,
             }}
+            onClick={
+              thisSentenceIsPlaying && isVideoPlaying
+                ? handlePause
+                : () => handleFromHere(thisTime)
+            }
           >
-            {thisSentenceIsPlaying && isVideoPlaying ? '⏸️' : '▶️'}
-          </span>
-        </button>
-        <div></div>
+            <span
+              style={{
+                height: 16,
+              }}
+            >
+              {thisSentenceIsPlaying && isVideoPlaying ? '⏸️' : '▶️'}
+            </span>
+          </button>
+          <button
+            id='menu'
+            className={clsx(
+              'rounded-sm bg-blue-400 text-white px-2 py-1 shadow h-fit',
+              hasBeenReviewed && 'border-2 border-amber-700',
+            )}
+            onClick={() => setShowMenuState(!showMenuState)}
+          >
+            <span>≣</span>
+          </button>
+        </div>
+
         <div
           style={{
-            background: thisSentenceIsPlaying ? 'yellow' : 'none',
             display: 'flex',
+            justifyContent: 'space-between',
+            background: thisSentenceIsPlaying ? 'yellow' : 'none',
           }}
         >
           <div>
-            <p style={{ display: 'flex', gap: 10 }}>
-              <button
-                className={clsx(
-                  'rounded-lg bg-blue-400 text-white px-2 py-1 shadow h-fit',
-                  hasBeenReviewed && 'border-2 border-amber-700',
-                )}
-                onClick={() => setShowMenuState(!showMenuState)}
-              >
-                <span>{numberOrder}</span>
-              </button>
-              {formattedSentence}
-            </p>
+            <p style={{ display: 'flex', gap: 10 }}>{formattedSentence}</p>
             <p>{baseLang}</p>
           </div>
+          {showMenuState && (
+            <div className='flex flex-col gap-0.5'>
+              <button
+                id='copy'
+                className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+                onClick={handleCopy}
+              >
+                📋
+              </button>
+              {hasBeenReviewed ? (
+                <button
+                  id='review'
+                  className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+                  onClick={async () =>
+                    await handleReviewFunc({
+                      sentenceId: contentItem.id,
+                      isRemoveReview: true,
+                    })
+                  }
+                >
+                  🗑️
+                </button>
+              ) : (
+                <button
+                  id='review'
+                  onClick={async () =>
+                    await handleReviewFunc({
+                      sentenceId: contentItem.id,
+                      isRemoveReview: false,
+                    })
+                  }
+                  className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+                >
+                  ⏰
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
       {showMenuState && (
@@ -220,7 +265,6 @@ const TranscriptItem = ({
           contentItem={contentItem}
           setShowSentenceBreakdownState={setShowSentenceBreakdownState}
           showSentenceBreakdownState={showSentenceBreakdownState}
-          handleReviewFunc={handleReviewFunc}
           handleBreakdownSentence={handleBreakdownSentence}
         />
       )}

@@ -50,7 +50,6 @@ const Transcript = ({
             return (
               <TranscriptItem
                 key={index}
-                index={index}
                 contentItem={contentItem}
                 isVideoPlaying={isVideoPlaying}
                 handlePause={handlePause}
