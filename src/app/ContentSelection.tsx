@@ -1,4 +1,6 @@
+import clsx from 'clsx';
 import { getGeneralTopicName } from './get-general-topic-name';
+import { Button } from '@/components/ui/button';
 
 const ContentSelection = ({
   generalTopicDisplayNameSelectedState,
@@ -32,7 +34,7 @@ const ContentSelection = ({
             );
           })}
       </ul>
-      <ul>
+      <ul className='flex flex-wrap gap-1'>
         {!selectedContentState &&
           generalTopicDisplayNameSelectedState &&
           youtubeContentTagsState?.length > 0 &&
@@ -45,18 +47,14 @@ const ContentSelection = ({
             }
 
             return (
-              <li key={index} style={{ padding: 5 }}>
-                <button
+              <li key={index} className='w-fit'>
+                <Button
+                  variant={'outline'}
                   onClick={() => handleSelectedContent(title)}
-                  style={{
-                    border: '1px solid grey',
-                    padding: 3,
-                    backgroundColor: reviewed ? 'red' : 'lightgray',
-                    borderRadius: 5,
-                  }}
+                  className={clsx('', reviewed && 'bg-red-700')}
                 >
                   {title}
-                </button>
+                </Button>
               </li>
             );
           })}

@@ -126,13 +126,6 @@ export const HomeContainer = () => {
 
   return (
     <div style={{ padding: 10 }}>
-      {!selectedContentState &&
-        generalTopicDisplayNameSelectedState &&
-        youtubeContentTagsState?.length > 0 && (
-          <button onClick={() => setGeneralTopicDisplayNameSelectedState('')}>
-            Clear
-          </button>
-        )}
       {isLoadingState && (
         <div
           style={{
