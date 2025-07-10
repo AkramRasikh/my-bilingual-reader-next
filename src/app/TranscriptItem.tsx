@@ -175,12 +175,14 @@ const TranscriptItem = ({
           <button
             style={{
               padding: 5,
-              background:
-                thisSentenceIsPlaying && isVideoPlaying ? 'green' : 'grey',
               borderRadius: 5,
               margin: 'auto 0',
               marginTop: 0,
             }}
+            className={clsx(
+              'bg-gray-300',
+              thisSentenceIsPlaying && isVideoPlaying && 'bg-yellow-200',
+            )}
             onClick={
               thisSentenceIsPlaying && isVideoPlaying
                 ? handlePause
@@ -199,7 +201,7 @@ const TranscriptItem = ({
             id='menu'
             className={clsx(
               'rounded-sm bg-blue-400 text-white px-2 py-1 shadow h-fit',
-              hasBeenReviewed && 'border-2 border-amber-700',
+              hasBeenReviewed && 'bg-red-700',
             )}
             onClick={() => setShowMenuState(!showMenuState)}
           >
@@ -211,10 +213,10 @@ const TranscriptItem = ({
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            background: thisSentenceIsPlaying ? 'yellow' : 'none',
+            width: '100%',
           }}
         >
-          <div>
+          <div className={clsx('', thisSentenceIsPlaying && 'bg-yellow-200')}>
             <p style={{ display: 'flex', gap: 10 }}>{formattedSentence}</p>
             <p>{baseLang}</p>
           </div>
