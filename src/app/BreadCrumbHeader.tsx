@@ -14,7 +14,6 @@ const BreadcrumbComponent = () => {
     selectedContentState,
     generalTopicDisplayNameSelectedState,
     setSelectedContentState,
-
     setGeneralTopicDisplayNameSelectedState,
   } = useData();
 
@@ -27,6 +26,11 @@ const BreadcrumbComponent = () => {
   };
 
   const title = selectedContentState?.title;
+
+  if (!generalTopicDisplayNameSelectedState) {
+    return null;
+  }
+
   return (
     <Breadcrumb>
       <BreadcrumbList>

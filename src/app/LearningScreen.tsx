@@ -195,22 +195,6 @@ const LearningScreen = ({
 
   return (
     <div>
-      <h1 style={{ textAlign: 'center' }}>
-        <button
-          style={{
-            background: 'grey',
-            borderRadius: 5,
-            margin: 'auto 0',
-            marginRight: 5,
-            padding: 5,
-          }}
-          onClick={clearTopic}
-        >
-          BACK
-        </button>
-        {selectedContentState?.title}
-      </h1>
-
       <ContentActionBar
         handleBulkReviews={handleBulkReviews}
         hasContentToReview={hasContentToReview}
