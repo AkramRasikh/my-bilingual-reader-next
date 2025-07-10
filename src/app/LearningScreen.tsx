@@ -142,13 +142,13 @@ const LearningScreen = ({
     const thisSentenceIndex = formattedTranscriptState.findIndex(
       (item) => item.id === currentMasterPlay,
     );
-    const isLastIndex =
-      thisSentenceIndex + 1 === formattedTranscriptState.length;
+    // const isLastIndex =
+    //   thisSentenceIndex + 1 === formattedTranscriptState.length;
 
     if (thisSentenceIndex === -1) {
       return;
     }
-    if ((thisSentenceIndex === 0 && nextIndex === -1) || isLastIndex) {
+    if (thisSentenceIndex === 0 && nextIndex === -1) {
       handleFromHere(formattedTranscriptState[thisSentenceIndex]?.time);
     } else {
       handleFromHere(

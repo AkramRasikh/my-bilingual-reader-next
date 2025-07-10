@@ -13,17 +13,18 @@ export const HomeContainer = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
   const [youtubeContentTagsState, setYoutubeContentTags] = useState();
   const [isLoadingState, setIsLoadingState] = useState(false);
-  const [generalTopicDisplayNameState, setGeneralTopicDisplayNameState] =
-    useState([]);
-  const [
-    generalTopicDisplayNameSelectedState,
-    setGeneralTopicDisplayNameSelectedState,
-  ] = useState('');
 
   const [currentTime, setCurrentTime] = useState(0);
 
-  const { contentState, selectedContentState, setSelectedContentState } =
-    useData();
+  const {
+    contentState,
+    selectedContentState,
+    setSelectedContentState,
+    generalTopicDisplayNameState,
+    setGeneralTopicDisplayNameState,
+    generalTopicDisplayNameSelectedState,
+    setGeneralTopicDisplayNameSelectedState,
+  } = useData();
 
   const handlePlayFromHere = (time: number) => {
     if (videoRef.current) {

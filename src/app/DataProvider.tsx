@@ -26,6 +26,12 @@ export const DataProvider = ({
   const [contentState, setContentState] = useState(sortedContent);
   const [pureWordsState, setPureWordsState] = useState([]);
   const [selectedContentState, setSelectedContentState] = useState(null);
+  const [generalTopicDisplayNameState, setGeneralTopicDisplayNameState] =
+    useState([]);
+  const [
+    generalTopicDisplayNameSelectedState,
+    setGeneralTopicDisplayNameSelectedState,
+  ] = useState('');
 
   const wordsFromSentences = [];
 
@@ -311,6 +317,10 @@ export const DataProvider = ({
         updateContentMetaData,
         getNextTranscript,
         checkIsThereFollowingContent,
+        generalTopicDisplayNameState,
+        setGeneralTopicDisplayNameState,
+        generalTopicDisplayNameSelectedState,
+        setGeneralTopicDisplayNameSelectedState,
       }}
     >
       {children}

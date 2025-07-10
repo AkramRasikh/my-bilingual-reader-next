@@ -1,3 +1,4 @@
+import BreadcrumbComponent from './BreadCrumbHeader';
 import { DataProvider } from './DataProvider';
 import { getGeneralTopicName } from './get-general-topic-name';
 import { getOnLoadData } from './get-on-load-data';
@@ -35,7 +36,10 @@ export default async function Home() {
       targetLanguageLoadedSentences={targetLanguageLoadedSentences}
       sortedContent={sortedContent}
     >
-      <HomeContainer sortedContent={sortedContent} />
+      <div className='p-4'>
+        <BreadcrumbComponent />
+        <HomeContainer sortedContent={sortedContent} />
+      </div>
     </DataProvider>
   );
 }
