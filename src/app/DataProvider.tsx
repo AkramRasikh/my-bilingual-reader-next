@@ -35,6 +35,11 @@ export const DataProvider = ({
 
   const wordsFromSentences = [];
 
+  const getYoutubeID = (generalName) =>
+    contentState
+      .find((item) => item.generalTopicName === generalName && item?.url)
+      .url.split('=')[1];
+
   const getPureWords = () => {
     const pureWords = [];
     wordsState?.forEach((wordData) => {
@@ -321,6 +326,7 @@ export const DataProvider = ({
         setGeneralTopicDisplayNameState,
         generalTopicDisplayNameSelectedState,
         setGeneralTopicDisplayNameSelectedState,
+        getYoutubeID,
       }}
     >
       {children}

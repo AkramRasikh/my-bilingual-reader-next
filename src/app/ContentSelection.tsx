@@ -1,6 +1,8 @@
 import clsx from 'clsx';
 import { getGeneralTopicName } from './get-general-topic-name';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import useData from './useData';
 
 const ContentSelection = ({
   generalTopicDisplayNameSelectedState,
@@ -10,14 +12,25 @@ const ContentSelection = ({
   youtubeContentTagsState,
   handleSelectedContent,
 }) => {
+  const { getYoutubeID } = useData();
   return (
     <>
       <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
         {!generalTopicDisplayNameSelectedState &&
           generalTopicDisplayNameState?.length > 0 &&
           generalTopicDisplayNameState.map((youtubeTag, index) => {
+            const youtubeId = getYoutubeID(youtubeTag);
+
             return (
               <li key={index}>
+                <Image
+                  width={200}
+                  height={200}
+                  src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
+                  alt={youtubeId}
+                  className='m-auto pb-1'
+                />
+
                 <button
                   onClick={() =>
                     setGeneralTopicDisplayNameSelectedState(youtubeTag)
