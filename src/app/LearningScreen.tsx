@@ -28,8 +28,9 @@ const LearningScreen = ({
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [sentenceHighlightingState, setSentenceHighlightingState] =
     useState('');
-  const [isGenericItemLoadingState, setIsGenericItemLoadingState] =
-    useState('');
+  const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
+    [],
+  );
 
   const {
     pureWords,
@@ -134,8 +135,6 @@ const LearningScreen = ({
     });
   };
 
-  console.log('## formattedTranscriptState', formattedTranscriptState);
-
   const handleBreakdownMasterSentence = async () => {
     const currentMasterPlay =
       isNumber(currentTime) &&
@@ -152,7 +151,7 @@ const LearningScreen = ({
 
     const thisSentenceTargetLang = thisSentence.targetLang;
     try {
-      setIsGenericItemLoadingState(currentMasterPlay);
+      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
       await breakdownSentence({
         topicName: selectedContentState.title,
         sentenceId: currentMasterPlay,
@@ -163,7 +162,9 @@ const LearningScreen = ({
     } catch (error) {
       console.log('## handleBreakdownMasterSentence error', error);
     } finally {
-      setIsGenericItemLoadingState('');
+      setIsGenericItemLoadingState((prev) =>
+        prev.filter((item) => item !== currentMasterPlay),
+      );
     }
   };
 

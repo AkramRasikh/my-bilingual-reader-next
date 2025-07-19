@@ -75,8 +75,9 @@ const TranscriptItem = ({
 
   const hasSentenceBreakdown = contentItem?.sentenceStructure;
 
-  const isGenericallyDoingAsyncAction =
-    isGenericItemLoadingState === contentItem.id;
+  const isGenericallyDoingAsyncAction = isGenericItemLoadingState.includes(
+    contentItem.id,
+  );
 
   const handleMouseEnter = (text) => {
     hoverTimer.current = setTimeout(() => {
