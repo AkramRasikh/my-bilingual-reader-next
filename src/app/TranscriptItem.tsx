@@ -18,6 +18,9 @@ const TranscriptItem = ({
   sentenceHighlightingState,
   setSentenceHighlightingState,
   isGenericItemLoadingState,
+  handleOpenBreakdownSentence,
+  breakdownSentencesArrState,
+  setBreakdownSentencesArrState,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
@@ -78,6 +81,14 @@ const TranscriptItem = ({
   const isGenericallyDoingAsyncAction = isGenericItemLoadingState.includes(
     contentItem.id,
   );
+
+  const isInSentenceBreakdown = breakdownSentencesArrState.includes(
+    contentItem.id,
+  );
+
+  useEffect(() => {
+    setShowSentenceBreakdownState(isInSentenceBreakdown);
+  }, [isInSentenceBreakdown]);
 
   const handleMouseEnter = (text) => {
     hoverTimer.current = setTimeout(() => {
@@ -281,6 +292,8 @@ const TranscriptItem = ({
           setShowSentenceBreakdownState={setShowSentenceBreakdownState}
           showSentenceBreakdownState={showSentenceBreakdownState}
           handleBreakdownSentence={handleBreakdownSentence}
+          handleOpenBreakdownSentence={handleOpenBreakdownSentence}
+          setBreakdownSentencesArrState={setBreakdownSentencesArrState}
         />
       )}
       {showSentenceBreakdownState && hasSentenceBreakdown ? (

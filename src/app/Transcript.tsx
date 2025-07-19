@@ -15,6 +15,9 @@ const Transcript = ({
   sentenceHighlightingState,
   setSentenceHighlightingState,
   isGenericItemLoadingState,
+  breakdownSentencesArrState,
+  handleOpenBreakdownSentence,
+  setBreakdownSentencesArrState,
 }) => {
   return (
     <div
@@ -61,6 +64,9 @@ const Transcript = ({
                 handleBreakdownSentence={handleBreakdownSentence}
                 sentenceHighlightingState={sentenceHighlightingState}
                 setSentenceHighlightingState={setSentenceHighlightingState}
+                handleOpenBreakdownSentence={handleOpenBreakdownSentence}
+                breakdownSentencesArrState={breakdownSentencesArrState}
+                setBreakdownSentencesArrState={setBreakdownSentencesArrState}
               />
             );
           })}

@@ -13,6 +13,7 @@ const KeyListener = ({
   handleJumpToSentenceViaKeys,
   handleBreakdownMasterSentence,
   handleRewind,
+  handleOpenBreakdownSentence,
 }: Props) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -24,7 +25,10 @@ const KeyListener = ({
         return;
       }
 
-      // shoft + space = play/pause
+      if (e.shiftKey && e.key.toLowerCase() === 'n') {
+        handleOpenBreakdownSentence();
+        return;
+      }
 
       switch (e.key.toLowerCase()) {
         case 'a':

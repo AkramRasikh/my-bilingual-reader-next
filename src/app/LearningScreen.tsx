@@ -31,6 +31,9 @@ const LearningScreen = ({
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
   );
+  const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
+    [],
+  );
 
   const {
     pureWords,
@@ -84,6 +87,9 @@ const LearningScreen = ({
     secondsState[Math.floor(currentTime)];
 
   const handlePause = () => ref.current.pause();
+  const handlePausePlay = () => {
+    setIsVideoPlaying(!isVideoPlaying);
+  };
 
   const handleReviewFunc = async ({ sentenceId, isRemoveReview }) => {
     const cardDataRelativeToNow = getEmptyCard();
@@ -135,6 +141,33 @@ const LearningScreen = ({
     });
   };
 
+  const handleOpenBreakdownSentence = () => {
+    const currentMasterPlay =
+      isNumber(currentTime) &&
+      secondsState?.length > 0 &&
+      secondsState[Math.floor(ref.current.currentTime)];
+
+    if (!currentMasterPlay) return null;
+    const thisSentence = formattedTranscriptState.find(
+      (item) => item.id === currentMasterPlay,
+    );
+
+    const alreadyHasBreakdown = thisSentence?.sentenceStructure;
+    if (!alreadyHasBreakdown) return null;
+
+    const isOpen = breakdownSentencesArrState.includes(currentMasterPlay);
+
+    if (isOpen) {
+      const updatedList = breakdownSentencesArrState.filter(
+        (i) => i !== currentMasterPlay,
+      );
+      setBreakdownSentencesArrState(updatedList);
+    } else {
+      const updatedList = [...breakdownSentencesArrState, currentMasterPlay];
+      setBreakdownSentencesArrState(updatedList);
+    }
+  };
+
   const handleBreakdownMasterSentence = async () => {
     const currentMasterPlay =
       isNumber(currentTime) &&
@@ -178,8 +211,6 @@ const LearningScreen = ({
     const thisSentenceIndex = formattedTranscriptState.findIndex(
       (item) => item.id === currentMasterPlay,
     );
-    // const isLastIndex =
-    //   thisSentenceIndex + 1 === formattedTranscriptState.length;
 
     if (thisSentenceIndex === -1) {
       return;
@@ -261,8 +292,11 @@ const LearningScreen = ({
             handleTimeUpdate={handleTimeUpdate}
             setIsVideoPlaying={setIsVideoPlaying}
           />
+
           <KeyListener
             isVideoPlaying={isVideoPlaying}
+            handleOpenBreakdownSentence={handleOpenBreakdownSentence}
+            handlePausePlay={handlePausePlay}
             handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}
             handleRewind={handleRewind}
             handleBreakdownMasterSentence={handleBreakdownMasterSentence}
@@ -284,6 +318,9 @@ const LearningScreen = ({
             sentenceHighlightingState={sentenceHighlightingState}
             setSentenceHighlightingState={setSentenceHighlightingState}
             isGenericItemLoadingState={isGenericItemLoadingState}
+            breakdownSentencesArrState={breakdownSentencesArrState}
+            setBreakdownSentencesArrState={setBreakdownSentencesArrState}
+            handleOpenBreakdownSentence={handleOpenBreakdownSentence}
           />
         )}
       </div>

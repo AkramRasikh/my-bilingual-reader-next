@@ -37,7 +37,9 @@ const SentenceBreakdown = ({
                 }}
               >
                 <span className='m-auto'>{surfaceForm}</span>
-                <span className='m-auto'>{meaning}</span>
+                <span className='m-auto' style={{ fontSize: 12 }}>
+                  {meaning}
+                </span>
                 {!wordIsSaved && (
                   <div className='flex gap-1.5 m-auto'>
                     <button

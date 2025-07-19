@@ -8,6 +8,8 @@ const MenuSection = ({
   setShowSentenceBreakdownState,
   showSentenceBreakdownState,
   handleBreakdownSentence,
+  handleOpenBreakdownSentence,
+  setBreakdownSentencesArrState,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,19 +25,27 @@ const MenuSection = ({
       setIsLoading(false);
     }
   };
+
+  const closeBreakdown = () => {
+    setBreakdownSentencesArrState((prev) =>
+      prev.filter((item) => item !== contentItem.id),
+    );
+  };
   return (
     <div className='flex gap-8 justify-center border-t-1 pt-1.5'>
       {contentItem?.sentenceStructure && !showSentenceBreakdownState ? (
         <div className='border rounded-lg p-1 transition active:scale-95 cursor-pointer mt-auto mb-auto relative'>
-          <button onClick={() => setShowSentenceBreakdownState(true)}>
+          <button
+            onClick={() =>
+              setBreakdownSentencesArrState((prev) => [...prev, contentItem.id])
+            }
+          >
             show breakdown
           </button>
         </div>
       ) : contentItem?.sentenceStructure ? (
         <div className='border rounded-lg p-1 transition active:scale-95 cursor-pointer mt-auto mb-auto relative'>
-          <button onClick={() => setShowSentenceBreakdownState(false)}>
-            close
-          </button>
+          <button onClick={closeBreakdown}>close</button>
         </div>
       ) : (
         <div className='border rounded-lg p-1 transition active:scale-95 cursor-pointer mt-auto mb-auto relative'>
