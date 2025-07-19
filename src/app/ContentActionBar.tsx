@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import LoadingSpinner from './LoadingSpinner';
+import { Button } from '@/components/ui/button';
 
 export default function ContentActionBar({
   hasContentToReview,
@@ -87,21 +88,13 @@ export default function ContentActionBar({
   return (
     <div className='flex flex-col items-center gap-2 mt-3'>
       <div className='flex gap-2'>
-        <button
-          onClick={handlePrimaryClick}
-          disabled={isLoading}
-          className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50'
-        >
+        <Button onClick={handlePrimaryClick} disabled={isLoading}>
           {hasContentToReview ? 'Remove bulk review' : 'Add bulk review'}
-        </button>
+        </Button>
         {isLoading && <LoadingSpinner />}
-        <button
-          onClick={setNextReviewDate}
-          disabled={isLoading}
-          className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50'
-        >
+        <Button onClick={setNextReviewDate} disabled={isLoading}>
           {hasBeenReviewed ? 'Remove has been reviewed' : 'Mark as reviewed'}
-        </button>
+        </Button>
       </div>
 
       {showConfirm && !isLoading && (
