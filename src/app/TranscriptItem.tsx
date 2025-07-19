@@ -71,6 +71,8 @@ const TranscriptItem = ({
     (item) => item?.id === 'targetWord',
   );
 
+  const hasSentenceBreakdown = contentItem?.sentenceStructure;
+
   const handleMouseEnter = (text) => {
     hoverTimer.current = setTimeout(() => {
       setShowModal(true); // Open modal
@@ -210,13 +212,19 @@ const TranscriptItem = ({
         </div>
 
         <div
+          // className={clsx(hasSentenceBreakdown && 'border-blue-700')}
           style={{
             display: 'flex',
             justifyContent: 'space-between',
             width: '100%',
           }}
         >
-          <div className={clsx('', thisSentenceIsPlaying && 'bg-yellow-200')}>
+          <div
+            className={clsx(
+              thisSentenceIsPlaying && 'bg-yellow-200',
+              hasSentenceBreakdown && 'border-2 border-green-700 rounded-sm',
+            )}
+          >
             <p style={{ display: 'flex', gap: 10 }}>{formattedSentence}</p>
             <p>{baseLang}</p>
           </div>
@@ -268,7 +276,7 @@ const TranscriptItem = ({
           handleBreakdownSentence={handleBreakdownSentence}
         />
       )}
-      {showSentenceBreakdownState && contentItem?.sentenceStructure ? (
+      {showSentenceBreakdownState && hasSentenceBreakdown ? (
         <SentenceBreakdown
           vocab={contentItem.vocab}
           meaning={contentItem.meaning}
