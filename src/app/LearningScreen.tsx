@@ -28,6 +28,8 @@ const LearningScreen = ({
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [sentenceHighlightingState, setSentenceHighlightingState] =
     useState('');
+  const [isGenericItemLoadingState, setIsGenericItemLoadingState] =
+    useState('');
 
   const {
     pureWords,
@@ -132,6 +134,39 @@ const LearningScreen = ({
     });
   };
 
+  console.log('## formattedTranscriptState', formattedTranscriptState);
+
+  const handleBreakdownMasterSentence = async () => {
+    const currentMasterPlay =
+      isNumber(currentTime) &&
+      secondsState?.length > 0 &&
+      secondsState[Math.floor(ref.current.currentTime)];
+
+    if (!currentMasterPlay) return null;
+    const thisSentence = formattedTranscriptState.find(
+      (item) => item.id === currentMasterPlay,
+    );
+
+    const alreadyHasBreakdown = thisSentence?.sentenceStructure;
+    if (alreadyHasBreakdown) return null;
+
+    const thisSentenceTargetLang = thisSentence.targetLang;
+    try {
+      setIsGenericItemLoadingState(currentMasterPlay);
+      await breakdownSentence({
+        topicName: selectedContentState.title,
+        sentenceId: currentMasterPlay,
+        language: japanese,
+        targetLang: thisSentenceTargetLang,
+        contentIndex,
+      });
+    } catch (error) {
+      console.log('## handleBreakdownMasterSentence error', error);
+    } finally {
+      setIsGenericItemLoadingState('');
+    }
+  };
+
   const handleJumpToSentenceViaKeys = (nextIndex: number) => {
     // defo revisit this
     const currentMasterPlay =
@@ -229,6 +264,7 @@ const LearningScreen = ({
             isVideoPlaying={isVideoPlaying}
             handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}
             handleRewind={handleRewind}
+            handleBreakdownMasterSentence={handleBreakdownMasterSentence}
           />
         </div>
         {secondsState && (
@@ -246,6 +282,7 @@ const LearningScreen = ({
             handleBreakdownSentence={handleBreakdownSentence}
             sentenceHighlightingState={sentenceHighlightingState}
             setSentenceHighlightingState={setSentenceHighlightingState}
+            isGenericItemLoadingState={isGenericItemLoadingState}
           />
         )}
       </div>

@@ -14,6 +14,7 @@ const Transcript = ({
   handleBreakdownSentence,
   sentenceHighlightingState,
   setSentenceHighlightingState,
+  isGenericItemLoadingState,
 }) => {
   return (
     <div
@@ -50,6 +51,7 @@ const Transcript = ({
             return (
               <TranscriptItem
                 key={index}
+                isGenericItemLoadingState={isGenericItemLoadingState}
                 contentItem={contentItem}
                 isVideoPlaying={isVideoPlaying}
                 handlePause={handlePause}

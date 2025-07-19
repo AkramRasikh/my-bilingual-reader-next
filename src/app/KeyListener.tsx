@@ -11,6 +11,7 @@ type Props = {
 const KeyListener = ({
   isVideoPlaying,
   handleJumpToSentenceViaKeys,
+  handleBreakdownMasterSentence,
   handleRewind,
 }: Props) => {
   useEffect(() => {
@@ -19,9 +20,11 @@ const KeyListener = ({
 
       // SHIFT + B
       if (e.shiftKey && e.key.toLowerCase() === 'b') {
-        console.log('Shift + B pressed!');
+        handleBreakdownMasterSentence();
         return;
       }
+
+      // shoft + space = play/pause
 
       switch (e.key.toLowerCase()) {
         case 'a':

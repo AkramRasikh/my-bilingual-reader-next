@@ -5,6 +5,7 @@ import HighlightedTextSection from './HighlightedTextSection';
 import SentenceBreakdown from './SentenceBreakdown';
 import clsx from 'clsx';
 import MenuSection from './MenuSection';
+import LoadingSpinner from './LoadingSpinner';
 
 const TranscriptItem = ({
   contentItem,
@@ -16,6 +17,7 @@ const TranscriptItem = ({
   handleBreakdownSentence,
   sentenceHighlightingState,
   setSentenceHighlightingState,
+  isGenericItemLoadingState,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
@@ -72,6 +74,9 @@ const TranscriptItem = ({
   );
 
   const hasSentenceBreakdown = contentItem?.sentenceStructure;
+
+  const isGenericallyDoingAsyncAction =
+    isGenericItemLoadingState === contentItem.id;
 
   const handleMouseEnter = (text) => {
     hoverTimer.current = setTimeout(() => {
@@ -209,6 +214,7 @@ const TranscriptItem = ({
           >
             <span>≣</span>
           </button>
+          {isGenericallyDoingAsyncAction && <LoadingSpinner />}
         </div>
 
         <div
