@@ -17,6 +17,12 @@ const KeyListener = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isVideoPlaying) return;
 
+      // SHIFT + B
+      if (e.shiftKey && e.key.toLowerCase() === 'b') {
+        console.log('Shift + B pressed!');
+        return;
+      }
+
       switch (e.key.toLowerCase()) {
         case 'a':
           handleJumpToSentenceViaKeys(-1);
