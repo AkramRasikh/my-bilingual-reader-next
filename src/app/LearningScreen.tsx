@@ -142,10 +142,11 @@ const LearningScreen = ({
   };
 
   const handleOpenBreakdownSentence = () => {
+    const currentSecond = Math.floor(ref.current.currentTime);
     const currentMasterPlay =
       isNumber(currentTime) &&
       secondsState?.length > 0 &&
-      secondsState[Math.floor(ref.current.currentTime)];
+      secondsState[currentSecond];
 
     if (!currentMasterPlay) return null;
     const thisSentence = formattedTranscriptState.find(

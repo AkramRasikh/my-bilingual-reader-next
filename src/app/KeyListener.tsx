@@ -50,7 +50,12 @@ const KeyListener = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isVideoPlaying]);
+  }, [
+    handleJumpToSentenceViaKeys,
+    handleBreakdownMasterSentence,
+    handleRewind,
+    handleOpenBreakdownSentence,
+  ]);
 
   return null;
 };
