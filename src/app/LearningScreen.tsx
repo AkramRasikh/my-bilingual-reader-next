@@ -20,7 +20,6 @@ const LearningScreen = ({
   ref,
   handlePlayFromHere,
   handleTimeUpdate,
-  clearTopic,
   currentTime,
 }) => {
   const [formattedTranscriptState, setFormattedTranscriptState] = useState();

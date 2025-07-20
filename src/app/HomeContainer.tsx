@@ -33,8 +33,6 @@ export const HomeContainer = () => {
     }
   };
 
-  const clearTopic = () => setSelectedContentState(null);
-
   // Update current time as video plays
   const handleTimeUpdate = () => {
     if (videoRef.current) {
@@ -154,7 +152,6 @@ export const HomeContainer = () => {
           handlePlayFromHere={handlePlayFromHere}
           handleTimeUpdate={handleTimeUpdate}
           ref={videoRef}
-          clearTopic={clearTopic}
           currentTime={currentTime}
         />
       )}
