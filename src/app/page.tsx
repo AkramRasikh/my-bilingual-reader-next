@@ -36,7 +36,7 @@ export default async function Home() {
       targetLanguageLoadedSentences={targetLanguageLoadedSentences}
       sortedContent={sortedContent}
     >
-      <div className='p-4'>
+      <div className='p-4 bg-amber-50 h-lvh'>
         <BreadcrumbComponent />
         <HomeContainer sortedContent={sortedContent} />
       </div>
