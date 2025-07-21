@@ -167,10 +167,7 @@ const TranscriptItem = ({
 
   return (
     <li
-      className={clsx(
-        'rounded-lg px-2 py-1 shadow h-fit border-2 border-blue-200',
-        hasBeenReviewed && 'border-red-200',
-      )}
+      className={'rounded-lg px-2 py-1 shadow h-fit border-2 border-blue-200'}
       style={{
         gap: 5,
         opacity: 0,
@@ -210,7 +207,15 @@ const TranscriptItem = ({
               {thisSentenceIsPlaying && isVideoPlaying ? '⏸️' : '▶️'}
             </span>
           </button>
-          {hasSentenceBreakdown && <span className='m-auto'>✅</span>}
+          {hasBeenReviewed && (
+            <span
+              className='m-auto bg-red-400 p-1 mask-radial-from-fuchsia-200'
+              id='has-been-reviewed-icon'
+            >
+              📚
+            </span>
+          )}
+          {hasSentenceBreakdown && <span className='m-auto'>🧱</span>}
 
           {isGenericallyDoingAsyncAction && <LoadingSpinner />}
         </div>
@@ -222,7 +227,7 @@ const TranscriptItem = ({
             width: '100%',
           }}
         >
-          <div className={clsx(thisSentenceIsPlaying && 'bg-yellow-200')}>
+          <div className={clsx(thisSentenceIsPlaying && 'bg-yellow-200 h-fit')}>
             {showSentenceBreakdownState && hasSentenceBreakdown ? (
               <NewSentenceBreakdown
                 vocab={contentItem.vocab}
