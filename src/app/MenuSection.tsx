@@ -54,7 +54,7 @@ const MenuSection = ({
         <div className='border rounded-lg p-1 transition active:scale-95 cursor-pointer mt-auto mb-auto relative'>
           <>
             <button
-              onClick={handleBreakdownSentenceFunc}
+              onDoubleClick={handleBreakdownSentenceFunc}
               id='breakdown-sentence'
             >
               ⚒️
