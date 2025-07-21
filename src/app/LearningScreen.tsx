@@ -90,6 +90,14 @@ const LearningScreen = ({
     setIsVideoPlaying(!isVideoPlaying);
   };
 
+  const handlePlayPauseViaRef = () => {
+    if (isVideoPlaying) {
+      handlePause();
+    } else {
+      ref.current.play();
+    }
+  };
+
   const handleReviewFunc = async ({ sentenceId, isRemoveReview }) => {
     const cardDataRelativeToNow = getEmptyCard();
     const nextScheduledOptions = getNextScheduledOptions({
@@ -300,6 +308,7 @@ const LearningScreen = ({
             handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}
             handleRewind={handleRewind}
             handleBreakdownMasterSentence={handleBreakdownMasterSentence}
+            handlePlayPauseViaRef={handlePlayPauseViaRef}
           />
         </div>
         {secondsState && (

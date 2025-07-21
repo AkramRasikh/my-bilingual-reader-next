@@ -14,6 +14,7 @@ const KeyListener = ({
   handleBreakdownMasterSentence,
   handleRewind,
   handleOpenBreakdownSentence,
+  handlePausePlay,
 }: Props) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -27,6 +28,10 @@ const KeyListener = ({
 
       if (e.shiftKey && e.key.toLowerCase() === 'n') {
         handleOpenBreakdownSentence();
+        return;
+      }
+      if (e.shiftKey && e.key.toLowerCase() === ' ') {
+        handlePausePlay();
         return;
       }
 
@@ -55,6 +60,7 @@ const KeyListener = ({
     handleBreakdownMasterSentence,
     handleRewind,
     handleOpenBreakdownSentence,
+    handlePausePlay,
   ]);
 
   return null;
