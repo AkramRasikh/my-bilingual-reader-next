@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import LoadingSpinner from './LoadingSpinner';
 
 const HighlightedTextSection = ({
@@ -53,12 +54,13 @@ const HighlightedTextSection = ({
           >
             <img src='/google.png' alt='Google logo' className='h-5' />
           </button>
-          <button
-            style={{ padding: 5, background: 'grey', borderRadius: 5 }}
+          <Button
+            variant='destructive'
+            size='sm'
             onClick={() => setHighlightedTextState('')}
           >
-            CLEAR
-          </button>
+            Clear
+          </Button>
         </div>
       </div>
     </div>
