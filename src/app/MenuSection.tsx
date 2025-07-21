@@ -36,21 +36,29 @@ const MenuSection = ({
       {contentItem?.sentenceStructure && !showSentenceBreakdownState ? (
         <div className='border rounded-lg p-1 transition active:scale-95 cursor-pointer mt-auto mb-auto relative'>
           <button
+            id='show-breakdown'
             onClick={() =>
               setBreakdownSentencesArrState((prev) => [...prev, contentItem.id])
             }
           >
-            show breakdown
+            👀
           </button>
         </div>
       ) : contentItem?.sentenceStructure ? (
         <div className='border rounded-lg p-1 transition active:scale-95 cursor-pointer mt-auto mb-auto relative'>
-          <button onClick={closeBreakdown}>close</button>
+          <button onClick={closeBreakdown} id='close-breakdown'>
+            ❌
+          </button>
         </div>
       ) : (
         <div className='border rounded-lg p-1 transition active:scale-95 cursor-pointer mt-auto mb-auto relative'>
           <>
-            <button onClick={handleBreakdownSentenceFunc}>Breakdown</button>
+            <button
+              onClick={handleBreakdownSentenceFunc}
+              id='breakdown-sentence'
+            >
+              ⚒️
+            </button>
             {isLoading && (
               <div className='m-auto w-fit-content absolute top-0 left-1/2 p-1.5'>
                 <LoadingSpinner />
