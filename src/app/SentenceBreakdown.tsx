@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import clsx from 'clsx';
 import { useState } from 'react';
 import Xarrow from 'react-xarrows';
@@ -19,25 +20,64 @@ function getColorByIndex(index) {
   return colors[index % colors.length];
 }
 
-export const NewSentenceBreakdown = ({ vocab, sentenceStructure }) => {
+export const NewSentenceBreakdown = ({
+  vocab,
+  sentenceStructure,
+  thisSentencesSavedWords,
+}) => {
   const [hoveredXStates, setHoveredXStates] = useState('');
 
   const handleAddIndexToArr = (index) => {
     setHoveredXStates(index);
-    setTimeout(() => setHoveredXStates(''), 2000);
+  };
+
+  const handleOnMouseExit = (index) => {
+    if (hoveredXStates === index) {
+      setTimeout(() => setHoveredXStates(''), 2000);
+    }
   };
 
   return (
     <div>
       <ul className='flex flex-wrap gap-1'>
         {vocab.map(({ surfaceForm }, index) => {
+          const wordIsSaved = thisSentencesSavedWords?.some(
+            (item) => item.text === surfaceForm,
+          );
+
+          const thisColor = getColorByIndex(index);
+
+          const isHovered = hoveredXStates === index && !wordIsSaved;
           return (
-            <li key={index} id={`vocab-${index}`}>
+            <li
+              key={index}
+              id={`vocab-${index}`}
+              className='relative'
+              onMouseEnter={() => handleAddIndexToArr(index)}
+              onMouseLeave={() => handleOnMouseExit(index)}
+            >
+              {isHovered && (
+                <div className='flex gap-1 border-2 absolute bottom-7 p-0.5 flex-col rounded overflow-hidden'>
+                  <Button variant='secondary' size='icon'>
+                    <img
+                      src='/deepseek.png'
+                      alt='Deepseek logo'
+                      className='h-5'
+                    />
+                  </Button>
+                  <hr />
+                  <Button variant='secondary' size='icon'>
+                    <img src='/google.png' alt='Google logo' className='h-5' />
+                  </Button>
+                </div>
+              )}
               <div
-                className='flex gap-0.5 flex-col'
-                onMouseEnter={() => handleAddIndexToArr(index)}
+                className={clsx(
+                  'flex gap-0.5 flex-col',
+                  isHovered ? `border-neutral-900 border-[1px] rounded` : '',
+                )}
                 style={{
-                  color: getColorByIndex(index),
+                  color: thisColor,
                 }}
               >
                 <span className='m-auto'>{surfaceForm}</span>
@@ -57,7 +97,9 @@ export const NewSentenceBreakdown = ({ vocab, sentenceStructure }) => {
               key={index}
               id={`structure-${index}`}
               className={clsx(
-                isInHoveredState ? 'animate-pulse font-bold underline' : '',
+                isInHoveredState
+                  ? 'border-neutral-900 border-[1px] rounded font-bold'
+                  : '',
               )}
             >
               <div
