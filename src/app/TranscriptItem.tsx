@@ -167,7 +167,10 @@ const TranscriptItem = ({
 
   return (
     <li
-      className={'rounded-lg px-2 py-1 shadow h-fit border-2 border-blue-200'}
+      className={clsx(
+        'rounded-lg px-2 py-1 shadow h-fit border-2 ',
+        hasBeenReviewed ? 'border-amber-500' : 'border-blue-200',
+      )}
       style={{
         gap: 5,
         opacity: 0,
@@ -207,14 +210,6 @@ const TranscriptItem = ({
               {thisSentenceIsPlaying && isVideoPlaying ? '⏸️' : '▶️'}
             </span>
           </button>
-          {hasBeenReviewed && (
-            <span
-              className='m-auto bg-red-400 p-1 mask-radial-from-fuchsia-200'
-              id='has-been-reviewed-icon'
-            >
-              📚
-            </span>
-          )}
           {hasSentenceBreakdown && <span className='m-auto'>🧱</span>}
 
           {isGenericallyDoingAsyncAction && <LoadingSpinner />}
