@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import useData from './useData';
 import PopUpWordCard from './PopUpWordCard';
 import HighlightedTextSection from './HighlightedTextSection';
-import SentenceBreakdown from './SentenceBreakdown';
+import { NewSentenceBreakdown } from './SentenceBreakdown';
 import clsx from 'clsx';
 import MenuSection from './MenuSection';
 import LoadingSpinner from './LoadingSpinner';
@@ -230,7 +230,6 @@ const TranscriptItem = ({
         </div>
 
         <div
-          // className={clsx(hasSentenceBreakdown && 'border-blue-700')}
           style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -243,8 +242,20 @@ const TranscriptItem = ({
               hasSentenceBreakdown && 'border-2 border-green-700 rounded-sm',
             )}
           >
-            <p style={{ display: 'flex', gap: 10 }}>{formattedSentence}</p>
-            <p>{baseLang}</p>
+            {showSentenceBreakdownState && hasSentenceBreakdown ? (
+              <NewSentenceBreakdown
+                vocab={contentItem.vocab}
+                meaning={contentItem.meaning}
+                thisSentencesSavedWords={thisSentencesSavedWords}
+                handleSaveFunc={handleSaveFunc}
+                sentenceStructure={contentItem.sentenceStructure}
+              />
+            ) : (
+              <>
+                <p style={{ display: 'flex', gap: 10 }}>{formattedSentence}</p>
+                <p>{baseLang}</p>
+              </>
+            )}
           </div>
           {showMenuState && (
             <div className='flex flex-col gap-0.5'>
@@ -296,14 +307,6 @@ const TranscriptItem = ({
           setBreakdownSentencesArrState={setBreakdownSentencesArrState}
         />
       )}
-      {showSentenceBreakdownState && hasSentenceBreakdown ? (
-        <SentenceBreakdown
-          vocab={contentItem.vocab}
-          meaning={contentItem.meaning}
-          thisSentencesSavedWords={thisSentencesSavedWords}
-          handleSaveFunc={handleSaveFunc}
-        />
-      ) : null}
       {wordPopUpState?.length > 0 ? (
         <ul>
           {wordPopUpState?.map((item) => (

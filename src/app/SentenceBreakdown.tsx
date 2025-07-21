@@ -15,6 +15,50 @@ function getColorByIndex(index) {
   return colors[index % colors.length];
 }
 
+export const NewSentenceBreakdown = ({ vocab, sentenceStructure }) => {
+  const sentenceStructureToArr = sentenceStructure.split('+');
+
+  return (
+    <div>
+      <ul className='flex flex-wrap gap-1'>
+        {vocab.map(({ surfaceForm }, index) => {
+          return (
+            <li key={index}>
+              <div
+                className='flex gap-0.5 flex-col'
+                style={{
+                  color: getColorByIndex(index),
+                }}
+              >
+                <span className='m-auto'>{surfaceForm}</span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <hr className='m-1' />
+      <ul className='flex flex-wrap gap-1'>
+        {sentenceStructureToArr.map((sentenceWidget, index) => {
+          return (
+            <li key={index}>
+              <div
+                className='flex gap-0.5 flex-col'
+                style={{
+                  color: getColorByIndex(index),
+                }}
+              >
+                <span className='m-auto' style={{ fontSize: 12 }}>
+                  {sentenceWidget}
+                </span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+};
+
 const SentenceBreakdown = ({
   vocab,
   meaning,
