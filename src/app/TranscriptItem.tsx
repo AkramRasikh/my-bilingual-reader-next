@@ -54,12 +54,6 @@ const TranscriptItem = ({
   }, []);
 
   useEffect(() => {
-    if (!showMenuState) {
-      setShowSentenceBreakdownState(false);
-    }
-  }, [showMenuState]);
-
-  useEffect(() => {
     if (sentenceHighlightingState !== contentItem.id && highlightedTextState) {
       setHighlightedTextState('');
     }
@@ -174,8 +168,8 @@ const TranscriptItem = ({
   return (
     <li
       className={clsx(
-        showMenuState &&
-          'rounded-lg px-2 py-1 shadow h-fit border-2 border-blue-200',
+        'rounded-lg px-2 py-1 shadow h-fit border-2 border-blue-200',
+        hasBeenReviewed && 'border-red-200',
       )}
       style={{
         gap: 5,
@@ -216,16 +210,8 @@ const TranscriptItem = ({
               {thisSentenceIsPlaying && isVideoPlaying ? '⏸️' : '▶️'}
             </span>
           </button>
-          <button
-            id='menu'
-            className={clsx(
-              'rounded-sm bg-blue-400 text-white px-2 py-1 shadow h-fit',
-              hasBeenReviewed && 'bg-red-700',
-            )}
-            onClick={() => setShowMenuState(!showMenuState)}
-          >
-            <span>≣</span>
-          </button>
+          {hasSentenceBreakdown && <span className='m-auto'>✅</span>}
+
           {isGenericallyDoingAsyncAction && <LoadingSpinner />}
         </div>
 
@@ -236,12 +222,7 @@ const TranscriptItem = ({
             width: '100%',
           }}
         >
-          <div
-            className={clsx(
-              thisSentenceIsPlaying && 'bg-yellow-200',
-              hasSentenceBreakdown && 'border-2 border-green-700 rounded-sm',
-            )}
-          >
+          <div className={clsx(thisSentenceIsPlaying && 'bg-yellow-200')}>
             {showSentenceBreakdownState && hasSentenceBreakdown ? (
               <NewSentenceBreakdown
                 vocab={contentItem.vocab}
@@ -257,56 +238,54 @@ const TranscriptItem = ({
               </>
             )}
           </div>
-          {showMenuState && (
-            <div className='flex flex-col gap-0.5'>
+
+          <div className='flex flex-col gap-0.5'>
+            <button
+              id='copy'
+              className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+              onClick={handleCopy}
+            >
+              📋
+            </button>
+            {hasBeenReviewed ? (
               <button
-                id='copy'
+                id='review'
                 className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
-                onClick={handleCopy}
+                onClick={async () =>
+                  await handleReviewFunc({
+                    sentenceId: contentItem.id,
+                    isRemoveReview: true,
+                  })
+                }
               >
-                📋
+                🗑️
               </button>
-              {hasBeenReviewed ? (
-                <button
-                  id='review'
-                  className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
-                  onClick={async () =>
-                    await handleReviewFunc({
-                      sentenceId: contentItem.id,
-                      isRemoveReview: true,
-                    })
-                  }
-                >
-                  🗑️
-                </button>
-              ) : (
-                <button
-                  id='review'
-                  onClick={async () =>
-                    await handleReviewFunc({
-                      sentenceId: contentItem.id,
-                      isRemoveReview: false,
-                    })
-                  }
-                  className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
-                >
-                  ⏰
-                </button>
-              )}
-            </div>
-          )}
+            ) : (
+              <button
+                id='review'
+                onClick={async () =>
+                  await handleReviewFunc({
+                    sentenceId: contentItem.id,
+                    isRemoveReview: false,
+                  })
+                }
+                className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+              >
+                ⏰
+              </button>
+            )}
+            <MenuSection
+              contentItem={contentItem}
+              setShowSentenceBreakdownState={setShowSentenceBreakdownState}
+              showSentenceBreakdownState={showSentenceBreakdownState}
+              handleBreakdownSentence={handleBreakdownSentence}
+              handleOpenBreakdownSentence={handleOpenBreakdownSentence}
+              setBreakdownSentencesArrState={setBreakdownSentencesArrState}
+            />
+          </div>
         </div>
       </div>
-      {showMenuState && (
-        <MenuSection
-          contentItem={contentItem}
-          setShowSentenceBreakdownState={setShowSentenceBreakdownState}
-          showSentenceBreakdownState={showSentenceBreakdownState}
-          handleBreakdownSentence={handleBreakdownSentence}
-          handleOpenBreakdownSentence={handleOpenBreakdownSentence}
-          setBreakdownSentencesArrState={setBreakdownSentencesArrState}
-        />
-      )}
+
       {wordPopUpState?.length > 0 ? (
         <ul>
           {wordPopUpState?.map((item) => (
