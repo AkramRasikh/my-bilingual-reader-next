@@ -1,3 +1,7 @@
+import clsx from 'clsx';
+import { useState } from 'react';
+import Xarrow from 'react-xarrows';
+
 const colors = [
   '#1f77b4',
   '#ff7f0e',
@@ -16,16 +20,22 @@ function getColorByIndex(index) {
 }
 
 export const NewSentenceBreakdown = ({ vocab, sentenceStructure }) => {
-  const sentenceStructureToArr = sentenceStructure.split('+');
+  const [hoveredXStates, setHoveredXStates] = useState('');
+
+  const handleAddIndexToArr = (index) => {
+    setHoveredXStates(index);
+    setTimeout(() => setHoveredXStates(''), 2000);
+  };
 
   return (
     <div>
       <ul className='flex flex-wrap gap-1'>
         {vocab.map(({ surfaceForm }, index) => {
           return (
-            <li key={index}>
+            <li key={index} id={`vocab-${index}`}>
               <div
                 className='flex gap-0.5 flex-col'
+                onMouseEnter={() => handleAddIndexToArr(index)}
                 style={{
                   color: getColorByIndex(index),
                 }}
@@ -37,10 +47,19 @@ export const NewSentenceBreakdown = ({ vocab, sentenceStructure }) => {
         })}
       </ul>
       <hr className='m-1' />
+
       <ul className='flex flex-wrap gap-1'>
-        {sentenceStructureToArr.map((sentenceWidget, index) => {
+        {vocab.map(({ meaning }, index) => {
+          const isInHoveredState = hoveredXStates === index;
+
           return (
-            <li key={index}>
+            <li
+              key={index}
+              id={`structure-${index}`}
+              className={clsx(
+                isInHoveredState ? 'animate-pulse font-bold underline' : '',
+              )}
+            >
               <div
                 className='flex gap-0.5 flex-col'
                 style={{
@@ -48,13 +67,29 @@ export const NewSentenceBreakdown = ({ vocab, sentenceStructure }) => {
                 }}
               >
                 <span className='m-auto' style={{ fontSize: 12 }}>
-                  {sentenceWidget}
+                  {meaning}
                 </span>
               </div>
             </li>
           );
         })}
       </ul>
+      <p>{sentenceStructure}</p>
+      {vocab.map((_, index) => {
+        const isInHoveredState = hoveredXStates === index;
+
+        if (!isInHoveredState) return null;
+        return (
+          <Xarrow
+            key={index}
+            start={`vocab-${index}`}
+            end={`structure-${index}`}
+            strokeWidth={2}
+            color={getColorByIndex(index)}
+            showHead={false}
+          />
+        );
+      })}
     </div>
   );
 };
