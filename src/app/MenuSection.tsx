@@ -33,24 +33,7 @@ const MenuSection = ({
   };
   return (
     <div className='flex gap-8 justify-center border-t-1 pt-1.5'>
-      {contentItem?.sentenceStructure && !showSentenceBreakdownState ? (
-        <div className='border rounded-lg p-1 transition active:scale-95 cursor-pointer mt-auto mb-auto relative'>
-          <button
-            id='show-breakdown'
-            onClick={() =>
-              setBreakdownSentencesArrState((prev) => [...prev, contentItem.id])
-            }
-          >
-            👀
-          </button>
-        </div>
-      ) : contentItem?.sentenceStructure ? (
-        <div className='border rounded-lg p-1 transition active:scale-95 cursor-pointer mt-auto mb-auto relative'>
-          <button onClick={closeBreakdown} id='close-breakdown'>
-            ❌
-          </button>
-        </div>
-      ) : (
+      {!contentItem?.sentenceStructure && (
         <div className='border rounded-lg p-1 transition active:scale-95 cursor-pointer mt-auto mb-auto relative'>
           <>
             <button

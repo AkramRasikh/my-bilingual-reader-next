@@ -165,6 +165,12 @@ const TranscriptItem = ({
     </span>
   );
 
+  const closeBreakdown = () => {
+    setBreakdownSentencesArrState((prev) =>
+      prev.filter((item) => item !== contentItem.id),
+    );
+  };
+
   return (
     <li
       className={clsx(
@@ -210,7 +216,26 @@ const TranscriptItem = ({
               {thisSentenceIsPlaying && isVideoPlaying ? '⏸️' : '▶️'}
             </span>
           </button>
-          {hasSentenceBreakdown && <span className='m-auto'>🧱</span>}
+
+          {hasSentenceBreakdown && (
+            <button
+              id='show-breakdown'
+              onClick={() => {
+                if (showSentenceBreakdownState) {
+                  closeBreakdown();
+                } else {
+                  setBreakdownSentencesArrState((prev) => [
+                    ...prev,
+                    contentItem.id,
+                  ]);
+                }
+              }}
+            >
+              <span className='m-auto'>
+                {showSentenceBreakdownState ? '❌' : '🧱'}
+              </span>
+            </button>
+          )}
 
           {isGenericallyDoingAsyncAction && <LoadingSpinner />}
         </div>
