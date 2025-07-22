@@ -24,6 +24,7 @@ export const NewSentenceBreakdown = ({
   vocab,
   sentenceStructure,
   thisSentencesSavedWords,
+  meaning,
 }) => {
   const [hoveredXStates, setHoveredXStates] = useState('');
 
@@ -87,7 +88,6 @@ export const NewSentenceBreakdown = ({
         })}
       </ul>
       <hr className='m-1' />
-
       <ul className='flex flex-wrap gap-1'>
         {vocab.map(({ meaning }, index) => {
           const isInHoveredState = hoveredXStates === index;
@@ -132,6 +132,8 @@ export const NewSentenceBreakdown = ({
           />
         );
       })}
+      <hr className='m-1' />
+      <p>{meaning}</p>
     </div>
   );
 };

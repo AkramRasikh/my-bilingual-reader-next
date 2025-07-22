@@ -292,6 +292,7 @@ const LearningScreen = ({
           style={{
             maxHeight: 500,
             margin: 'auto',
+            marginTop: '50px',
           }}
         >
           <VideoPlayer
