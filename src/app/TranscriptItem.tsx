@@ -25,7 +25,6 @@ const TranscriptItem = ({
   const ulRef = useRef<HTMLUListElement>(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [showMenuState, setShowMenuState] = useState(false);
   const [showSentenceBreakdownState, setShowSentenceBreakdownState] =
     useState(false);
   const [isLoadingState, setIsLoadingState] = useState(false);
