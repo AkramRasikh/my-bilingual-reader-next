@@ -21,13 +21,17 @@ const TranscriptItem = ({
   handleOpenBreakdownSentence,
   breakdownSentencesArrState,
   setBreakdownSentencesArrState,
+  isPressDownShiftState,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
-  const [showModal, setShowModal] = useState(false);
   const [showSentenceBreakdownState, setShowSentenceBreakdownState] =
     useState(false);
   const [isLoadingState, setIsLoadingState] = useState(false);
+  const [
+    showThisSentenceBreakdownPreviewState,
+    setShowThisSentenceBreakdownPreviewState,
+  ] = useState(false);
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
 
@@ -83,9 +87,14 @@ const TranscriptItem = ({
     setShowSentenceBreakdownState(isInSentenceBreakdown);
   }, [isInSentenceBreakdown]);
 
+  useEffect(() => {
+    if (!isPressDownShiftState && showThisSentenceBreakdownPreviewState) {
+      setShowThisSentenceBreakdownPreviewState(false);
+    }
+  }, [isPressDownShiftState, showThisSentenceBreakdownPreviewState]);
+
   const handleMouseEnter = (text) => {
     hoverTimer.current = setTimeout(() => {
-      setShowModal(true); // Open modal
       const wordsAmongstHighlightedText = wordsState?.filter((item) => {
         if (item.baseForm === text || item.surfaceForm === text) {
           return true;
@@ -141,6 +150,11 @@ const TranscriptItem = ({
     }
   };
 
+  const handleOnMouseEnterSentence = () => {
+    if (!isPressDownShiftState || !hasSentenceBreakdown) return null;
+    setShowThisSentenceBreakdownPreviewState(true);
+  };
+
   const formattedSentence = (
     <span ref={ulRef} className='mt-auto mb-auto'>
       {targetLangformatted.map((item, indexNested) => {
@@ -181,7 +195,10 @@ const TranscriptItem = ({
         opacity: 0,
         animation: 'fadeIn 0.5s ease-out forwards',
       }}
-      onMouseLeave={() => setWordPopUpState([])}
+      onMouseLeave={() => {
+        setWordPopUpState([]);
+        setShowThisSentenceBreakdownPreviewState(false);
+      }}
     >
       <div
         style={{
@@ -248,8 +265,12 @@ const TranscriptItem = ({
             width: '100%',
           }}
         >
-          <div className={clsx(thisSentenceIsPlaying && 'bg-yellow-200 h-fit')}>
-            {showSentenceBreakdownState && hasSentenceBreakdown ? (
+          <div
+            className={clsx(thisSentenceIsPlaying && 'bg-yellow-200 h-fit')}
+            onMouseEnter={handleOnMouseEnterSentence}
+          >
+            {(showSentenceBreakdownState && hasSentenceBreakdown) ||
+            showThisSentenceBreakdownPreviewState ? (
               <NewSentenceBreakdown
                 vocab={contentItem.vocab}
                 meaning={contentItem.meaning}

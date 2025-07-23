@@ -333,6 +333,7 @@ const LearningScreen = ({
             breakdownSentencesArrState={breakdownSentencesArrState}
             setBreakdownSentencesArrState={setBreakdownSentencesArrState}
             handleOpenBreakdownSentence={handleOpenBreakdownSentence}
+            isPressDownShiftState={isPressDownShiftState}
           />
         )}
       </div>
