@@ -15,8 +15,15 @@ const KeyListener = ({
   handleRewind,
   handleOpenBreakdownSentence,
   handlePausePlay,
+  setIsPressDownShiftState,
 }: Props) => {
   useEffect(() => {
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') {
+        setIsPressDownShiftState(false);
+        return;
+      }
+    };
     const handleKeyDown = (e: KeyboardEvent) => {
       // SHIFT + B
       if (e.shiftKey && e.key.toLowerCase() === 'b') {
@@ -30,6 +37,11 @@ const KeyListener = ({
       }
       if (e.shiftKey && e.key.toLowerCase() === ' ') {
         handlePausePlay();
+        return;
+      }
+
+      if (e.shiftKey) {
+        setIsPressDownShiftState(true);
         return;
       }
 
@@ -54,13 +66,19 @@ const KeyListener = ({
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [
     handleJumpToSentenceViaKeys,
     handleBreakdownMasterSentence,
     handleRewind,
     handleOpenBreakdownSentence,
     handlePausePlay,
+    setIsPressDownShiftState,
   ]);
 
   return null;

@@ -25,6 +25,7 @@ const LearningScreen = ({
   const [formattedTranscriptState, setFormattedTranscriptState] = useState();
   const [secondsState, setSecondsState] = useState([]);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isPressDownShiftState, setIsPressDownShiftState] = useState(false);
   const [sentenceHighlightingState, setSentenceHighlightingState] =
     useState('');
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
@@ -310,6 +311,7 @@ const LearningScreen = ({
             handleRewind={handleRewind}
             handleBreakdownMasterSentence={handleBreakdownMasterSentence}
             handlePlayPauseViaRef={handlePlayPauseViaRef}
+            setIsPressDownShiftState={setIsPressDownShiftState}
           />
         </div>
         {secondsState && (
