@@ -93,9 +93,11 @@ export default function ContentActionBar({
         <Button onClick={handlePrimaryClick} disabled={isLoading}>
           {hasContentToReview ? 'Remove bulk review' : 'Add bulk review'}
         </Button>
-        <div className='m-auto'>
-          <LoadingSpinner />
-        </div>
+        {isLoading && (
+          <div className='m-auto'>
+            <LoadingSpinner />
+          </div>
+        )}
         <div className='flex gap-2 m-auto'>
           <Label>Reviewed </Label>
           <Switch
