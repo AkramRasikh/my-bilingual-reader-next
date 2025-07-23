@@ -102,15 +102,13 @@ const LearningScreen = ({
   };
 
   useEffect(() => {
-    console.log('## loopTranscriptState', loopTranscriptState);
-    console.log('## masterPlay', masterPlay);
     if (ref.current && loopTranscriptState) {
       if (masterPlay !== loopTranscriptState.id) {
         ref.current.currentTime = loopTranscriptState.time;
         ref.current.play();
       }
     }
-  }, [loopTranscriptState, ref.current?.time, masterPlay]);
+  }, [loopTranscriptState, ref, masterPlay]);
 
   const handleReviewFunc = async ({ sentenceId, isRemoveReview }) => {
     const cardDataRelativeToNow = getEmptyCard();
@@ -153,7 +151,6 @@ const LearningScreen = ({
   };
 
   const handleLoopThisSentence = () => {
-    console.log('## handleLoopThisSentencea');
     const currentMasterPlay =
       isNumber(currentTime) &&
       secondsState?.length > 0 &&
@@ -161,13 +158,22 @@ const LearningScreen = ({
     const thisIndex = formattedTranscriptState.findIndex(
       (item) => item.id === currentMasterPlay,
     );
+    const masterItem = formattedTranscriptState[thisIndex];
+
+    if (loopTranscriptState?.id === currentMasterPlay) {
+      setLoopTranscriptState(null);
+      return;
+    }
+
     setLoopTranscriptState({
-      ...formattedTranscriptState[thisIndex],
-      time: realStartTime + formattedTranscriptState[thisIndex].time,
+      ...masterItem,
+      time: realStartTime + masterItem.time,
       nextTime:
         realStartTime +
         (thisIndex === formattedTranscriptState.length - 1
           ? ref.current.duration - 0.05
+          : thisIndex === 0
+          ? realStartTime
           : formattedTranscriptState[thisIndex - 1].time),
     });
   };
@@ -313,9 +319,6 @@ const LearningScreen = ({
         reviewHistory={reviewHistory}
         contentIndex={contentIndex}
       />
-      <Button className='m-auto pt-2' onClick={handleLoopThisSentence}>
-        Loop
-      </Button>
       <div
         style={{
           display: 'flex',
@@ -348,6 +351,7 @@ const LearningScreen = ({
             handleBreakdownMasterSentence={handleBreakdownMasterSentence}
             handlePlayPauseViaRef={handlePlayPauseViaRef}
             setIsPressDownShiftState={setIsPressDownShiftState}
+            handleLoopThisSentence={handleLoopThisSentence}
           />
         </div>
         {secondsState && (

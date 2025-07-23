@@ -6,6 +6,7 @@ import { NewSentenceBreakdown } from './SentenceBreakdown';
 import clsx from 'clsx';
 import MenuSection from './MenuSection';
 import LoadingSpinner from './LoadingSpinner';
+import { Repeat2 } from 'lucide-react';
 
 const TranscriptItem = ({
   contentItem,
@@ -256,8 +257,12 @@ const TranscriptItem = ({
             </button>
           )}
           {loopTranscriptState?.id === contentItem.id && (
-            <button id='stop-loop' onClick={() => setLoopTranscriptState(null)}>
-              <span className='m-auto'>⌛️</span>
+            <button
+              id='stop-loop'
+              onClick={() => setLoopTranscriptState(null)}
+              className='animate-spin'
+            >
+              <Repeat2 />
             </button>
           )}
 
