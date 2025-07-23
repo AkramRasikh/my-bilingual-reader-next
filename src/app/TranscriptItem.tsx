@@ -195,6 +195,7 @@ const TranscriptItem = ({
         opacity: 0,
         animation: 'fadeIn 0.5s ease-out forwards',
       }}
+      onMouseEnter={handleOnMouseEnterSentence}
       onMouseLeave={() => {
         setWordPopUpState([]);
         setShowThisSentenceBreakdownPreviewState(false);
@@ -265,10 +266,7 @@ const TranscriptItem = ({
             width: '100%',
           }}
         >
-          <div
-            className={clsx(thisSentenceIsPlaying && 'bg-yellow-200 h-fit')}
-            onMouseEnter={handleOnMouseEnterSentence}
-          >
+          <div className={clsx(thisSentenceIsPlaying && 'bg-yellow-200 h-fit')}>
             {(showSentenceBreakdownState && hasSentenceBreakdown) ||
             showThisSentenceBreakdownPreviewState ? (
               <NewSentenceBreakdown
