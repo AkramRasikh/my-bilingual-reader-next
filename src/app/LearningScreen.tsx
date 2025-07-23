@@ -16,6 +16,8 @@ import {
 import ContentActionBar from './ContentActionBar';
 import Transcript from './Transcript';
 import { Button } from '@/components/ui/button';
+import { Repeat2 } from 'lucide-react';
+import clsx from 'clsx';
 
 const LearningScreen = ({
   ref,
@@ -36,6 +38,7 @@ const LearningScreen = ({
     [],
   );
   const [loopTranscriptState, setLoopTranscriptState] = useState();
+  const [threeSecondLoopState, setThreeSecondLoopState] = useState();
 
   const {
     pureWords,
@@ -102,13 +105,26 @@ const LearningScreen = ({
   };
 
   useEffect(() => {
+    if (!ref.current) return;
+    if (isNumber(threeSecondLoopState)) {
+      const lessThan1500Seconds =
+        ref.current.currentTime - 1.5 < threeSecondLoopState;
+      const moreThan1500Seconds =
+        ref.current.currentTime + 1.5 > threeSecondLoopState;
+
+      if (lessThan1500Seconds || moreThan1500Seconds) {
+        ref.current.currentTime = ref.current.currentTime - 1.5;
+        ref.current.play();
+      }
+      return;
+    }
     if (ref.current && loopTranscriptState) {
       if (masterPlay !== loopTranscriptState.id) {
         ref.current.currentTime = loopTranscriptState.time;
         ref.current.play();
       }
     }
-  }, [loopTranscriptState, ref, masterPlay]);
+  }, [loopTranscriptState, ref, masterPlay, threeSecondLoopState]);
 
   const handleReviewFunc = async ({ sentenceId, isRemoveReview }) => {
     const cardDataRelativeToNow = getEmptyCard();
@@ -176,6 +192,19 @@ const LearningScreen = ({
           ? realStartTime
           : formattedTranscriptState[thisIndex - 1].time),
     });
+  };
+
+  const handleLoopThis3Second = () => {
+    if (loopTranscriptState) {
+      setLoopTranscriptState(null);
+    }
+    if (isNumber(threeSecondLoopState)) {
+      setThreeSecondLoopState(null);
+      return;
+    }
+
+    setThreeSecondLoopState(ref.current.currentTime);
+    // account for the three seconds on both extremes
   };
 
   const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {
@@ -341,7 +370,18 @@ const LearningScreen = ({
             handleTimeUpdate={handleTimeUpdate}
             setIsVideoPlaying={setIsVideoPlaying}
           />
-
+          {threeSecondLoopState && (
+            <div className='pt-1.5 m-auto flex justify-center'>
+              <Button
+                id='stop-loop'
+                onClick={() => setThreeSecondLoopState(null)}
+                className={clsx(isVideoPlaying && 'animate-spin')}
+                size='icon'
+              >
+                <Repeat2 />
+              </Button>
+            </div>
+          )}
           <KeyListener
             isVideoPlaying={isVideoPlaying}
             handleOpenBreakdownSentence={handleOpenBreakdownSentence}
@@ -352,6 +392,7 @@ const LearningScreen = ({
             handlePlayPauseViaRef={handlePlayPauseViaRef}
             setIsPressDownShiftState={setIsPressDownShiftState}
             handleLoopThisSentence={handleLoopThisSentence}
+            handleLoopThis3Second={handleLoopThis3Second}
           />
         </div>
         {secondsState && (

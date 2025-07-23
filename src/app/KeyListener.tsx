@@ -17,6 +17,7 @@ const KeyListener = ({
   handlePausePlay,
   setIsPressDownShiftState,
   handleLoopThisSentence,
+  handleLoopThis3Second,
 }: Props) => {
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -43,6 +44,11 @@ const KeyListener = ({
 
       if (e.shiftKey && e.key.toLowerCase() === 'm') {
         handleLoopThisSentence();
+        return;
+      }
+
+      if (e.shiftKey && e.key.toLowerCase() === 'k') {
+        handleLoopThis3Second();
         return;
       }
       if (e.shiftKey) {
@@ -85,6 +91,7 @@ const KeyListener = ({
     handlePausePlay,
     setIsPressDownShiftState,
     handleLoopThisSentence,
+    handleLoopThis3Second,
   ]);
 
   return null;
