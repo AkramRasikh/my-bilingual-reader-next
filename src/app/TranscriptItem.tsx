@@ -22,6 +22,8 @@ const TranscriptItem = ({
   breakdownSentencesArrState,
   setBreakdownSentencesArrState,
   isPressDownShiftState,
+  loopTranscriptState,
+  setLoopTranscriptState,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
@@ -251,6 +253,11 @@ const TranscriptItem = ({
               <span className='m-auto'>
                 {showSentenceBreakdownState ? '❌' : '🧱'}
               </span>
+            </button>
+          )}
+          {loopTranscriptState?.id === contentItem.id && (
+            <button id='stop-loop' onClick={() => setLoopTranscriptState(null)}>
+              <span className='m-auto'>⌛️</span>
             </button>
           )}
 

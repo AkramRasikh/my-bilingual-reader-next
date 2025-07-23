@@ -19,6 +19,8 @@ const Transcript = ({
   handleOpenBreakdownSentence,
   setBreakdownSentencesArrState,
   isPressDownShiftState,
+  loopTranscriptState,
+  setLoopTranscriptState,
 }) => {
   return (
     <div
@@ -69,6 +71,8 @@ const Transcript = ({
                 breakdownSentencesArrState={breakdownSentencesArrState}
                 setBreakdownSentencesArrState={setBreakdownSentencesArrState}
                 isPressDownShiftState={isPressDownShiftState}
+                loopTranscriptState={loopTranscriptState}
+                setLoopTranscriptState={setLoopTranscriptState}
               />
             );
           })}

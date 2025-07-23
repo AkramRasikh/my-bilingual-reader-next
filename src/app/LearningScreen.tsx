@@ -15,6 +15,7 @@ import {
 } from './srs-algo';
 import ContentActionBar from './ContentActionBar';
 import Transcript from './Transcript';
+import { Button } from '@/components/ui/button';
 
 const LearningScreen = ({
   ref,
@@ -34,6 +35,7 @@ const LearningScreen = ({
   const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
     [],
   );
+  const [loopTranscriptState, setLoopTranscriptState] = useState();
 
   const {
     pureWords,
@@ -99,6 +101,17 @@ const LearningScreen = ({
     }
   };
 
+  useEffect(() => {
+    console.log('## loopTranscriptState', loopTranscriptState);
+    console.log('## masterPlay', masterPlay);
+    if (ref.current && loopTranscriptState) {
+      if (masterPlay !== loopTranscriptState.id) {
+        ref.current.currentTime = loopTranscriptState.time;
+        ref.current.play();
+      }
+    }
+  }, [loopTranscriptState, ref.current?.time, masterPlay]);
+
   const handleReviewFunc = async ({ sentenceId, isRemoveReview }) => {
     const cardDataRelativeToNow = getEmptyCard();
     const nextScheduledOptions = getNextScheduledOptions({
@@ -136,6 +149,26 @@ const LearningScreen = ({
       },
       contentIndex: contentIndex,
       removeReview: hasContentToReview,
+    });
+  };
+
+  const handleLoopThisSentence = () => {
+    console.log('## handleLoopThisSentencea');
+    const currentMasterPlay =
+      isNumber(currentTime) &&
+      secondsState?.length > 0 &&
+      secondsState[Math.floor(ref.current.currentTime)];
+    const thisIndex = formattedTranscriptState.findIndex(
+      (item) => item.id === currentMasterPlay,
+    );
+    setLoopTranscriptState({
+      ...formattedTranscriptState[thisIndex],
+      time: realStartTime + formattedTranscriptState[thisIndex].time,
+      nextTime:
+        realStartTime +
+        (thisIndex === formattedTranscriptState.length - 1
+          ? ref.current.duration - 0.05
+          : formattedTranscriptState[thisIndex - 1].time),
     });
   };
 
@@ -280,6 +313,9 @@ const LearningScreen = ({
         reviewHistory={reviewHistory}
         contentIndex={contentIndex}
       />
+      <Button className='m-auto pt-2' onClick={handleLoopThisSentence}>
+        Loop
+      </Button>
       <div
         style={{
           display: 'flex',
@@ -334,6 +370,8 @@ const LearningScreen = ({
             setBreakdownSentencesArrState={setBreakdownSentencesArrState}
             handleOpenBreakdownSentence={handleOpenBreakdownSentence}
             isPressDownShiftState={isPressDownShiftState}
+            loopTranscriptState={loopTranscriptState}
+            setLoopTranscriptState={setLoopTranscriptState}
           />
         )}
       </div>
