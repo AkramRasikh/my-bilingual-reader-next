@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import LoadingSpinner from './LoadingSpinner';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 export default function ContentActionBar({
   hasContentToReview,
@@ -91,10 +93,17 @@ export default function ContentActionBar({
         <Button onClick={handlePrimaryClick} disabled={isLoading}>
           {hasContentToReview ? 'Remove bulk review' : 'Add bulk review'}
         </Button>
-        {isLoading && <LoadingSpinner />}
-        <Button onClick={setNextReviewDate} disabled={isLoading}>
-          {hasBeenReviewed ? 'Remove has been reviewed' : 'Mark as reviewed'}
-        </Button>
+        <div className='m-auto'>
+          <LoadingSpinner />
+        </div>
+        <div className='flex gap-2 m-auto'>
+          <Label>Reviewed </Label>
+          <Switch
+            checked={hasBeenReviewed}
+            onCheckedChange={setNextReviewDate}
+            disabled={isLoading}
+          />
+        </div>
       </div>
 
       {showConfirm && !isLoading && (
