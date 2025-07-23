@@ -236,7 +236,9 @@ const TranscriptItem = ({
             </button>
           )}
 
-          {isGenericallyDoingAsyncAction && <LoadingSpinner />}
+          {(isGenericallyDoingAsyncAction || isLoadingState) && (
+            <LoadingSpinner />
+          )}
         </div>
 
         <div

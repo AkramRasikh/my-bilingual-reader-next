@@ -24,6 +24,7 @@ export const NewSentenceBreakdown = ({
   vocab,
   sentenceStructure,
   thisSentencesSavedWords,
+  handleSaveFunc,
   meaning,
 }) => {
   const [hoveredXStates, setHoveredXStates] = useState('');
@@ -41,7 +42,7 @@ export const NewSentenceBreakdown = ({
   return (
     <div>
       <ul className='flex flex-wrap gap-1'>
-        {vocab.map(({ surfaceForm }, index) => {
+        {vocab.map(({ surfaceForm, meaning }, index) => {
           const wordIsSaved = thisSentencesSavedWords?.some(
             (item) => item.text === surfaceForm,
           );
@@ -59,7 +60,11 @@ export const NewSentenceBreakdown = ({
             >
               {isHovered && (
                 <div className='flex gap-1 border-2 absolute bottom-7 p-0.5 flex-col rounded overflow-hidden'>
-                  <Button variant='secondary' size='icon'>
+                  <Button
+                    variant='secondary'
+                    size='icon'
+                    onClick={() => handleSaveFunc(false, surfaceForm, meaning)}
+                  >
                     <img
                       src='/deepseek.png'
                       alt='Deepseek logo'
@@ -67,7 +72,11 @@ export const NewSentenceBreakdown = ({
                     />
                   </Button>
                   <hr />
-                  <Button variant='secondary' size='icon'>
+                  <Button
+                    variant='secondary'
+                    size='icon'
+                    onClick={() => handleSaveFunc(true, surfaceForm, meaning)}
+                  >
                     <img src='/google.png' alt='Google logo' className='h-5' />
                   </Button>
                 </div>
@@ -81,7 +90,9 @@ export const NewSentenceBreakdown = ({
                   color: thisColor,
                 }}
               >
-                <span className='m-auto'>{surfaceForm}</span>
+                <span className={clsx(wordIsSaved && 'underline', 'm-auto')}>
+                  {surfaceForm}
+                </span>
               </div>
             </li>
           );
