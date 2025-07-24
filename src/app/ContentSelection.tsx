@@ -64,7 +64,7 @@ const ContentSelection = ({
                 <Button
                   variant={'outline'}
                   onClick={() => handleSelectedContent(title)}
-                  className={clsx('', reviewed && 'bg-red-700')}
+                  className={clsx('', reviewed && 'text-white bg-red-700')}
                 >
                   {title}
                 </Button>
