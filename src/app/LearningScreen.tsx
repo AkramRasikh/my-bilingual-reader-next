@@ -18,6 +18,7 @@ import Transcript from './Transcript';
 import { Button } from '@/components/ui/button';
 import { Repeat2 } from 'lucide-react';
 import clsx from 'clsx';
+import ProgressBarSnippet from './ProgressBarSnippet';
 
 const LearningScreen = ({
   ref,
@@ -39,6 +40,7 @@ const LearningScreen = ({
   );
   const [loopTranscriptState, setLoopTranscriptState] = useState();
   const [threeSecondLoopState, setThreeSecondLoopState] = useState();
+  const [progress, setProgress] = useState(0);
 
   const {
     pureWords,
@@ -105,16 +107,17 @@ const LearningScreen = ({
   };
 
   useEffect(() => {
+    // can be split into two for efficiency but fine for now
     if (!ref.current) return;
     if (isNumber(threeSecondLoopState)) {
-      const lessThan1500Seconds =
-        ref.current.currentTime - 1.5 < threeSecondLoopState;
-      const moreThan1500Seconds =
-        ref.current.currentTime + 1.5 > threeSecondLoopState;
-
+      const startTime = threeSecondLoopState - 1.5;
+      const endTime = threeSecondLoopState + 1.5;
+      const lessThan1500Seconds = ref.current.currentTime < startTime;
+      const moreThan1500Seconds = ref.current.currentTime > endTime;
       if (lessThan1500Seconds || moreThan1500Seconds) {
-        ref.current.currentTime = ref.current.currentTime - 1.5;
+        ref.current.currentTime = startTime;
         ref.current.play();
+        return;
       }
       return;
     }
@@ -124,7 +127,7 @@ const LearningScreen = ({
         ref.current.play();
       }
     }
-  }, [loopTranscriptState, ref, masterPlay, threeSecondLoopState]);
+  }, [loopTranscriptState, ref, masterPlay, threeSecondLoopState, progress]);
 
   const handleReviewFunc = async ({ sentenceId, isRemoveReview }) => {
     const cardDataRelativeToNow = getEmptyCard();
@@ -380,6 +383,12 @@ const LearningScreen = ({
               >
                 <Repeat2 />
               </Button>
+              <ProgressBarSnippet
+                snippetRef={ref}
+                threeSecondLoopState={threeSecondLoopState}
+                progress={progress}
+                setProgress={setProgress}
+              />
             </div>
           )}
           <KeyListener
