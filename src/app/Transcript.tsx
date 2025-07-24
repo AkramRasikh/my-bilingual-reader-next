@@ -23,12 +23,7 @@ const Transcript = ({
   setLoopTranscriptState,
 }) => {
   return (
-    <div
-      style={{
-        margin: 'auto',
-        maxWidth: 600,
-      }}
-    >
+    <div className='flex-1'>
       <div>
         {hasPreviousVideo && (
           <button

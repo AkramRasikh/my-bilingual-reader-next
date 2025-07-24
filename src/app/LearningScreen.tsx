@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Repeat2 } from 'lucide-react';
 import clsx from 'clsx';
 import ProgressBarSnippet from './ProgressBarSnippet';
+import ComprehensiveTranscriptItem from './ComprehensiveTranscriptItem';
 
 const LearningScreen = ({
   ref,
@@ -28,6 +29,8 @@ const LearningScreen = ({
 }) => {
   const [formattedTranscriptState, setFormattedTranscriptState] = useState();
   const [secondsState, setSecondsState] = useState([]);
+  const [masterPlayComprehensiveState, setMasterPlayComprehensiveState] =
+    useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isPressDownShiftState, setIsPressDownShiftState] = useState(false);
   const [sentenceHighlightingState, setSentenceHighlightingState] =
@@ -92,6 +95,16 @@ const LearningScreen = ({
     currentTime &&
     secondsState?.length > 0 &&
     secondsState[Math.floor(currentTime)];
+
+  useEffect(() => {
+    if (masterPlay && formattedTranscriptState) {
+      console.log('## USE EFFECT masterPlay', masterPlay);
+      const thisItemTranscript = formattedTranscriptState.find(
+        (item) => item.id === masterPlay,
+      );
+      setMasterPlayComprehensiveState(thisItemTranscript);
+    }
+  }, [masterPlay, formattedTranscriptState]);
 
   const handlePause = () => ref.current.pause();
   const handlePausePlay = () => {
@@ -360,13 +373,7 @@ const LearningScreen = ({
           marginTop: 50,
         }}
       >
-        <div
-          style={{
-            maxHeight: 500,
-            margin: 'auto',
-            marginTop: '50px',
-          }}
-        >
+        <div className='flex-1 mt-5'>
           <VideoPlayer
             ref={ref}
             url={videoUrl}
@@ -391,6 +398,11 @@ const LearningScreen = ({
                 <Repeat2 />
               </Button>
             </div>
+          )}
+          {masterPlayComprehensiveState && (
+            <ComprehensiveTranscriptItem
+              contentItem={masterPlayComprehensiveState}
+            />
           )}
           <KeyListener
             isVideoPlaying={isVideoPlaying}

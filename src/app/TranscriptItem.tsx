@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import MenuSection from './MenuSection';
 import LoadingSpinner from './LoadingSpinner';
 import { Repeat2 } from 'lucide-react';
+import FormattedSentence from './FormattedSentence';
 
 const TranscriptItem = ({
   contentItem,
@@ -158,29 +159,6 @@ const TranscriptItem = ({
     setShowThisSentenceBreakdownPreviewState(true);
   };
 
-  const formattedSentence = (
-    <span ref={ulRef} className='mt-auto mb-auto'>
-      {targetLangformatted.map((item, indexNested) => {
-        const isUnderlined = item?.style?.textDecorationLine;
-        const text = item?.text;
-        return (
-          <span
-            key={indexNested}
-            onMouseEnter={
-              isUnderlined ? () => handleMouseEnter(text) : () => {}
-            }
-            onMouseLeave={handleMouseLeave}
-            style={{
-              textDecorationLine: isUnderlined ? 'underline' : 'none',
-            }}
-          >
-            {text}
-          </span>
-        );
-      })}
-    </span>
-  );
-
   const closeBreakdown = () => {
     setBreakdownSentencesArrState((prev) =>
       prev.filter((item) => item !== contentItem.id),
@@ -290,7 +268,14 @@ const TranscriptItem = ({
               />
             ) : (
               <>
-                <p style={{ display: 'flex', gap: 10 }}>{formattedSentence}</p>
+                <p className='flex gap-2'>
+                  <FormattedSentence
+                    ref={ulRef}
+                    targetLangformatted={targetLangformatted}
+                    handleMouseLeave={handleMouseLeave}
+                    handleMouseEnter={handleMouseEnter}
+                  />
+                </p>
                 <p>{baseLang}</p>
               </>
             )}
