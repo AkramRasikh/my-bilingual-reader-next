@@ -247,7 +247,9 @@ const TranscriptItem = ({
           )}
 
           {(isGenericallyDoingAsyncAction || isLoadingState) && (
-            <LoadingSpinner />
+            <div className='m-auto'>
+              <LoadingSpinner />
+            </div>
           )}
         </div>
 
