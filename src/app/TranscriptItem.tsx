@@ -6,7 +6,7 @@ import { NewSentenceBreakdown } from './SentenceBreakdown';
 import clsx from 'clsx';
 import MenuSection from './MenuSection';
 import LoadingSpinner from './LoadingSpinner';
-import { Repeat2 } from 'lucide-react';
+import { MenuIcon, Repeat2 } from 'lucide-react';
 import FormattedSentence from './FormattedSentence';
 
 const TranscriptItem = ({
@@ -31,6 +31,8 @@ const TranscriptItem = ({
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [showSentenceBreakdownState, setShowSentenceBreakdownState] =
     useState(false);
+  const [showMenuState, setShowMenuState] = useState(false);
+
   const [isLoadingState, setIsLoadingState] = useState(false);
   const [
     showThisSentenceBreakdownPreviewState,
@@ -282,48 +284,67 @@ const TranscriptItem = ({
           </div>
 
           <div className='flex flex-col gap-0.5'>
-            <button
-              id='copy'
-              className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
-              onClick={handleCopy}
-            >
-              📋
-            </button>
-            {hasBeenReviewed ? (
-              <button
-                id='review'
-                className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
-                onClick={async () =>
-                  await handleReviewFunc({
-                    sentenceId: contentItem.id,
-                    isRemoveReview: true,
-                  })
-                }
-              >
-                🗑️
-              </button>
+            {showMenuState ? (
+              <>
+                <button
+                  className='bg-gray-400 p-1 mt-0 rounded transparent'
+                  id='show-menu'
+                  onClick={() => setShowMenuState(!showMenuState)}
+                >
+                  <MenuIcon />
+                </button>
+                <button
+                  id='copy'
+                  className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+                  onClick={handleCopy}
+                >
+                  📋
+                </button>
+                {hasBeenReviewed ? (
+                  <button
+                    id='review'
+                    className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+                    onClick={async () =>
+                      await handleReviewFunc({
+                        sentenceId: contentItem.id,
+                        isRemoveReview: true,
+                      })
+                    }
+                  >
+                    🗑️
+                  </button>
+                ) : (
+                  <button
+                    id='review'
+                    onClick={async () =>
+                      await handleReviewFunc({
+                        sentenceId: contentItem.id,
+                        isRemoveReview: false,
+                      })
+                    }
+                    className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+                  >
+                    ⏰
+                  </button>
+                )}
+                <MenuSection
+                  contentItem={contentItem}
+                  setShowSentenceBreakdownState={setShowSentenceBreakdownState}
+                  showSentenceBreakdownState={showSentenceBreakdownState}
+                  handleBreakdownSentence={handleBreakdownSentence}
+                  handleOpenBreakdownSentence={handleOpenBreakdownSentence}
+                  setBreakdownSentencesArrState={setBreakdownSentencesArrState}
+                />
+              </>
             ) : (
               <button
-                id='review'
-                onClick={async () =>
-                  await handleReviewFunc({
-                    sentenceId: contentItem.id,
-                    isRemoveReview: false,
-                  })
-                }
-                className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+                className='bg-gray-400 p-1 mt-0 rounded'
+                id='show-menu'
+                onClick={() => setShowMenuState(!showMenuState)}
               >
-                ⏰
+                <MenuIcon />
               </button>
             )}
-            <MenuSection
-              contentItem={contentItem}
-              setShowSentenceBreakdownState={setShowSentenceBreakdownState}
-              showSentenceBreakdownState={showSentenceBreakdownState}
-              handleBreakdownSentence={handleBreakdownSentence}
-              handleOpenBreakdownSentence={handleOpenBreakdownSentence}
-              setBreakdownSentencesArrState={setBreakdownSentencesArrState}
-            />
           </div>
         </div>
       </div>
