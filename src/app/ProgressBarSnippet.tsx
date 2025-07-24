@@ -34,7 +34,7 @@ const ProgressBarSnippet = ({
   }, []);
 
   return (
-    <div className='space-y-4 w-full max-w-xl'>
+    <div className='space-y-4 w-full max-w-xl m-auto'>
       <Progress value={progress} className='w-full' />
     </div>
   );

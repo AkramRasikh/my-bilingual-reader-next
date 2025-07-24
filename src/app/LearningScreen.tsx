@@ -374,21 +374,22 @@ const LearningScreen = ({
             setIsVideoPlaying={setIsVideoPlaying}
           />
           {threeSecondLoopState && (
-            <div className='pt-1.5 m-auto flex justify-center'>
-              <Button
-                id='stop-loop'
-                onClick={() => setThreeSecondLoopState(null)}
-                className={clsx(isVideoPlaying && 'animate-spin')}
-                size='icon'
-              >
-                <Repeat2 />
-              </Button>
+            <div className='pt-1.5 m-auto flex justify-center gap-1.5 w-80'>
               <ProgressBarSnippet
                 snippetRef={ref}
                 threeSecondLoopState={threeSecondLoopState}
                 progress={progress}
                 setProgress={setProgress}
               />
+              <Button
+                id='stop-loop'
+                onClick={() => setThreeSecondLoopState(null)}
+                className={clsx(isVideoPlaying && 'animate-spin')}
+                size='icon'
+                variant={'destructive'}
+              >
+                <Repeat2 />
+              </Button>
             </div>
           )}
           <KeyListener
