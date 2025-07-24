@@ -170,7 +170,7 @@ const TranscriptItem = ({
   return (
     <li
       className={clsx(
-        'rounded-lg px-2 py-1 shadow h-fit border-2 ',
+        'rounded-lg px-2 py-1 shadow h-fit border-1 ',
         hasBeenReviewed ? 'border-amber-500' : 'border-blue-200',
       )}
       style={{
