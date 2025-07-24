@@ -1,9 +1,14 @@
 import FormattedSentence from './FormattedSentence';
+import PopUpWordCard from './PopUpWordCard';
 import { NewSentenceBreakdown } from './SentenceBreakdown';
 
 const ComprehensiveTranscriptItem = ({
   contentItem,
   thisSentencesSavedWords,
+  wordPopUpState,
+  setWordPopUpState,
+  handleMouseLeave,
+  handleMouseEnter,
 }) => {
   const hasSentenceBreakdown = contentItem?.sentenceStructure;
   const baseLang = contentItem?.baseLang;
@@ -14,8 +19,8 @@ const ComprehensiveTranscriptItem = ({
       <FormattedSentence
         // ref={ulRef}
         targetLangformatted={targetLangformatted}
-        // handleMouseLeave={handleMouseLeave}
-        // handleMouseEnter={handleMouseEnter}
+        handleMouseLeave={handleMouseLeave}
+        handleMouseEnter={handleMouseEnter}
       />
       <p>{baseLang}</p>
       {hasSentenceBreakdown && (
@@ -30,6 +35,20 @@ const ComprehensiveTranscriptItem = ({
           />
         </>
       )}
+
+      {wordPopUpState?.length > 0 ? (
+        <ul>
+          {wordPopUpState?.map((item) => (
+            <li key={item.id}>
+              <PopUpWordCard
+                word={item}
+                onClose={() => setWordPopUpState([])}
+                // handleDelete={handleDeleteFunc}
+              />
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getFirebaseVideoURL } from './get-firebase-media-url';
 import { getGeneralTopicName } from './get-general-topic-name';
 import { japanese } from './languages';
@@ -41,12 +41,16 @@ const LearningScreen = ({
   const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
     [],
   );
+  const [wordPopUpState, setWordPopUpState] = useState([]);
+
   const [loopTranscriptState, setLoopTranscriptState] = useState();
   const [threeSecondLoopState, setThreeSecondLoopState] = useState();
   const [progress, setProgress] = useState(0);
+  const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
 
   const {
     pureWords,
+    wordsState,
     updateSentenceData,
     sentenceReviewBulk,
     breakdownSentence,
@@ -98,7 +102,6 @@ const LearningScreen = ({
 
   useEffect(() => {
     if (masterPlay && formattedTranscriptState) {
-      console.log('## USE EFFECT masterPlay', masterPlay);
       const thisItemTranscript = formattedTranscriptState.find(
         (item) => item.id === masterPlay,
       );
@@ -210,6 +213,25 @@ const LearningScreen = ({
     });
   };
 
+  const handleMouseEnter = (text) => {
+    hoverTimerMasterRef.current = setTimeout(() => {
+      const wordsAmongstHighlightedText = wordsState?.filter((item) => {
+        if (item.baseForm === text || item.surfaceForm === text) {
+          return true;
+        }
+        return false;
+      });
+
+      setWordPopUpState(wordsAmongstHighlightedText);
+    }, 300);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimerMasterRef.current) {
+      clearTimeout(hoverTimerMasterRef.current); // Cancel if left early
+      hoverTimerMasterRef.current = null;
+    }
+  };
   const handleLoopThis3Second = () => {
     if (loopTranscriptState) {
       setLoopTranscriptState(null);
@@ -402,6 +424,10 @@ const LearningScreen = ({
           {masterPlayComprehensiveState && (
             <ComprehensiveTranscriptItem
               contentItem={masterPlayComprehensiveState}
+              wordPopUpState={wordPopUpState}
+              setWordPopUpState={setWordPopUpState}
+              handleMouseEnter={handleMouseEnter}
+              handleMouseLeave={handleMouseLeave}
             />
           )}
           <KeyListener
