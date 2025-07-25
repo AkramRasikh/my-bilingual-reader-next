@@ -26,12 +26,15 @@ const TranscriptItem = ({
   isPressDownShiftState,
   loopTranscriptState,
   setLoopTranscriptState,
+  overlappingSnippetDataState,
+  threeSecondLoopState,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [showSentenceBreakdownState, setShowSentenceBreakdownState] =
     useState(false);
   const [showMenuState, setShowMenuState] = useState(false);
+  const [thisSnippetOverlapState, setThisSnippetOverlapState] = useState();
 
   const [isLoadingState, setIsLoadingState] = useState(false);
   const [
@@ -43,6 +46,18 @@ const TranscriptItem = ({
 
   const { wordsState, handleSaveWord, handleDeleteWordDataProvider } =
     useData();
+
+  useEffect(() => {
+    if (!threeSecondLoopState && thisSnippetOverlapState) {
+      setThisSnippetOverlapState(null);
+      return;
+    }
+    const hasOverlappingSnippet =
+      overlappingSnippetDataState.length > 0 &&
+      overlappingSnippetDataState.find((i) => i.id === contentItem.id);
+
+    setThisSnippetOverlapState(hasOverlappingSnippet);
+  }, [threeSecondLoopState, overlappingSnippetDataState, contentItem]);
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -167,6 +182,8 @@ const TranscriptItem = ({
     );
   };
 
+  console.log('## thisSnippetOverlapState', thisSnippetOverlapState);
+
   return (
     <li
       className={clsx(
@@ -184,6 +201,19 @@ const TranscriptItem = ({
         setShowThisSentenceBreakdownPreviewState(false);
       }}
     >
+      {thisSnippetOverlapState && (
+        <div className='relative h-1'>
+          <div
+            className='absolute bg-red-500 opacity-50 rounded'
+            style={{
+              width: `${thisSnippetOverlapState.percentageOverlap}%`,
+              left: `${thisSnippetOverlapState.startPoint}%`,
+              height: '100%',
+            }}
+          />
+        </div>
+      )}
+
       <div
         style={{
           display: 'flex',

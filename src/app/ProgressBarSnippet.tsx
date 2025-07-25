@@ -31,10 +31,13 @@ const ProgressBarSnippet = ({
         audio.removeEventListener('timeupdate', updateProgress);
       };
     }
-  }, []);
+  }, [threeSecondLoopState]);
 
   return (
     <div className='space-y-4 w-full max-w-xl m-auto'>
+      <span>
+        {startPoint.toFixed(2)} ➡️ {(startPoint + 3).toFixed(2)}
+      </span>
       <Progress value={progress} className='w-full' />
     </div>
   );

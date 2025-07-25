@@ -41,10 +41,14 @@ const LearningScreen = ({
   const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
     [],
   );
+  const [overlappingSnippetDataState, setOverlappingSnippetDataState] =
+    useState([]);
   const [wordPopUpState, setWordPopUpState] = useState([]);
 
   const [loopTranscriptState, setLoopTranscriptState] = useState();
-  const [threeSecondLoopState, setThreeSecondLoopState] = useState();
+  const [threeSecondLoopState, setThreeSecondLoopState] = useState<
+    number | null
+  >();
   const [progress, setProgress] = useState(0);
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -184,6 +188,45 @@ const LearningScreen = ({
       removeReview: hasContentToReview,
     });
   };
+
+  useEffect(() => {
+    if (isNumber(threeSecondLoopState)) {
+      const startTime = threeSecondLoopState - 1.5;
+      const endTime = threeSecondLoopState + 1.5;
+
+      const results = [];
+
+      formattedTranscriptState.forEach((item, index) => {
+        const start = item.time + realStartTime;
+        const end =
+          index < formattedTranscriptState.length - 1
+            ? formattedTranscriptState[index + 1].time + realStartTime
+            : start;
+        const duration = end - start;
+
+        const overlapStart = Math.max(start, startTime);
+        const overlapEnd = Math.min(end, endTime);
+
+        if (overlapStart < overlapEnd) {
+          const overlapDuration = overlapEnd - overlapStart;
+          const percentageOverlap = (overlapDuration / duration) * 100;
+          const startPoint = ((overlapStart - start) / duration) * 100;
+
+          results.push({
+            ...item,
+            start,
+            end,
+            percentageOverlap: Number(percentageOverlap.toFixed(2)),
+            startPoint: Number(startPoint.toFixed(2)),
+          });
+        }
+      });
+
+      if (results?.length > 0) {
+        setOverlappingSnippetDataState(results);
+      }
+    }
+  }, [threeSecondLoopState, realStartTime, formattedTranscriptState]);
 
   const handleLoopThisSentence = () => {
     const currentMasterPlay =
@@ -339,6 +382,14 @@ const LearningScreen = ({
     }
   };
 
+  const handleShiftSnippet = (shiftNumber: number) => {
+    if (isNumber(threeSecondLoopState) && threeSecondLoopState > 0) {
+      // factor in small descrepancy
+      const newCurrentNumber = threeSecondLoopState + shiftNumber;
+      setThreeSecondLoopState(newCurrentNumber);
+    }
+  };
+
   const handleRewind = () =>
     (ref.current.currentTime = ref.current.currentTime - 3);
 
@@ -441,6 +492,8 @@ const LearningScreen = ({
             setIsPressDownShiftState={setIsPressDownShiftState}
             handleLoopThisSentence={handleLoopThisSentence}
             handleLoopThis3Second={handleLoopThis3Second}
+            threeSecondLoopState={threeSecondLoopState}
+            handleShiftSnippet={handleShiftSnippet}
           />
         </div>
         {secondsState && (
@@ -465,6 +518,8 @@ const LearningScreen = ({
             isPressDownShiftState={isPressDownShiftState}
             loopTranscriptState={loopTranscriptState}
             setLoopTranscriptState={setLoopTranscriptState}
+            overlappingSnippetDataState={overlappingSnippetDataState}
+            threeSecondLoopState={threeSecondLoopState}
           />
         )}
       </div>

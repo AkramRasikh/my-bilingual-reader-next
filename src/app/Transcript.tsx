@@ -21,6 +21,8 @@ const Transcript = ({
   isPressDownShiftState,
   loopTranscriptState,
   setLoopTranscriptState,
+  overlappingSnippetDataState,
+  threeSecondLoopState,
 }) => {
   return (
     <div className='flex-1'>
@@ -68,6 +70,8 @@ const Transcript = ({
                 isPressDownShiftState={isPressDownShiftState}
                 loopTranscriptState={loopTranscriptState}
                 setLoopTranscriptState={setLoopTranscriptState}
+                overlappingSnippetDataState={overlappingSnippetDataState}
+                threeSecondLoopState={threeSecondLoopState}
               />
             );
           })}

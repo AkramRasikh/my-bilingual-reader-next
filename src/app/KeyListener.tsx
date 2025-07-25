@@ -18,6 +18,8 @@ const KeyListener = ({
   setIsPressDownShiftState,
   handleLoopThisSentence,
   handleLoopThis3Second,
+  threeSecondLoopState,
+  handleShiftSnippet,
 }: Props) => {
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -27,6 +29,21 @@ const KeyListener = ({
       }
     };
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (threeSecondLoopState) {
+        if (e.shiftKey && e.key.toLowerCase() === 'k') {
+          handleLoopThis3Second();
+          return;
+        }
+        if (e.shiftKey && e.key.toLowerCase() === 'l') {
+          handleShiftSnippet(0.5);
+          return;
+        }
+        if (e.shiftKey && e.key.toLowerCase() === 'j') {
+          handleShiftSnippet(-0.5);
+          return;
+        }
+        return;
+      }
       // SHIFT + B
       if (e.shiftKey && e.key.toLowerCase() === 'b') {
         handleBreakdownMasterSentence();
@@ -92,6 +109,8 @@ const KeyListener = ({
     setIsPressDownShiftState,
     handleLoopThisSentence,
     handleLoopThis3Second,
+    threeSecondLoopState,
+    handleShiftSnippet,
   ]);
 
   return null;
