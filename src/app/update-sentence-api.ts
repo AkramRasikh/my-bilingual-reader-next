@@ -1,5 +1,3 @@
-import { BACKEND_ENDPOINT } from '@env';
-
 export const updateSentenceDataAPI = async ({
   topicName,
   sentenceId,

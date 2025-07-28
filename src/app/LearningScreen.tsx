@@ -150,11 +150,16 @@ const LearningScreen = ({
     }
   }, [loopTranscriptState, ref, masterPlay, threeSecondLoopState, progress]);
 
-  const handleReviewFunc = async ({ sentenceId, isRemoveReview }) => {
+  const handleReviewFunc = async ({ sentenceId, isRemoveReview, nextDue }) => {
     const cardDataRelativeToNow = getEmptyCard();
     const nextScheduledOptions = getNextScheduledOptions({
       card: cardDataRelativeToNow,
       contentType: srsRetentionKeyTypes.sentences,
+    });
+    console.log('## LearningScreen handleReviewFunc', {
+      sentenceId,
+      isRemoveReview,
+      nextDue,
     });
 
     try {
@@ -162,7 +167,9 @@ const LearningScreen = ({
         topicName: selectedContentState.title,
         sentenceId,
         fieldToUpdate: {
-          reviewData: isRemoveReview ? null : nextScheduledOptions['1'].card,
+          reviewData: isRemoveReview
+            ? null
+            : nextDue || nextScheduledOptions['1'].card,
         },
         contentIndex,
         isRemoveReview,

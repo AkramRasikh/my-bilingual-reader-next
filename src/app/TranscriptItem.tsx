@@ -8,6 +8,7 @@ import MenuSection from './MenuSection';
 import LoadingSpinner from './LoadingSpinner';
 import { MenuIcon, Repeat2 } from 'lucide-react';
 import FormattedSentence from './FormattedSentence';
+import ReviewSRSToggles from './ReviewSRSToggles';
 
 const TranscriptItem = ({
   contentItem,
@@ -87,7 +88,7 @@ const TranscriptItem = ({
   const baseLang = contentItem.baseLang;
   const targetLangformatted = contentItem.targetLangformatted;
   const hasBeenReviewed = contentItem?.reviewData?.due;
-  const isDueNow = new Date(hasBeenReviewed) > new Date();
+  const isDueNow = new Date(hasBeenReviewed) < new Date();
 
   const thisTime = contentItem.time;
   const thisSentenceIsPlaying = contentItem.id === masterPlay;
@@ -217,7 +218,6 @@ const TranscriptItem = ({
           />
         </div>
       )}
-
       <div
         style={{
           display: 'flex',
@@ -384,6 +384,12 @@ const TranscriptItem = ({
           </div>
         </div>
       </div>
+      {isInReviewMode && isDueNow && (
+        <ReviewSRSToggles
+          contentItem={contentItem}
+          handleReviewFunc={handleReviewFunc}
+        />
+      )}
 
       {wordPopUpState?.length > 0 ? (
         <ul>
