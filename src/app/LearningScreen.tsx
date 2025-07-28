@@ -33,6 +33,7 @@ const LearningScreen = ({
     useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isPressDownShiftState, setIsPressDownShiftState] = useState(false);
+  const [isInReviewMode, setIsInReviewMode] = useState(false);
   const [sentenceHighlightingState, setSentenceHighlightingState] =
     useState('');
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
@@ -436,6 +437,8 @@ const LearningScreen = ({
         nextReview={nextReview}
         reviewHistory={reviewHistory}
         contentIndex={contentIndex}
+        isInReviewMode={isInReviewMode}
+        setIsInReviewMode={setIsInReviewMode}
       />
       <div
         style={{
@@ -520,6 +523,7 @@ const LearningScreen = ({
             setLoopTranscriptState={setLoopTranscriptState}
             overlappingSnippetDataState={overlappingSnippetDataState}
             threeSecondLoopState={threeSecondLoopState}
+            isInReviewMode={isInReviewMode}
           />
         )}
       </div>

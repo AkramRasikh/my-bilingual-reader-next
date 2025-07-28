@@ -28,6 +28,7 @@ const TranscriptItem = ({
   setLoopTranscriptState,
   overlappingSnippetDataState,
   threeSecondLoopState,
+  isInReviewMode,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
@@ -86,6 +87,7 @@ const TranscriptItem = ({
   const baseLang = contentItem.baseLang;
   const targetLangformatted = contentItem.targetLangformatted;
   const hasBeenReviewed = contentItem?.reviewData?.due;
+  const isDueNow = new Date(hasBeenReviewed) > new Date();
 
   const thisTime = contentItem.time;
   const thisSentenceIsPlaying = contentItem.id === masterPlay;
@@ -182,18 +184,20 @@ const TranscriptItem = ({
     );
   };
 
-  console.log('## thisSnippetOverlapState', thisSnippetOverlapState);
-
   return (
     <li
       className={clsx(
         'rounded-lg px-2 py-1 shadow h-fit border-1 ',
-        hasBeenReviewed ? 'border-amber-500' : 'border-blue-200',
+        isDueNow
+          ? 'border-red-500'
+          : hasBeenReviewed
+          ? 'border-amber-500'
+          : 'border-blue-200',
+        !(isDueNow && isInReviewMode) ? 'opacity-25' : 'opacity-100',
       )}
       style={{
         gap: 5,
-        opacity: 0,
-        animation: 'fadeIn 0.5s ease-out forwards',
+        animation: !isInReviewMode ? 'fadeIn 0.5s ease-out forwards' : '',
       }}
       onMouseEnter={handleOnMouseEnterSentence}
       onMouseLeave={() => {

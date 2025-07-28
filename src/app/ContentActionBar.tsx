@@ -13,6 +13,8 @@ export default function ContentActionBar({
   updateContentMetaData,
   topicName,
   contentIndex,
+  isInReviewMode,
+  setIsInReviewMode,
 }: {
   hasContentToReview: boolean;
   handleBulkReviews: (action: 'add' | 'remove') => Promise<void>;
@@ -104,6 +106,13 @@ export default function ContentActionBar({
             checked={hasBeenReviewed}
             onCheckedChange={setNextReviewDate}
             disabled={isLoading}
+          />
+        </div>
+        <div className='flex gap-2 m-auto'>
+          <Label>Review Mode</Label>
+          <Switch
+            checked={isInReviewMode}
+            onCheckedChange={setIsInReviewMode}
           />
         </div>
       </div>

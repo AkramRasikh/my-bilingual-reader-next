@@ -23,6 +23,7 @@ const Transcript = ({
   setLoopTranscriptState,
   overlappingSnippetDataState,
   threeSecondLoopState,
+  isInReviewMode,
 }) => {
   return (
     <div className='flex-1'>
@@ -72,6 +73,7 @@ const Transcript = ({
                 setLoopTranscriptState={setLoopTranscriptState}
                 overlappingSnippetDataState={overlappingSnippetDataState}
                 threeSecondLoopState={threeSecondLoopState}
+                isInReviewMode={isInReviewMode}
               />
             );
           })}
