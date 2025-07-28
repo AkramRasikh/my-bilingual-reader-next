@@ -12,7 +12,11 @@ const ContentSelection = ({
   youtubeContentTagsState,
   handleSelectedContent,
 }) => {
-  const { getYoutubeID } = useData();
+  const { getYoutubeID, checkHowManyOfTopicNeedsReview } = useData();
+
+  const theseSentencesDue =
+    generalTopicDisplayNameSelectedState && checkHowManyOfTopicNeedsReview();
+
   return (
     <>
       <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
@@ -72,6 +76,12 @@ const ContentSelection = ({
             );
           })}
       </ul>
+      {theseSentencesDue?.length > 0 && (
+        <Button className='m-1'>
+          {generalTopicDisplayNameSelectedState}
+          {` (${theseSentencesDue.length})`}
+        </Button>
+      )}
     </>
   );
 };

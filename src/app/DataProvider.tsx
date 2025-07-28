@@ -90,6 +90,47 @@ export const DataProvider = ({
     });
   };
 
+  const isDueCheck = (sentence, todayDateObj) => {
+    return (
+      (sentence?.nextReview && sentence.nextReview < todayDateObj) ||
+      new Date(sentence?.reviewData?.due) < todayDateObj
+    );
+  };
+
+  const checkHowManyOfTopicNeedsReview = () => {
+    if (!generalTopicDisplayNameSelectedState) {
+      return null;
+    }
+
+    const todayDateObj = new Date();
+
+    const sentencesNeedReview = [];
+    contentState.forEach((contentEl) => {
+      if (contentEl.generalTopicName !== generalTopicDisplayNameSelectedState) {
+        return;
+      }
+
+      const thisStartTime = contentEl.realStartTime;
+      const contentIndex = contentEl.contentIndex;
+      const transcript = contentEl.content;
+
+      transcript.forEach((transcriptEl) => {
+        if (!transcriptEl?.reviewData?.due) {
+          return;
+        }
+        if (isDueCheck(transcriptEl, todayDateObj)) {
+          sentencesNeedReview.push({
+            ...transcriptEl,
+            realStartTime: thisStartTime,
+            contentIndex,
+          });
+        }
+      });
+    });
+
+    return sentencesNeedReview;
+  };
+
   const updateSentenceDataFromContent = ({
     sentenceId,
     fieldToUpdate,
@@ -327,6 +368,7 @@ export const DataProvider = ({
         generalTopicDisplayNameSelectedState,
         setGeneralTopicDisplayNameSelectedState,
         getYoutubeID,
+        checkHowManyOfTopicNeedsReview,
       }}
     >
       {children}

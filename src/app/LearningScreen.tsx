@@ -156,11 +156,6 @@ const LearningScreen = ({
       card: cardDataRelativeToNow,
       contentType: srsRetentionKeyTypes.sentences,
     });
-    console.log('## LearningScreen handleReviewFunc', {
-      sentenceId,
-      isRemoveReview,
-      nextDue,
-    });
 
     try {
       await updateSentenceData({
