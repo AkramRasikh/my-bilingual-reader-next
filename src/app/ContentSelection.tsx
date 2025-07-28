@@ -17,6 +17,17 @@ const ContentSelection = ({
   const theseSentencesDue =
     generalTopicDisplayNameSelectedState && checkHowManyOfTopicNeedsReview();
 
+  const hasReviewSentences = theseSentencesDue?.length > 0;
+
+  const topicsWithReviews = hasReviewSentences
+    ? theseSentencesDue.reduce((acc, item) => {
+        if (item.title) {
+          acc[item.title] = (acc[item.title] || 0) + 1;
+        }
+        return acc;
+      }, {})
+    : [];
+
   return (
     <>
       <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
@@ -76,11 +87,16 @@ const ContentSelection = ({
             );
           })}
       </ul>
-      {theseSentencesDue?.length > 0 && (
-        <Button className='m-1'>
-          {generalTopicDisplayNameSelectedState}
-          {` (${theseSentencesDue.length})`}
-        </Button>
+      {hasReviewSentences > 0 && (
+        <>
+          <ul className='flex flex-wrap gap-1'>
+            {Object.entries(topicsWithReviews).map(([title, count]) => (
+              <Button key={title} onClick={() => handleSelectedContent(title)}>
+                {title} ({count})
+              </Button>
+            ))}
+          </ul>
+        </>
       )}
     </>
   );

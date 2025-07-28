@@ -15,7 +15,11 @@ const BreadcrumbComponent = () => {
     generalTopicDisplayNameSelectedState,
     setSelectedContentState,
     setGeneralTopicDisplayNameSelectedState,
+    checkHowManyOfTopicNeedsReview,
   } = useData();
+
+  const theseSentencesDue =
+    generalTopicDisplayNameSelectedState && checkHowManyOfTopicNeedsReview();
 
   const handleOnHome = () => {
     setSelectedContentState(null);
@@ -42,7 +46,10 @@ const BreadcrumbComponent = () => {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink onClick={handleThisGeneralTopic}>
-                {generalTopicDisplayNameSelectedState}
+                {generalTopicDisplayNameSelectedState}{' '}
+                {theseSentencesDue?.length > 0
+                  ? `(${theseSentencesDue?.length})`
+                  : null}
               </BreadcrumbLink>
             </BreadcrumbItem>
           </>

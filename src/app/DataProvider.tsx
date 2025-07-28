@@ -123,6 +123,7 @@ export const DataProvider = ({
             ...transcriptEl,
             realStartTime: thisStartTime,
             contentIndex,
+            title: contentEl.title,
           });
         }
       });
