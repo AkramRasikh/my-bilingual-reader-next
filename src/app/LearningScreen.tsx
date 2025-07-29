@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { getFirebaseVideoURL } from './get-firebase-media-url';
 import { getGeneralTopicName } from './get-general-topic-name';
 import { japanese } from './languages';
@@ -23,31 +23,38 @@ import ComprehensiveTranscriptItem from './ComprehensiveTranscriptItem';
 import useLearningScreen from './useLearningScreen';
 
 const LearningScreen = () => {
-  const [formattedTranscriptState, setFormattedTranscriptState] = useState();
-  const [secondsState, setSecondsState] = useState([]);
-  const [masterPlayComprehensiveState, setMasterPlayComprehensiveState] =
-    useState(null);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const [isPressDownShiftState, setIsPressDownShiftState] = useState(false);
-  const [isInReviewMode, setIsInReviewMode] = useState(false);
-  const [sentenceHighlightingState, setSentenceHighlightingState] =
-    useState('');
-  const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
-    [],
-  );
-  const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
-    [],
-  );
-  const [overlappingSnippetDataState, setOverlappingSnippetDataState] =
-    useState([]);
-  const [wordPopUpState, setWordPopUpState] = useState([]);
-
-  const [loopTranscriptState, setLoopTranscriptState] = useState();
-  const [threeSecondLoopState, setThreeSecondLoopState] = useState<
-    number | null
-  >();
-  const [progress, setProgress] = useState(0);
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
+
+  const {
+    formattedTranscriptState,
+    setFormattedTranscriptState,
+    secondsState,
+    setSecondsState,
+    masterPlayComprehensiveState,
+    setMasterPlayComprehensiveState,
+    isVideoPlaying,
+    setIsVideoPlaying,
+    isPressDownShiftState,
+    setIsPressDownShiftState,
+    isInReviewMode,
+    setIsInReviewMode,
+    sentenceHighlightingState,
+    setSentenceHighlightingState,
+    isGenericItemLoadingState,
+    setIsGenericItemLoadingState,
+    breakdownSentencesArrState,
+    setBreakdownSentencesArrState,
+    overlappingSnippetDataState,
+    setOverlappingSnippetDataState,
+    wordPopUpState,
+    setWordPopUpState,
+    loopTranscriptState,
+    setLoopTranscriptState,
+    threeSecondLoopState,
+    setThreeSecondLoopState,
+    progress,
+    setProgress,
+  } = useLearningScreen();
 
   const { ref, handlePlayFromHere, handleTimeUpdate, currentTime } =
     useLearningScreen();

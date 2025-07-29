@@ -1,5 +1,5 @@
 'use client';
-import { createContext } from 'react';
+import { createContext, useState } from 'react';
 
 export const LearningScreenContext = createContext(null);
 
@@ -10,6 +10,31 @@ export const LearningScreenProvider = ({
   currentTime,
   children,
 }: PropsWithChildren<object>) => {
+  const [formattedTranscriptState, setFormattedTranscriptState] = useState();
+  const [secondsState, setSecondsState] = useState([]);
+  const [masterPlayComprehensiveState, setMasterPlayComprehensiveState] =
+    useState(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isPressDownShiftState, setIsPressDownShiftState] = useState(false);
+  const [isInReviewMode, setIsInReviewMode] = useState(false);
+  const [sentenceHighlightingState, setSentenceHighlightingState] =
+    useState('');
+  const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
+    [],
+  );
+  const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
+    [],
+  );
+  const [overlappingSnippetDataState, setOverlappingSnippetDataState] =
+    useState([]);
+  const [wordPopUpState, setWordPopUpState] = useState([]);
+
+  const [loopTranscriptState, setLoopTranscriptState] = useState();
+  const [threeSecondLoopState, setThreeSecondLoopState] = useState<
+    number | null
+  >();
+  const [progress, setProgress] = useState(0);
+
   return (
     <LearningScreenContext.Provider
       value={{
@@ -17,6 +42,34 @@ export const LearningScreenProvider = ({
         handleTimeUpdate,
         ref,
         currentTime,
+        formattedTranscriptState,
+        setFormattedTranscriptState,
+        secondsState,
+        setSecondsState,
+        masterPlayComprehensiveState,
+        setMasterPlayComprehensiveState,
+        isVideoPlaying,
+        setIsVideoPlaying,
+        isPressDownShiftState,
+        setIsPressDownShiftState,
+        isInReviewMode,
+        setIsInReviewMode,
+        sentenceHighlightingState,
+        setSentenceHighlightingState,
+        isGenericItemLoadingState,
+        setIsGenericItemLoadingState,
+        breakdownSentencesArrState,
+        setBreakdownSentencesArrState,
+        overlappingSnippetDataState,
+        setOverlappingSnippetDataState,
+        wordPopUpState,
+        setWordPopUpState,
+        loopTranscriptState,
+        setLoopTranscriptState,
+        threeSecondLoopState,
+        setThreeSecondLoopState,
+        progress,
+        setProgress,
       }}
     >
       {children}
