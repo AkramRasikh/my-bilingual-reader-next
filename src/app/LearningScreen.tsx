@@ -362,6 +362,14 @@ const LearningScreen = ({
     }
   };
 
+  const handleSlowDownAudio = (isSlow) => {
+    if (isSlow) {
+      ref.current.playbackRate = 0.75;
+    } else {
+      ref.current.playbackRate = 1;
+    }
+  };
+
   const handleJumpToSentenceViaKeys = (nextIndex: number) => {
     // defo revisit this
     const currentMasterPlay =
@@ -499,6 +507,8 @@ const LearningScreen = ({
             handleLoopThis3Second={handleLoopThis3Second}
             threeSecondLoopState={threeSecondLoopState}
             handleShiftSnippet={handleShiftSnippet}
+            handleSlowDownAudio={handleSlowDownAudio}
+            loopTranscriptState={loopTranscriptState}
           />
         </div>
         {secondsState && (

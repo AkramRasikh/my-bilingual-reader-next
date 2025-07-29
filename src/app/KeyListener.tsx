@@ -20,6 +20,8 @@ const KeyListener = ({
   handleLoopThis3Second,
   threeSecondLoopState,
   handleShiftSnippet,
+  handleSlowDownAudio,
+  loopTranscriptState,
 }: Props) => {
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -27,8 +29,21 @@ const KeyListener = ({
         setIsPressDownShiftState(false);
         return;
       }
+
+      if (threeSecondLoopState || loopTranscriptState) {
+        if (e.key.toLowerCase() === 'o') {
+          handleSlowDownAudio(false);
+          return;
+        }
+      }
     };
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (threeSecondLoopState || loopTranscriptState) {
+        if (e.key.toLowerCase() === 'o') {
+          handleSlowDownAudio(true);
+          return;
+        }
+      }
       if (threeSecondLoopState) {
         if (e.shiftKey && e.key.toLowerCase() === 'k') {
           handleLoopThis3Second();
@@ -44,6 +59,7 @@ const KeyListener = ({
         }
         return;
       }
+
       // SHIFT + B
       if (e.shiftKey && e.key.toLowerCase() === 'b') {
         handleBreakdownMasterSentence();
@@ -111,6 +127,8 @@ const KeyListener = ({
     handleLoopThis3Second,
     threeSecondLoopState,
     handleShiftSnippet,
+    handleSlowDownAudio,
+    loopTranscriptState,
   ]);
 
   return null;
