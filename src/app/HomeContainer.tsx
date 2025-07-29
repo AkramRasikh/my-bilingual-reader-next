@@ -8,6 +8,7 @@ import { japanese } from './languages';
 import checkIfVideoExists from './check-if-video-exists';
 import ContentSelection from './ContentSelection';
 import LoadingSpinner from './LoadingSpinner';
+import { LearningScreenProvider } from './LearningScreenProvider';
 
 export const HomeContainer = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
@@ -148,12 +149,14 @@ export const HomeContainer = () => {
         handleSelectedContent={handleSelectedContent}
       />
       {selectedContentState && (
-        <LearningScreen
+        <LearningScreenProvider
           handlePlayFromHere={handlePlayFromHere}
           handleTimeUpdate={handleTimeUpdate}
           ref={videoRef}
           currentTime={currentTime}
-        />
+        >
+          <LearningScreen />
+        </LearningScreenProvider>
       )}
     </div>
   );

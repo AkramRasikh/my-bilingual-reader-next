@@ -20,13 +20,9 @@ import { Repeat2 } from 'lucide-react';
 import clsx from 'clsx';
 import ProgressBarSnippet from './ProgressBarSnippet';
 import ComprehensiveTranscriptItem from './ComprehensiveTranscriptItem';
+import useLearningScreen from './useLearningScreen';
 
-const LearningScreen = ({
-  ref,
-  handlePlayFromHere,
-  handleTimeUpdate,
-  currentTime,
-}) => {
+const LearningScreen = () => {
   const [formattedTranscriptState, setFormattedTranscriptState] = useState();
   const [secondsState, setSecondsState] = useState([]);
   const [masterPlayComprehensiveState, setMasterPlayComprehensiveState] =
@@ -52,6 +48,9 @@ const LearningScreen = ({
   >();
   const [progress, setProgress] = useState(0);
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
+
+  const { ref, handlePlayFromHere, handleTimeUpdate, currentTime } =
+    useLearningScreen();
 
   const {
     pureWords,
