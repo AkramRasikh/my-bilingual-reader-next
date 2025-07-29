@@ -9,6 +9,7 @@ import LoadingSpinner from './LoadingSpinner';
 import { MenuIcon, Repeat2 } from 'lucide-react';
 import FormattedSentence from './FormattedSentence';
 import ReviewSRSToggles from './ReviewSRSToggles';
+import { getTimeDiffSRS } from './getTimeDiffSRS';
 
 const TranscriptItem = ({
   contentItem,
@@ -88,7 +89,8 @@ const TranscriptItem = ({
   const baseLang = contentItem.baseLang;
   const targetLangformatted = contentItem.targetLangformatted;
   const hasBeenReviewed = contentItem?.reviewData?.due;
-  const isDueNow = new Date(hasBeenReviewed) < new Date();
+  const timeNow = new Date();
+  const isDueNow = new Date(hasBeenReviewed) < timeNow;
 
   const thisTime = contentItem.time;
   const thisSentenceIsPlaying = contentItem.id === masterPlay;
@@ -384,12 +386,17 @@ const TranscriptItem = ({
           </div>
         </div>
       </div>
-      {isInReviewMode && isDueNow && (
+      {isInReviewMode && isDueNow ? (
         <ReviewSRSToggles
           contentItem={contentItem}
           handleReviewFunc={handleReviewFunc}
         />
-      )}
+      ) : isInReviewMode && hasBeenReviewed ? (
+        <p className='italic m-1 text-center'>
+          Due in{' '}
+          {getTimeDiffSRS({ dueTimeStamp: new Date(hasBeenReviewed), timeNow })}
+        </p>
+      ) : null}
 
       {wordPopUpState?.length > 0 ? (
         <ul>
