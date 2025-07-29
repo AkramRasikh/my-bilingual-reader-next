@@ -54,10 +54,11 @@ const LearningScreen = () => {
     setThreeSecondLoopState,
     progress,
     setProgress,
+    ref,
+    handlePlayFromHere,
+    handleTimeUpdate,
+    currentTime,
   } = useLearningScreen();
-
-  const { ref, handlePlayFromHere, handleTimeUpdate, currentTime } =
-    useLearningScreen();
 
   const {
     pureWords,
