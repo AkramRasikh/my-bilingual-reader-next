@@ -72,11 +72,15 @@ const LearningScreen = () => {
     checkIsThereFollowingContent,
   } = useData();
 
-  const generalTopic = getGeneralTopicName(selectedContentState.title);
+  const isFullReview = selectedContentState?.isFullReview;
+
+  const generalTopic = isFullReview
+    ? selectedContentState.title
+    : getGeneralTopicName(selectedContentState.title);
   const videoUrl = getFirebaseVideoURL(generalTopic, japanese);
   const content = selectedContentState.content;
-  const realStartTime = selectedContentState.realStartTime;
-  const contentIndex = selectedContentState.contentIndex;
+  const realStartTime = selectedContentState?.realStartTime || 0;
+  const contentIndex = selectedContentState?.contentIndex;
 
   const nextReview = selectedContentState?.nextReview;
   const reviewHistory = selectedContentState?.reviewHistory;
@@ -166,14 +170,18 @@ const LearningScreen = () => {
 
     try {
       await updateSentenceData({
-        topicName: selectedContentState.title,
+        topicName: isFullReview
+          ? getThisSentenceInfo(sentenceId).title
+          : selectedContentState.title,
         sentenceId,
         fieldToUpdate: {
           reviewData: isRemoveReview
             ? null
             : nextDue || nextScheduledOptions['1'].card,
         },
-        contentIndex,
+        contentIndex: isFullReview
+          ? getThisSentenceInfo(sentenceId).contentIndex
+          : contentIndex,
         isRemoveReview,
       });
     } catch (error) {
@@ -297,14 +305,20 @@ const LearningScreen = () => {
     setThreeSecondLoopState(ref.current.currentTime);
     // account for the three seconds on both extremes
   };
+  const getThisSentenceInfo = (sentenceId) =>
+    formattedTranscriptState.find((item) => item.id === sentenceId);
 
   const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {
     await breakdownSentence({
-      topicName: selectedContentState.title,
+      topicName: isFullReview
+        ? getThisSentenceInfo(sentenceId).title
+        : selectedContentState.title,
       sentenceId,
       language: japanese,
       targetLang,
-      contentIndex,
+      contentIndex: isFullReview
+        ? getThisSentenceInfo(sentenceId).contentIndex
+        : contentIndex,
     });
   };
 

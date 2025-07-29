@@ -45,7 +45,7 @@ export const getOnLoadData = async () => {
     },
     body: JSON.stringify({
       language: 'japanese',
-      refs: [content, snippets, words, sentences],
+      refs: [content, words],
     }),
   });
 

@@ -419,6 +419,9 @@ const TranscriptItem = ({
           highlightedTextState={highlightedTextState}
         />
       )}
+      {contentItem?.title && (
+        <p className='flex justify-end opacity-50'>{contentItem.title}</p>
+      )}
 
       <style jsx>{`
         @keyframes fadeIn {

@@ -113,6 +113,8 @@ export const DataProvider = ({
       const thisStartTime = contentEl.realStartTime;
       const contentIndex = contentEl.contentIndex;
       const transcript = contentEl.content;
+      const generalTopicName = contentEl.generalTopicName;
+      const title = contentEl.title;
 
       transcript.forEach((transcriptEl) => {
         if (!transcriptEl?.reviewData?.due) {
@@ -121,9 +123,10 @@ export const DataProvider = ({
         if (isDueCheck(transcriptEl, todayDateObj)) {
           sentencesNeedReview.push({
             ...transcriptEl,
-            realStartTime: thisStartTime,
+            time: thisStartTime + transcriptEl.time,
             contentIndex,
-            title: contentEl.title,
+            title,
+            generalTopicName,
           });
         }
       });
@@ -156,7 +159,8 @@ export const DataProvider = ({
   };
 
   useEffect(() => {
-    if (selectedContentState) {
+    // figure out conditions here
+    if (selectedContentState && !selectedContentState?.isFullReview) {
       setSelectedContentState(contentState[selectedContentState.contentIndex]);
     }
   }, [selectedContentState, contentState]);
@@ -193,6 +197,17 @@ export const DataProvider = ({
           sentenceId,
           fieldToUpdate: updatedFieldFromDB,
           contentIndex,
+        });
+      }
+
+      if (selectedContentState?.isFullReview) {
+        // filter out ASSUMING its date() based
+        const updatedReviewSpecificState = selectedContentState.content.filter(
+          (sentenceData) => sentenceData.id !== sentenceId,
+        );
+        setSelectedContentState({
+          ...selectedContentState,
+          content: updatedReviewSpecificState,
         });
       }
 
@@ -305,6 +320,14 @@ export const DataProvider = ({
     }
   };
 
+  const handleGetComprehensiveReview = () => {
+    setSelectedContentState({
+      content: checkHowManyOfTopicNeedsReview(),
+      title: generalTopicDisplayNameSelectedState,
+      isFullReview: true,
+    });
+  };
+
   const breakdownSentence = async ({
     topicName,
     sentenceId,
@@ -340,6 +363,24 @@ export const DataProvider = ({
 
       setContentState(updatedState);
 
+      if (selectedContentState?.isFullReview) {
+        const updatedReviewSpecificState = selectedContentState.content.map(
+          (sentenceData) => {
+            if (sentenceData.id === sentenceId) {
+              return {
+                ...sentenceData,
+                ...resObj,
+              };
+            }
+            return sentenceData;
+          },
+        );
+        setSelectedContentState({
+          ...selectedContentState,
+          content: updatedReviewSpecificState,
+        });
+      }
+
       return true;
     } catch (error) {
       console.log('## breakdownSentence', { error });
@@ -370,6 +411,7 @@ export const DataProvider = ({
         setGeneralTopicDisplayNameSelectedState,
         getYoutubeID,
         checkHowManyOfTopicNeedsReview,
+        handleGetComprehensiveReview,
       }}
     >
       {children}

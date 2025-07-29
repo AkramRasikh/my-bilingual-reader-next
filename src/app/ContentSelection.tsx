@@ -12,7 +12,11 @@ const ContentSelection = ({
   youtubeContentTagsState,
   handleSelectedContent,
 }) => {
-  const { getYoutubeID, checkHowManyOfTopicNeedsReview } = useData();
+  const {
+    getYoutubeID,
+    checkHowManyOfTopicNeedsReview,
+    handleGetComprehensiveReview,
+  } = useData();
 
   const theseSentencesDue =
     generalTopicDisplayNameSelectedState && checkHowManyOfTopicNeedsReview();
@@ -96,6 +100,13 @@ const ContentSelection = ({
               </Button>
             ))}
           </ul>
+          <Button
+            className='m-1'
+            variant='outline'
+            onClick={handleGetComprehensiveReview}
+          >
+            All {theseSentencesDue?.length}
+          </Button>
         </>
       )}
     </>
