@@ -5,12 +5,11 @@ import WordCard from '../WordCard';
 import useWords from './useWords';
 import { Button } from '@/components/ui/button';
 import { KaraokePlayer } from './KaraokePlayer';
-import { mockStoryState } from './mock-story-state';
+import LoadingSpinner from '../LoadingSpinner';
 
 const WordsContainer = ({ words }) => {
   const [wordsState, setWordsState] = useState(words);
   const [story, setStory] = useState();
-  // const [story, setStory] = useState(mockStoryState);
   const [loading, setLoading] = useState(false);
 
   const { wordBasketState, setWordBasketState } = useWords();
@@ -62,6 +61,17 @@ const WordsContainer = ({ words }) => {
           <hr />
           <Button onClick={getStoryAPI}>Get Story!</Button>
         </>
+      )}
+      {loading && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+          }}
+        >
+          <LoadingSpinner />
+        </div>
       )}
       {story && (
         <Button

@@ -107,6 +107,8 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
 
     let overallMatchedKeys = [];
     let newArr = [];
+    let startTimesArr = [];
+
     normalisedChunks.forEach((chunk) => {
       const reading = chunk.reading;
       let tempKana = '';
@@ -115,6 +117,9 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
       while (i < katakanaTimes.length && tempKana.length < reading.length) {
         tempKana += katakanaTimes[i].kana;
         matchedKanas.push(katakanaTimes[i]);
+        if (tempKana === reading) {
+          overallMatchedKeys.push(i);
+        }
         i++;
       }
 
@@ -130,15 +135,24 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
         i++;
       }
 
+      const updatedKatakanaTimeArr = katakanaTimes.filter(
+        (kataItem) => !startTimesArr.includes(kataItem.start),
+      );
+
       // If we still don't match, roll back the index
       if (tempKana !== reading) {
         // Try to find the match from scratch (fallback)
-        for (let j = 0; j <= katakanaTimes.length - reading.length; j++) {
+        for (
+          let j = 0;
+          j <= updatedKatakanaTimeArr.length - reading.length;
+          j++
+        ) {
           let temp = '',
             slice = [];
-          for (let k = j; k < katakanaTimes.length; k++) {
-            temp += katakanaTimes[k].kana;
-            slice.push(katakanaTimes[k]);
+          for (let k = j; k < updatedKatakanaTimeArr.length; k++) {
+            temp += updatedKatakanaTimeArr[k].kana;
+            slice.push(updatedKatakanaTimeArr[k]);
+
             if (temp === reading && !overallMatchedKeys.includes(i)) {
               matchedKanas = slice;
               i = k + 1;
@@ -154,9 +168,17 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
           }
         }
       }
+
+      // console.log('## loop i', i);
+
+      const startTime = matchedKanas.length > 0 ? matchedKanas[0].start : null;
+
+      if (startTime) {
+        startTimesArr.push(startTime);
+      }
       newArr.push({
         ...chunk,
-        start: matchedKanas.length > 0 ? matchedKanas[0].start : null,
+        start: startTime,
         end:
           matchedKanas.length > 0
             ? matchedKanas[matchedKanas.length - 1].end
@@ -172,7 +194,7 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
         if (!item?.end) {
           return {
             ...item,
-            start: fixedChunks[length - 2].end,
+            start: fixedChunks[length - 2]?.end,
             end: katakanaTimes[katakanaTimes.length - 1].end,
           };
         } else {
