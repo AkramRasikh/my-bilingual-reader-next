@@ -50,68 +50,9 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
   audioQuery,
   chunks,
 }) => {
+  const [formattedTextState, setFormattedState] = useState([]);
   const [currentTime, setCurrentTime] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
-
-  const katakanaTimes = mapKanaToTiming(audioQuery);
-  const normalisedChunks = chunks.map((item) => {
-    return { ...item, reading: normalizeKana(item.reading) };
-  });
-
-  console.log('## KaraokePlayer ', { katakanaTimes, chunks });
-
-  let i = 0;
-
-  const enriched = normalisedChunks.map((chunk) => {
-    const reading = chunk.reading;
-    let tempKana = '';
-    const startIndex = i;
-    let matchedKanas = [];
-
-    while (i < katakanaTimes.length && tempKana.length < reading.length) {
-      tempKana += katakanaTimes[i].kana;
-      matchedKanas.push(katakanaTimes[i]);
-      i++;
-    }
-
-    // if it's not a match, keep extending
-    while (tempKana !== reading && i < katakanaTimes.length) {
-      tempKana += katakanaTimes[i].kana;
-      matchedKanas.push(katakanaTimes[i]);
-      i++;
-    }
-
-    // If we still don't match, roll back the index
-    if (tempKana !== reading) {
-      // Try to find the match from scratch (fallback)
-      for (let j = 0; j <= katakanaTimes.length - reading.length; j++) {
-        let temp = '',
-          slice = [];
-        for (let k = j; k < katakanaTimes.length; k++) {
-          temp += katakanaTimes[k].kana;
-          slice.push(katakanaTimes[k]);
-          if (temp === reading) {
-            matchedKanas = slice;
-            i = k + 1;
-            break;
-          }
-          if (temp.length > reading.length) break;
-        }
-        if (matchedKanas.length > 0) break;
-      }
-    }
-
-    return {
-      ...chunk,
-      start: matchedKanas.length > 0 ? matchedKanas[0].start : null,
-      end:
-        matchedKanas.length > 0
-          ? matchedKanas[matchedKanas.length - 1].end
-          : null,
-    };
-  });
-
-  console.log('## enriched', enriched);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -165,26 +106,84 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
       return fixedItem || item;
     });
   }
-  // const fixedChunks = fixChunkOverlaps(enriched);
-  // const fixedChunks = fixChunkOverlapsGlobally(enriched);
-  const fixedChunks = fixOverlappingEndTimes(enriched);
-  console.log('## fixedChunks', fixedChunks);
 
-  // const fixedChunks = normalizeChunksTimeline(
-  //   enriched,
-  //   audioRef.current?.duration,
-  // );
+  useEffect(() => {
+    if (formattedTextState?.length > 0) {
+      return;
+    }
+
+    const katakanaTimes = mapKanaToTiming(audioQuery);
+    const normalisedChunks = chunks.map((item) => {
+      return { ...item, reading: normalizeKana(item.reading) };
+    });
+
+    console.log('## KaraokePlayer ', { katakanaTimes, chunks });
+
+    let i = 0;
+
+    const enriched = normalisedChunks.map((chunk) => {
+      const reading = chunk.reading;
+      let tempKana = '';
+      const startIndex = i;
+      let matchedKanas = [];
+
+      while (i < katakanaTimes.length && tempKana.length < reading.length) {
+        tempKana += katakanaTimes[i].kana;
+        matchedKanas.push(katakanaTimes[i]);
+        i++;
+      }
+
+      // if it's not a match, keep extending
+      while (tempKana !== reading && i < katakanaTimes.length) {
+        tempKana += katakanaTimes[i].kana;
+        matchedKanas.push(katakanaTimes[i]);
+        i++;
+      }
+
+      // If we still don't match, roll back the index
+      if (tempKana !== reading) {
+        // Try to find the match from scratch (fallback)
+        for (let j = 0; j <= katakanaTimes.length - reading.length; j++) {
+          let temp = '',
+            slice = [];
+          for (let k = j; k < katakanaTimes.length; k++) {
+            temp += katakanaTimes[k].kana;
+            slice.push(katakanaTimes[k]);
+            if (temp === reading) {
+              matchedKanas = slice;
+              i = k + 1;
+              break;
+            }
+            if (temp.length > reading.length) break;
+          }
+          if (matchedKanas.length > 0) break;
+        }
+      }
+
+      return {
+        ...chunk,
+        start: matchedKanas.length > 0 ? matchedKanas[0].start : null,
+        end:
+          matchedKanas.length > 0
+            ? matchedKanas[matchedKanas.length - 1].end
+            : null,
+      };
+    });
+
+    const fixedChunks = fixOverlappingEndTimes(enriched);
+    setFormattedState(fixedChunks);
+  }, [formattedTextState]);
 
   return (
     <div className='w-full max-w-xl p-4 space-y-4 rounded-xl shadow-lg bg-white text-center'>
       <audio ref={audioRef} src={audioUrl} controls className='w-full' />
       <div className='text-3xl font-mono flex flex-wrap justify-center gap-1 leading-relaxed'>
-        {fixedChunks.map(({ chunk, start, end }, index) => {
-          const isLast = index === fixedChunks.length - 1;
+        {formattedTextState?.map(({ chunk, start, end }, index) => {
+          const isLast = index === formattedTextState.length - 1;
           let isActive;
           if (isLast) {
             isActive =
-              currentTime >= fixedChunks[index - 1].start &&
+              currentTime >= formattedTextState[index - 1].start &&
               currentTime !== audioRef.current?.duration;
           } else {
             isActive = currentTime >= start && currentTime < end;
