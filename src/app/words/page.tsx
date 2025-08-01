@@ -1,6 +1,7 @@
 import { getOnLoadData } from '@/app/get-on-load-data';
 import PageContainer from '../PageContainer';
 import WordsContainer from './WordsContainer';
+import { WordsProvider } from './WordsProvider';
 
 export default async function WordsRoute() {
   const allStudyDataRes = await getOnLoadData();
@@ -120,16 +121,13 @@ export default async function WordsRoute() {
 
   const dueWords = words.filter((item) => item.isDue);
 
-  console.log('## ', {
-    words: words[0],
-    isDueWords: words.filter((item) => item.isDue)[0],
-  });
-
   return (
     <PageContainer>
-      <h1 className='text-center p-1'>Yah Dun Kno Words!</h1>
+      <WordsProvider words={dueWords}>
+        <h1 className='text-center p-1'>Yah Dun Kno Words!</h1>
 
-      <WordsContainer words={dueWords} />
+        <WordsContainer words={dueWords} />
+      </WordsProvider>
     </PageContainer>
   );
 }
