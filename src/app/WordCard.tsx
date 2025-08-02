@@ -40,7 +40,7 @@ const WordCard = ({
             })
           }
         >
-          {isInBasket ? 'Remove from 🗑️' : 'Add to 🗑️'}
+          🗑️
         </Button>
         <Button onClick={() => setOpenContentState(!openContentState)}>
           ⠇
