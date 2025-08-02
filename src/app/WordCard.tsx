@@ -7,13 +7,16 @@ import useWords from './words/useWords';
 
 const WordCard = ({ baseForm, id, definition }) => {
   const [openContentState, setOpenContentState] = useState(false);
-  const { addWordToBasket } = useWords();
+  const { addWordToBasket, wordBasketState } = useWords();
+
+  const isInBasket = wordBasketState?.some((i) => i?.id === id);
   return (
     <Card className='w-fit p-3'>
       <div className='flex gap-3'>
         <CardTitle className='m-auto'>{baseForm}</CardTitle>
         <Button>EASY</Button>
         <Button
+          variant={isInBasket ? 'destructive' : 'default'}
           onClick={() =>
             addWordToBasket({
               word: baseForm,
@@ -22,7 +25,7 @@ const WordCard = ({ baseForm, id, definition }) => {
             })
           }
         >
-          Add to 🗑️
+          {isInBasket ? 'Remove from 🗑️' : 'Add to 🗑️'}
         </Button>
         <Button onClick={() => setOpenContentState(!openContentState)}>
           ⠇
