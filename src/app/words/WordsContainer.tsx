@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import WordCard from '../WordCard';
 import useWords from './useWords';
 import { Button } from '@/components/ui/button';
 import { KaraokePlayer } from './KaraokePlayer';
 import LoadingSpinner from '../LoadingSpinner';
+import StoryBasket from './StoryBasket';
 
 const WordsContainer = () => {
   const [story, setStory] = useState();
+  const [initial30State, setInitial30State] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const { wordBasketState, setWordBasketState, wordsState } = useWords();
@@ -40,7 +42,11 @@ const WordsContainer = () => {
     }
   };
 
-  const initial30Words = wordsState.slice(0, 30);
+  useEffect(() => {
+    if (wordsState) {
+      setInitial30State([...wordsState].slice(0, 30));
+    }
+  }, [wordsState]);
 
   return (
     <div>
@@ -49,21 +55,11 @@ const WordsContainer = () => {
       </h1>
 
       {wordBasketState?.length > 0 && (
-        <>
-          <ul className='flex flex-wrap gap-2.5'>
-            {wordBasketState?.map((word, index) => {
-              return (
-                <li key={index}>
-                  <span>
-                    {index + 1}) {word.word}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-          <hr />
-          <Button onClick={getStoryAPI}>Get Story!</Button>
-        </>
+        <StoryBasket
+          getStoryAPI={getStoryAPI}
+          story={story}
+          setStory={setStory}
+        />
       )}
       {loading && (
         <div
@@ -113,7 +109,7 @@ const WordsContainer = () => {
         />
       )}
       <ul className='flex flex-wrap gap-2.5'>
-        {initial30Words?.map((word, index) => {
+        {initial30State?.map((word, index) => {
           return (
             <li key={index}>
               <WordCard {...word} />
