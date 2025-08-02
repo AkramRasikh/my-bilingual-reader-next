@@ -16,8 +16,6 @@ const WordCard = ({
   transliteration,
   ...rest
 }) => {
-  console.log('## transliteration', transliteration);
-
   const [openContentState, setOpenContentState] = useState(false);
   const { addWordToBasket, wordBasketState, updateWordData } = useWords();
 
