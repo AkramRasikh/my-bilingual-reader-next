@@ -4,7 +4,7 @@ import { Trash } from 'lucide-react';
 import { useState } from 'react';
 import clsx from 'clsx';
 
-const ReviewSRSToggles = ({ contentItem, handleReviewFunc }) => {
+const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {
   const [isLoadingSRSState, setIsLoadingSRSState] = useState(false);
   const reviewData = contentItem.reviewData;
 
@@ -13,7 +13,9 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc }) => {
   const { nextScheduledOptions, againText, hardText, goodText, easyText } =
     srsCalculationAndText({
       reviewData,
-      contentType: srsRetentionKeyTypes.sentences,
+      contentType: isVocab
+        ? srsRetentionKeyTypes.vocab
+        : srsRetentionKeyTypes.sentences,
       timeNow,
     });
 
@@ -21,10 +23,18 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc }) => {
     const nextReviewData = nextScheduledOptions[difficulty].card;
     try {
       setIsLoadingSRSState(true);
-      await handleReviewFunc({
-        sentenceId: contentItem.id,
-        nextDue: nextReviewData,
-      });
+      if (isVocab) {
+        await handleReviewFunc({
+          wordId: contentItem.id,
+          fieldToUpdate: { reviewData: nextReviewData },
+          language: 'japanese',
+        });
+      } else {
+        await handleReviewFunc({
+          sentenceId: contentItem.id,
+          nextDue: nextReviewData,
+        });
+      }
     } catch (error) {
       console.log('## handleNextReview', { error });
     } finally {
@@ -34,10 +44,18 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc }) => {
   const handleRemoveReviewReview = async () => {
     try {
       setIsLoadingSRSState(true);
-      await handleReviewFunc({
-        sentenceId: contentItem.id,
-        isRemoveReview: true,
-      });
+      if (isVocab) {
+        await handleReviewFunc({
+          wordId: contentItem.id,
+          language: 'japanese',
+          isRemoveReview: true,
+        });
+      } else {
+        await handleReviewFunc({
+          sentenceId: contentItem.id,
+          isRemoveReview: true,
+        });
+      }
     } catch (error) {
       console.log('## handleRemoveReviewReview', { error });
     } finally {

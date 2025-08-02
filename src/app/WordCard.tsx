@@ -4,10 +4,11 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import useWords from './words/useWords';
+import ReviewSRSToggles from './ReviewSRSToggles';
 
-const WordCard = ({ baseForm, id, definition }) => {
+const WordCard = ({ baseForm, id, definition, ...rest }) => {
   const [openContentState, setOpenContentState] = useState(false);
-  const { addWordToBasket, wordBasketState } = useWords();
+  const { addWordToBasket, wordBasketState, updateWordData } = useWords();
 
   const isInBasket = wordBasketState?.some((i) => i?.id === id);
   return (
@@ -33,7 +34,14 @@ const WordCard = ({ baseForm, id, definition }) => {
       </div>
       {openContentState && (
         <CardContent>
-          <h2>Siu! {baseForm}</h2>
+          <ReviewSRSToggles
+            contentItem={{
+              id,
+              ...rest,
+            }}
+            handleReviewFunc={updateWordData}
+            isVocab
+          />
         </CardContent>
       )}
     </Card>

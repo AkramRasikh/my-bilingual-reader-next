@@ -124,9 +124,7 @@ export default async function WordsRoute() {
   return (
     <PageContainer>
       <WordsProvider words={dueWords}>
-        <h1 className='text-center p-1'>Yah Dun Kno Words!</h1>
-
-        <WordsContainer words={dueWords} />
+        <WordsContainer />
       </WordsProvider>
     </PageContainer>
   );

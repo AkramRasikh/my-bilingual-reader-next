@@ -7,12 +7,11 @@ import { Button } from '@/components/ui/button';
 import { KaraokePlayer } from './KaraokePlayer';
 import LoadingSpinner from '../LoadingSpinner';
 
-const WordsContainer = ({ words }) => {
-  const [wordsState, setWordsState] = useState(words);
+const WordsContainer = () => {
   const [story, setStory] = useState();
   const [loading, setLoading] = useState(false);
 
-  const { wordBasketState, setWordBasketState } = useWords();
+  const { wordBasketState, setWordBasketState, wordsState } = useWords();
 
   console.log('## story', story);
 
@@ -45,6 +44,10 @@ const WordsContainer = ({ words }) => {
 
   return (
     <div>
+      <h1 className='text-center p-1'>
+        Yah Dun Kno Words! {wordsState.length}
+      </h1>
+
       {wordBasketState?.length > 0 && (
         <>
           <ul className='flex flex-wrap gap-2.5'>
