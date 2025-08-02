@@ -73,18 +73,6 @@ const WordsContainer = () => {
         </div>
       )}
       {story && (
-        <Button
-          variant='destructive'
-          className='m-1'
-          onClick={() => {
-            setWordBasketState([]);
-            setStory();
-          }}
-        >
-          Clear story
-        </Button>
-      )}
-      {story && (
         <>
           <p className='mt-4 p-2 border rounded bg-gray-100 text-lg'>
             🇯🇵{story.targetLang}
