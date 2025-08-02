@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 
 export const WordsContext = createContext(null);
 
@@ -7,8 +7,12 @@ export const WordsProvider = ({
   words,
   children,
 }: PropsWithChildren<object>) => {
-  const [wordsState, setWordsState] = useState(words);
+  const [wordsState, setWordsState] = useState([]);
   const [wordBasketState, setWordBasketState] = useState([]);
+
+  useEffect(() => {
+    setWordsState(words);
+  }, []);
 
   const addWordToBasket = (word) => {
     const wordIsInBasic = wordBasketState.some(
@@ -42,7 +46,7 @@ export const WordsProvider = ({
         const data = await res.json();
         console.log('## data', data);
 
-        const targetLanguageWordsStateUpdated = words.filter(
+        const targetLanguageWordsStateUpdated = wordsState.filter(
           (item) => item.id !== wordId,
         );
         setWordsState(targetLanguageWordsStateUpdated);
@@ -56,21 +60,21 @@ export const WordsProvider = ({
         });
 
         const data = await res.json();
-        console.log('## data', data);
 
-        const targetLanguageWordsStateUpdated = words.map((item) => {
+        const targetLanguageWordsStateUpdated = wordsState.map((item) => {
           const thisWordId = item.id === wordId;
           if (thisWordId) {
+            const isDue = data.reviewData?.due < new Date();
             return {
               ...item,
               ...data,
+              isDue,
             };
           }
           return item;
         });
-        setWordsState(targetLanguageWordsStateUpdated);
 
-        return true;
+        setWordsState(targetLanguageWordsStateUpdated.filter((i) => i?.isDue));
       }
     } catch (error) {
       console.log('## updateWordData DataProvider', { error });
