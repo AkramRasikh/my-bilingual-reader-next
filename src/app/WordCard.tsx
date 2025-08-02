@@ -40,7 +40,7 @@ const WordCard = ({
             })
           }
         >
-          🗑️
+          🧺
         </Button>
         <Button onClick={() => setOpenContentState(!openContentState)}>
           ⠇
