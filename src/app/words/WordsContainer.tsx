@@ -3,10 +3,9 @@
 import { useEffect, useState } from 'react';
 import WordCard from '../WordCard';
 import useWords from './useWords';
-import { Button } from '@/components/ui/button';
-import { KaraokePlayer } from './KaraokePlayer';
 import LoadingSpinner from '../LoadingSpinner';
 import StoryBasket from './StoryBasket';
+import StoryComponent from './StoryComponent';
 
 const WordsContainer = () => {
   const [story, setStory] = useState();
@@ -72,30 +71,7 @@ const WordsContainer = () => {
           <LoadingSpinner />
         </div>
       )}
-      {story && (
-        <>
-          <p className='mt-4 p-2 border rounded bg-gray-100 text-lg'>
-            🇯🇵{story.targetLang}
-          </p>
-          <p className='mt-4 p-2 border rounded bg-gray-100 text-lg'>
-            🇬🇧{story.baseLang}
-          </p>
-          {story?.notes && (
-            <p className='mt-4 p-2 border rounded bg-gray-100 text-lg'>
-              👀{story.notes}
-            </p>
-          )}
-        </>
-      )}
-      {story?.audioUrl && (
-        <KaraokePlayer
-          originalText={story?.targetLang}
-          audioUrl={story?.audioUrl}
-          audioQuery={story?.audioQuery}
-          katakanaSentence={story?.katakana}
-          chunks={story?.chunks}
-        />
-      )}
+      {story && <StoryComponent story={story} />}
       <ul className='flex flex-wrap gap-2.5'>
         {initial30State?.map((word, index) => {
           return (
