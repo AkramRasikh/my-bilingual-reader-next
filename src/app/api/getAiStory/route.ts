@@ -4,7 +4,6 @@ import fs from 'fs';
 import path from 'path';
 
 const VOICEVOX_API = 'http://localhost:50021';
-// const speakerId = 3;
 
 const apiKey = process.env.NEXT_PUBLIC_OPEN_AI;
 
@@ -25,6 +24,7 @@ const jsonResponseObj = {
         '<katakana reading of that part. NOTE where を is used, the katakana equal should be オ and not ヲ. where ウ is used, the katakana equal should be オ instead of ヲ>',
     },
   ],
+  wordIds: [['ids of the words being used']],
 };
 export async function POST(request: Request) {
   try {
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     const formattedWords = words
       .map(
         (w: { id: string | number; word: string; definition: string }) =>
-          `- ${w.word} (${w.definition})`,
+          `- ${w.id} | ${w.word} (${w.definition})`,
       )
       .join('\n');
 
@@ -48,7 +48,9 @@ export async function POST(request: Request) {
 
     const userPrompt = `Here are some Japanese words with their meanings:\n${formattedWords}    
 
-Please write a short, natural-sounding example using these words in a meaningful context. You may use more than one sentence if it improves clarity or flow, but keep the overall output concise (under 2–3 sentences).
+Please write a short natural-sounding example dialogue using these words. The dialogue should be between two people and include **at least two exchanges** (i.e., a minimum of 2/3 sentences total, alternating speakers). Use questions, imperatives, natural filler words, and varied sentence types to make it conversational and engaging.
+
+Keep the dialogue concise but meaningful, ensuring that the context clearly demonstrates how the words are used naturally.
 
 Return ONLY a JSON object in the following format:
 
