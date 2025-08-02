@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 const VOICEVOX_API = 'http://localhost:50021';
-const speakerId = 13;
+// const speakerId = 3;
 
 const apiKey = process.env.NEXT_PUBLIC_OPEN_AI;
 
@@ -12,9 +12,23 @@ const openai = new OpenAI({
   apiKey,
 });
 
+const jsonResponseObj = {
+  targetLang: '[sentence(s) in Japanese]',
+  baseLang: '[natural English translation]',
+  notes: '[explanation of any word choices, grammar, or cultural nuance]',
+  katakana: '<full katakana version of the sentence>',
+  chunks: [
+    {
+      chunk:
+        '<original wording of the japanese sentence i.e. 堅苦しい, 居住者, etc would be a seperate chunk in, ignore punctuation here such as commas, full stops etc>',
+      reading:
+        '<katakana reading of that part. NOTE where を is used, the katakana equal should be オ and not ヲ. where ウ is used, the katakana equal should be オ instead of ヲ>',
+    },
+  ],
+};
 export async function POST(request: Request) {
   try {
-    const { words } = await request.json();
+    const { words, speakerId } = await request.json();
 
     if (!words || !Array.isArray(words)) {
       return NextResponse.json(
@@ -32,21 +46,15 @@ export async function POST(request: Request) {
 
     const systemPrompt = `You are a bilingual tutor. You will be given Japanese words and asked to build a short sentence using them. Your job is to return a structured JSON object containing the Japanese sentence, its English translation, and helpful notes for learners.`;
 
-    const userPrompt = `Here are some Japanese words with their meanings:\n${formattedWords}
+    const userPrompt = `Here are some Japanese words with their meanings:\n${formattedWords}    
 
 Please write a short, natural-sounding example using these words in a meaningful context. You may use more than one sentence if it improves clarity or flow, but keep the overall output concise (under 2–3 sentences).
 
 Return ONLY a JSON object in the following format:
 
-{
-  "targetLang": "[sentence(s) in Japanese]",
-  "baseLang": "[natural English translation]",
-  "notes": "[explanation of any word choices, grammar, or cultural nuance]",
-  "katakana": "<full katakana version of the sentence>",
-  "chunks": [
-    { "chunk": "<original wording of the japanese sentence i.e. 堅苦しい, 居住者, etc would be a seperate chunk in, ignore punctuation here such as commas, full stops etc>", "reading": "<katakana reading of that part. NOTE where を is used, the katakana equal should be オ and not ヲ. where ウ is used, the katakana equal should be オ instead of ヲ>" }
-  ]
-}`;
+${JSON.stringify(jsonResponseObj)}
+
+`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
