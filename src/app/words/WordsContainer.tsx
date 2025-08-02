@@ -7,11 +7,10 @@ import StoryBasket from './StoryBasket';
 import StoryComponent from './StoryComponent';
 
 const WordsContainer = () => {
-  const [story, setStory] = useState();
   const [initial30State, setInitial30State] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const { wordBasketState, wordsState } = useWords();
+  const { wordBasketState, wordsState, story, setStory } = useWords();
 
   console.log('## story', story);
 
@@ -21,7 +20,7 @@ const WordsContainer = () => {
       const res = await fetch('/api/getAiStory', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ words: wordBasketState, speakerId: 11 }),
+        body: JSON.stringify({ words: wordBasketState, speakerId: 37 }),
       });
 
       const data = await res.json();

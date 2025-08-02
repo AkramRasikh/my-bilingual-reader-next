@@ -9,6 +9,7 @@ export const WordsProvider = ({
 }: PropsWithChildren<object>) => {
   const [wordsState, setWordsState] = useState([]);
   const [wordBasketState, setWordBasketState] = useState([]);
+  const [story, setStory] = useState();
 
   useEffect(() => {
     setWordsState(words);
@@ -81,6 +82,24 @@ export const WordsProvider = ({
     }
   };
 
+  const addGeneratedSentence = async ({ targetLang, baseLang }) => {
+    console.log('## addGeneratedSentence', targetLang, baseLang);
+
+    const res = await fetch('/api/addSentence', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        language: 'japanese',
+        targetLang,
+        baseLang,
+        localAudioPath: story.audioUrl,
+      }),
+    });
+    const data = await res.json();
+
+    console.log('## data', data);
+  };
+
   return (
     <WordsContext.Provider
       value={{
@@ -89,6 +108,9 @@ export const WordsProvider = ({
         setWordBasketState,
         addWordToBasket,
         updateWordData,
+        addGeneratedSentence,
+        story,
+        setStory,
       }}
     >
       {children}

@@ -1,6 +1,9 @@
+import { Button } from '@/components/ui/button';
 import { KaraokePlayer } from './KaraokePlayer';
+import useWords from './useWords';
 
 const StoryComponent = ({ story }) => {
+  const { addGeneratedSentence } = useWords();
   return (
     <div className='flex flex-col gap-2 mb-2'>
       <KaraokePlayer
@@ -22,6 +25,16 @@ const StoryComponent = ({ story }) => {
             👀{story.notes}
           </p>
         )}
+        <Button
+          onClick={async () =>
+            await addGeneratedSentence({
+              targetLang: story?.targetLang,
+              baseLang: story?.baseLang,
+            })
+          }
+        >
+          Add sentence
+        </Button>
       </div>
     </div>
   );

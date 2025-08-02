@@ -25,7 +25,35 @@ const jsonResponseObj = {
     },
   ],
   wordIds: [['ids of the words being used']],
+  mood: 'number id of the voice/mood selected',
 };
+
+const voicesSelectionEng = [
+  {
+    mood: 'normal',
+    id: 2,
+  },
+  {
+    mood: 'Sweet',
+    id: 0,
+  },
+  {
+    mood: 'pointy voice',
+    id: 6,
+  },
+  {
+    mood: 'sexy voice',
+    id: 4,
+  },
+  {
+    mood: 'whisper (softly)',
+    id: 36,
+  },
+  {
+    mood: 'ヒソヒソ (secretly)',
+    id: 37,
+  },
+];
 export async function POST(request: Request) {
   try {
     const { words, speakerId } = await request.json();
@@ -50,7 +78,13 @@ export async function POST(request: Request) {
 
 Please write a short natural-sounding example dialogue using these words. The dialogue should be between two people and include **at least two exchanges** (i.e., a minimum of 2/3 sentences total, alternating speakers). Use questions, imperatives, natural filler words, and varied sentence types to make it conversational and engaging.
 
-Keep the dialogue concise but meaningful, ensuring that the context clearly demonstrates how the words are used naturally.
+Keep the dialogue concise but meaningful and ideally theatrical, ensuring that the context clearly demonstrates how the words are used naturally.
+
+Here are a list of voices/mood to choose from ${JSON.stringify(
+      voicesSelectionEng,
+    )}
+
+    given the generated content, pick one mood
 
 Return ONLY a JSON object in the following format:
 
@@ -85,7 +119,7 @@ ${JSON.stringify(jsonResponseObj)}
     const audioQueryRes = await fetch(
       `${VOICEVOX_API}/audio_query?text=${encodeURIComponent(
         response.targetLang,
-      )}&speaker=${speakerId}`,
+      )}&speaker=${response.mood}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -97,7 +131,7 @@ ${JSON.stringify(jsonResponseObj)}
     const audioQueryJson = await audioQueryRes.json();
 
     const synthesisRes = await fetch(
-      `${VOICEVOX_API}/synthesis?speaker=${speakerId}`,
+      `${VOICEVOX_API}/synthesis?speaker=${response.mood}`,
       {
         method: 'POST',
         headers: {
