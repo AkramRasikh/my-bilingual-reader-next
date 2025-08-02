@@ -1,3 +1,5 @@
+import { saveJsonToFile } from '@/utils/setup-mock-data';
+
 export const content = 'content';
 export const words = 'words';
 export const snippets = 'snippets';
@@ -51,6 +53,7 @@ export const getOnLoadData = async () => {
 
   if (!res.ok) throw new Error('Failed to fetch data');
   const jsonData = await res.json();
+  await saveJsonToFile(jsonData);
 
   const formattedData = getFormattedData(jsonData);
   return formattedData;
