@@ -60,6 +60,7 @@ const WordCard = ({
               {transliteration && (
                 <Label>Transliteration: {transliteration}</Label>
               )}
+              {definition && <Label>Definition: {definition}</Label>}
             </div>
             <ReviewSRSToggles
               contentItem={{
