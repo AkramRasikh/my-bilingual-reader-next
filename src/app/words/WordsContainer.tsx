@@ -22,7 +22,7 @@ const WordsContainer = ({ words }) => {
       const res = await fetch('/api/getAiStory', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ words: wordBasketState }),
+        body: JSON.stringify({ words: wordBasketState, speakerId: 13 }),
       });
 
       const data = await res.json();
