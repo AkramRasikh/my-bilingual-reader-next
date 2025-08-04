@@ -3,7 +3,22 @@ import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
 import { voicesSelectionMan, voicesSelectionWoman } from './voice-selection';
-import { perfectResponse } from './model-response';
+// import { response } from './model-response';
+import { formatChunksComprehensive } from '@/app/words/format-chunks';
+import { combineAudio } from './merge-audio-files';
+
+function mergeDialogueLines(
+  personA: { targetLang: string; baseLang: string },
+  personB: { targetLang: string; baseLang: string },
+) {
+  const targetLang = `${personA.targetLang}${personB.targetLang}`;
+  const baseLang = `${personA.baseLang} ${personB.baseLang}`;
+
+  return {
+    targetLang,
+    baseLang,
+  };
+}
 
 const VOICEVOX_API = 'http://localhost:50021';
 
@@ -17,21 +32,24 @@ const chunkAtAbstractLevel = {
   chunk:
     '<A chunk should be one logical word/phrase or particle. original wording of the japanese sentence i.e. 堅苦しい, 居住者, etc would be a seperate chunk in, ignore punctuation here such as commas, full stops etc>',
   reading:
-    '<katakana reading of that part. NOTE where を is used, the katakana equal should be オ and not ヲ. where ウ is used, the katakana equal should be オ instead of ヲ>',
+    '<katakana (not hiragana) reading of that part. NOTE where を is used, the katakana equal should be オ and not ヲ. where ウ is used, the katakana equal should be オ instead of ヲ>',
 };
 
 const jsonResponseObj = {
-  targetLang: `[A single natural Japanese string that includes **both personA and personB's full dialogue**, back-to-back, without any speaker labels or line breaks. An amalgamation of the dialogue between personA & personB ]`,
-  baseLang:
-    '[Return the natural English translation of the entire dialogue, including both speakers]',
-  notes: '[explanation of any word choices, grammar, or cultural nuance]',
-  chunks: {
-    personA: [chunkAtAbstractLevel],
-    personB: [chunkAtAbstractLevel],
+  personA: {
+    chunks: [chunkAtAbstractLevel],
+    targetLang: 'The Japanese chunk text together in a standard sentence',
+    baseLang: 'Natural English translation of the targetLang',
+  },
+  personB: {
+    chunks: [chunkAtAbstractLevel],
+    targetLang: 'The Japanese chunk text together in a standard sentence',
+    baseLang: 'Natural English translation of the targetLang',
   },
   wordIds: ['ids of the words being used'],
   moodPersonA: 'number id of the voice/mood selected',
   moodPersonB: 'number id of the voice/mood selected',
+  notes: '[explanation of any word choices, grammar, or cultural nuance]',
 };
 
 export async function POST(request: Request) {
@@ -85,10 +103,6 @@ Return ONLY a JSON object in the following format:
 
 ${JSON.stringify(jsonResponseObj)}
 
-HERE is an example of a model response structure ${JSON.stringify(
-      perfectResponse,
-    )}
-
 `;
 
     const completion = await openai.chat.completions.create({
@@ -115,58 +129,151 @@ HERE is an example of a model response structure ${JSON.stringify(
       );
     }
 
-    return NextResponse.json({
-      ...response,
-      // audioQuery: audioQueryJson, // 👈 include here
-      // hasAudio: true,
-      // audioUrl: `/audio/${audioFileName}`,
-    });
+    // return NextResponse.json({
+    //   ...response,
+    //   targetLang: mergeDialogueLines(response.personA, response.personB)
+    //     .targetLang,
+    //   baseLang: mergeDialogueLines(response.personA, response.personB).baseLang,
+    //   // audioQuery: audioQueryJson, // 👈 include here
+    //   // hasAudio: true,
+    //   // audioUrl: `/audio/${audioFileName}`,
+    // });
+    // return NextResponse.json({
+    //   ...response,
+    //   targetLang: mergeDialogueLines(response.personA, response.personB)
+    //     .targetLang,
+    //   baseLang: mergeDialogueLines(response.personA, response.personB).baseLang,
+    //   // audioQuery: audioQueryJson, // 👈 include here
+    //   // hasAudio: true,
+    //   // audioUrl: `/audio/${audioFileName}`,
+    // });
 
-    const audioQueryRes = await fetch(
+    const personAText = response.personA.targetLang;
+    const personAMood = response.moodPersonA;
+
+    const audioQueryResSpeakerA = await fetch(
       `${VOICEVOX_API}/audio_query?text=${encodeURIComponent(
-        response.targetLang,
-      )}&speaker=${response.mood}`,
+        personAText,
+      )}&speaker=${personAMood}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),
       },
     );
+    //
 
-    if (!audioQueryRes.ok) throw new Error('VOICEVOX audio_query failed');
-    const audioQueryJson = await audioQueryRes.json();
+    if (!audioQueryResSpeakerA.ok)
+      throw new Error('VOICEVOX audio_query failed');
+    const audioQueryJsonA = await audioQueryResSpeakerA.json();
 
-    const synthesisRes = await fetch(
-      `${VOICEVOX_API}/synthesis?speaker=${response.mood}`,
+    const synthesisResA = await fetch(
+      `${VOICEVOX_API}/synthesis?speaker=${personAMood}`,
       {
         method: 'POST',
         headers: {
           Accept: 'audio/wav',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(audioQueryJson),
+        body: JSON.stringify(audioQueryJsonA),
       },
     );
 
-    if (!synthesisRes.ok) throw new Error('VOICEVOX synthesis failed');
+    if (!synthesisResA.ok) throw new Error('VOICEVOX synthesis failed');
 
-    const audioBuffer = Buffer.from(await synthesisRes.arrayBuffer());
+    const audioBufferA = Buffer.from(await synthesisResA.arrayBuffer());
 
-    const audioFileName = `voicevox-${Date.now()}.wav`;
-    const outputPath = path.join(
+    const audioFileNameSpeakerA = `voicevox-speakerA.wav`;
+    // const audioFileName = `voicevox-${Date.now()}.wav`;
+    const outputPathA = path.join(
       process.cwd(),
       'public',
       'audio',
-      audioFileName,
+      audioFileNameSpeakerA,
     );
-    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-    fs.writeFileSync(outputPath, audioBuffer);
+    fs.mkdirSync(path.dirname(outputPathA), { recursive: true });
+    fs.writeFileSync(outputPathA, audioBufferA);
+
+    const personBText = response.personB.targetLang;
+    const personBMood = response.moodPersonB;
+
+    // B - Speaker
+    const audioQueryResSpeakerB = await fetch(
+      `${VOICEVOX_API}/audio_query?text=${encodeURIComponent(
+        personBText,
+      )}&speaker=${personBMood}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      },
+    );
+    //
+
+    if (!audioQueryResSpeakerB.ok)
+      throw new Error('VOICEVOX audio_query failed');
+    const audioQueryJsonB = await audioQueryResSpeakerB.json();
+
+    const synthesisResB = await fetch(
+      `${VOICEVOX_API}/synthesis?speaker=${personBMood}`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'audio/wav',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(audioQueryJsonB),
+      },
+    );
+
+    if (!synthesisResB.ok) throw new Error('VOICEVOX synthesis failed');
+
+    const audioBufferB = Buffer.from(await synthesisResB.arrayBuffer());
+
+    const audioFileNameSpeakerB = `voicevox-speakerB.wav`;
+    // const audioFileName = `voicevox-${Date.now()}.wav`;
+    const outputPathB = path.join(
+      process.cwd(),
+      'public',
+      'audio',
+      audioFileNameSpeakerB,
+    );
+    fs.mkdirSync(path.dirname(outputPathB), { recursive: true });
+    fs.writeFileSync(outputPathB, audioBufferB);
+    //
+
+    const combinedAudioPath = path.join(
+      process.cwd(),
+      'public',
+      'audio',
+      'combined-a-b.mp3',
+    );
+    const silentAudioFilePath = path.join(
+      process.cwd(),
+      'public',
+      'audio',
+      'silence.wav',
+    );
+    combineAudio(
+      outputPathA,
+      outputPathB,
+      silentAudioFilePath,
+      combinedAudioPath,
+    );
 
     return NextResponse.json({
-      ...response,
-      audioQuery: audioQueryJson, // 👈 include here
-      hasAudio: true,
-      audioUrl: `/audio/${audioFileName}`,
+      // audioQueryA: audioQueryJsonA, // 👈 include here
+      // audioQueryB: audioQueryJsonA, // 👈 include here
+      // outputPathA,
+      // outputPathB,
+      aOutput: formatChunksComprehensive({
+        audioQuery: audioQueryJsonA,
+        chunks: response.personA.chunks,
+      }),
+      bOutput: formatChunksComprehensive({
+        audioQuery: audioQueryJsonB,
+        chunks: response.personB.chunks,
+      }),
     });
   } catch (error) {
     console.error('Error in getAiStory:', error);

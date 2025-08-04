@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { mapKanaToTiming } from './kana-connection';
 import { normalizeKana } from './normalize-kana';
+import { fixOverlappingEndTimes } from './format-chunks';
 
 type Mora = {
   text: string; // kana
@@ -29,49 +30,6 @@ type AudioQuery = {
 type KaraokePlayerProps = {
   audioUrl: string;
   audioQuery: AudioQuery;
-};
-
-const fixOverlappingEndTimes = (data) => {
-  // Filter out entries with null start/end times
-  const validData = data.filter(
-    (item) => item.start !== null && item.end !== null,
-  );
-
-  for (let i = 0; i < validData.length; i++) {
-    const current = validData[i];
-    let minNextStart = Infinity;
-
-    // Find the smallest start time among all following items
-    for (let j = i + 1; j < validData.length; j++) {
-      if (validData[j].start < minNextStart) {
-        minNextStart = validData[j].start;
-      }
-    }
-
-    // Only adjust if:
-    // 1. There is a following item (`minNextStart` is not Infinity)
-    // 2. The current `end` exceeds `minNextStart` (overlap)
-    // 3. `minNextStart` is *after* the current `start` (to prevent `end < start`)
-    if (
-      minNextStart !== Infinity &&
-      current.end > minNextStart &&
-      minNextStart > current.start
-    ) {
-      current.end = minNextStart;
-    }
-  }
-
-  // Return the fixed data (including originally null entries)
-  return data.map((item) => {
-    if (item.start === null || item.end === null) return item;
-    const fixedItem = validData.find(
-      (x) =>
-        x.chunk === item.chunk &&
-        x.reading === item.reading &&
-        x.start === item.start,
-    );
-    return fixedItem || item;
-  });
 };
 
 export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
@@ -185,6 +143,9 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
     });
 
     const fixedChunks = fixOverlappingEndTimes(newArr);
+
+    console.log('## fixedChunks', fixedChunks);
+
     const myTing = fixedChunks;
     setFormattedState(myTing);
   }, [formattedTextState, audioRef]);

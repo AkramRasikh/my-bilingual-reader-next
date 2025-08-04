@@ -15,7 +15,6 @@ const StoryComponent = ({ story }) => {
         originalText={story?.targetLang}
         audioUrl={story?.audioUrl}
         audioQuery={story?.audioQuery}
-        katakanaSentence={story?.katakana}
         chunks={story?.chunks}
       />
       <div>
