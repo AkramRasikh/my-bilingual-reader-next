@@ -24,7 +24,7 @@ const jsonResponseObj = {
         '<katakana reading of that part. NOTE where を is used, the katakana equal should be オ and not ヲ. where ウ is used, the katakana equal should be オ instead of ヲ>',
     },
   ],
-  wordIds: [['ids of the words being used']],
+  wordIds: ['ids of the words being used'],
   mood: 'number id of the voice/mood selected',
 };
 
