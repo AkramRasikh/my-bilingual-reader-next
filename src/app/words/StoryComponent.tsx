@@ -3,7 +3,12 @@ import { KaraokePlayer } from './KaraokePlayer';
 import useWords from './useWords';
 
 const StoryComponent = ({ story }) => {
-  const { addGeneratedSentence } = useWords();
+  const { addGeneratedSentence, wordBasketState } = useWords();
+
+  const wordsUsedInStory = wordBasketState.filter((i) =>
+    story?.wordIds.includes(i.id),
+  );
+
   return (
     <div className='flex flex-col gap-2 mb-2'>
       <KaraokePlayer
@@ -14,8 +19,11 @@ const StoryComponent = ({ story }) => {
         chunks={story?.chunks}
       />
       <div>
+        {wordsUsedInStory?.length > 0 && (
+          <p>{wordsUsedInStory.map((i) => i.word).join(', ')}</p>
+        )}
         <p className='mt-4 p-2 border rounded bg-gray-100 text-lg'>
-          🇯🇵{story.targetLang}
+          🇯🇵{story.targetLang} {story?.isSaved ? '✅✅✅✅' : ''}
         </p>
         <p className='mt-4 p-2 border rounded bg-gray-100 text-lg'>
           🇬🇧{story.baseLang}
@@ -26,10 +34,12 @@ const StoryComponent = ({ story }) => {
           </p>
         )}
         <Button
+          disabled={story?.isSaved}
           onClick={async () =>
             await addGeneratedSentence({
               targetLang: story?.targetLang,
               baseLang: story?.baseLang,
+              notes: story?.notes,
             })
           }
         >

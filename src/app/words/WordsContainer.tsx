@@ -45,6 +45,12 @@ const WordsContainer = () => {
     }
   }, [wordsState]);
 
+  const storiesId = story?.wordIds;
+
+  const storiesWordBlocks = initial30State?.filter((i) =>
+    storiesId?.includes(i.id),
+  );
+
   return (
     <div>
       <h1 className='text-center p-1'>
@@ -62,17 +68,28 @@ const WordsContainer = () => {
           <div className='h-20 w-20 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin'></div>
         </div>
       )}
+      <ul className='flex flex-wrap gap-2.5'>
+        {storiesWordBlocks?.map((word, index) => {
+          return (
+            <li key={index}>
+              <WordCard {...word} defaultOpen />
+            </li>
+          );
+        })}
+      </ul>
 
-      {wordBasketState?.length > 0 && (
-        <StoryBasket
-          getStoryAPI={getStoryAPI}
-          story={story}
-          setStory={setStory}
-        />
-      )}
+      <StoryBasket
+        getStoryAPI={getStoryAPI}
+        story={story}
+        setStory={setStory}
+      />
+
       {story && <StoryComponent story={story} />}
       <ul className='flex flex-wrap gap-2.5'>
         {initial30State?.map((word, index) => {
+          if (storiesId?.includes(word.id)) {
+            return null;
+          }
           return (
             <li key={index}>
               <WordCard {...word} />

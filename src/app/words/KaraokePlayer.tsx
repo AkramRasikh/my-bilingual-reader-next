@@ -189,8 +189,6 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
     setFormattedState(myTing);
   }, [formattedTextState, audioRef]);
 
-  console.log('## formattedTextState', formattedTextState);
-
   return (
     <div className='w-full max-w-xl p-4 space-y-4 rounded-xl shadow-lg bg-white text-center m-auto'>
       <audio ref={audioRef} src={audioUrl} controls className='w-full' />

@@ -18,11 +18,10 @@ const StoryBasket = ({ getStoryAPI, story, setStory }) => {
       </ul>
       <hr />
       <div className='flex gap-2'>
-        {wordBasketState?.length && (
-          <Button variant='destructive' onClick={() => setWordBasketState([])}>
-            Clear Basket
-          </Button>
-        )}
+        <Button variant='destructive' onClick={() => setWordBasketState([])}>
+          Clear Basket
+        </Button>
+
         {story ? (
           <Button variant='destructive' onClick={() => setStory()}>
             Clear Story

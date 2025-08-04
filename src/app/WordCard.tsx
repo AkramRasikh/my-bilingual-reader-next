@@ -14,9 +14,10 @@ const WordCard = ({
   surfaceForm,
   phonetic,
   transliteration,
+  defaultOpen = false,
   ...rest
 }) => {
-  const [openContentState, setOpenContentState] = useState(false);
+  const [openContentState, setOpenContentState] = useState(defaultOpen);
   const { addWordToBasket, wordBasketState, updateWordData } = useWords();
 
   const isInBasket = wordBasketState?.some((i) => i?.id === id);

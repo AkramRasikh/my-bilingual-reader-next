@@ -77,12 +77,13 @@ export const WordsProvider = ({
 
         setWordsState(targetLanguageWordsStateUpdated.filter((i) => i?.isDue));
       }
+      setWordBasketState((prev) => prev.filter((o) => o?.id !== wordId));
     } catch (error) {
       console.log('## updateWordData DataProvider', { error });
     }
   };
 
-  const addGeneratedSentence = async ({ targetLang, baseLang }) => {
+  const addGeneratedSentence = async ({ targetLang, baseLang, notes }) => {
     console.log('## addGeneratedSentence', targetLang, baseLang);
 
     const res = await fetch('/api/addSentence', {
@@ -93,9 +94,17 @@ export const WordsProvider = ({
         targetLang,
         baseLang,
         localAudioPath: story.audioUrl,
+        notes,
       }),
     });
     const data = await res.json();
+
+    if (data) {
+      setStory({
+        ...story,
+        isSaved: true,
+      });
+    }
 
     console.log('## data', data);
   };
