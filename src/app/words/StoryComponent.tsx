@@ -12,10 +12,7 @@ const StoryComponent = ({ story }) => {
   return (
     <div className='flex flex-col gap-2 mb-2'>
       <KaraokePlayer
-        originalText={story?.targetLang}
         audioUrl={story?.audioUrl}
-        audioQuery={story?.audioQuery}
-        chunks={story?.chunks}
         dialogueOutput={story?.dialogueOutput}
       />
       <div>
