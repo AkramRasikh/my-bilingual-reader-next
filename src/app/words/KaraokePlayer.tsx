@@ -36,6 +36,7 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
   audioUrl,
   audioQuery,
   chunks,
+  dialogueOutput,
 }) => {
   const [formattedTextState, setFormattedState] = useState([]);
   const [currentTime, setCurrentTime] = useState(0);
@@ -52,6 +53,10 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
   }, []);
 
   useEffect(() => {
+    if (dialogueOutput) {
+      setFormattedState(dialogueOutput);
+      return;
+    }
     if (formattedTextState?.length > 0 && audioRef.current?.duration) {
       return;
     }
@@ -153,6 +158,7 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
   return (
     <div className='w-full max-w-xl p-4 space-y-4 rounded-xl shadow-lg bg-white text-center m-auto'>
       <audio ref={audioRef} src={audioUrl} controls className='w-full' />
+
       <span>{currentTime.toFixed(2)}</span>
       <div className='text-lg font-mono flex flex-wrap justify-center gap-1 leading-relaxed'>
         {formattedTextState?.map(({ chunk, start, end }, index) => {

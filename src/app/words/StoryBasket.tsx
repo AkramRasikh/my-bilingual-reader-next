@@ -27,7 +27,14 @@ const StoryBasket = ({ getStoryAPI, story, setStory }) => {
             Clear Story
           </Button>
         ) : (
-          <Button onClick={getStoryAPI}>Get Story!</Button>
+          <div className='flex gap-2'>
+            <Button onClick={() => getStoryAPI({ isStory: true })}>
+              Get Story!
+            </Button>
+            <Button onClick={() => getStoryAPI({ isStory: false })}>
+              Get Dialogue
+            </Button>
+          </div>
         )}
       </div>
     </div>

@@ -16,6 +16,7 @@ const StoryComponent = ({ story }) => {
         audioUrl={story?.audioUrl}
         audioQuery={story?.audioQuery}
         chunks={story?.chunks}
+        dialogueOutput={story?.dialogueOutput}
       />
       <div>
         {wordsUsedInStory?.length > 0 && (
