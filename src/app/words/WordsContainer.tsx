@@ -14,14 +14,17 @@ const WordsContainer = () => {
 
   console.log('## story', story);
 
-  const getStoryAPI = async () => {
+  const getStoryAPI = async ({ isStory }) => {
     setLoading(true);
     try {
-      const res = await fetch('/api/getAiStory', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ words: wordBasketState, speakerId: 37 }),
-      });
+      const res = await fetch(
+        isStory ? '/api/getAiStory' : '/api/getDialogue',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ words: wordBasketState, speakerId: 37 }),
+        },
+      );
 
       const data = await res.json();
       console.log('## data', data);
