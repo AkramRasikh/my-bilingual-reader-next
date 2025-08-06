@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
+import { formatChunksComprehensive } from '@/app/words/format-chunks';
 
 const VOICEVOX_API = 'http://localhost:50021';
 
@@ -158,6 +159,10 @@ ${JSON.stringify(jsonResponseObj)}
 
     return NextResponse.json({
       ...response,
+      dialogueOutput: formatChunksComprehensive({
+        audioQuery: audioQueryJson,
+        chunks: response.chunks,
+      }),
       audioQuery: audioQueryJson, // 👈 include here
       audioUrl: `/audio/${audioFileName}`,
     });
