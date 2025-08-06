@@ -3,9 +3,9 @@ import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
 import { voicesSelectionMan, voicesSelectionWoman } from './voice-selection';
-// import { response } from './model-response';
 import { formatChunksComprehensive } from '@/app/words/format-chunks';
 import { combineAudio } from './merge-audio-files';
+import { getAudioFileDuration } from '@/utils/get-audio-file-duration';
 
 function mergeDialogueLines(
   personA: { targetLang: string; baseLang: string },
@@ -129,25 +129,6 @@ ${JSON.stringify(jsonResponseObj)}
       );
     }
 
-    // return NextResponse.json({
-    //   ...response,
-    //   targetLang: mergeDialogueLines(response.personA, response.personB)
-    //     .targetLang,
-    //   baseLang: mergeDialogueLines(response.personA, response.personB).baseLang,
-    //   // audioQuery: audioQueryJson, // 👈 include here
-    //   // hasAudio: true,
-    //   // audioUrl: `/audio/${audioFileName}`,
-    // });
-    // return NextResponse.json({
-    //   ...response,
-    //   targetLang: mergeDialogueLines(response.personA, response.personB)
-    //     .targetLang,
-    //   baseLang: mergeDialogueLines(response.personA, response.personB).baseLang,
-    //   // audioQuery: audioQueryJson, // 👈 include here
-    //   // hasAudio: true,
-    //   // audioUrl: `/audio/${audioFileName}`,
-    // });
-
     const personAText = response.personA.targetLang;
     const personAMood = response.moodPersonA;
 
@@ -193,6 +174,8 @@ ${JSON.stringify(jsonResponseObj)}
     );
     fs.mkdirSync(path.dirname(outputPathA), { recursive: true });
     fs.writeFileSync(outputPathA, audioBufferA);
+
+    const audioADuration = await getAudioFileDuration(outputPathA);
 
     const personBText = response.personB.targetLang;
     const personBMood = response.moodPersonB;
@@ -261,19 +244,34 @@ ${JSON.stringify(jsonResponseObj)}
       combinedAudioPath,
     );
 
+    const aOutput = formatChunksComprehensive({
+      audioQuery: audioQueryJsonA,
+      chunks: response.personA.chunks,
+    });
+    const bOutput = formatChunksComprehensive({
+      audioQuery: audioQueryJsonB,
+      chunks: response.personB.chunks,
+    }).map((i) => {
+      return {
+        ...i,
+        start: Number.isFinite(i?.start)
+          ? i.start + audioADuration + 0.3
+          : i?.start,
+        end: Number.isFinite(i?.end) ? i.end + audioADuration + 0.3 : i?.end,
+      };
+    });
+
+    const dialogueOutput = [...aOutput, ...bOutput];
+
     return NextResponse.json({
-      // audioQueryA: audioQueryJsonA, // 👈 include here
-      // audioQueryB: audioQueryJsonA, // 👈 include here
-      // outputPathA,
-      // outputPathB,
-      aOutput: formatChunksComprehensive({
-        audioQuery: audioQueryJsonA,
-        chunks: response.personA.chunks,
-      }),
-      bOutput: formatChunksComprehensive({
-        audioQuery: audioQueryJsonB,
-        chunks: response.personB.chunks,
-      }),
+      dialogueOutput,
+      targetLang: mergeDialogueLines(response.personA, response.personB)
+        .targetLang,
+      baseLang: mergeDialogueLines(response.personA, response.personB).baseLang,
+      audioUrl: path.join('audio', 'combined-a-b.mp3'),
+      isDialogue: true,
+      wordIds: response.wordIds,
+      notes: response?.notes,
     });
   } catch (error) {
     console.error('Error in getAiStory:', error);

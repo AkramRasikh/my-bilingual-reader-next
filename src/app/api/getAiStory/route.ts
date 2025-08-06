@@ -56,7 +56,7 @@ const voicesSelectionEng = [
 ];
 export async function POST(request: Request) {
   try {
-    const { words, speakerId } = await request.json();
+    const { words } = await request.json();
 
     if (!words || !Array.isArray(words)) {
       return NextResponse.json(
@@ -159,7 +159,6 @@ ${JSON.stringify(jsonResponseObj)}
     return NextResponse.json({
       ...response,
       audioQuery: audioQueryJson, // 👈 include here
-      hasAudio: true,
       audioUrl: `/audio/${audioFileName}`,
     });
   } catch (error) {
