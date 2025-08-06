@@ -24,7 +24,8 @@
 .DS_Store
 *.pem
 
-/public/audio/voicevox-*
+/public/audio
+
 
 # debug
 npm-debug.log*
