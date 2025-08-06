@@ -99,7 +99,7 @@ Here are a list of voices/mood to choose from personB - a man ${JSON.stringify(
 
 given the generated content, pick one mood each
 
-Return ONLY a JSON object in the following format:
+Return ONLY raw & valid JSON in the following format:
 
 ${JSON.stringify(jsonResponseObj)}
 
@@ -268,7 +268,7 @@ ${JSON.stringify(jsonResponseObj)}
       targetLang: mergeDialogueLines(response.personA, response.personB)
         .targetLang,
       baseLang: mergeDialogueLines(response.personA, response.personB).baseLang,
-      audioUrl: path.join('audio', 'combined-a-b.mp3'),
+      audioUrl: '/audio/combined-a-b.mp3',
       isDialogue: true,
       wordIds: response.wordIds,
       notes: response?.notes,
