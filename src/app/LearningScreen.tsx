@@ -162,8 +162,6 @@ const LearningScreen = () => {
   }, [loopTranscriptState, ref, masterPlay, threeSecondLoopState, progress]);
 
   const handleReviewFunc = async ({ sentenceId, isRemoveReview, nextDue }) => {
-    console.log('## handleReviewFunc', { sentenceId, isRemoveReview, nextDue });
-
     const cardDataRelativeToNow = getEmptyCard();
     const nextScheduledOptions = getNextScheduledOptions({
       card: cardDataRelativeToNow,
