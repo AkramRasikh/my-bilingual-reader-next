@@ -480,7 +480,7 @@ const LearningScreen = () => {
           marginTop: 50,
         }}
       >
-        <div className='flex-1 mt-5'>
+        <div className='flex-1 mt-5 max-w-xl m-auto'>
           <VideoPlayer
             ref={ref}
             url={videoUrl}

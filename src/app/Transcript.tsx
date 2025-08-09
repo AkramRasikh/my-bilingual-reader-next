@@ -26,7 +26,7 @@ const Transcript = ({
   isInReviewMode,
 }) => {
   return (
-    <div className='flex-1'>
+    <div className='flex-1 max-w-xl'>
       <div>
         {hasPreviousVideo && (
           <button

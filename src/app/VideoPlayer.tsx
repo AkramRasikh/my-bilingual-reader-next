@@ -29,7 +29,7 @@ const VideoPlayer = ({ url, ref, handleTimeUpdate, setIsVideoPlaying }) => {
       ref={ref}
       src={videoUrl}
       controls
-      className='w-full max-w-3xl rounded-lg shadow-lg'
+      className='w-full rounded-lg shadow-lg m-auto'
       onTimeUpdate={handleTimeUpdate}
     >
       Your browser does not support the video tag.
