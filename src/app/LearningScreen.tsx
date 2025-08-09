@@ -162,6 +162,8 @@ const LearningScreen = () => {
   }, [loopTranscriptState, ref, masterPlay, threeSecondLoopState, progress]);
 
   const handleReviewFunc = async ({ sentenceId, isRemoveReview, nextDue }) => {
+    console.log('## handleReviewFunc', { sentenceId, isRemoveReview, nextDue });
+
     const cardDataRelativeToNow = getEmptyCard();
     const nextScheduledOptions = getNextScheduledOptions({
       card: cardDataRelativeToNow,
@@ -414,6 +416,22 @@ const LearningScreen = () => {
     }
   };
 
+  const handleAddMasterToReview = async () => {
+    const currentSecond = Math.floor(ref.current.currentTime);
+    const currentMasterPlay =
+      isNumber(currentTime) &&
+      secondsState?.length > 0 &&
+      secondsState[currentSecond]; // need to make sure its part of the content
+
+    const sentenceHasReview =
+      getThisSentenceInfo(currentMasterPlay)?.reviewData;
+
+    await handleReviewFunc({
+      sentenceId: currentMasterPlay,
+      isRemoveReview: Boolean(sentenceHasReview),
+      nextDue: null,
+    });
+  };
   const handleShiftSnippet = (shiftNumber: number) => {
     if (isNumber(threeSecondLoopState) && threeSecondLoopState > 0) {
       // factor in small descrepancy
@@ -530,6 +548,7 @@ const LearningScreen = () => {
             handleShiftSnippet={handleShiftSnippet}
             handleSlowDownAudio={handleSlowDownAudio}
             loopTranscriptState={loopTranscriptState}
+            handleAddMasterToReview={handleAddMasterToReview}
           />
         </div>
         {secondsState && (

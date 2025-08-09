@@ -13,6 +13,7 @@ const KeyListener = ({
   handleJumpToSentenceViaKeys,
   handleBreakdownMasterSentence,
   handleRewind,
+  handleAddMasterToReview,
   handleOpenBreakdownSentence,
   handlePausePlay,
   setIsPressDownShiftState,
@@ -57,6 +58,12 @@ const KeyListener = ({
           handleShiftSnippet(-0.5);
           return;
         }
+        return;
+      }
+
+      // SHIFT + B
+      if (e.shiftKey && e.key.toLowerCase() === 'p') {
+        handleAddMasterToReview();
         return;
       }
 
@@ -129,6 +136,7 @@ const KeyListener = ({
     handleShiftSnippet,
     handleSlowDownAudio,
     loopTranscriptState,
+    handleAddMasterToReview,
   ]);
 
   return null;
