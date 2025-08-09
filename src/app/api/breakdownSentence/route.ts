@@ -1,7 +1,7 @@
 export async function POST(req: Request) {
   const body = await req.json();
 
-  const url = process.env.NEXT_PUBLIC_BACKEND_ENDPOINT + '/breakdown-sentence';
+  const url = process.env.NEXT_PUBLIC_BREAKDOWN_SENTENCE_URL as string;
 
   const response = await fetch(url, {
     method: 'POST',
