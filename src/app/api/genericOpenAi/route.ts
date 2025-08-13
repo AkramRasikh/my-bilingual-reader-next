@@ -1,32 +1,36 @@
 import { NextResponse } from 'next/server';
 import path from 'path';
-import fs from 'fs';
-import { transcript, yoooJapanese } from './data';
+import { formatRawTranscript } from './data';
 import { generateAllVoiceVoxAudios } from './generate-all-voice-vox-audios';
 import { combineAudioFilesWithPromiseWrapper } from '../getDialogue/merge-audio-files';
 import { getAudioFileDuration } from '@/utils/get-audio-file-duration';
-import { getSilencePath } from '@/app/shared-apis/get-silence-path';
 import { v4 as uuidv4 } from 'uuid';
+import OpenAiApi from './openAiApi';
+import { genericOpenAiSystemPrompt, getGenericOpenAiPrompt } from './prompt';
+import { uploadAudioCloudflare } from '@/app/shared-apis/upload-audio-cloudflare';
+import { japanese } from '@/app/languages';
+import { deleteVoiceVoxFiles } from './remove-generated-files';
 
 export async function GET() {
   try {
-    // const systemPrompt = genericOpenAiSystemPrompt
+    const userPrompt = getGenericOpenAiPrompt(formatRawTranscript());
 
-    // const userPrompt =  getGenericOpenAiPrompt(transcript)
-
-    // const completion = await OpenAiApi({systemPrompt,userPrompt})
-
-    // const raw = completion.choices[0].message?.content?.trim() ?? '';
-
-    // const parsedResponse = JSON.parse(yoooJapanese);
-    const parsedResponse = yoooJapanese;
+    const response = await OpenAiApi({
+      systemPrompt: genericOpenAiSystemPrompt,
+      userPrompt,
+      model: 'gpt-4',
+    });
+    const parsedResponse = JSON.parse(response);
     const body = {
       title: 'richard-wolf-rabble',
+      language: japanese,
     };
 
     const { title } = body;
 
-    const generatedAudioUrls = await generateAllVoiceVoxAudios(parsedResponse);
+    const audioTextMap = parsedResponse.map((i) => i.targetLang);
+
+    const generatedAudioUrls = await generateAllVoiceVoxAudios(audioTextMap);
 
     const timeStampedAudios = [] as number[];
 
@@ -45,30 +49,93 @@ export async function GET() {
       conbinedOutputFile,
     );
 
+    const sortedOrderOfGeneratedUrls = generatedAudioUrls.sort((a, b) => {
+      const numA = parseInt(a.match(/voicevox-(\d+)\.wav$/)?.[1] || '0', 10);
+      const numB = parseInt(b.match(/voicevox-(\d+)\.wav$/)?.[1] || '0', 10);
+      return numA - numB;
+    });
+
     const combinedAudioSuccess = await combineAudioFilesWithPromiseWrapper(
-      generatedAudioUrls,
+      sortedOrderOfGeneratedUrls,
       outputPathB,
     );
 
-    let content = [];
+    //
+
+    let currentAudioStartTime = 0;
+    let content = [] as any;
+    const newContent = [];
     if (combinedAudioSuccess) {
-      parsedResponse.forEach((transcriptItem, index) => {
-        const thisStartTime = timeStampedAudios[index];
-        content.push({
-          id: uuidv4(),
-          targetLang: transcriptItem,
-          time: thisStartTime,
-        });
-      });
+      content = await Promise.all(
+        parsedResponse.map(async (transcriptItem, index) => {
+          const audioFileName = `voicevox-${index}.wav`;
+          const thisAudioFile = path.join(
+            process.cwd(),
+            'public',
+            'audio',
+            audioFileName,
+          );
+          const thisAudioDuration = await getAudioFileDuration(thisAudioFile);
+
+          return {
+            id: uuidv4(),
+            index,
+            targetLang: transcriptItem.targetLang,
+            baseLang: transcriptItem.baseLang,
+            duration: thisAudioDuration as number,
+          };
+        }),
+      );
     }
+
+    content.sort((a, b) => a.index - b.index);
+
+    content.forEach((item) => {
+      const time = currentAudioStartTime;
+      newContent.push({
+        ...item,
+        time,
+      });
+      currentAudioStartTime += item.duration;
+    });
+
+    const localAudioPath =
+      'http://localhost:3000' + `/audio/${conbinedOutputFile}`;
+
+    const isUploaded = await uploadAudioCloudflare({
+      localAudioPath,
+      cloudFlareAudioName: title,
+    });
+
+    const contentObjToAdd = {
+      title,
+      isArticle: true,
+      content: newContent,
+      hasAudio: isUploaded,
+    };
+
+    const addContentRes = await fetch(
+      'http://127.0.0.1:5001/language-content-storage/us-central1/addContent',
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'audio/wav',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: contentObjToAdd,
+          language: 'japanese',
+        }),
+      },
+    );
+
+    console.log('## addContentRes', addContentRes);
 
     // Attempt to parse JSON from the model's response
     return NextResponse.json(
       {
+        content: contentObjToAdd,
         response: parsedResponse,
-        generatedAudioUrls,
-        timeStampedAudios,
-        content,
       },
       { status: 200 },
     );
@@ -78,5 +145,8 @@ export async function GET() {
       { error: 'Internal Server Error' },
       { status: 500 },
     );
+  } finally {
+    const pathToAudioFiles = path.join(process.cwd(), 'public', 'audio');
+    await deleteVoiceVoxFiles(pathToAudioFiles);
   }
 }
