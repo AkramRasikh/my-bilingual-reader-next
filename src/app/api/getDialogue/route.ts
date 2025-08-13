@@ -49,7 +49,7 @@ const jsonResponseObj = {
   wordIds: ['ids of the words being used'],
   moodPersonA: 'number id of the voice/mood selected',
   moodPersonB: 'number id of the voice/mood selected',
-  notes: '[explanation of any word choices, grammar, or cultural nuance]',
+  notes: 'explanation of any word choices, grammar, or cultural nuance',
 };
 
 export async function POST(request: Request) {

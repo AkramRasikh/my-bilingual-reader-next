@@ -13,9 +13,10 @@ const openai = new OpenAI({
 });
 
 const jsonResponseObj = {
-  targetLang: '[sentence(s) in Japanese]',
-  baseLang: '[natural English translation]',
-  notes: '[explanation of any word choices, grammar, or cultural nuance]',
+  targetLang: '<sentence(s) in Japanese>',
+  baseLang: '<natural English translation>',
+  notes:
+    '<sentence(s) of explanation of any word choices, grammar, or cultural nuance>',
   katakana: '<full katakana version of the sentence>',
   chunks: [
     {
