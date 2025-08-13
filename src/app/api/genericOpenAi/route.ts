@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import path from 'path';
-import { formatRawTranscript } from './data';
 import { generateAllVoiceVoxAudios } from './generate-all-voice-vox-audios';
 import { combineAudioFilesWithPromiseWrapper } from '../getDialogue/merge-audio-files';
 import { getAudioFileDuration } from '@/utils/get-audio-file-duration';
@@ -8,12 +7,24 @@ import { v4 as uuidv4 } from 'uuid';
 import OpenAiApi from './openAiApi';
 import { genericOpenAiSystemPrompt, getGenericOpenAiPrompt } from './prompt';
 import { uploadAudioCloudflare } from '@/app/shared-apis/upload-audio-cloudflare';
-import { japanese } from '@/app/languages';
 import { deleteVoiceVoxFiles } from './remove-generated-files';
+import { formatRawTranscript } from './format-youtube-subtitles-response';
 
-export async function GET() {
+export async function POST(req: Request) {
+  const body = await req.json();
+
+  const { title, youtubeUrl, language } = body;
+
   try {
-    const userPrompt = getGenericOpenAiPrompt(formatRawTranscript());
+    const youtubeSubsResponse = await fetch(youtubeUrl);
+
+    if (!youtubeSubsResponse.ok) {
+      throw new Error('GET Youtube subs failed');
+    }
+    const yotubeSubsJson = await youtubeSubsResponse.json();
+
+    const youtubeSubsToString = formatRawTranscript(yotubeSubsJson);
+    const userPrompt = getGenericOpenAiPrompt(youtubeSubsToString);
 
     const response = await OpenAiApi({
       systemPrompt: genericOpenAiSystemPrompt,
@@ -21,12 +32,6 @@ export async function GET() {
       model: 'gpt-4',
     });
     const parsedResponse = JSON.parse(response);
-    const body = {
-      title: 'richard-wolf-rabble',
-      language: japanese,
-    };
-
-    const { title } = body;
 
     const audioTextMap = parsedResponse.map((i) => i.targetLang);
 
@@ -124,7 +129,7 @@ export async function GET() {
         },
         body: JSON.stringify({
           content: contentObjToAdd,
-          language: 'japanese',
+          language,
         }),
       },
     );

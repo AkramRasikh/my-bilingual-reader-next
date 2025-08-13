@@ -5,7 +5,7 @@ const returnObject = [
   { targetLang: 'for Japanese', baseLang: 'The English translation' },
 ];
 
-export const getGenericOpenAiPrompt = (transcript: string[]) => `
+export const getGenericOpenAiPrompt = (transcript: string) => `
 
     I found a video online from Richard Wolf an american economist. I want a condensed and **Japanese** version of his transcript below.
 
@@ -17,7 +17,7 @@ export const getGenericOpenAiPrompt = (transcript: string[]) => `
     5. Japanese sentence should be around under 40 characters long.
 
     ## Transcript:
-    ${JSON.stringify(transcript)}
+    ${transcript}
 
     ## Final instruction
     > Return ONLY raw & valid JSON - an array of objects formatted as below with the properties targetLang and baseLang:
