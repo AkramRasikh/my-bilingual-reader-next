@@ -9,14 +9,16 @@ const openai = new OpenAI({
 interface OpenAIAPITypes {
   systemPrompt: string;
   userPrompt: string;
+  model?: string;
 }
 
 export default async function OpenAiApi({
   systemPrompt,
   userPrompt,
+  model,
 }: OpenAIAPITypes) {
   const completion = await openai.chat.completions.create({
-    model: 'gpt-5-mini',
+    model: model || 'gpt-4-mini',
     messages: [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
