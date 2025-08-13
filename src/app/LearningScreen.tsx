@@ -72,6 +72,7 @@ const LearningScreen = () => {
     selectedContentState,
     checkIsThereFollowingContent,
     wordsForSelectedTopic,
+    updateWordDataProvider,
   } = useData();
 
   const isFullReview = selectedContentState?.isFullReview;
@@ -584,7 +585,10 @@ const LearningScreen = () => {
           <ul className='flex flex-wrap gap-2.5'>
             {wordsForSelectedTopic.map((word) => (
               <li key={word.id}>
-                <WordCardContent {...word} />
+                <WordCardContent
+                  {...word}
+                  updateWordData={updateWordDataProvider}
+                />
               </li>
             ))}
           </ul>

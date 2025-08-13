@@ -82,6 +82,7 @@ export const WordCardContent = ({
               <ReviewSRSToggles
                 contentItem={{
                   id,
+                  reviewData,
                   ...rest,
                 }}
                 handleReviewFunc={updateWordData}

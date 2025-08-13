@@ -44,7 +44,7 @@ export const DataProvider = ({
   const wordsFromSentences = [];
 
   useEffect(() => {
-    if (selectedContentState) {
+    if (selectedContentState && wordsState?.length > 0) {
       const wordsForThisTopic = getSelectedTopicsWords();
       setWordsForSelectedTopic(wordsForThisTopic);
     }
@@ -88,6 +88,56 @@ export const DataProvider = ({
     const pureWords = getPureWords();
     setPureWordsState(pureWords);
   }, [wordsState]);
+
+  const updateWordDataProvider = async ({
+    wordId,
+    fieldToUpdate,
+    language,
+    isRemoveReview,
+  }) => {
+    try {
+      if (isRemoveReview) {
+        const res = await fetch('/api/deleteWord', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: wordId, language }),
+        });
+        const data = await res.json();
+        console.log('## data', data);
+
+        const targetLanguageWordsStateUpdated = wordsState.filter(
+          (item) => item.id !== wordId,
+        );
+        setWordsState(targetLanguageWordsStateUpdated);
+        return true;
+      } else {
+        const res = await fetch('/api/updateWord', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: wordId, fieldToUpdate, language }),
+        });
+
+        const data = await res.json();
+
+        const dateNow = new Date();
+        const targetLanguageWordsStateUpdated = wordsState.map((item) => {
+          const thisWordId = item.id === wordId;
+          if (thisWordId) {
+            const isDue = data.reviewData?.due < dateNow;
+            return {
+              ...item,
+              ...data,
+              isDue,
+            };
+          }
+          return item;
+        });
+        setWordsState(targetLanguageWordsStateUpdated);
+      }
+    } catch (error) {
+      console.log('## updateWordDataProvider DataProvider', { error });
+    }
+  };
 
   const getSelectedTopicsWords = () => {
     if (!selectedContentState || wordsState?.length === 0) {
@@ -441,6 +491,7 @@ export const DataProvider = ({
         handleGetComprehensiveReview,
         getSelectedTopicsWords,
         wordsForSelectedTopic,
+        updateWordDataProvider,
       }}
     >
       {children}
