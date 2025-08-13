@@ -10,7 +10,7 @@ export const generateAllVoiceVoxAudios = async (
 ) => {
   const audioUrls: string[] = [];
   await Promise.all(
-    parsedTranscriptResult.map(async (text) => {
+    parsedTranscriptResult.map(async (text, index) => {
       try {
         const audioGenerationResult = await generateVoiceVox(
           text,
@@ -32,7 +32,7 @@ export const generateAllVoiceVoxAudios = async (
 
         const audioBuffer = Buffer.from(await synthesisRes.arrayBuffer());
 
-        const audioFileName = `voicevox-${Date.now()}.wav`;
+        const audioFileName = `voicevox-${index}.wav`;
         const outputPath = path.join(
           process.cwd(),
           'public',
