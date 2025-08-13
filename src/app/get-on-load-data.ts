@@ -1,10 +1,12 @@
-import { saveJsonToFile } from '@/utils/setup-mock-data';
+import { readJsonFromFile, saveJsonToFile } from '@/utils/setup-mock-data';
 
 export const content = 'content';
 export const words = 'words';
 export const snippets = 'snippets';
 export const adhocSentences = 'adhocSentences';
 export const sentences = 'sentences';
+
+const isMock = false;
 
 const getFormattedData = (loadedData) => {
   const getNestedObjectData = (thisRef) => {
@@ -39,6 +41,11 @@ const getFormattedData = (loadedData) => {
 export const getOnLoadData = async () => {
   const url = process.env.NEXT_PUBLIC_GET_ON_ALL_LOAD_URL as string;
 
+  if (isMock) {
+    const formattedData = getFormattedData(await readJsonFromFile());
+    return formattedData;
+  }
+
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -61,7 +68,6 @@ export const getOnLoadData = async () => {
 
 // export const getOnLoadData = async () => {
 //   const url = process.env.NEXT_PUBLIC_GET_ON_ALL_LOAD_URL as string;
-
 //   // const res = await fetch(url, {
 //   //   method: 'POST',
 //   //   headers: {
