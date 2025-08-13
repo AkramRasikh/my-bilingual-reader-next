@@ -19,7 +19,7 @@ export const formatRawTranscript = (responseDataObj) => {
   let wordCount = 0;
   const subs = [] as string[];
 
-  responseDataObj.events.forEach((target) => {
+  responseDataObj.events.forEach((target: YoutubeSubsRes) => {
     if (target?.segs) {
       const textChunk = target.segs.map((seg) => seg.utf8).join('');
       const isLineBreak = textChunk === '\n';
