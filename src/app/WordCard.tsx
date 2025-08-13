@@ -6,6 +6,9 @@ import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import useWords from './words/useWords';
 import ReviewSRSToggles from './ReviewSRSToggles';
 import { Label } from '@/components/ui/label';
+import { isDueCheck } from './DataProvider';
+import clsx from 'clsx';
+import { getTimeDiffSRS } from './getTimeDiffSRS';
 
 export const WordCardContent = ({
   id,
@@ -18,13 +21,24 @@ export const WordCardContent = ({
   transliteration,
   updateWordData,
   defaultOpen,
+  reviewData,
   rest,
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
 
+  const timeNow = new Date();
+  const isWordDue = isDueCheck({ reviewData }, timeNow);
+
+  const isDueText = !isWordDue
+    ? getTimeDiffSRS({
+        dueTimeStamp: new Date(reviewData.due),
+        timeNow: timeNow,
+      })
+    : '';
+
   return (
     <Card
-      className='w-fit p-3'
+      className={clsx(isWordDue ? 'bg-amber-500' : '', 'w-fit p-3')}
       style={{
         animation: 'fadeIn 0.5s ease-out forwards',
       }}
@@ -64,14 +78,18 @@ export const WordCardContent = ({
               )}
               {definition && <Label>Definition: {definition}</Label>}
             </div>
-            <ReviewSRSToggles
-              contentItem={{
-                id,
-                ...rest,
-              }}
-              handleReviewFunc={updateWordData}
-              isVocab
-            />
+            {isWordDue ? (
+              <ReviewSRSToggles
+                contentItem={{
+                  id,
+                  ...rest,
+                }}
+                handleReviewFunc={updateWordData}
+                isVocab
+              />
+            ) : (
+              <span>{isDueText}</span>
+            )}
           </CardContent>
         </>
       )}

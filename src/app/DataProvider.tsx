@@ -16,6 +16,13 @@ import { updateContentMetaDataAPI } from './update-content-meta-data';
 
 export const DataContext = createContext(null);
 
+export const isDueCheck = (sentence, todayDateObj) => {
+  return (
+    (sentence?.nextReview && sentence.nextReview < todayDateObj) ||
+    new Date(sentence?.reviewData?.due) < todayDateObj
+  );
+};
+
 export const DataProvider = ({
   sortedContent,
   targetLanguageLoadedSentences,
@@ -115,13 +122,6 @@ export const DataProvider = ({
 
       return newContent;
     });
-  };
-
-  const isDueCheck = (sentence, todayDateObj) => {
-    return (
-      (sentence?.nextReview && sentence.nextReview < todayDateObj) ||
-      new Date(sentence?.reviewData?.due) < todayDateObj
-    );
   };
 
   const checkHowManyOfTopicNeedsReview = () => {
