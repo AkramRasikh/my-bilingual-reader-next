@@ -7,6 +7,88 @@ import useWords from './words/useWords';
 import ReviewSRSToggles from './ReviewSRSToggles';
 import { Label } from '@/components/ui/label';
 
+export const WordCardContent = ({
+  id,
+  isInBasket,
+  addWordToBasket,
+  baseForm,
+  definition,
+  surfaceForm,
+  phonetic,
+  transliteration,
+  updateWordData,
+  defaultOpen,
+  rest,
+}) => {
+  const [openContentState, setOpenContentState] = useState(defaultOpen);
+
+  return (
+    <Card
+      className='w-fit p-3'
+      style={{
+        animation: 'fadeIn 0.5s ease-out forwards',
+      }}
+    >
+      <div className='flex gap-3'>
+        <CardTitle className='m-auto'>{baseForm}</CardTitle>
+        <Button>EASY</Button>
+        <Button
+          variant={isInBasket ? 'destructive' : 'default'}
+          onClick={() =>
+            addWordToBasket?.({
+              word: baseForm,
+              id,
+              definition,
+            })
+          }
+        >
+          🧺
+        </Button>
+        <Button onClick={() => setOpenContentState(!openContentState)}>
+          ⠇
+        </Button>
+      </div>
+      {openContentState && (
+        <>
+          <hr />
+          <CardContent
+            style={{
+              animation: 'fadeIn 0.5s ease-out forwards',
+            }}
+          >
+            <div className='flex flex-col gap-3 mb-4'>
+              {surfaceForm && <Label>Surface Form: {surfaceForm}</Label>}
+              {phonetic && <Label>Phonetic: {phonetic}</Label>}
+              {transliteration && (
+                <Label>Transliteration: {transliteration}</Label>
+              )}
+              {definition && <Label>Definition: {definition}</Label>}
+            </div>
+            <ReviewSRSToggles
+              contentItem={{
+                id,
+                ...rest,
+              }}
+              handleReviewFunc={updateWordData}
+              isVocab
+            />
+          </CardContent>
+        </>
+      )}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+      `}</style>
+    </Card>
+  );
+};
+
 const WordCard = ({
   baseForm,
   id,

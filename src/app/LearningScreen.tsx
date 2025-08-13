@@ -21,6 +21,7 @@ import clsx from 'clsx';
 import ProgressBarSnippet from './ProgressBarSnippet';
 import ComprehensiveTranscriptItem from './ComprehensiveTranscriptItem';
 import useLearningScreen from './useLearningScreen';
+import { WordCardContent } from './WordCard';
 
 const LearningScreen = () => {
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
@@ -70,6 +71,7 @@ const LearningScreen = () => {
     getNextTranscript,
     selectedContentState,
     checkIsThereFollowingContent,
+    wordsForSelectedTopic,
   } = useData();
 
   const isFullReview = selectedContentState?.isFullReview;
@@ -577,6 +579,17 @@ const LearningScreen = () => {
           />
         )}
       </div>
+      {wordsForSelectedTopic.length > 0 ? (
+        <div className='text-center'>
+          <ul className='flex flex-wrap gap-2.5'>
+            {wordsForSelectedTopic.map((word) => (
+              <li key={word.id}>
+                <WordCardContent {...word} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </div>
   );
 };

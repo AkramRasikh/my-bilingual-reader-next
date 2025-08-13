@@ -28,12 +28,20 @@ export const DataProvider = ({
   const [selectedContentState, setSelectedContentState] = useState(null);
   const [generalTopicDisplayNameState, setGeneralTopicDisplayNameState] =
     useState([]);
+  const [wordsForSelectedTopic, setWordsForSelectedTopic] = useState([]);
   const [
     generalTopicDisplayNameSelectedState,
     setGeneralTopicDisplayNameSelectedState,
   ] = useState('');
 
   const wordsFromSentences = [];
+
+  useEffect(() => {
+    if (selectedContentState) {
+      const wordsForThisTopic = getSelectedTopicsWords();
+      setWordsForSelectedTopic(wordsForThisTopic);
+    }
+  }, [wordsState, selectedContentState]);
 
   const getYoutubeID = (generalName) =>
     contentState
@@ -73,6 +81,25 @@ export const DataProvider = ({
     const pureWords = getPureWords();
     setPureWordsState(pureWords);
   }, [wordsState]);
+
+  const getSelectedTopicsWords = () => {
+    if (!selectedContentState || wordsState?.length === 0) {
+      return null;
+    }
+
+    const thisTopicsSentenceIds = selectedContentState.content.map((i) => i.id);
+
+    const thisTopicsWordsArr = [];
+
+    wordsState.forEach((word) => {
+      const originalContextId = word.contexts[0];
+      if (thisTopicsSentenceIds.includes(originalContextId)) {
+        thisTopicsWordsArr.push(word);
+      }
+    });
+
+    return thisTopicsWordsArr;
+  };
 
   const removeReviewFromContentStateFunc = ({ sentenceId, contentIndex }) => {
     setContentState((prev) => {
@@ -412,6 +439,8 @@ export const DataProvider = ({
         getYoutubeID,
         checkHowManyOfTopicNeedsReview,
         handleGetComprehensiveReview,
+        getSelectedTopicsWords,
+        wordsForSelectedTopic,
       }}
     >
       {children}

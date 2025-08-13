@@ -12,8 +12,6 @@ const WordsContainer = () => {
 
   const { wordBasketState, wordsState, story, setStory } = useWords();
 
-  console.log('## story', story);
-
   const getStoryAPI = async ({ isStory }) => {
     setLoading(true);
     try {
