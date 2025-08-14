@@ -23,15 +23,12 @@ const getFormattedData = (loadedData) => {
   ).content.filter((item) => item !== null);
 
   const targetLanguageLoadedWords = getNestedObjectData(words)?.words || [];
-  const targetLanguageLoadedSnippets =
-    getNestedObjectData(snippets)?.snippets || [];
   const targetLanguageLoadedSentences =
     getNestedObjectData(sentences)?.sentences || [];
 
   const data = {
     content: targetLanguageLoadedContent,
     words: targetLanguageLoadedWords,
-    snippets: targetLanguageLoadedSnippets,
     sentences: targetLanguageLoadedSentences,
   };
 
@@ -54,7 +51,7 @@ export const getOnLoadData = async () => {
     },
     body: JSON.stringify({
       language: 'japanese',
-      refs: [content, words],
+      refs: [content, words, sentences],
     }),
   });
 
