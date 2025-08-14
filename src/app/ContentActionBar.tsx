@@ -90,7 +90,7 @@ export default function ContentActionBar({
   };
 
   return (
-    <div className='flex flex-col items-start gap-2'>
+    <div className='flex flex-col items-start gap-2 mt-2'>
       <div className='flex gap-2'>
         <Button onClick={handlePrimaryClick} disabled={isLoading}>
           {hasContentToReview ? 'Remove bulk review' : 'Add bulk review'}
