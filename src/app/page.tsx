@@ -10,12 +10,6 @@ export default async function Home() {
   const targetLanguageLoadedSentences = allStudyDataRes.sentences;
   const targetLanguageLoadedContent = allStudyDataRes.content;
   const targetLanguageLoadedWords = allStudyDataRes.words;
-  // const targetLanguageLoadedSnippets = allStudyDataRes.snippets;
-  // const targetLanguageLoadedSnippetsWithSavedTag =
-  //   targetLanguageLoadedSnippets?.map((item) => ({
-  //     ...item,
-  //     saved: true,
-  //   }));
 
   const sortedContent = targetLanguageLoadedContent
     ?.sort((a, b) => {
