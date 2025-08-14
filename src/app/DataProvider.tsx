@@ -40,6 +40,8 @@ export const DataProvider = ({
   const [selectedContentState, setSelectedContentState] = useState(null);
   const [generalTopicDisplayNameState, setGeneralTopicDisplayNameState] =
     useState([]);
+  const [wordBasketState, setWordBasketState] = useState([]);
+
   const [wordsForSelectedTopic, setWordsForSelectedTopic] = useState([]);
   const [
     generalTopicDisplayNameSelectedState,
@@ -56,8 +58,12 @@ export const DataProvider = ({
 
   useEffect(() => {
     if (selectedContentState && wordsState?.length > 0) {
+      const dateNow = new Date();
       const wordsForThisTopic = getSelectedTopicsWords();
-      setWordsForSelectedTopic(wordsForThisTopic);
+      const sortedWordsForThisTopic = wordsForThisTopic?.sort(
+        (a, b) => isDueCheck(b, dateNow) - isDueCheck(a, dateNow),
+      );
+      setWordsForSelectedTopic(sortedWordsForThisTopic);
     }
   }, [wordsState, selectedContentState]);
 
@@ -576,6 +582,8 @@ export const DataProvider = ({
         setToastMessageState,
         isSentenceReviewState,
         setIsSentenceReviewState,
+        wordBasketState,
+        setWordBasketState,
       }}
     >
       {children}

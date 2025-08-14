@@ -73,7 +73,25 @@ const LearningScreen = () => {
     checkIsThereFollowingContent,
     wordsForSelectedTopic,
     updateWordDataProvider,
+    wordBasketState,
+    setWordBasketState,
   } = useData();
+
+  const addWordToBasket = (word) => {
+    const wordIsInBasic = wordBasketState.some(
+      (wordItem) => wordItem?.id === word.id,
+    );
+
+    if (wordIsInBasic) {
+      const updatedBasket = wordBasketState.filter(
+        (item) => item.id !== word.id,
+      );
+      setWordBasketState(updatedBasket);
+      return;
+    }
+
+    setWordBasketState((prev) => [...prev, word]);
+  };
 
   const isFullReview = selectedContentState?.isFullReview;
 
@@ -494,14 +512,22 @@ const LearningScreen = () => {
         {wordsForSelectedTopic.length > 0 ? (
           <div className='text-center m-auto p-1.5'>
             <ul className='flex flex-wrap gap-2.5'>
-              {wordsForSelectedTopic.slice(0, 5).map((word) => (
-                <li key={word.id}>
-                  <WordCardContent
-                    {...word}
-                    updateWordData={updateWordDataProvider}
-                  />
-                </li>
-              ))}
+              {wordsForSelectedTopic.slice(0, 5).map((word) => {
+                const isInBasket = wordBasketState?.some(
+                  (i) => i?.id === word.id,
+                );
+
+                return (
+                  <li key={word.id}>
+                    <WordCardContent
+                      {...word}
+                      updateWordData={updateWordDataProvider}
+                      addWordToBasket={addWordToBasket}
+                      isInBasket={isInBasket}
+                    />
+                  </li>
+                );
+              })}
             </ul>
           </div>
         ) : null}
