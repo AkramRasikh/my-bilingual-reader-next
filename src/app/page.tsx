@@ -1,3 +1,4 @@
+import { Toaster } from 'sonner';
 import BreadcrumbComponent from './BreadCrumbHeader';
 import { DataProvider } from './DataProvider';
 import { getGeneralTopicName } from './get-general-topic-name';

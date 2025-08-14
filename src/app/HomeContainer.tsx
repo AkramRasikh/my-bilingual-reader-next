@@ -11,6 +11,7 @@ import LoadingSpinner from './LoadingSpinner';
 import { LearningScreenProvider } from './LearningScreenProvider';
 import { Button } from '@/components/ui/button';
 import SentenceBlock from './SentenceBlock';
+import { toast, Toaster } from 'sonner';
 
 export const HomeContainer = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
@@ -29,7 +30,16 @@ export const HomeContainer = () => {
     generalTopicDisplayNameSelectedState,
     setGeneralTopicDisplayNameSelectedState,
     sentencesState,
+    toastMessageState,
+    setToastMessageState,
   } = useData();
+
+  useEffect(() => {
+    if (toastMessageState) {
+      toast(toastMessageState);
+      setTimeout(() => setToastMessageState(''), 1000);
+    }
+  }, [toastMessageState]);
 
   const handlePlayFromHere = (time: number) => {
     if (videoRef.current) {
@@ -135,6 +145,7 @@ export const HomeContainer = () => {
 
     return (
       <div style={{ padding: 10 }}>
+        <Toaster />
         <Button onClick={() => setIsSentenceReviewState(false)}>
           Exit Sentence Review ({numberOfSentences})
         </Button>
@@ -142,7 +153,7 @@ export const HomeContainer = () => {
           {slicedSentences?.map((sentence, index) => {
             const sentenceIndex = index + 1 + ') ';
             return (
-              <li key={sentence.id}>
+              <li key={sentence.id} className='mb-2'>
                 <SentenceBlock
                   sentence={sentence}
                   sentenceIndex={sentenceIndex}

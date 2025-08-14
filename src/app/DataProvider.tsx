@@ -313,7 +313,6 @@ export const DataProvider = ({
           .filter((i) => isDueCheck(i, dateNow));
 
         setSentencesState(updatedSentencesState);
-        console.log('## Here?');
 
         setToastMessageState(
           isRemoveReview

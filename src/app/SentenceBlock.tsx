@@ -49,7 +49,7 @@ const SentenceBlock = ({ sentence, sentenceIndex }) => {
   };
 
   return (
-    <div className='text-lg w-5/10 border rounded-2xl p-2'>
+    <div className='text-lg w-5/10 border rounded-2xl p-2 m-auto'>
       <p className='flex gap-2 '>
         {sentenceIndex && <span>{sentenceIndex}</span>}
         <FormattedSentence
@@ -60,7 +60,7 @@ const SentenceBlock = ({ sentence, sentenceIndex }) => {
         />
       </p>
       <p className='text-right opacity-30'>{sentence.baseLang}</p>
-      <audio src={url} controls />
+      <audio src={url} controls className='m-3 ml-auto w-full' />
       <ReviewSRSToggles
         contentItem={sentence}
         handleReviewFunc={handleReviewFunc}
