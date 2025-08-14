@@ -90,8 +90,8 @@ export default function ContentActionBar({
   };
 
   return (
-    <div className='flex flex-col items-start gap-2 mt-2'>
-      <div className='flex gap-2'>
+    <div className='flex flex-col items-start gap-2  my-2'>
+      <div className='flex gap-2 mx-auto'>
         <Button onClick={handlePrimaryClick} disabled={isLoading}>
           {hasContentToReview ? 'Remove bulk review' : 'Add bulk review'}
         </Button>
@@ -118,7 +118,7 @@ export default function ContentActionBar({
       </div>
 
       {showConfirm && !isLoading && (
-        <div className='flex gap-2 mt-2'>
+        <div className='flex gap-2 mt-2 mx-auto'>
           <button
             onClick={handleConfirm}
             className='px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700'

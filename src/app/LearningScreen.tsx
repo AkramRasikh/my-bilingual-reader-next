@@ -497,41 +497,28 @@ const LearningScreen = () => {
 
   return (
     <div>
-      <div>
-        <ContentActionBar
-          handleBulkReviews={handleBulkReviews}
-          hasContentToReview={hasContentToReview}
-          updateContentMetaData={updateContentMetaData}
-          topicName={selectedContentState.title}
-          nextReview={nextReview}
-          reviewHistory={reviewHistory}
-          contentIndex={contentIndex}
-          isInReviewMode={isInReviewMode}
-          setIsInReviewMode={setIsInReviewMode}
-        />
-        {wordsForSelectedTopic.length > 0 ? (
-          <div className='text-center m-auto p-1.5'>
-            <ul className='flex flex-wrap gap-2.5'>
-              {wordsForSelectedTopic.slice(0, 5).map((word) => {
-                const isInBasket = wordBasketState?.some(
-                  (i) => i?.id === word.id,
-                );
+      {wordsForSelectedTopic.length > 0 ? (
+        <div className='text-center m-auto p-1.5'>
+          <ul className='flex flex-wrap gap-2.5'>
+            {wordsForSelectedTopic.slice(0, 5).map((word) => {
+              const isInBasket = wordBasketState?.some(
+                (i) => i?.id === word.id,
+              );
 
-                return (
-                  <li key={word.id}>
-                    <WordCardContent
-                      {...word}
-                      updateWordData={updateWordDataProvider}
-                      addWordToBasket={addWordToBasket}
-                      isInBasket={isInBasket}
-                    />
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ) : null}
-      </div>
+              return (
+                <li key={word.id}>
+                  <WordCardContent
+                    {...word}
+                    updateWordData={updateWordDataProvider}
+                    addWordToBasket={addWordToBasket}
+                    isInBasket={isInBasket}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : null}
       <div
         style={{
           display: 'flex',
@@ -547,6 +534,17 @@ const LearningScreen = () => {
             url={videoUrl}
             handleTimeUpdate={handleTimeUpdate}
             setIsVideoPlaying={setIsVideoPlaying}
+          />
+          <ContentActionBar
+            handleBulkReviews={handleBulkReviews}
+            hasContentToReview={hasContentToReview}
+            updateContentMetaData={updateContentMetaData}
+            topicName={selectedContentState.title}
+            nextReview={nextReview}
+            reviewHistory={reviewHistory}
+            contentIndex={contentIndex}
+            isInReviewMode={isInReviewMode}
+            setIsInReviewMode={setIsInReviewMode}
           />
           {threeSecondLoopState && (
             <div className='pt-1.5 m-auto flex justify-center gap-1.5 w-80'>
