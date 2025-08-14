@@ -45,6 +45,7 @@ export const DataProvider = ({
     generalTopicDisplayNameSelectedState,
     setGeneralTopicDisplayNameSelectedState,
   ] = useState('');
+  const [toastMessageState, setToastMessageState] = useState('');
 
   const wordsFromSentences = [];
 
@@ -312,6 +313,13 @@ export const DataProvider = ({
           .filter((i) => isDueCheck(i, dateNow));
 
         setSentencesState(updatedSentencesState);
+        console.log('## Here?');
+
+        setToastMessageState(
+          isRemoveReview
+            ? 'Successful learned sentence ✅'
+            : 'Sentence reviewed ✅',
+        );
       }
     } catch (error) {
       console.log('## updateAdhocSentenceData', { error });
@@ -564,6 +572,8 @@ export const DataProvider = ({
         updateWordDataProvider,
         sentencesState,
         updateAdhocSentenceData,
+        toastMessageState,
+        setToastMessageState,
       }}
     >
       {children}
