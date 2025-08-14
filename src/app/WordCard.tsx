@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { isDueCheck } from './DataProvider';
 import clsx from 'clsx';
 import { getTimeDiffSRS } from './getTimeDiffSRS';
+import { srsCalculationAndText, srsRetentionKeyTypes } from './srs-algo';
+import LoadingSpinner from './LoadingSpinner';
 
 export const WordCardContent = ({
   id,
@@ -25,7 +27,7 @@ export const WordCardContent = ({
   rest,
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
-
+  const [isLoadingState, setIsLoadingState] = useState(false);
   const timeNow = new Date();
   const isWordDue = isDueCheck({ reviewData }, timeNow);
 
@@ -36,16 +38,50 @@ export const WordCardContent = ({
       })
     : '';
 
+  const handleQuickEasy = async () => {
+    const timeNow = new Date();
+
+    const { nextScheduledOptions } = srsCalculationAndText({
+      reviewData: rest,
+      contentType: srsRetentionKeyTypes.vocab,
+      timeNow,
+    });
+
+    const easyModeData = nextScheduledOptions['4'].card;
+
+    try {
+      setIsLoadingState(true);
+      await updateWordData({
+        wordId: id,
+        fieldToUpdate: { reviewData: easyModeData },
+        language: 'japanese',
+      });
+    } catch (error) {
+      console.log('## handleNextReview', { error });
+    } finally {
+      setIsLoadingState(false);
+    }
+  };
+
   return (
     <Card
-      className={clsx(isWordDue ? 'bg-amber-500' : '', 'w-fit p-3')}
+      className={clsx(
+        isWordDue ? 'bg-amber-500' : '',
+        isLoadingState ? 'mask-b-from-gray-700' : '',
+        'w-fit p-3 relative',
+      )}
       style={{
         animation: 'fadeIn 0.5s ease-out forwards',
       }}
     >
+      {isLoadingState && (
+        <div className='absolute left-5/10 top-1/3'>
+          <LoadingSpinner />
+        </div>
+      )}
       <div className='flex gap-3'>
         <CardTitle className='m-auto'>{baseForm}</CardTitle>
-        <Button>EASY</Button>
+        <Button onClick={handleQuickEasy}>EASY</Button>
         <Button
           variant={isInBasket ? 'destructive' : 'default'}
           onClick={() =>
