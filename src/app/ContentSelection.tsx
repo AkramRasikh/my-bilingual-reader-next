@@ -11,9 +11,6 @@ const ContentSelection = ({
   selectedContentState,
   youtubeContentTagsState,
   handleSelectedContent,
-  isSentenceReviewState,
-  setIsSentenceReviewState,
-  numberOfSentences,
 }) => {
   const {
     getYoutubeID,
@@ -37,14 +34,6 @@ const ContentSelection = ({
 
   return (
     <>
-      {!isSentenceReviewState && (
-        <Button
-          className='m-1.5'
-          onClick={() => setIsSentenceReviewState(true)}
-        >
-          Sentence reviews ({numberOfSentences})
-        </Button>
-      )}
       <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
         {!generalTopicDisplayNameSelectedState &&
           generalTopicDisplayNameState?.length > 0 &&
@@ -104,20 +93,16 @@ const ContentSelection = ({
       </ul>
       {hasReviewSentences > 0 && (
         <>
-          <ul className='flex flex-wrap gap-1'>
+          <ul className='flex flex-wrap gap-1 m-auto border-t-2 pt-1'>
             {Object.entries(topicsWithReviews).map(([title, count]) => (
               <Button key={title} onClick={() => handleSelectedContent(title)}>
                 {title} ({count})
               </Button>
             ))}
+            <Button variant='outline' onClick={handleGetComprehensiveReview}>
+              All {theseSentencesDue?.length}
+            </Button>
           </ul>
-          <Button
-            className='m-1'
-            variant='outline'
-            onClick={handleGetComprehensiveReview}
-          >
-            All {theseSentencesDue?.length}
-          </Button>
         </>
       )}
     </>

@@ -479,24 +479,40 @@ const LearningScreen = () => {
 
   return (
     <div>
-      <ContentActionBar
-        handleBulkReviews={handleBulkReviews}
-        hasContentToReview={hasContentToReview}
-        updateContentMetaData={updateContentMetaData}
-        topicName={selectedContentState.title}
-        nextReview={nextReview}
-        reviewHistory={reviewHistory}
-        contentIndex={contentIndex}
-        isInReviewMode={isInReviewMode}
-        setIsInReviewMode={setIsInReviewMode}
-      />
+      <div>
+        <ContentActionBar
+          handleBulkReviews={handleBulkReviews}
+          hasContentToReview={hasContentToReview}
+          updateContentMetaData={updateContentMetaData}
+          topicName={selectedContentState.title}
+          nextReview={nextReview}
+          reviewHistory={reviewHistory}
+          contentIndex={contentIndex}
+          isInReviewMode={isInReviewMode}
+          setIsInReviewMode={setIsInReviewMode}
+        />
+        {wordsForSelectedTopic.length > 0 ? (
+          <div className='text-center m-auto p-1.5'>
+            <ul className='flex flex-wrap gap-2.5'>
+              {wordsForSelectedTopic.slice(0, 5).map((word) => (
+                <li key={word.id}>
+                  <WordCardContent
+                    {...word}
+                    updateWordData={updateWordDataProvider}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </div>
       <div
         style={{
           display: 'flex',
           gap: 20,
           width: 'fit-content',
           margin: 'auto',
-          marginTop: 50,
+          marginTop: 20,
         }}
       >
         <div className='flex-1 mt-5 max-w-xl m-auto'>
@@ -580,20 +596,6 @@ const LearningScreen = () => {
           />
         )}
       </div>
-      {wordsForSelectedTopic.length > 0 ? (
-        <div className='text-center'>
-          <ul className='flex flex-wrap gap-2.5'>
-            {wordsForSelectedTopic.map((word) => (
-              <li key={word.id}>
-                <WordCardContent
-                  {...word}
-                  updateWordData={updateWordDataProvider}
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
     </div>
   );
 };

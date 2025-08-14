@@ -9,7 +9,6 @@ import checkIfVideoExists from './check-if-video-exists';
 import ContentSelection from './ContentSelection';
 import LoadingSpinner from './LoadingSpinner';
 import { LearningScreenProvider } from './LearningScreenProvider';
-import { Button } from '@/components/ui/button';
 import SentenceBlock from './SentenceBlock';
 import { toast, Toaster } from 'sonner';
 
@@ -17,7 +16,6 @@ export const HomeContainer = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
   const [youtubeContentTagsState, setYoutubeContentTags] = useState();
   const [isLoadingState, setIsLoadingState] = useState(false);
-  const [isSentenceReviewState, setIsSentenceReviewState] = useState(false);
 
   const [currentTime, setCurrentTime] = useState(0);
 
@@ -32,6 +30,8 @@ export const HomeContainer = () => {
     sentencesState,
     toastMessageState,
     setToastMessageState,
+    isSentenceReviewState,
+    setIsSentenceReviewState,
   } = useData();
 
   useEffect(() => {
@@ -146,9 +146,6 @@ export const HomeContainer = () => {
     return (
       <div style={{ padding: 10 }}>
         <Toaster />
-        <Button onClick={() => setIsSentenceReviewState(false)}>
-          Exit Sentence Review ({numberOfSentences})
-        </Button>
         <ul className='mt-1.5 mb-1.5'>
           {slicedSentences?.map((sentence, index) => {
             const sentenceIndex = index + 1 + ') ';

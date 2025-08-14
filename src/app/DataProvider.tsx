@@ -46,6 +46,7 @@ export const DataProvider = ({
     setGeneralTopicDisplayNameSelectedState,
   ] = useState('');
   const [toastMessageState, setToastMessageState] = useState('');
+  const [isSentenceReviewState, setIsSentenceReviewState] = useState(false);
 
   const wordsFromSentences = [];
 
@@ -573,6 +574,8 @@ export const DataProvider = ({
         updateAdhocSentenceData,
         toastMessageState,
         setToastMessageState,
+        isSentenceReviewState,
+        setIsSentenceReviewState,
       }}
     >
       {children}

@@ -1,9 +1,7 @@
-import { Toaster } from 'sonner';
-import BreadcrumbComponent from './BreadCrumbHeader';
 import { DataProvider } from './DataProvider';
 import { getGeneralTopicName } from './get-general-topic-name';
 import { getOnLoadData } from './get-on-load-data';
-import { HomeContainer } from './HomeContainer';
+import PageBaseContent from './PageBaseContent';
 
 export default async function Home() {
   const allStudyDataRes = await getOnLoadData();
@@ -31,10 +29,7 @@ export default async function Home() {
       targetLanguageLoadedSentences={targetLanguageLoadedSentences}
       sortedContent={sortedContent}
     >
-      <div className='p-4 bg-amber-50 h-lvh'>
-        <BreadcrumbComponent />
-        <HomeContainer sortedContent={sortedContent} />
-      </div>
+      <PageBaseContent />
     </DataProvider>
   );
 }
