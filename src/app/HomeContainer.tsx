@@ -9,11 +9,14 @@ import checkIfVideoExists from './check-if-video-exists';
 import ContentSelection from './ContentSelection';
 import LoadingSpinner from './LoadingSpinner';
 import { LearningScreenProvider } from './LearningScreenProvider';
+import { Button } from '@/components/ui/button';
+import SentenceBlock from './SentenceBlock';
 
 export const HomeContainer = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
   const [youtubeContentTagsState, setYoutubeContentTags] = useState();
   const [isLoadingState, setIsLoadingState] = useState(false);
+  const [isSentenceReviewState, setIsSentenceReviewState] = useState(false);
 
   const [currentTime, setCurrentTime] = useState(0);
 
@@ -25,6 +28,7 @@ export const HomeContainer = () => {
     setGeneralTopicDisplayNameState,
     generalTopicDisplayNameSelectedState,
     setGeneralTopicDisplayNameSelectedState,
+    sentencesState,
   } = useData();
 
   const handlePlayFromHere = (time: number) => {
@@ -47,6 +51,7 @@ export const HomeContainer = () => {
     );
     setSelectedContentState(thisContent);
   };
+
   useEffect(() => {
     const loadYoutubeTags = async () => {
       try {
@@ -123,6 +128,31 @@ export const HomeContainer = () => {
     loadYoutubeTags();
   }, []);
 
+  if (isSentenceReviewState && sentencesState.length > 0) {
+    const slicedSentences = sentencesState.slice(0, 5);
+
+    return (
+      <div style={{ padding: 10 }}>
+        <Button onClick={() => setIsSentenceReviewState(false)}>
+          Exit Sentence Review
+        </Button>
+        <ul className='mt-1.5 mb-1.5'>
+          {slicedSentences?.map((sentence, index) => {
+            const sentenceIndex = index + 1 + ') ';
+            return (
+              <li key={sentence.id}>
+                <SentenceBlock
+                  sentence={sentence}
+                  sentenceIndex={sentenceIndex}
+                />
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: 10 }}>
       {isLoadingState && (
@@ -147,6 +177,8 @@ export const HomeContainer = () => {
         selectedContentState={selectedContentState}
         youtubeContentTagsState={youtubeContentTagsState}
         handleSelectedContent={handleSelectedContent}
+        isSentenceReviewState={isSentenceReviewState}
+        setIsSentenceReviewState={setIsSentenceReviewState}
       />
       {selectedContentState && (
         <LearningScreenProvider

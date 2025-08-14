@@ -11,6 +11,8 @@ const ContentSelection = ({
   selectedContentState,
   youtubeContentTagsState,
   handleSelectedContent,
+  isSentenceReviewState,
+  setIsSentenceReviewState,
 }) => {
   const {
     getYoutubeID,
@@ -34,6 +36,14 @@ const ContentSelection = ({
 
   return (
     <>
+      {!isSentenceReviewState && (
+        <Button
+          className='m-1.5'
+          onClick={() => setIsSentenceReviewState(true)}
+        >
+          Sentence reviews
+        </Button>
+      )}
       <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
         {!generalTopicDisplayNameSelectedState &&
           generalTopicDisplayNameState?.length > 0 &&

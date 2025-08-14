@@ -6,7 +6,10 @@ import {
   getNextScheduledOptions,
   srsRetentionKeyTypes,
 } from './srs-algo';
-import { makeArrayUnique } from './useHighlightWordToWordBank';
+import {
+  makeArrayUnique,
+  useHighlightWordToWordBank,
+} from './useHighlightWordToWordBank';
 import { deleteWordAPI } from './delete-word';
 import { japanese } from './languages';
 import { updateSentenceDataAPI } from './update-sentence-api';
@@ -30,6 +33,7 @@ export const DataProvider = ({
   children,
 }: PropsWithChildren<object>) => {
   const [wordsState, setWordsState] = useState(targetLanguageLoadedWords);
+  const [sentencesState, setSentencesState] = useState([]);
   const [contentState, setContentState] = useState(sortedContent);
   const [pureWordsState, setPureWordsState] = useState([]);
   const [selectedContentState, setSelectedContentState] = useState(null);
@@ -43,12 +47,37 @@ export const DataProvider = ({
 
   const wordsFromSentences = [];
 
+  const { underlineWordsInSentence } = useHighlightWordToWordBank({
+    pureWordsUnique: pureWordsState,
+  });
+
   useEffect(() => {
     if (selectedContentState && wordsState?.length > 0) {
       const wordsForThisTopic = getSelectedTopicsWords();
       setWordsForSelectedTopic(wordsForThisTopic);
     }
   }, [wordsState, selectedContentState]);
+
+  useEffect(() => {
+    if (
+      sentencesState.length === 0 &&
+      targetLanguageLoadedSentences.length > 0 &&
+      pureWordsState.length > 0
+    ) {
+      const dateNow = new Date();
+      const dueCardsNow = targetLanguageLoadedSentences.filter((sentence) =>
+        isDueCheck(sentence, dateNow),
+      );
+
+      const formatSentence = dueCardsNow?.map((item) => {
+        return {
+          ...item,
+          targetLangformatted: underlineWordsInSentence(item.targetLang),
+        };
+      });
+      setSentencesState(formatSentence);
+    }
+  }, [sentencesState, pureWordsState]);
 
   const getYoutubeID = (generalName) =>
     contentState
@@ -492,6 +521,7 @@ export const DataProvider = ({
         getSelectedTopicsWords,
         wordsForSelectedTopic,
         updateWordDataProvider,
+        sentencesState,
       }}
     >
       {children}
