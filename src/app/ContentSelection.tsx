@@ -13,6 +13,7 @@ const ContentSelection = ({
   handleSelectedContent,
   isSentenceReviewState,
   setIsSentenceReviewState,
+  numberOfSentences,
 }) => {
   const {
     getYoutubeID,
@@ -41,7 +42,7 @@ const ContentSelection = ({
           className='m-1.5'
           onClick={() => setIsSentenceReviewState(true)}
         >
-          Sentence reviews
+          Sentence reviews ({numberOfSentences})
         </Button>
       )}
       <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>

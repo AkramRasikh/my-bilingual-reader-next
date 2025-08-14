@@ -16,6 +16,7 @@ import { updateSentenceDataAPI } from './update-sentence-api';
 import { sentenceReviewBulkAPI } from './bulk-sentence-review';
 import { breakdownSentenceAPI } from './breakdown-sentence';
 import { updateContentMetaDataAPI } from './update-content-meta-data';
+import { updateAdhocSentenceAPI } from './update-adhoc-sentence';
 
 export const DataContext = createContext(null);
 
@@ -280,6 +281,46 @@ export const DataProvider = ({
     setSelectedContentState(thisContent);
   };
 
+  const updateAdhocSentenceData = async ({
+    sentenceId,
+    fieldToUpdate,
+    isRemoveReview,
+  }) => {
+    try {
+      const updatedFieldFromDB = await updateAdhocSentenceAPI({
+        sentenceId,
+        fieldToUpdate,
+        language: japanese,
+      });
+
+      if (updatedFieldFromDB) {
+        const dateNow = new Date();
+        const updatedSentencesState = sentencesState
+          .map((item) => {
+            const matchedId = sentenceId === item.id;
+            if (matchedId && isRemoveReview) {
+              delete item?.reviewData;
+              return item;
+            } else if (matchedId) {
+              return {
+                ...item,
+                ...updatedFieldFromDB,
+              };
+            }
+            return item;
+          })
+          .filter((i) => isDueCheck(i, dateNow));
+
+        setSentencesState(updatedSentencesState);
+      }
+    } catch (error) {
+      console.log('## updateAdhocSentenceData', { error });
+      // updatePromptFunc(`Error updating sentence for ${topicName}`);
+    } finally {
+      // setUpdatingSentenceState('');
+    }
+  };
+
   const updateSentenceData = async ({
     topicName,
     sentenceId,
@@ -522,6 +563,7 @@ export const DataProvider = ({
         wordsForSelectedTopic,
         updateWordDataProvider,
         sentencesState,
+        updateAdhocSentenceData,
       }}
     >
       {children}

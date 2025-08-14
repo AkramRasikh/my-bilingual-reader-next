@@ -10,11 +10,23 @@ const SentenceBlock = ({ sentence, sentenceIndex }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const hoverTimerMasterRef = useRef<HTMLVideoElement>(null); // Reference to the video element
 
-  const { wordsState } = useData();
+  const { wordsState, updateAdhocSentenceData } = useData();
 
   const url = getAudioURL(sentence.id, japanese);
 
-  const handleReviewFunc = () => {};
+  const handleReviewFunc = async (arg) => {
+    if (arg?.isRemoveReview) {
+      await updateAdhocSentenceData({
+        ...arg,
+        fieldToUpdate: { reviewData: {} },
+      });
+    } else {
+      await updateAdhocSentenceData({
+        ...arg,
+        fieldToUpdate: { reviewData: arg.nextDue },
+      });
+    }
+  };
 
   const handleMouseEnter = (text) => {
     hoverTimerMasterRef.current = setTimeout(() => {

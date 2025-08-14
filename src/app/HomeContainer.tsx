@@ -128,13 +128,15 @@ export const HomeContainer = () => {
     loadYoutubeTags();
   }, []);
 
+  const numberOfSentences = sentencesState.length;
+
   if (isSentenceReviewState && sentencesState.length > 0) {
     const slicedSentences = sentencesState.slice(0, 5);
 
     return (
       <div style={{ padding: 10 }}>
         <Button onClick={() => setIsSentenceReviewState(false)}>
-          Exit Sentence Review
+          Exit Sentence Review ({numberOfSentences})
         </Button>
         <ul className='mt-1.5 mb-1.5'>
           {slicedSentences?.map((sentence, index) => {
@@ -179,6 +181,7 @@ export const HomeContainer = () => {
         handleSelectedContent={handleSelectedContent}
         isSentenceReviewState={isSentenceReviewState}
         setIsSentenceReviewState={setIsSentenceReviewState}
+        numberOfSentences={numberOfSentences}
       />
       {selectedContentState && (
         <LearningScreenProvider
