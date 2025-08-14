@@ -81,7 +81,9 @@ export const WordCardContent = ({
       )}
       <div className='flex gap-3'>
         <CardTitle className='m-auto'>{baseForm}</CardTitle>
-        <Button onClick={handleQuickEasy}>EASY</Button>
+        <Button onClick={handleQuickEasy} disabled={!isWordDue}>
+          EASY
+        </Button>
         <Button
           variant={isInBasket ? 'destructive' : 'default'}
           onClick={() =>

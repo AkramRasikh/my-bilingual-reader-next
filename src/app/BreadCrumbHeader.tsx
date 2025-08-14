@@ -52,7 +52,11 @@ const BreadcrumbComponent = () => {
     if (wordBasketState.length === 0) {
       return null;
     }
-    setShowBasketState(true);
+    if (showBasketState) {
+      setShowBasketState(false);
+    } else {
+      setShowBasketState(true);
+    }
   };
 
   const title = selectedContentState?.title;
