@@ -3,12 +3,6 @@ export const updateAdhocSentenceAPI = async ({
   fieldToUpdate,
   language,
 }) => {
-  console.log('## ', {
-    language,
-    id: sentenceId,
-    fieldToUpdate,
-  });
-
   try {
     const response = await fetch('/api/updateAdhocSentence', {
       method: 'POST',
@@ -26,8 +20,6 @@ export const updateAdhocSentenceAPI = async ({
       throw new Error('Network response was not ok');
     }
     const responseToJSON = await response.json();
-
-    console.log('## responseToJSON', responseToJSON);
 
     return responseToJSON;
   } catch (error) {

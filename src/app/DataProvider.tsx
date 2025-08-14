@@ -299,7 +299,7 @@ export const DataProvider = ({
           .map((item) => {
             const matchedId = sentenceId === item.id;
             if (matchedId && isRemoveReview) {
-              delete item?.reviewData;
+              delete item.reviewData;
               return item;
             } else if (matchedId) {
               return {
