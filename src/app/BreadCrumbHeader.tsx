@@ -10,6 +10,7 @@ import {
 import useData from './useData';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
+import DialogueHomeScreen from './DialogueHomeScreen';
 
 const BreadcrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
@@ -133,6 +134,7 @@ const BreadcrumbComponent = () => {
               </li>
             ))}
           </ul>
+          <DialogueHomeScreen />
         </div>
       ) : null}
     </>

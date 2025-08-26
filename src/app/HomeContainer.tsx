@@ -147,6 +147,7 @@ export const HomeContainer = () => {
       <div style={{ padding: 10 }}>
         <Toaster />
         <ul className='mt-1.5 mb-1.5'>
+          <p className='text-center my-2'>{sentencesState?.length} Sentences</p>
           {slicedSentences?.map((sentence, index) => {
             const sentenceIndex = index + 1 + ') ';
             return (

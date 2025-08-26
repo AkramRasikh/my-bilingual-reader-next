@@ -1,10 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { KaraokePlayer } from './KaraokePlayer';
-import useWords from './useWords';
 
-const StoryComponent = ({ story }) => {
-  const { addGeneratedSentence, wordBasketState } = useWords();
-
+const StoryComponent = ({ story, addGeneratedSentence, wordBasketState }) => {
   const wordsUsedInStory = wordBasketState.filter((i) =>
     story?.wordIds.includes(i.id),
   );

@@ -10,7 +10,8 @@ const WordsContainer = () => {
   const [initial30State, setInitial30State] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const { wordBasketState, wordsState, story, setStory } = useWords();
+  const { wordBasketState, addGeneratedSentence, wordsState, story, setStory } =
+    useWords();
 
   const getStoryAPI = async ({ isStory }) => {
     setLoading(true);
@@ -85,7 +86,13 @@ const WordsContainer = () => {
         setStory={setStory}
       />
 
-      {story && <StoryComponent story={story} />}
+      {story && (
+        <StoryComponent
+          story={story}
+          addGeneratedSentence={addGeneratedSentence}
+          wordBasketState={wordBasketState}
+        />
+      )}
       <ul className='flex flex-wrap gap-2.5'>
         {initial30State?.map((word, index) => {
           if (storiesId?.includes(word.id)) {

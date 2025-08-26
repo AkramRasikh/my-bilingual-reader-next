@@ -35,6 +35,7 @@ export const DataProvider = ({
 }: PropsWithChildren<object>) => {
   const [wordsState, setWordsState] = useState(targetLanguageLoadedWords);
   const [sentencesState, setSentencesState] = useState([]);
+  const [story, setStory] = useState();
   const [contentState, setContentState] = useState(sortedContent);
   const [pureWordsState, setPureWordsState] = useState([]);
   const [selectedContentState, setSelectedContentState] = useState(null);
@@ -489,6 +490,34 @@ export const DataProvider = ({
     });
   };
 
+  const addGeneratedSentence = async ({ targetLang, baseLang, notes }) => {
+    console.log('## addGeneratedSentence', targetLang, baseLang);
+
+    const res = await fetch('/api/addSentence', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        language: 'japanese',
+        targetLang,
+        baseLang,
+        localAudioPath: story.audioUrl,
+        notes,
+      }),
+    });
+    const data = await res.json();
+
+    console.log('## addGeneratedSentence data', data);
+
+    if (data) {
+      setStory({
+        ...story,
+        isSaved: true,
+      });
+    }
+
+    setSentencesState([...sentencesState, data]);
+  };
+
   const breakdownSentence = async ({
     topicName,
     sentenceId,
@@ -584,6 +613,9 @@ export const DataProvider = ({
         setIsSentenceReviewState,
         wordBasketState,
         setWordBasketState,
+        story,
+        setStory,
+        addGeneratedSentence,
       }}
     >
       {children}

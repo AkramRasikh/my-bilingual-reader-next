@@ -18,7 +18,7 @@ export default async function OpenAiApi({
   model,
 }: OpenAIAPITypes) {
   const completion = await openai.chat.completions.create({
-    model: model || 'gpt-4-mini',
+    model: model || 'gpt-4o-mini',
     messages: [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
