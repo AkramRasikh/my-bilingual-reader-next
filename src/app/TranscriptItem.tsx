@@ -190,6 +190,10 @@ const TranscriptItem = ({
     );
   };
 
+  const isSentenceLooping = loopTranscriptState?.some(
+    (i) => i?.id === contentItem.id,
+  );
+
   return (
     <li
       className={clsx(
@@ -275,7 +279,7 @@ const TranscriptItem = ({
               </span>
             </button>
           )}
-          {loopTranscriptState?.id === contentItem.id && (
+          {isSentenceLooping && (
             <button
               id='stop-loop'
               onClick={() => setLoopTranscriptState(null)}

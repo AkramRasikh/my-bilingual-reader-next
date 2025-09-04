@@ -23,6 +23,7 @@ const KeyListener = ({
   handleShiftSnippet,
   handleSlowDownAudio,
   loopTranscriptState,
+  handleUpdateLoopedSentence,
 }: Props) => {
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -39,22 +40,31 @@ const KeyListener = ({
       }
     };
     const handleKeyDown = (e: KeyboardEvent) => {
+      const shiftKey = e.shiftKey;
       if (threeSecondLoopState || loopTranscriptState) {
         if (e.key.toLowerCase() === 'o') {
           handleSlowDownAudio(true);
           return;
         }
+        if (shiftKey && loopTranscriptState) {
+          if (e.key.toLowerCase() === 'arrowdown') {
+            handleUpdateLoopedSentence(true);
+          } else if (e.key.toLowerCase() === 'arrowup') {
+            handleUpdateLoopedSentence(false);
+          }
+        }
       }
+
       if (threeSecondLoopState) {
-        if (e.shiftKey && e.key.toLowerCase() === 'k') {
+        if (shiftKey && e.key.toLowerCase() === 'k') {
           handleLoopThis3Second();
           return;
         }
-        if (e.shiftKey && e.key.toLowerCase() === 'l') {
+        if (shiftKey && e.key.toLowerCase() === 'l') {
           handleShiftSnippet(0.5);
           return;
         }
-        if (e.shiftKey && e.key.toLowerCase() === 'j') {
+        if (shiftKey && e.key.toLowerCase() === 'j') {
           handleShiftSnippet(-0.5);
           return;
         }
@@ -137,6 +147,7 @@ const KeyListener = ({
     handleSlowDownAudio,
     loopTranscriptState,
     handleAddMasterToReview,
+    handleUpdateLoopedSentence,
   ]);
 
   return null;

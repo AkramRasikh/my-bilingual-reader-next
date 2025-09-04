@@ -178,9 +178,11 @@ const LearningScreen = () => {
       }
       return;
     }
-    if (ref.current && loopTranscriptState) {
-      if (masterPlay !== loopTranscriptState.id) {
-        ref.current.currentTime = loopTranscriptState.time;
+    if (ref.current && loopTranscriptState?.length > 0) {
+      const loopTranscriptIds = loopTranscriptState.map((item) => item?.id);
+      const firstLoopScript = loopTranscriptState[0];
+      if (!loopTranscriptIds.includes(masterPlay)) {
+        ref.current.currentTime = firstLoopScript.time;
         ref.current.play();
       }
     }
@@ -271,6 +273,26 @@ const LearningScreen = () => {
     }
   }, [threeSecondLoopState, realStartTime, formattedTranscriptState]);
 
+  const handleUpdateLoopedSentence = (extendSentenceLoop) => {
+    if (extendSentenceLoop) {
+      const lastSentenceId =
+        loopTranscriptState[loopTranscriptState.length - 1]?.id;
+      if (!lastSentenceId) {
+        return;
+      }
+      const lastSentenceIdIndex = formattedTranscriptState.findIndex(
+        (i) => i.id === lastSentenceId,
+      );
+
+      const nextElToAddToLoop =
+        formattedTranscriptState[lastSentenceIdIndex + 1];
+
+      setLoopTranscriptState((prev) => [...prev, nextElToAddToLoop]);
+    } else {
+      setLoopTranscriptState((prev) => prev.slice(0, -1));
+    }
+  };
+
   const handleLoopThisSentence = () => {
     const currentMasterPlay =
       isNumber(currentTime) &&
@@ -286,17 +308,19 @@ const LearningScreen = () => {
       return;
     }
 
-    setLoopTranscriptState({
-      ...masterItem,
-      time: realStartTime + masterItem.time,
-      nextTime:
-        realStartTime +
-        (thisIndex === formattedTranscriptState.length - 1
-          ? ref.current.duration - 0.05
-          : thisIndex === 0
-          ? realStartTime
-          : formattedTranscriptState[thisIndex - 1].time),
-    });
+    setLoopTranscriptState([
+      {
+        ...masterItem,
+        time: realStartTime + masterItem.time,
+        nextTime:
+          realStartTime +
+          (thisIndex === formattedTranscriptState.length - 1
+            ? ref.current.duration - 0.05
+            : thisIndex === 0
+            ? realStartTime
+            : formattedTranscriptState[thisIndex - 1].time),
+      },
+    ]);
   };
 
   const handleMouseEnter = (text) => {
@@ -610,6 +634,7 @@ const LearningScreen = () => {
             handleSlowDownAudio={handleSlowDownAudio}
             loopTranscriptState={loopTranscriptState}
             handleAddMasterToReview={handleAddMasterToReview}
+            handleUpdateLoopedSentence={handleUpdateLoopedSentence}
           />
         </div>
         {secondsState && (
