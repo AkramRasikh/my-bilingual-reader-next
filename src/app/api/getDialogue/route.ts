@@ -30,7 +30,7 @@ const openai = new OpenAI({
 
 const chunkAtAbstractLevel = {
   chunk:
-    '<A chunk should be one logical word/phrase or particle. original wording of the japanese sentence i.e. 堅苦しい, 居住者, etc would be a seperate chunk in, ignore punctuation here such as commas, full stops etc>',
+    '<A chunk should be one logical word/phrase or particle (granular aspect of the sentence). original wording of the japanese sentence i.e. 堅苦しい, 居住者, etc would be a seperate chunk in, ignore punctuation here such as commas, full stops etc>',
   reading:
     '<katakana (not hiragana) reading of that part. NOTE where を is used, the katakana equal should be オ and not ヲ. where ウ is used, the katakana equal should be オ instead of ヲ>',
 };
@@ -101,6 +101,24 @@ given the generated content, pick one mood each
 
 Return ONLY raw & valid JSON in the following format:
 
+interface personResponseTypes {
+  targetLang: string;
+  baseLang: string;
+  chunks: {
+    chunk: string;
+    reading: string;
+  }[];
+}
+
+interface responseTypes {
+  personA: personResponseTypes;
+  personB: personResponseTypes;
+  wordIds: string[];
+  moodPersonA: number;
+  moodPersonB: number;
+  notes?: string;
+}
+
 ${JSON.stringify(jsonResponseObj)}
 
 `;
@@ -116,6 +134,8 @@ ${JSON.stringify(jsonResponseObj)}
     });
 
     const raw = completion.choices[0].message?.content?.trim() ?? '';
+
+    console.log('## raw', raw);
 
     // Attempt to parse JSON from the model's response
     let response;
@@ -147,6 +167,8 @@ ${JSON.stringify(jsonResponseObj)}
     if (!audioQueryResSpeakerA.ok)
       throw new Error('VOICEVOX audio_query failed');
     const audioQueryJsonA = await audioQueryResSpeakerA.json();
+
+    console.log('## audioQueryJsonA', JSON.stringify(audioQueryJsonA));
 
     const synthesisResA = await fetch(
       `${VOICEVOX_API}/synthesis?speaker=${personAMood}`,
