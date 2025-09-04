@@ -61,6 +61,8 @@ const BreadcrumbComponent = () => {
   };
 
   const title = selectedContentState?.title;
+  const chapter = title?.split('-');
+  const chapterNum = chapter?.[chapter?.length - 1];
 
   return (
     <>
@@ -87,7 +89,7 @@ const BreadcrumbComponent = () => {
               <>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{title}</BreadcrumbPage>
+                  <BreadcrumbPage>Chapter: {chapterNum}</BreadcrumbPage>
                 </BreadcrumbItem>
               </>
             )}
