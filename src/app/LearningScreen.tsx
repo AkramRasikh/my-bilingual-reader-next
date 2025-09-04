@@ -303,7 +303,10 @@ const LearningScreen = () => {
     );
     const masterItem = formattedTranscriptState[thisIndex];
 
-    if (loopTranscriptState?.id === currentMasterPlay) {
+    if (
+      loopTranscriptState?.length === 1 &&
+      loopTranscriptState[0]?.id === currentMasterPlay
+    ) {
       setLoopTranscriptState(null);
       return;
     }
