@@ -94,11 +94,18 @@ const ContentSelection = ({
       {hasReviewSentences > 0 && (
         <>
           <ul className='flex flex-wrap gap-1 m-auto border-t-2 pt-1'>
-            {Object.entries(topicsWithReviews).map(([title, count]) => (
-              <Button key={title} onClick={() => handleSelectedContent(title)}>
-                {title} ({count})
-              </Button>
-            ))}
+            {Object.entries(topicsWithReviews).map(([title, count]) => {
+              const chapter = title.split('-');
+              const chapterNum = chapter[chapter.length - 1];
+              return (
+                <Button
+                  key={title}
+                  onClick={() => handleSelectedContent(title)}
+                >
+                  {chapterNum} ({count})
+                </Button>
+              );
+            })}
             <Button variant='outline' onClick={handleGetComprehensiveReview}>
               All {theseSentencesDue?.length}
             </Button>
