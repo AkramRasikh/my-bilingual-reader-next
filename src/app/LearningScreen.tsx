@@ -61,6 +61,8 @@ const LearningScreen = () => {
     currentTime,
     onlyShowEngState,
     setOnlyShowEngState,
+    showOnVideoTranscriptState,
+    setShowOnVideoTranscriptState,
   } = useLearningScreen();
 
   const {
@@ -545,6 +547,9 @@ const LearningScreen = () => {
             url={videoUrl}
             handleTimeUpdate={handleTimeUpdate}
             setIsVideoPlaying={setIsVideoPlaying}
+            masterPlayComprehensiveState={
+              showOnVideoTranscriptState && masterPlayComprehensiveState
+            }
           />
           <ContentActionBar
             handleBulkReviews={handleBulkReviews}
@@ -558,6 +563,8 @@ const LearningScreen = () => {
             setIsInReviewMode={setIsInReviewMode}
             onlyShowEngState={onlyShowEngState}
             setOnlyShowEngState={setOnlyShowEngState}
+            showOnVideoTranscriptState={showOnVideoTranscriptState}
+            setShowOnVideoTranscriptState={setShowOnVideoTranscriptState}
           />
           {threeSecondLoopState && (
             <div className='pt-1.5 m-auto flex justify-center gap-1.5 w-80'>

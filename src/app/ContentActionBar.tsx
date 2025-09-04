@@ -17,6 +17,8 @@ export default function ContentActionBar({
   setIsInReviewMode,
   onlyShowEngState,
   setOnlyShowEngState,
+  showOnVideoTranscriptState,
+  setShowOnVideoTranscriptState,
 }: {
   hasContentToReview: boolean;
   handleBulkReviews: (action: 'add' | 'remove') => Promise<void>;
@@ -93,7 +95,7 @@ export default function ContentActionBar({
 
   return (
     <div className='flex flex-col items-start gap-2  my-2'>
-      <div className='flex gap-2 mx-auto'>
+      <div className='flex gap-2 mx-auto flex-wrap'>
         <Button onClick={handlePrimaryClick} disabled={isLoading}>
           {hasContentToReview ? 'Remove bulk review' : 'Add bulk review'}
         </Button>
@@ -122,6 +124,13 @@ export default function ContentActionBar({
           <Switch
             checked={onlyShowEngState}
             onCheckedChange={setOnlyShowEngState}
+          />
+        </div>
+        <div className='flex gap-2 m-auto'>
+          <Label>Subs on Video</Label>
+          <Switch
+            checked={showOnVideoTranscriptState}
+            onCheckedChange={setShowOnVideoTranscriptState}
           />
         </div>
       </div>

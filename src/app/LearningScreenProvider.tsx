@@ -18,6 +18,8 @@ export const LearningScreenProvider = ({
   const [isPressDownShiftState, setIsPressDownShiftState] = useState(false);
   const [isInReviewMode, setIsInReviewMode] = useState(false);
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
+  const [showOnVideoTranscriptState, setShowOnVideoTranscriptState] =
+    useState(true);
   const [sentenceHighlightingState, setSentenceHighlightingState] =
     useState('');
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
@@ -73,6 +75,8 @@ export const LearningScreenProvider = ({
         setProgress,
         onlyShowEngState,
         setOnlyShowEngState,
+        showOnVideoTranscriptState,
+        setShowOnVideoTranscriptState,
       }}
     >
       {children}
