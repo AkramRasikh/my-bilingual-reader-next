@@ -15,6 +15,8 @@ export default function ContentActionBar({
   contentIndex,
   isInReviewMode,
   setIsInReviewMode,
+  onlyShowEngState,
+  setOnlyShowEngState,
 }: {
   hasContentToReview: boolean;
   handleBulkReviews: (action: 'add' | 'remove') => Promise<void>;
@@ -113,6 +115,13 @@ export default function ContentActionBar({
           <Switch
             checked={isInReviewMode}
             onCheckedChange={setIsInReviewMode}
+          />
+        </div>
+        <div className='flex gap-2 m-auto'>
+          <Label>No Eng 🇬🇧</Label>
+          <Switch
+            checked={onlyShowEngState}
+            onCheckedChange={setOnlyShowEngState}
           />
         </div>
       </div>

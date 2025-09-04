@@ -59,6 +59,8 @@ const LearningScreen = () => {
     handlePlayFromHere,
     handleTimeUpdate,
     currentTime,
+    onlyShowEngState,
+    setOnlyShowEngState,
   } = useLearningScreen();
 
   const {
@@ -554,6 +556,8 @@ const LearningScreen = () => {
             contentIndex={contentIndex}
             isInReviewMode={isInReviewMode}
             setIsInReviewMode={setIsInReviewMode}
+            onlyShowEngState={onlyShowEngState}
+            setOnlyShowEngState={setOnlyShowEngState}
           />
           {threeSecondLoopState && (
             <div className='pt-1.5 m-auto flex justify-center gap-1.5 w-80'>

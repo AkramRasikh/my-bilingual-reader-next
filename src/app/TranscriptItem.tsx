@@ -10,6 +10,7 @@ import { MenuIcon, Repeat2 } from 'lucide-react';
 import FormattedSentence from './FormattedSentence';
 import ReviewSRSToggles from './ReviewSRSToggles';
 import { getTimeDiffSRS } from './getTimeDiffSRS';
+import useLearningScreen from './useLearningScreen';
 
 const TranscriptItem = ({
   contentItem,
@@ -49,6 +50,8 @@ const TranscriptItem = ({
 
   const { wordsState, handleSaveWord, handleDeleteWordDataProvider } =
     useData();
+
+  const { onlyShowEngState } = useLearningScreen();
 
   useEffect(() => {
     if (!threeSecondLoopState && thisSnippetOverlapState) {
@@ -316,7 +319,7 @@ const TranscriptItem = ({
                     handleMouseEnter={handleMouseEnter}
                   />
                 </p>
-                <p>{baseLang}</p>
+                {!onlyShowEngState && <p>{baseLang}</p>}
               </>
             )}
           </div>
