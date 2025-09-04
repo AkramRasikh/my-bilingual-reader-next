@@ -28,6 +28,7 @@ export const WordCardContent = ({
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
   const [isLoadingState, setIsLoadingState] = useState(false);
+  const [isShowBaseFormWordState, setShowBaseFormWordState] = useState(false);
   const timeNow = new Date();
   const isWordDue = isDueCheck({ reviewData }, timeNow);
 
@@ -80,7 +81,15 @@ export const WordCardContent = ({
         </div>
       )}
       <div className='flex gap-3'>
-        <CardTitle className='m-auto'>{baseForm}</CardTitle>
+        <Button
+          onClick={() => setShowBaseFormWordState(!isShowBaseFormWordState)}
+        >
+          {isShowBaseFormWordState ? (
+            <CardTitle className='m-auto'>{baseForm}</CardTitle>
+          ) : (
+            <CardTitle className='m-auto'>{definition}</CardTitle>
+          )}
+        </Button>
         <Button onClick={handleQuickEasy} disabled={!isWordDue}>
           EASY
         </Button>
@@ -157,6 +166,8 @@ const WordCard = ({
   ...rest
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
+  const [isShowBaseFormWordState, setShowBaseFormWordState] = useState(false);
+
   const { addWordToBasket, wordBasketState, updateWordData } = useWords();
 
   const isInBasket = wordBasketState?.some((i) => i?.id === id);
@@ -168,8 +179,21 @@ const WordCard = ({
       }}
     >
       <div className='flex gap-3'>
-        <CardTitle className='m-auto'>{baseForm}</CardTitle>
-        <Button>EASY</Button>
+        <Button
+          onClick={() => setShowBaseFormWordState(!isShowBaseFormWordState)}
+          className='m-auto border-0'
+          variant='outline'
+        >
+          {isShowBaseFormWordState ? <span>🇯🇵</span> : <span>🇬🇧</span>}
+        </Button>
+        {isShowBaseFormWordState ? (
+          <CardTitle className='m-auto'>{baseForm}</CardTitle>
+        ) : (
+          <CardTitle className='m-auto'>{definition}</CardTitle>
+        )}
+        <Button onClick={() => setOpenContentState(!openContentState)}>
+          ⠇
+        </Button>
         <Button
           variant={isInBasket ? 'destructive' : 'default'}
           onClick={() =>
@@ -182,9 +206,7 @@ const WordCard = ({
         >
           🧺
         </Button>
-        <Button onClick={() => setOpenContentState(!openContentState)}>
-          ⠇
-        </Button>
+        <Button>EASY</Button>
       </div>
       {openContentState && (
         <>
