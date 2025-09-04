@@ -43,7 +43,7 @@ const VideoPlayer = ({
       </video>
       {masterPlayComprehensiveState?.targetLang && (
         <p
-          className='text-center absolute bottom-1/7 w-11/12 p-1.5  font-bold text-xl text-blue-100 [text-shadow:_2px_2px_6px_rgba(0,0,0,0.8)]'
+          className='text-center absolute bottom-1/7 w-11/12 p-1.5  font-bold text-xl text-blue-100 [text-shadow:_2px_2px_6px_rgba(0,0,0,0.8)] backdrop-blur-xs backdrop-brightness-75'
           style={{
             left: '50%',
             transform: 'translate(-50%, -50%)',
