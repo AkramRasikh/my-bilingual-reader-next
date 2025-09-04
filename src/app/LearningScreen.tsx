@@ -445,11 +445,20 @@ const LearningScreen = () => {
     const sentenceHasReview =
       getThisSentenceInfo(currentMasterPlay)?.reviewData;
 
-    await handleReviewFunc({
-      sentenceId: currentMasterPlay,
-      isRemoveReview: Boolean(sentenceHasReview),
-      nextDue: null,
-    });
+    try {
+      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
+      await handleReviewFunc({
+        sentenceId: currentMasterPlay,
+        isRemoveReview: Boolean(sentenceHasReview),
+        nextDue: null,
+      });
+    } catch (error) {
+      console.log('## handleAddMasterToReview', error);
+    } finally {
+      setIsGenericItemLoadingState((prev) =>
+        prev.filter((item) => item !== currentMasterPlay),
+      );
+    }
   };
   const handleShiftSnippet = (shiftNumber: number) => {
     if (isNumber(threeSecondLoopState) && threeSecondLoopState > 0) {
