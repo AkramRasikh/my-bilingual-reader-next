@@ -64,7 +64,6 @@ const LearningScreen = () => {
     setOnlyShowEngState,
     showOnVideoTranscriptState,
     setShowOnVideoTranscriptState,
-    showWordsBasketState,
     setShowWordsBasketState,
   } = useLearningScreen();
 
@@ -79,7 +78,6 @@ const LearningScreen = () => {
     selectedContentState,
     checkIsThereFollowingContent,
     wordsForSelectedTopic,
-    updateWordDataProvider,
     wordBasketState,
     setWordBasketState,
   } = useData();
@@ -584,35 +582,8 @@ const LearningScreen = () => {
     selectedContentState.generalTopicName,
   );
 
-  const hasWords = wordsForSelectedTopic.length > 0;
-  console.log('## showWordsBasketState', showWordsBasketState);
-
   return (
     <div>
-      <div>
-        {showWordsBasketState && hasWords > 0 && (
-          <div className='text-center m-auto p-1.5'>
-            <ul className='flex flex-wrap gap-2.5'>
-              {wordsForSelectedTopic.slice(0, 5).map((word) => {
-                const isInBasket = wordBasketState?.some(
-                  (i) => i?.id === word.id,
-                );
-
-                return (
-                  <li key={word.id}>
-                    <WordCardContent
-                      {...word}
-                      updateWordData={updateWordDataProvider}
-                      addWordToBasket={addWordToBasket}
-                      isInBasket={isInBasket}
-                    />
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        )}
-      </div>
       <ContentActionBar
         handleBulkReviews={handleBulkReviews}
         hasContentToReview={hasContentToReview}

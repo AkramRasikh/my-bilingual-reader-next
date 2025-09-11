@@ -1,3 +1,5 @@
+import HoverWordCard from './HoverWordCard';
+
 const FormattedSentence = ({
   ref,
   targetLangformatted,
@@ -9,6 +11,9 @@ const FormattedSentence = ({
       {targetLangformatted.map((item, indexNested) => {
         const isUnderlined = item?.style?.textDecorationLine;
         const text = item?.text;
+        if (isUnderlined) {
+          return <HoverWordCard key={indexNested} text={text} />;
+        }
         return (
           <span
             key={indexNested}

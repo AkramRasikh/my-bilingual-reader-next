@@ -1,0 +1,91 @@
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card';
+import useLearningScreen from './useLearningScreen';
+import useData from './useData';
+import { useState } from 'react';
+
+const HoverWordCard = ({ text }) => {
+  const { wordsState } = useData();
+  const { wordPopUpState, setWordPopUpState } = useLearningScreen();
+
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [isLoadingState, setIsLoadingState] = useState(false);
+
+  const handleDeleteFunc = async () => {
+    try {
+      setIsLoadingState(true);
+      await handleDelete({ wordId: word.id, wordBaseForm: word.baseForm });
+    } catch (error) {
+    } finally {
+      setIsLoadingState(false);
+    }
+  };
+
+  const onHoverTrigger = () => {
+    const wordsAmongstHighlightedText = wordsState?.filter((item) => {
+      if (item.baseForm === text || item.surfaceForm === text) {
+        return true;
+      }
+      return false;
+    });
+
+    setWordPopUpState(wordsAmongstHighlightedText);
+  };
+
+  return (
+    <HoverCard>
+      <HoverCardTrigger
+        asChild
+        className='p-0'
+        style={{
+          textDecorationLine: 'underline',
+        }}
+        onMouseEnter={onHoverTrigger}
+      >
+        <span>{text}</span>
+      </HoverCardTrigger>
+      <HoverCardContent className='w-80'>
+        <div className='flex justify-between gap-4'>
+          <div className='space-y-1'>
+            {wordPopUpState?.map((word, index) => {
+              return (
+                <p className='text-sm' key={index}>
+                  {word.baseForm}, {word.surfaceForm}, {word.definition},{' '}
+                  {word.phonetic}, {word?.transliteration}
+                </p>
+              );
+            })}
+          </div>
+        </div>
+        {!showConfirm ? (
+          <button
+            onClick={() => setShowConfirm(true)}
+            className='bg-red-500 text-white px-3 py-1 rounded w-fit my-1 text-xs'
+          >
+            Delete
+          </button>
+        ) : (
+          <div className='flex gap-2 my-1'>
+            <button
+              onClick={handleDeleteFunc}
+              className='bg-red-600 text-white px-3 py-1 rounded text-xs'
+            >
+              Confirm Delete
+            </button>
+            <button
+              onClick={() => setShowConfirm(false)}
+              className='bg-gray-300 text-black px-3 py-1 rounded text-xs'
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </HoverCardContent>
+    </HoverCard>
+  );
+};
+
+export default HoverWordCard;
