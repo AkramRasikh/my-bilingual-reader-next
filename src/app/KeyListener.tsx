@@ -44,12 +44,10 @@ const KeyListener = ({
       const shiftKey = e.shiftKey;
 
       if (
-        (shiftKey &&
-          e.key.toLowerCase() === 'arrowdown' &&
-          loopTranscriptState.length === 0) ||
-        !loopTranscriptState
+        shiftKey &&
+        e.key.toLowerCase() === 'arrowdown' &&
+        (loopTranscriptState?.length === 0 || !loopTranscriptState)
       ) {
-        console.log('## HERE');
         handleLoopThisSentence();
 
         return;
