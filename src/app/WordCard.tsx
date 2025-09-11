@@ -87,7 +87,15 @@ export const WordCardContent = ({
           {isShowBaseFormWordState ? (
             <CardTitle className='m-auto'>{baseForm}</CardTitle>
           ) : (
-            <CardTitle className='m-auto'>{definition}</CardTitle>
+            <CardTitle
+              className='m-auto text-ellipsis'
+              style={{
+                overflow: !openContentState ? 'hidden' : '',
+                maxWidth: !openContentState ? '15ch' : '',
+              }}
+            >
+              {definition}
+            </CardTitle>
           )}
         </Button>
         <Button onClick={handleQuickEasy} disabled={!isWordDue}>

@@ -64,6 +64,8 @@ const LearningScreen = () => {
     setOnlyShowEngState,
     showOnVideoTranscriptState,
     setShowOnVideoTranscriptState,
+    showWordsBasketState,
+    setShowWordsBasketState,
   } = useLearningScreen();
 
   const {
@@ -582,30 +584,53 @@ const LearningScreen = () => {
     selectedContentState.generalTopicName,
   );
 
+  const hasWords = wordsForSelectedTopic.length > 0;
+  console.log('## showWordsBasketState', showWordsBasketState);
+
   return (
     <div>
-      {wordsForSelectedTopic.length > 0 ? (
-        <div className='text-center m-auto p-1.5'>
-          <ul className='flex flex-wrap gap-2.5'>
-            {wordsForSelectedTopic.slice(0, 5).map((word) => {
-              const isInBasket = wordBasketState?.some(
-                (i) => i?.id === word.id,
-              );
+      <div>
+        {showWordsBasketState && hasWords > 0 && (
+          <div className='text-center m-auto p-1.5'>
+            <ul className='flex flex-wrap gap-2.5'>
+              {wordsForSelectedTopic.slice(0, 5).map((word) => {
+                const isInBasket = wordBasketState?.some(
+                  (i) => i?.id === word.id,
+                );
 
-              return (
-                <li key={word.id}>
-                  <WordCardContent
-                    {...word}
-                    updateWordData={updateWordDataProvider}
-                    addWordToBasket={addWordToBasket}
-                    isInBasket={isInBasket}
-                  />
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ) : null}
+                return (
+                  <li key={word.id}>
+                    <WordCardContent
+                      {...word}
+                      updateWordData={updateWordDataProvider}
+                      addWordToBasket={addWordToBasket}
+                      isInBasket={isInBasket}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+      </div>
+      <ContentActionBar
+        handleBulkReviews={handleBulkReviews}
+        hasContentToReview={hasContentToReview}
+        updateContentMetaData={updateContentMetaData}
+        topicName={selectedContentState.title}
+        nextReview={nextReview}
+        reviewHistory={reviewHistory}
+        contentIndex={contentIndex}
+        isInReviewMode={isInReviewMode}
+        setIsInReviewMode={setIsInReviewMode}
+        onlyShowEngState={onlyShowEngState}
+        setOnlyShowEngState={setOnlyShowEngState}
+        showOnVideoTranscriptState={showOnVideoTranscriptState}
+        setShowOnVideoTranscriptState={setShowOnVideoTranscriptState}
+        wordsForSelectedTopic={wordsForSelectedTopic}
+        setShowWordsBasketState={setShowWordsBasketState}
+        addWordToBasket={addWordToBasket}
+      />
       <div
         style={{
           display: 'flex',
@@ -624,21 +649,6 @@ const LearningScreen = () => {
             masterPlayComprehensiveState={
               showOnVideoTranscriptState && masterPlayComprehensiveState
             }
-          />
-          <ContentActionBar
-            handleBulkReviews={handleBulkReviews}
-            hasContentToReview={hasContentToReview}
-            updateContentMetaData={updateContentMetaData}
-            topicName={selectedContentState.title}
-            nextReview={nextReview}
-            reviewHistory={reviewHistory}
-            contentIndex={contentIndex}
-            isInReviewMode={isInReviewMode}
-            setIsInReviewMode={setIsInReviewMode}
-            onlyShowEngState={onlyShowEngState}
-            setOnlyShowEngState={setOnlyShowEngState}
-            showOnVideoTranscriptState={showOnVideoTranscriptState}
-            setShowOnVideoTranscriptState={setShowOnVideoTranscriptState}
           />
           {threeSecondLoopState && (
             <div className='pt-1.5 m-auto flex justify-center gap-1.5 w-80'>

@@ -18,6 +18,7 @@ export const LearningScreenProvider = ({
   const [isPressDownShiftState, setIsPressDownShiftState] = useState(false);
   const [isInReviewMode, setIsInReviewMode] = useState(false);
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
+  const [showWordsBasketState, setShowWordsBasketState] = useState(false);
   const [showOnVideoTranscriptState, setShowOnVideoTranscriptState] =
     useState(true);
   const [sentenceHighlightingState, setSentenceHighlightingState] =
@@ -77,6 +78,8 @@ export const LearningScreenProvider = ({
         setOnlyShowEngState,
         showOnVideoTranscriptState,
         setShowOnVideoTranscriptState,
+        showWordsBasketState,
+        setShowWordsBasketState,
       }}
     >
       {children}
