@@ -11,6 +11,7 @@ import useData from './useData';
 import {
   getEmptyCard,
   getNextScheduledOptions,
+  srsCalculationAndText,
   srsRetentionKeyTypes,
 } from './srs-algo';
 import ContentActionBar from './ContentActionBar';
@@ -424,7 +425,10 @@ const LearningScreen = () => {
     );
 
     const alreadyHasBreakdown = thisSentence?.sentenceStructure;
-    if (alreadyHasBreakdown) return null;
+    if (alreadyHasBreakdown) {
+      handleOpenBreakdownSentence();
+      return null;
+    }
 
     const thisSentenceTargetLang = thisSentence.targetLang;
     try {
@@ -492,6 +496,39 @@ const LearningScreen = () => {
         sentenceId: currentMasterPlay,
         isRemoveReview: Boolean(sentenceHasReview),
         nextDue: null,
+      });
+    } catch (error) {
+      console.log('## handleAddMasterToReview', error);
+    } finally {
+      setIsGenericItemLoadingState((prev) =>
+        prev.filter((item) => item !== currentMasterPlay),
+      );
+    }
+  };
+
+  const handleIsEasyReviewShortCut = async () => {
+    const currentSecond = Math.floor(ref.current.currentTime);
+    const currentMasterPlay =
+      isNumber(currentTime) &&
+      secondsState?.length > 0 &&
+      secondsState[currentSecond]; // need to make sure its part of the content
+
+    const sentenceHasReview =
+      getThisSentenceInfo(currentMasterPlay)?.reviewData;
+
+    const { nextScheduledOptions } = srsCalculationAndText({
+      reviewData: sentenceHasReview,
+      contentType: srsRetentionKeyTypes.sentences,
+      timeNow: new Date(),
+    });
+
+    const nextReviewData = nextScheduledOptions['4'].card;
+
+    try {
+      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
+      await handleReviewFunc({
+        sentenceId: currentMasterPlay,
+        nextDue: nextReviewData,
       });
     } catch (error) {
       console.log('## handleAddMasterToReview', error);
@@ -633,7 +670,6 @@ const LearningScreen = () => {
           )}
           <KeyListener
             isVideoPlaying={isVideoPlaying}
-            handleOpenBreakdownSentence={handleOpenBreakdownSentence}
             handlePausePlay={handlePausePlay}
             handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}
             handleRewind={handleRewind}
@@ -649,6 +685,8 @@ const LearningScreen = () => {
             handleAddMasterToReview={handleAddMasterToReview}
             handleUpdateLoopedSentence={handleUpdateLoopedSentence}
             handleShiftLoopSentence={handleShiftLoopSentence}
+            handleIsEasyReviewShortCut={handleIsEasyReviewShortCut}
+            isInReviewMode={isInReviewMode}
           />
         </div>
         {secondsState && (

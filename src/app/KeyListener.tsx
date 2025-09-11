@@ -14,7 +14,6 @@ const KeyListener = ({
   handleBreakdownMasterSentence,
   handleRewind,
   handleAddMasterToReview,
-  handleOpenBreakdownSentence,
   handlePausePlay,
   setIsPressDownShiftState,
   handleLoopThisSentence,
@@ -25,6 +24,8 @@ const KeyListener = ({
   loopTranscriptState,
   handleUpdateLoopedSentence,
   handleShiftLoopSentence,
+  isInReviewMode,
+  handleIsEasyReviewShortCut,
 }: Props) => {
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -53,6 +54,13 @@ const KeyListener = ({
         return;
       }
 
+      if (shiftKey && isInReviewMode && e.key.toLowerCase() === ')') {
+        // 0 shifted
+        console.log('## HEREEEEE');
+
+        handleIsEasyReviewShortCut();
+        return;
+      }
       if (threeSecondLoopState || loopTranscriptState) {
         // think of properties and array things
         if (e.key.toLowerCase() === 'o') {
@@ -98,10 +106,6 @@ const KeyListener = ({
         return;
       }
 
-      if (e.shiftKey && e.key.toLowerCase() === 'n') {
-        handleOpenBreakdownSentence();
-        return;
-      }
       if (e.shiftKey && e.key.toLowerCase() === ' ') {
         handlePausePlay();
         return;
@@ -147,7 +151,6 @@ const KeyListener = ({
     handleJumpToSentenceViaKeys,
     handleBreakdownMasterSentence,
     handleRewind,
-    handleOpenBreakdownSentence,
     handlePausePlay,
     setIsPressDownShiftState,
     handleLoopThisSentence,
@@ -159,6 +162,8 @@ const KeyListener = ({
     handleAddMasterToReview,
     handleUpdateLoopedSentence,
     handleShiftLoopSentence,
+    isInReviewMode,
+    handleIsEasyReviewShortCut,
   ]);
 
   return null;
