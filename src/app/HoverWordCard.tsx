@@ -6,13 +6,14 @@ import {
 import useLearningScreen from './useLearningScreen';
 import useData from './useData';
 import { useState } from 'react';
+import LoadingSpinner from './LoadingSpinner';
 
 const HoverWordCard = ({ text }) => {
   const { wordsState } = useData();
   const { wordPopUpState, setWordPopUpState } = useLearningScreen();
 
   const [showConfirm, setShowConfirm] = useState(false);
-  const [isLoadingState, setIsLoadingState] = useState(false);
+  const [isLoadingState, setIsLoadingState] = useState(true);
 
   const handleDeleteFunc = async () => {
     try {
@@ -69,6 +70,11 @@ const HoverWordCard = ({ text }) => {
           </button>
         ) : (
           <div className='flex gap-2 my-1'>
+            {isLoadingState && (
+              <div className='absolute inset-0 flex items-center justify-center bg-white/70 rounded'>
+                <LoadingSpinner />
+              </div>
+            )}
             <button
               onClick={handleDeleteFunc}
               className='bg-red-600 text-white px-3 py-1 rounded text-xs'
