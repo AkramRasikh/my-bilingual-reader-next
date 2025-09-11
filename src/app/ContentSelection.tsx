@@ -67,21 +67,21 @@ const ContentSelection = ({
                   height={200}
                   src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
                   alt={youtubeId}
-                  className='m-auto pb-1'
+                  className='m-auto pb-1 rounded'
                 />
 
-                <button
+                <Button
+                  variant={'outline'}
                   onClick={() =>
                     setGeneralTopicDisplayNameSelectedState(youtubeTag)
                   }
                   style={{
-                    border: '1px solid grey',
-                    padding: 3,
                     borderRadius: 5,
+                    background: 'transparent',
                   }}
                 >
                   {youtubeTag}
-                </button>
+                </Button>
               </li>
             );
           })}
