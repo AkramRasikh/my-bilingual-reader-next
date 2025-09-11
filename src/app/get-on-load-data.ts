@@ -39,6 +39,7 @@ export const getOnLoadData = async () => {
   const url = process.env.NEXT_PUBLIC_GET_ON_ALL_LOAD_URL as string;
 
   if (isMock) {
+    console.log('## Getting mock data');
     const formattedData = getFormattedData(await readJsonFromFile());
     return formattedData;
   }
