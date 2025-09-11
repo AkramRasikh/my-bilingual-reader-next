@@ -284,12 +284,22 @@ const LearningScreen = () => {
         (i) => i.id === lastSentenceId,
       );
 
-      const nextElToAddToLoop =
-        formattedTranscriptState[lastSentenceIdIndex + 1];
+      const thisItemData = formattedTranscriptState[lastSentenceIdIndex + 1];
+
+      const nextElToAddToLoop = {
+        ...thisItemData,
+        time: realStartTime + thisItemData.time,
+      };
 
       setLoopTranscriptState((prev) => [...prev, nextElToAddToLoop]);
     } else {
       setLoopTranscriptState((prev) => prev.slice(0, -1));
+    }
+  };
+
+  const handleShiftLoopSentence = (shiftForward) => {
+    if (shiftForward) {
+      setLoopTranscriptState((prev) => prev.slice(1));
     }
   };
 
@@ -638,6 +648,7 @@ const LearningScreen = () => {
             loopTranscriptState={loopTranscriptState}
             handleAddMasterToReview={handleAddMasterToReview}
             handleUpdateLoopedSentence={handleUpdateLoopedSentence}
+            handleShiftLoopSentence={handleShiftLoopSentence}
           />
         </div>
         {secondsState && (
