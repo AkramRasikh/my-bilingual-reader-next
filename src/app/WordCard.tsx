@@ -61,6 +61,7 @@ export const WordCardContent = ({
       console.log('## handleNextReview', { error });
     } finally {
       setIsLoadingState(false);
+      setOpenContentState(false);
     }
   };
 

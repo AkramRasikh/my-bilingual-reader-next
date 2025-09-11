@@ -5,15 +5,28 @@ import {
 } from '@/components/ui/hover-card';
 import useLearningScreen from './useLearningScreen';
 import useData from './useData';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import LoadingSpinner from './LoadingSpinner';
+import clsx from 'clsx';
 
 const HoverWordCard = ({ text }) => {
-  const { wordsState } = useData();
-  const { wordPopUpState, setWordPopUpState } = useLearningScreen();
-
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoadingState, setIsLoadingState] = useState(false);
+  const [isOriginalWordSettingState, setIsOriginalWordSettingState] =
+    useState(false);
+
+  const { wordsState, wordsForSelectedTopic } = useData();
+  const { wordPopUpState, setWordPopUpState } = useLearningScreen();
+
+  useEffect(() => {
+    const textIsOriginalToSelectedTopic = wordsForSelectedTopic.some(
+      (item) => text === item.baseForm || text === item.surfaceForm,
+    );
+
+    if (textIsOriginalToSelectedTopic) {
+      setIsOriginalWordSettingState(true);
+    }
+  }, [wordsForSelectedTopic]);
 
   const handleDeleteFunc = async () => {
     try {
@@ -40,7 +53,10 @@ const HoverWordCard = ({ text }) => {
     <HoverCard>
       <HoverCardTrigger
         asChild
-        className='p-0'
+        className={clsx(
+          'p-0',
+          isOriginalWordSettingState ? 'bg-blue-50 rounded' : '',
+        )}
         style={{
           textDecorationLine: 'underline',
         }}
