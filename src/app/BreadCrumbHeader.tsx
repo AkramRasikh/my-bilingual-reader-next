@@ -11,6 +11,7 @@ import useData from './useData';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import DialogueHomeScreen from './DialogueHomeScreen';
+import { ContentSectionsForReciew } from './ContentSelection';
 
 const BreadcrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
@@ -93,6 +94,7 @@ const BreadcrumbComponent = () => {
                 </BreadcrumbItem>
               </>
             )}
+            <ContentSectionsForReciew />
           </BreadcrumbList>
         </Breadcrumb>
 

@@ -4,18 +4,12 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import useData from './useData';
 
-const ContentSelection = ({
-  generalTopicDisplayNameSelectedState,
-  generalTopicDisplayNameState,
-  setGeneralTopicDisplayNameSelectedState,
-  selectedContentState,
-  youtubeContentTagsState,
-  handleSelectedContent,
-}) => {
+export const ContentSectionsForReciew = () => {
   const {
-    getYoutubeID,
     checkHowManyOfTopicNeedsReview,
     handleGetComprehensiveReview,
+    generalTopicDisplayNameSelectedState,
+    handleSelectedContent,
   } = useData();
 
   const theseSentencesDue =
@@ -31,6 +25,32 @@ const ContentSelection = ({
         return acc;
       }, {})
     : [];
+  return hasReviewSentences > 0 ? (
+    <ul className='flex flex-wrap gap-1 m-auto'>
+      {Object.entries(topicsWithReviews).map(([title, count]) => {
+        const chapter = title.split('-');
+        const chapterNum = chapter[chapter.length - 1];
+        return (
+          <Button key={title} onClick={() => handleSelectedContent(title)}>
+            {chapterNum} ({count})
+          </Button>
+        );
+      })}
+      <Button variant='outline' onClick={handleGetComprehensiveReview}>
+        All {theseSentencesDue?.length}
+      </Button>
+    </ul>
+  ) : null;
+};
+
+const ContentSelection = ({
+  generalTopicDisplayNameSelectedState,
+  generalTopicDisplayNameState,
+  setGeneralTopicDisplayNameSelectedState,
+  selectedContentState,
+  youtubeContentTagsState,
+}) => {
+  const { getYoutubeID, handleSelectedContent } = useData();
 
   return (
     <>
@@ -91,27 +111,6 @@ const ContentSelection = ({
             );
           })}
       </ul>
-      {hasReviewSentences > 0 && (
-        <>
-          <ul className='flex flex-wrap gap-1 m-auto border-t-2 pt-1'>
-            {Object.entries(topicsWithReviews).map(([title, count]) => {
-              const chapter = title.split('-');
-              const chapterNum = chapter[chapter.length - 1];
-              return (
-                <Button
-                  key={title}
-                  onClick={() => handleSelectedContent(title)}
-                >
-                  {chapterNum} ({count})
-                </Button>
-              );
-            })}
-            <Button variant='outline' onClick={handleGetComprehensiveReview}>
-              All {theseSentencesDue?.length}
-            </Button>
-          </ul>
-        </>
-      )}
     </>
   );
 };

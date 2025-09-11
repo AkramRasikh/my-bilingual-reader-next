@@ -89,6 +89,13 @@ export const DataProvider = ({
     }
   }, [sentencesState, pureWordsState]);
 
+  const handleSelectedContent = (thisYoutubeTitle) => {
+    const thisContent = contentState.find(
+      (item) => item?.title === thisYoutubeTitle,
+    );
+    setSelectedContentState(thisContent);
+  };
+
   const getYoutubeID = (generalName) =>
     contentState
       .find((item) => item.generalTopicName === generalName && item?.url)
@@ -616,6 +623,7 @@ export const DataProvider = ({
         story,
         setStory,
         addGeneratedSentence,
+        handleSelectedContent,
       }}
     >
       {children}

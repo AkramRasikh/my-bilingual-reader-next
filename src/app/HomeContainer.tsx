@@ -22,7 +22,6 @@ export const HomeContainer = () => {
   const {
     contentState,
     selectedContentState,
-    setSelectedContentState,
     generalTopicDisplayNameState,
     setGeneralTopicDisplayNameState,
     generalTopicDisplayNameSelectedState,
@@ -53,13 +52,6 @@ export const HomeContainer = () => {
     if (videoRef.current) {
       setCurrentTime(videoRef.current.currentTime);
     }
-  };
-
-  const handleSelectedContent = (thisYoutubeTitle) => {
-    const thisContent = contentState.find(
-      (item) => item?.title === thisYoutubeTitle,
-    );
-    setSelectedContentState(thisContent);
   };
 
   useEffect(() => {
@@ -187,7 +179,6 @@ export const HomeContainer = () => {
         }
         selectedContentState={selectedContentState}
         youtubeContentTagsState={youtubeContentTagsState}
-        handleSelectedContent={handleSelectedContent}
         isSentenceReviewState={isSentenceReviewState}
         setIsSentenceReviewState={setIsSentenceReviewState}
         numberOfSentences={numberOfSentences}
