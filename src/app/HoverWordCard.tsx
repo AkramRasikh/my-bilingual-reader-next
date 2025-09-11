@@ -13,7 +13,7 @@ const HoverWordCard = ({ text }) => {
   const { wordPopUpState, setWordPopUpState } = useLearningScreen();
 
   const [showConfirm, setShowConfirm] = useState(false);
-  const [isLoadingState, setIsLoadingState] = useState(true);
+  const [isLoadingState, setIsLoadingState] = useState(false);
 
   const handleDeleteFunc = async () => {
     try {
