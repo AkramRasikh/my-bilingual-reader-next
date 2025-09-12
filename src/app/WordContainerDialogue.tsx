@@ -10,6 +10,7 @@ import {
 import { WordCardContent } from './WordCard';
 import useData from './useData';
 import { isDueCheck } from './DataProvider';
+import clsx from 'clsx';
 
 const WordContainerDialogue = ({ wordsForSelectedTopic, addWordToBasket }) => {
   const { wordBasketState, updateWordDataProvider } = useData();
@@ -18,11 +19,17 @@ const WordContainerDialogue = ({ wordsForSelectedTopic, addWordToBasket }) => {
     isDueCheck(i, nowTime),
   ).length;
 
+  const btnText = howManyDue
+    ? `Words (${howManyDue}/${wordsForSelectedTopic.length})`
+    : `Words ${wordsForSelectedTopic.length}`;
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant='outline'>
-          Words ({howManyDue}/{wordsForSelectedTopic.length})
+        <Button
+          variant='outline'
+          className={clsx(howManyDue > 0 ? 'bg-amber-500' : '')}
+        >
+          {btnText}
         </Button>
       </DialogTrigger>
       <DialogContent>

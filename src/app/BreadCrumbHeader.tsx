@@ -10,8 +10,8 @@ import {
 import useData from './useData';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import DialogueHomeScreen from './DialogueHomeScreen';
 import { ContentSectionsForReciew } from './ContentSelection';
+import BasketDialogue from './BasketDialogue';
 
 const BreadcrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
@@ -25,7 +25,6 @@ const BreadcrumbComponent = () => {
     setIsSentenceReviewState,
     isSentenceReviewState,
     wordBasketState,
-    setWordBasketState,
   } = useData();
 
   useEffect(() => {
@@ -45,20 +44,6 @@ const BreadcrumbComponent = () => {
   };
   const handleThisGeneralTopic = () => {
     setSelectedContentState(null);
-  };
-
-  const removeFromBasket = (wordId) => {
-    setWordBasketState((prev) => prev.filter((i) => i.id === wordId));
-  };
-  const handleOpenBasket = () => {
-    if (wordBasketState.length === 0) {
-      return null;
-    }
-    if (showBasketState) {
-      setShowBasketState(false);
-    } else {
-      setShowBasketState(true);
-    }
   };
 
   const title = selectedContentState?.title;
@@ -99,9 +84,7 @@ const BreadcrumbComponent = () => {
         </Breadcrumb>
 
         <div>
-          <Button onClick={handleOpenBasket}>
-            Basket 🧺 ({wordBasketState.length})
-          </Button>
+          <BasketDialogue />
 
           {!isSentenceReviewState ? (
             <Button
@@ -123,24 +106,6 @@ const BreadcrumbComponent = () => {
           )}
         </div>
       </div>
-      {showBasketState ? (
-        <div>
-          <ul>
-            {wordBasketState.map((basketItem, indexBasketItem) => (
-              <li key={basketItem.id} className='flex gap-2 '>
-                <span className='my-auto'>
-                  {indexBasketItem + 1}) {basketItem.word},{' '}
-                  {basketItem.definition}
-                </span>
-                <Button onClick={removeFromBasket} variant='ghost' size='icon'>
-                  ❌
-                </Button>
-              </li>
-            ))}
-          </ul>
-          <DialogueHomeScreen />
-        </div>
-      ) : null}
     </>
   );
 };

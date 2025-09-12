@@ -56,9 +56,6 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
 
   return (
     <div className='w-full max-w-xl p-4 space-y-4 rounded-xl shadow-lg bg-white text-center m-auto'>
-      <audio ref={audioRef} src={audioUrl} controls className='w-full' />
-
-      <span>{currentTime.toFixed(2)}</span>
       <div className='text-lg font-mono flex flex-wrap justify-center gap-1 leading-relaxed'>
         {formattedTextState?.map(({ chunk, start, end }, index) => {
           const isActive = currentTime >= start && currentTime < end;
@@ -75,6 +72,7 @@ export const KaraokePlayer: React.FC<KaraokePlayerProps> = ({
           );
         })}
       </div>
+      <audio ref={audioRef} src={audioUrl} controls className='w-full' />
     </div>
   );
 };
