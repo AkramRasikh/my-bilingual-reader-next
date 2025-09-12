@@ -57,6 +57,8 @@ const SentenceBlock = ({ sentence, sentenceIndex }) => {
           handleMouseLeave={handleMouseLeave}
           handleMouseEnter={handleMouseEnter}
           targetLangformatted={sentence?.targetLangformatted}
+          wordPopUpState={wordPopUpState}
+          setWordPopUpState={setWordPopUpState}
         />
       </p>
       <p className='text-right opacity-30'>{sentence.baseLang}</p>

@@ -5,6 +5,8 @@ const FormattedSentence = ({
   targetLangformatted,
   handleMouseLeave,
   handleMouseEnter,
+  wordPopUpState,
+  setWordPopUpState,
 }) => {
   return (
     <span ref={ref} className='mt-auto mb-auto'>
@@ -12,7 +14,14 @@ const FormattedSentence = ({
         const isUnderlined = item?.style?.textDecorationLine;
         const text = item?.text;
         if (isUnderlined) {
-          return <HoverWordCard key={indexNested} text={text} />;
+          return (
+            <HoverWordCard
+              key={indexNested}
+              text={text}
+              wordPopUpState={wordPopUpState}
+              setWordPopUpState={setWordPopUpState}
+            />
+          );
         }
         return (
           <span

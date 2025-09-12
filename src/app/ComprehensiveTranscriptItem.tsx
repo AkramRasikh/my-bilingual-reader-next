@@ -21,6 +21,8 @@ const ComprehensiveTranscriptItem = ({
         targetLangformatted={targetLangformatted}
         handleMouseLeave={handleMouseLeave}
         handleMouseEnter={handleMouseEnter}
+        wordPopUpState={wordPopUpState}
+        setWordPopUpState={setWordPopUpState}
       />
       <p>{baseLang}</p>
       {hasSentenceBreakdown && (

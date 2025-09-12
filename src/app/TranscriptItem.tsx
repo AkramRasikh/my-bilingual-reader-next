@@ -321,6 +321,8 @@ const TranscriptItem = ({
                     targetLangformatted={targetLangformatted}
                     handleMouseLeave={handleMouseLeave}
                     handleMouseEnter={handleMouseEnter}
+                    wordPopUpState={wordPopUpState}
+                    setWordPopUpState={setWordPopUpState}
                   />
                 </p>
                 {!onlyShowEngState && <p>{baseLang}</p>}
@@ -403,20 +405,6 @@ const TranscriptItem = ({
           Due in{' '}
           {getTimeDiffSRS({ dueTimeStamp: new Date(hasBeenReviewed), timeNow })}
         </p>
-      ) : null}
-
-      {wordPopUpState?.length > 0 ? (
-        <ul>
-          {wordPopUpState?.map((item) => (
-            <li key={item.id}>
-              <PopUpWordCard
-                word={item}
-                onClose={() => setWordPopUpState([])}
-                handleDelete={handleDeleteFunc}
-              />
-            </li>
-          ))}
-        </ul>
       ) : null}
       {highlightedTextState && (
         <HighlightedTextSection

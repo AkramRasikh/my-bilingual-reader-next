@@ -3,20 +3,18 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import useLearningScreen from './useLearningScreen';
 import useData from './useData';
 import { useEffect, useState } from 'react';
 import LoadingSpinner from './LoadingSpinner';
 import clsx from 'clsx';
 
-const HoverWordCard = ({ text }) => {
+const HoverWordCard = ({ text, wordPopUpState, setWordPopUpState }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoadingState, setIsLoadingState] = useState(false);
   const [isOriginalWordSettingState, setIsOriginalWordSettingState] =
     useState(false);
 
   const { wordsState, wordsForSelectedTopic } = useData();
-  const { wordPopUpState, setWordPopUpState } = useLearningScreen();
 
   useEffect(() => {
     const textIsOriginalToSelectedTopic = wordsForSelectedTopic.some(
