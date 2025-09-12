@@ -7,6 +7,7 @@ import StoryComponent from './words/StoryComponent';
 
 const DialogueHomeScreen = () => {
   const [loading, setLoading] = useState(false);
+  const [valueState, setValueState] = useState('');
 
   const { story, setStory, wordBasketState, addGeneratedSentence } = useData();
 
@@ -21,7 +22,10 @@ const DialogueHomeScreen = () => {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ words: wordBasketState, speakerId: 37 }),
+          body: JSON.stringify({
+            words: wordBasketState,
+            suggested: valueState,
+          }),
         },
       );
 
@@ -67,6 +71,22 @@ const DialogueHomeScreen = () => {
           </Button>
         </div>
       )}
+
+      <div className='flex flex-col items-start space-y-2 w-80'>
+        <label htmlFor='name' className='text-sm font-medium text-gray-700'>
+          Enter your name
+        </label>
+        <input
+          id='name'
+          // type='text'
+          value={valueState}
+          x-webkit-speech='true'
+          onChange={(e) => setValueState(e.target.value)}
+          placeholder='Type here...'
+          className='w-full px-4 py-2 border rounded-2xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none'
+        />
+        <p className='text-gray-500 text-sm'>You typed: {valueState}</p>
+      </div>
       {story?.audioUrl && (
         <KaraokePlayer
           audioUrl={story?.audioUrl}

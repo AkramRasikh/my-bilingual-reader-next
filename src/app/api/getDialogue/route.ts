@@ -54,7 +54,7 @@ const jsonResponseObj = {
 
 export async function POST(request: Request) {
   try {
-    const { words } = await request.json();
+    const { words, suggested } = await request.json();
 
     if (!words || !Array.isArray(words)) {
       return NextResponse.json(
@@ -88,6 +88,11 @@ Both speakers must speak in the dialogue or else the output will be rejected
 
 Keep the dialogue concise but meaningful and ideally theatrical, ensuring that the context clearly demonstrates how the words are used naturally.
 
+${
+  suggested
+    ? `Here is a suggested sentence with the words being used in English. If it is a natural use of the words then use it as inspiration for the sentence generation. Otherwise ignore: ${suggested}`
+    : ''
+}
 
 Here are a list of voices/mood to choose from personA - a woman ${JSON.stringify(
       voicesSelectionWoman,
