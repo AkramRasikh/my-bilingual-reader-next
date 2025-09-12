@@ -2,7 +2,6 @@ import { useRef, useState } from 'react';
 import FormattedSentence from './FormattedSentence';
 import { getAudioURL } from './get-firebase-media-url';
 import { japanese } from './languages';
-import PopUpWordCard from './PopUpWordCard';
 import ReviewSRSToggles from './ReviewSRSToggles';
 import useData from './useData';
 
@@ -67,17 +66,6 @@ const SentenceBlock = ({ sentence, sentenceIndex }) => {
         contentItem={sentence}
         handleReviewFunc={handleReviewFunc}
       />
-      <ul>
-        {wordPopUpState?.map((popUpItem, index) => {
-          return (
-            <PopUpWordCard
-              key={index}
-              word={popUpItem}
-              onClose={() => setWordPopUpState([])}
-            />
-          );
-        })}
-      </ul>
     </div>
   );
 };
