@@ -1,7 +1,7 @@
-import { Button } from '@/components/ui/button';
 import clsx from 'clsx';
 import { useState } from 'react';
 import Xarrow from 'react-xarrows';
+import BreakSentenceHoverCard from './BreakSentenceHoverCard';
 
 const colors = [
   '#1f77b4',
@@ -49,7 +49,6 @@ export const NewSentenceBreakdown = ({
 
           const thisColor = getColorByIndex(index);
 
-          const isHovered = hoveredXStates === index && !wordIsSaved;
           return (
             <li
               key={index}
@@ -58,42 +57,13 @@ export const NewSentenceBreakdown = ({
               onMouseEnter={() => handleAddIndexToArr(index)}
               onMouseLeave={() => handleOnMouseExit(index)}
             >
-              {isHovered && (
-                <div className='flex gap-1 border-2 absolute bottom-7 p-0.5 flex-col rounded overflow-hidden'>
-                  <Button
-                    variant='secondary'
-                    size='icon'
-                    onClick={() => handleSaveFunc(false, surfaceForm, meaning)}
-                  >
-                    <img
-                      src='/deepseek.png'
-                      alt='Deepseek logo'
-                      className='h-5'
-                    />
-                  </Button>
-                  <hr />
-                  <Button
-                    variant='secondary'
-                    size='icon'
-                    onClick={() => handleSaveFunc(true, surfaceForm, meaning)}
-                  >
-                    <img src='/google.png' alt='Google logo' className='h-5' />
-                  </Button>
-                </div>
-              )}
-              <div
-                className={clsx(
-                  'flex gap-0.5 flex-col',
-                  isHovered ? `border-neutral-900 border-[1px] rounded` : '',
-                )}
-                style={{
-                  color: thisColor,
-                }}
-              >
-                <span className={clsx(wordIsSaved && 'underline', 'm-auto')}>
-                  {surfaceForm}
-                </span>
-              </div>
+              <BreakSentenceHoverCard
+                handleSaveFunc={handleSaveFunc}
+                surfaceForm={surfaceForm}
+                meaning={meaning}
+                thisColor={thisColor}
+                wordIsSaved={wordIsSaved}
+              />
             </li>
           );
         })}
