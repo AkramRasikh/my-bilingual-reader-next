@@ -9,14 +9,20 @@ import {
 } from '@/components/ui/dialog';
 import { WordCardContent } from './WordCard';
 import useData from './useData';
+import { isDueCheck } from './DataProvider';
 
 const WordContainerDialogue = ({ wordsForSelectedTopic, addWordToBasket }) => {
   const { wordBasketState, updateWordDataProvider } = useData();
+  const nowTime = new Date();
+  const howManyDue = wordsForSelectedTopic.filter((i) =>
+    isDueCheck(i, nowTime),
+  ).length;
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant='outline'>
-          Show Words ({wordsForSelectedTopic.length})
+          Words ({howManyDue}/{wordsForSelectedTopic.length})
         </Button>
       </DialogTrigger>
       <DialogContent>
