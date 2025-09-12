@@ -14,7 +14,6 @@ const DialogueHomeScreen = () => {
   console.log('## story', story);
 
   const getStoryAPI = async ({ isStory }) => {
-    setLoading(true);
     try {
       setLoading(true);
       const res = await fetch(
