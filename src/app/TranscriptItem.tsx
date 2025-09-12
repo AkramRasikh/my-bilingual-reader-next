@@ -197,7 +197,7 @@ const TranscriptItem = ({
   return (
     <li
       className={clsx(
-        'rounded-lg px-2 py-1 shadow h-fit border-1 ',
+        'rounded-lg px-2 py-1 shadow h-fit border-2 ',
         isDueNow
           ? 'border-red-500'
           : hasBeenReviewed
