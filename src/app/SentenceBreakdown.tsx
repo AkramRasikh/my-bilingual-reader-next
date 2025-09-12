@@ -57,13 +57,26 @@ export const NewSentenceBreakdown = ({
               onMouseEnter={() => handleAddIndexToArr(index)}
               onMouseLeave={() => handleOnMouseExit(index)}
             >
-              <BreakSentenceHoverCard
-                handleSaveFunc={handleSaveFunc}
-                surfaceForm={surfaceForm}
-                meaning={meaning}
-                thisColor={thisColor}
-                wordIsSaved={wordIsSaved}
-              />
+              {wordIsSaved ? (
+                <div
+                  className={clsx('flex gap-0.5 flex-col')}
+                  style={{
+                    color: thisColor,
+                  }}
+                >
+                  <span className={clsx(wordIsSaved && 'underline', 'm-auto')}>
+                    {surfaceForm}
+                  </span>
+                </div>
+              ) : (
+                <BreakSentenceHoverCard
+                  handleSaveFunc={handleSaveFunc}
+                  surfaceForm={surfaceForm}
+                  meaning={meaning}
+                  thisColor={thisColor}
+                  wordIsSaved={wordIsSaved}
+                />
+              )}
             </li>
           );
         })}
