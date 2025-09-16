@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { getFirebaseVideoURL } from './get-firebase-media-url';
 import { getGeneralTopicName } from './get-general-topic-name';
 import { japanese } from './languages';
@@ -619,9 +619,7 @@ const LearningScreen = () => {
         setOnlyShowEngState={setOnlyShowEngState}
         showOnVideoTranscriptState={showOnVideoTranscriptState}
         setShowOnVideoTranscriptState={setShowOnVideoTranscriptState}
-        wordsForSelectedTopic={wordsForSelectedTopic}
         setShowWordsBasketState={setShowWordsBasketState}
-        addWordToBasket={addWordToBasket}
       />
       <div
         style={{

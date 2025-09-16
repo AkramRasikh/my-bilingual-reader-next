@@ -5,7 +5,6 @@ import LoadingSpinner from './LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import WordContainerDialogue from './WordContainerDialogue';
 
 export default function ContentActionBar({
   hasContentToReview,
@@ -20,8 +19,6 @@ export default function ContentActionBar({
   setOnlyShowEngState,
   showOnVideoTranscriptState,
   setShowOnVideoTranscriptState,
-  wordsForSelectedTopic,
-  addWordToBasket,
 }: {
   hasContentToReview: boolean;
   handleBulkReviews: (action: 'add' | 'remove') => Promise<void>;
@@ -136,10 +133,6 @@ export default function ContentActionBar({
             onCheckedChange={setShowOnVideoTranscriptState}
           />
         </div>
-        <WordContainerDialogue
-          wordsForSelectedTopic={wordsForSelectedTopic}
-          addWordToBasket={addWordToBasket}
-        />
       </div>
 
       {showConfirm && !isLoading && (
