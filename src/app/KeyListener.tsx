@@ -26,6 +26,7 @@ const KeyListener = ({
   handleShiftLoopSentence,
   isInReviewMode,
   handleIsEasyReviewShortCut,
+  setContractThreeSecondLoopState,
 }: Props) => {
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -47,27 +48,53 @@ const KeyListener = ({
       if (
         shiftKey &&
         e.key.toLowerCase() === 'arrowdown' &&
+        !threeSecondLoopState &&
         (loopTranscriptState?.length === 0 || !loopTranscriptState)
       ) {
         handleLoopThisSentence();
-
         return;
       }
 
       if (shiftKey && isInReviewMode && e.key.toLowerCase() === ')') {
         // 0 shifted
-        console.log('## HEREEEEE');
-
         handleIsEasyReviewShortCut();
         return;
       }
       if (threeSecondLoopState || loopTranscriptState) {
         // think of properties and array things
+        if (
+          threeSecondLoopState &&
+          (!loopTranscriptState || loopTranscriptState?.length === 0)
+        ) {
+          if (shiftKey && e.key.toLowerCase() === 'k') {
+            handleLoopThis3Second();
+            return;
+          }
+          if (shiftKey && e.key.toLowerCase() === 'arrowright') {
+            handleShiftSnippet(0.5);
+            return;
+          }
+          if (shiftKey && e.key.toLowerCase() === 'arrowleft') {
+            handleShiftSnippet(-0.5);
+            return;
+          }
+
+          if (shiftKey && e.key.toLowerCase() === 'arrowup') {
+            setContractThreeSecondLoopState((prev) => !prev);
+            return;
+          }
+          if (shiftKey && e.key.toLowerCase() === 'arrowdown') {
+            // setContractThreeSecondLoopState(true);
+            return;
+          }
+          return;
+        }
+
         if (e.key.toLowerCase() === 'o') {
           handleSlowDownAudio(true);
           return;
         }
-        if (shiftKey && loopTranscriptState) {
+        if (shiftKey && loopTranscriptState && !threeSecondLoopState) {
           if (e.key.toLowerCase() === 'arrowdown') {
             handleUpdateLoopedSentence(true);
           } else if (e.key.toLowerCase() === 'arrowup') {
@@ -76,22 +103,6 @@ const KeyListener = ({
             handleShiftLoopSentence(true);
           }
         }
-      }
-
-      if (threeSecondLoopState) {
-        if (shiftKey && e.key.toLowerCase() === 'k') {
-          handleLoopThis3Second();
-          return;
-        }
-        if (shiftKey && e.key.toLowerCase() === 'l') {
-          handleShiftSnippet(0.5);
-          return;
-        }
-        if (shiftKey && e.key.toLowerCase() === 'j') {
-          handleShiftSnippet(-0.5);
-          return;
-        }
-        return;
       }
 
       // SHIFT + B
@@ -164,6 +175,7 @@ const KeyListener = ({
     handleShiftLoopSentence,
     isInReviewMode,
     handleIsEasyReviewShortCut,
+    setContractThreeSecondLoopState,
   ]);
 
   return null;

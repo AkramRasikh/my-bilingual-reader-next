@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getFirebaseVideoURL } from './get-firebase-media-url';
 import { getGeneralTopicName } from './get-general-topic-name';
 import { japanese } from './languages';
@@ -22,7 +22,6 @@ import clsx from 'clsx';
 import ProgressBarSnippet from './ProgressBarSnippet';
 import ComprehensiveTranscriptItem from './ComprehensiveTranscriptItem';
 import useLearningScreen from './useLearningScreen';
-import { WordCardContent } from './WordCard';
 
 const LearningScreen = () => {
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
@@ -65,6 +64,8 @@ const LearningScreen = () => {
     showOnVideoTranscriptState,
     setShowOnVideoTranscriptState,
     setShowWordsBasketState,
+    contractThreeSecondLoopState,
+    setContractThreeSecondLoopState,
   } = useLearningScreen();
 
   const {
@@ -168,8 +169,11 @@ const LearningScreen = () => {
     // can be split into two for efficiency but fine for now
     if (!ref.current) return;
     if (isNumber(threeSecondLoopState)) {
-      const startTime = threeSecondLoopState - 1.5;
-      const endTime = threeSecondLoopState + 1.5;
+      //
+      const startTime =
+        threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
+      const endTime =
+        threeSecondLoopState + (contractThreeSecondLoopState ? 0.75 : 1.5);
       const lessThan1500Seconds = ref.current.currentTime < startTime;
       const moreThan1500Seconds = ref.current.currentTime > endTime;
       if (lessThan1500Seconds || moreThan1500Seconds) {
@@ -187,7 +191,17 @@ const LearningScreen = () => {
         ref.current.play();
       }
     }
-  }, [loopTranscriptState, ref, masterPlay, threeSecondLoopState, progress]);
+    if (contractThreeSecondLoopState && !threeSecondLoopState) {
+      setContractThreeSecondLoopState(false);
+    }
+  }, [
+    loopTranscriptState,
+    ref,
+    masterPlay,
+    contractThreeSecondLoopState,
+    threeSecondLoopState,
+    progress,
+  ]);
 
   const handleReviewFunc = async ({ sentenceId, isRemoveReview, nextDue }) => {
     const cardDataRelativeToNow = getEmptyCard();
@@ -237,8 +251,10 @@ const LearningScreen = () => {
 
   useEffect(() => {
     if (isNumber(threeSecondLoopState)) {
-      const startTime = threeSecondLoopState - 1.5;
-      const endTime = threeSecondLoopState + 1.5;
+      const startTime =
+        threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
+      const endTime =
+        threeSecondLoopState + (contractThreeSecondLoopState ? 0.75 : 1.5);
 
       const results = [];
 
@@ -272,7 +288,12 @@ const LearningScreen = () => {
         setOverlappingSnippetDataState(results);
       }
     }
-  }, [threeSecondLoopState, realStartTime, formattedTranscriptState]);
+  }, [
+    threeSecondLoopState,
+    contractThreeSecondLoopState,
+    realStartTime,
+    formattedTranscriptState,
+  ]);
 
   const handleUpdateLoopedSentence = (extendSentenceLoop) => {
     if (extendSentenceLoop) {
@@ -628,6 +649,7 @@ const LearningScreen = () => {
                 threeSecondLoopState={threeSecondLoopState}
                 progress={progress}
                 setProgress={setProgress}
+                contractThreeSecondLoopState={contractThreeSecondLoopState}
               />
               <Button
                 id='stop-loop'
@@ -668,6 +690,7 @@ const LearningScreen = () => {
             handleShiftLoopSentence={handleShiftLoopSentence}
             handleIsEasyReviewShortCut={handleIsEasyReviewShortCut}
             isInReviewMode={isInReviewMode}
+            setContractThreeSecondLoopState={setContractThreeSecondLoopState}
           />
         </div>
         {secondsState && (

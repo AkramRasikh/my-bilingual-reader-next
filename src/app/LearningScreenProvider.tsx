@@ -38,6 +38,8 @@ export const LearningScreenProvider = ({
     number | null
   >();
   const [progress, setProgress] = useState(0);
+  const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
+    useState(false);
 
   return (
     <LearningScreenContext.Provider
@@ -80,6 +82,8 @@ export const LearningScreenProvider = ({
         setShowOnVideoTranscriptState,
         showWordsBasketState,
         setShowWordsBasketState,
+        contractThreeSecondLoopState,
+        setContractThreeSecondLoopState,
       }}
     >
       {children}
