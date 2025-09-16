@@ -50,7 +50,8 @@ const ContentSelection = ({
   selectedContentState,
   youtubeContentTagsState,
 }) => {
-  const { getYoutubeID, handleSelectedContent } = useData();
+  const { getYoutubeID, handleSelectedContent, checkTopicNeedsReviewBool } =
+    useData();
 
   return (
     <>
@@ -59,6 +60,7 @@ const ContentSelection = ({
           generalTopicDisplayNameState?.length > 0 &&
           generalTopicDisplayNameState.map((youtubeTag, index) => {
             const youtubeId = getYoutubeID(youtubeTag);
+            const isThisDue = checkTopicNeedsReviewBool(youtubeTag);
 
             return (
               <li key={index}>
@@ -75,10 +77,10 @@ const ContentSelection = ({
                   onClick={() =>
                     setGeneralTopicDisplayNameSelectedState(youtubeTag)
                   }
-                  style={{
-                    borderRadius: 5,
-                    background: 'transparent',
-                  }}
+                  className={clsx(
+                    'm-auto pb-1 rounded',
+                    isThisDue ? 'bg-amber-500' : '',
+                  )}
                 >
                   {youtubeTag}
                 </Button>

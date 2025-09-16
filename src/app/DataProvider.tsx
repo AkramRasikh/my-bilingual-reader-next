@@ -220,6 +220,25 @@ export const DataProvider = ({
     });
   };
 
+  const checkTopicNeedsReviewBool = (genTop) => {
+    const todayDateObj = new Date();
+
+    return contentState.some((contentEl) => {
+      if (contentEl.generalTopicName !== genTop) {
+        return;
+      }
+
+      const transcript = contentEl.content;
+
+      return transcript.some((transcriptEl) => {
+        if (!transcriptEl?.reviewData?.due) {
+          return;
+        }
+        return isDueCheck(transcriptEl, todayDateObj);
+      });
+    });
+  };
+
   const checkHowManyOfTopicNeedsReview = () => {
     if (!generalTopicDisplayNameSelectedState) {
       return null;
@@ -624,6 +643,7 @@ export const DataProvider = ({
         setStory,
         addGeneratedSentence,
         handleSelectedContent,
+        checkTopicNeedsReviewBool,
       }}
     >
       {children}
