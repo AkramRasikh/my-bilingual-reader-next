@@ -24,7 +24,8 @@ export const WordCardContent = ({
   updateWordData,
   defaultOpen,
   reviewData,
-  rest,
+  reduceChar = true,
+  ...rest
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
   const [isLoadingState, setIsLoadingState] = useState(false);
@@ -81,7 +82,7 @@ export const WordCardContent = ({
           <LoadingSpinner />
         </div>
       )}
-      <div className='flex gap-3'>
+      <div className='flex gap-3 flex-wrap'>
         <Button
           onClick={() => setShowBaseFormWordState(!isShowBaseFormWordState)}
         >
@@ -92,7 +93,7 @@ export const WordCardContent = ({
               className='m-auto text-ellipsis'
               style={{
                 overflow: !openContentState ? 'hidden' : '',
-                maxWidth: !openContentState ? '15ch' : '',
+                maxWidth: reduceChar && !openContentState ? '15ch' : '',
               }}
             >
               {definition}
@@ -126,7 +127,7 @@ export const WordCardContent = ({
               animation: 'fadeIn 0.5s ease-out forwards',
             }}
           >
-            <div className='flex flex-col gap-3 mb-4'>
+            <div className='flex flex-col gap-3 mb-4 flex-wrap'>
               {surfaceForm && <Label>Surface Form: {surfaceForm}</Label>}
               {phonetic && <Label>Phonetic: {phonetic}</Label>}
               {transliteration && (
@@ -187,7 +188,7 @@ const WordCard = ({
         animation: 'fadeIn 0.5s ease-out forwards',
       }}
     >
-      <div className='flex gap-3'>
+      <div className='flex gap-3 flex-wrap'>
         <Button
           onClick={() => setShowBaseFormWordState(!isShowBaseFormWordState)}
           className='m-auto border-0'
@@ -225,7 +226,7 @@ const WordCard = ({
               animation: 'fadeIn 0.5s ease-out forwards',
             }}
           >
-            <div className='flex flex-col gap-3 mb-4'>
+            <div className='flex flex-col gap-3 mb-4 flex-wrap'>
               {surfaceForm && <Label>Surface Form: {surfaceForm}</Label>}
               {phonetic && <Label>Phonetic: {phonetic}</Label>}
               {transliteration && (

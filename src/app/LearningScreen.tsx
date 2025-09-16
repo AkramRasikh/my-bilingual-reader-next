@@ -695,6 +695,8 @@ const LearningScreen = () => {
             overlappingSnippetDataState={overlappingSnippetDataState}
             threeSecondLoopState={threeSecondLoopState}
             isInReviewMode={isInReviewMode}
+            addWordToBasket={addWordToBasket}
+            wordsForSelectedTopic={wordsForSelectedTopic}
           />
         )}
       </div>

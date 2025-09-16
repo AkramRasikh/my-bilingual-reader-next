@@ -12,6 +12,34 @@ import useData from './useData';
 import { isDueCheck } from './DataProvider';
 import clsx from 'clsx';
 
+export const WordDialogueContent = ({
+  addWordToBasket,
+  wordsForSelectedTopic,
+}) => {
+  const { wordBasketState, updateWordDataProvider } = useData();
+
+  return (
+    <div className='text-center m-auto p-1.5'>
+      <ul className='flex flex-wrap gap-2.5'>
+        {wordsForSelectedTopic.map((word) => {
+          const isInBasket = wordBasketState?.some((i) => i?.id === word.id);
+
+          return (
+            <li key={word.id}>
+              <WordCardContent
+                {...word}
+                updateWordData={updateWordDataProvider}
+                addWordToBasket={addWordToBasket}
+                isInBasket={isInBasket}
+              />
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+};
+
 const WordContainerDialogue = ({ wordsForSelectedTopic, addWordToBasket }) => {
   const { wordBasketState, updateWordDataProvider } = useData();
   const nowTime = new Date();

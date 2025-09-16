@@ -1,4 +1,6 @@
 import TranscriptItem from './TranscriptItem';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { WordDialogueContent } from './WordContainerDialogue';
 
 const Transcript = ({
   hasPreviousVideo,
@@ -24,7 +26,10 @@ const Transcript = ({
   overlappingSnippetDataState,
   threeSecondLoopState,
   isInReviewMode,
+  addWordToBasket,
+  wordsForSelectedTopic,
 }) => {
+  const thisTopicHasWords = wordsForSelectedTopic?.length > 0;
   return (
     <div className='flex-1 max-w-xl'>
       <div>
@@ -39,45 +44,64 @@ const Transcript = ({
             ⏫⏫⏫⏫⏫
           </button>
         )}
-        <ul
-          className='border rounded-lg p-1'
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 10,
-            margin: 'auto',
-            overflow: 'scroll',
-            maxHeight: '600px',
-            overflowY: 'auto',
-          }}
-        >
-          {formattedTranscriptState.map((contentItem, index) => {
-            return (
-              <TranscriptItem
-                key={index}
-                isGenericItemLoadingState={isGenericItemLoadingState}
-                contentItem={contentItem}
-                isVideoPlaying={isVideoPlaying}
-                handlePause={handlePause}
-                handleFromHere={handleFromHere}
-                masterPlay={masterPlay}
-                handleReviewFunc={handleReviewFunc}
-                handleBreakdownSentence={handleBreakdownSentence}
-                sentenceHighlightingState={sentenceHighlightingState}
-                setSentenceHighlightingState={setSentenceHighlightingState}
-                handleOpenBreakdownSentence={handleOpenBreakdownSentence}
-                breakdownSentencesArrState={breakdownSentencesArrState}
-                setBreakdownSentencesArrState={setBreakdownSentencesArrState}
-                isPressDownShiftState={isPressDownShiftState}
-                loopTranscriptState={loopTranscriptState}
-                setLoopTranscriptState={setLoopTranscriptState}
-                overlappingSnippetDataState={overlappingSnippetDataState}
-                threeSecondLoopState={threeSecondLoopState}
-                isInReviewMode={isInReviewMode}
-              />
-            );
-          })}
-        </ul>
+        <Tabs defaultValue='transcript'>
+          <TabsList>
+            <TabsTrigger value='transcript'>Transcript</TabsTrigger>
+            <TabsTrigger value='words' disabled={!thisTopicHasWords}>
+              Words {wordsForSelectedTopic.length}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value='transcript'>
+            <ul
+              className='border rounded-lg p-1'
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 5,
+                margin: 'auto',
+                overflow: 'scroll',
+                maxHeight: '600px',
+                overflowY: 'auto',
+              }}
+            >
+              {formattedTranscriptState.map((contentItem, index) => {
+                return (
+                  <TranscriptItem
+                    key={index}
+                    isGenericItemLoadingState={isGenericItemLoadingState}
+                    contentItem={contentItem}
+                    isVideoPlaying={isVideoPlaying}
+                    handlePause={handlePause}
+                    handleFromHere={handleFromHere}
+                    masterPlay={masterPlay}
+                    handleReviewFunc={handleReviewFunc}
+                    handleBreakdownSentence={handleBreakdownSentence}
+                    sentenceHighlightingState={sentenceHighlightingState}
+                    setSentenceHighlightingState={setSentenceHighlightingState}
+                    handleOpenBreakdownSentence={handleOpenBreakdownSentence}
+                    breakdownSentencesArrState={breakdownSentencesArrState}
+                    setBreakdownSentencesArrState={
+                      setBreakdownSentencesArrState
+                    }
+                    isPressDownShiftState={isPressDownShiftState}
+                    loopTranscriptState={loopTranscriptState}
+                    setLoopTranscriptState={setLoopTranscriptState}
+                    overlappingSnippetDataState={overlappingSnippetDataState}
+                    threeSecondLoopState={threeSecondLoopState}
+                    isInReviewMode={isInReviewMode}
+                  />
+                );
+              })}
+            </ul>
+          </TabsContent>
+          <TabsContent value='words'>
+            <WordDialogueContent
+              addWordToBasket={addWordToBasket}
+              wordsForSelectedTopic={wordsForSelectedTopic}
+            />
+          </TabsContent>
+        </Tabs>
         <div>
           {hasFollowingVideo && (
             <button
