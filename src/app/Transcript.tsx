@@ -96,10 +96,17 @@ const Transcript = ({
             </ul>
           </TabsContent>
           <TabsContent value='words'>
-            <WordDialogueContent
-              addWordToBasket={addWordToBasket}
-              wordsForSelectedTopic={wordsForSelectedTopic}
-            />
+            <div
+              style={{
+                overflow: 'scroll',
+                maxHeight: '600px',
+              }}
+            >
+              <WordDialogueContent
+                addWordToBasket={addWordToBasket}
+                wordsForSelectedTopic={wordsForSelectedTopic}
+              />
+            </div>
           </TabsContent>
         </Tabs>
         <div>

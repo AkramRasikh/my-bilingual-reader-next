@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import useData from './useData';
-import PopUpWordCard from './PopUpWordCard';
 import HighlightedTextSection from './HighlightedTextSection';
 import { NewSentenceBreakdown } from './SentenceBreakdown';
 import clsx from 'clsx';
@@ -11,6 +10,7 @@ import FormattedSentence from './FormattedSentence';
 import ReviewSRSToggles from './ReviewSRSToggles';
 import { getTimeDiffSRS } from './getTimeDiffSRS';
 import useLearningScreen from './useLearningScreen';
+import { Button } from '@/components/ui/button';
 
 const TranscriptItem = ({
   contentItem,
@@ -333,13 +333,15 @@ const TranscriptItem = ({
           <div className='flex flex-col gap-0.5'>
             {showMenuState ? (
               <>
-                <button
-                  className='bg-gray-400 p-1 mt-0 rounded transparent'
+                <Button
                   id='show-menu'
+                  variant='secondary'
+                  size='icon'
+                  className='bgmt-0 rounded transparent'
                   onClick={() => setShowMenuState(!showMenuState)}
                 >
                   <MenuIcon />
-                </button>
+                </Button>
                 <button
                   id='copy'
                   className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
@@ -384,13 +386,15 @@ const TranscriptItem = ({
                 />
               </>
             ) : (
-              <button
-                className='bg-gray-400 p-1 mt-0 rounded'
+              <Button
                 id='show-menu'
+                className='mt-0 rounded'
+                variant='secondary'
+                size='icon'
                 onClick={() => setShowMenuState(!showMenuState)}
               >
                 <MenuIcon />
-              </button>
+              </Button>
             )}
           </div>
         </div>
