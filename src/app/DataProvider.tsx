@@ -277,6 +277,44 @@ export const DataProvider = ({
     return sentencesNeedReview;
   };
 
+  const getGeneralContentMetaData = () => {
+    if (!generalTopicDisplayNameSelectedState) {
+      return null;
+    }
+
+    const todayDateObj = new Date();
+
+    const contentOfGeneralTopic = contentState.filter(
+      (contentEl) =>
+        contentEl.generalTopicName === generalTopicDisplayNameSelectedState,
+    );
+
+    return contentOfGeneralTopic.map((thisContentEl) => {
+      const title = thisContentEl.title;
+      const reviewHistory = thisContentEl.reviewHistory?.length > 0;
+      const chapter = title.split('-');
+      const chapterNum = chapter[chapter.length - 1];
+
+      let sentencesNeedReview = 0;
+      const transcript = thisContentEl.content;
+
+      sentencesNeedReview = transcript.filter((transcriptEl) => {
+        if (!transcriptEl?.reviewData?.due) {
+          return;
+        }
+        if (isDueCheck(transcriptEl, todayDateObj)) {
+          return true;
+        }
+      }).length;
+      return {
+        chapterNum,
+        hasBeenReviewed: reviewHistory,
+        sentencesNeedReview,
+        title,
+      };
+    });
+  };
+
   const updateSentenceDataFromContent = ({
     sentenceId,
     fieldToUpdate,
@@ -644,6 +682,7 @@ export const DataProvider = ({
         addGeneratedSentence,
         handleSelectedContent,
         checkTopicNeedsReviewBool,
+        getGeneralContentMetaData,
       }}
     >
       {children}

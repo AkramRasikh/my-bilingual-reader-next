@@ -6,41 +6,39 @@ import useData from './useData';
 
 export const ContentSectionsForReciew = () => {
   const {
-    checkHowManyOfTopicNeedsReview,
+    getGeneralContentMetaData,
     handleGetComprehensiveReview,
     generalTopicDisplayNameSelectedState,
     handleSelectedContent,
   } = useData();
 
-  const theseSentencesDue =
-    generalTopicDisplayNameSelectedState && checkHowManyOfTopicNeedsReview();
+  const contentMetaData =
+    generalTopicDisplayNameSelectedState && getGeneralContentMetaData();
 
-  const hasReviewSentences = theseSentencesDue?.length > 0;
+  return (
+    <ul className='flex flex-col gap-1 overflow-y-scroll max-h-96'>
+      <Button variant='outline' onClick={handleGetComprehensiveReview}>
+        All
+      </Button>
+      {contentMetaData.map((thisContentMetaData) => {
+        const chapterNum = thisContentMetaData.chapterNum;
+        const title = thisContentMetaData.title;
+        const sentencesNeedReview = thisContentMetaData.sentencesNeedReview;
+        const hasBeenReviewed = thisContentMetaData.hasBeenReviewed;
 
-  const topicsWithReviews = hasReviewSentences
-    ? theseSentencesDue.reduce((acc, item) => {
-        if (item.title) {
-          acc[item.title] = (acc[item.title] || 0) + 1;
-        }
-        return acc;
-      }, {})
-    : [];
-  return hasReviewSentences > 0 ? (
-    <ul className='flex flex-col flex-wrap gap-1'>
-      {Object.entries(topicsWithReviews).map(([title, count]) => {
-        const chapter = title.split('-');
-        const chapterNum = chapter[chapter.length - 1];
         return (
-          <Button key={title} onClick={() => handleSelectedContent(title)}>
-            {chapterNum} ({count})
+          <Button
+            key={chapterNum}
+            variant='outline'
+            className={clsx(hasBeenReviewed ? 'bg-green-600' : '')}
+            onClick={() => handleSelectedContent(title)}
+          >
+            {chapterNum} <span>({sentencesNeedReview})</span>
           </Button>
         );
       })}
-      <Button variant='outline' onClick={handleGetComprehensiveReview}>
-        All {theseSentencesDue?.length}
-      </Button>
     </ul>
-  ) : null;
+  );
 };
 
 const ContentSelection = ({
