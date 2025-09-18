@@ -5,7 +5,6 @@ import ReviewSRSToggles from './ReviewSRSToggles';
 import { isDueCheck } from './DataProvider';
 import clsx from 'clsx';
 import { getTimeDiffSRS } from './getTimeDiffSRS';
-import { srsCalculationAndText, srsRetentionKeyTypes } from './srs-algo';
 import LoadingSpinner from './LoadingSpinner';
 
 function ConditionalWrapper({ condition, wrapper, children }) {
@@ -40,29 +39,14 @@ const WordTabContent = ({
       })
     : '';
 
-  const handleQuickEasy = async () => {
-    const timeNow = new Date();
-
-    const { nextScheduledOptions } = srsCalculationAndText({
-      reviewData: rest,
-      contentType: srsRetentionKeyTypes.vocab,
-      timeNow,
-    });
-
-    const easyModeData = nextScheduledOptions['4'].card;
-
+  const handleReviewFunc = async (arg) => {
     try {
       setIsLoadingState(true);
-      await updateWordData({
-        wordId: id,
-        fieldToUpdate: { reviewData: easyModeData },
-        language: 'japanese',
-      });
+      await updateWordData(arg);
     } catch (error) {
-      console.log('## handleNextReview', { error });
+      console.log('## handleReviewFunc', error);
     } finally {
       setIsLoadingState(false);
-      setOpenContentState(false);
     }
   };
 
@@ -161,7 +145,7 @@ const WordTabContent = ({
                 reviewData,
                 ...rest,
               }}
-              handleReviewFunc={updateWordData}
+              handleReviewFunc={handleReviewFunc}
               isVocab
             />
           ) : (
