@@ -133,9 +133,7 @@ const WordTabContent = ({
             )}
           >
             {baseForm && (
-              <span className='text-sm font-medium'>
-                baseForm: {surfaceForm}
-              </span>
+              <span className='text-sm font-medium'>BaseForm: {baseForm}</span>
             )}
             {surfaceForm && (
               <span className='text-sm font-medium'>
