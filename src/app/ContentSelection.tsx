@@ -65,8 +65,8 @@ const ContentSelection = ({
             return (
               <li key={index}>
                 <Image
-                  width={200}
-                  height={200}
+                  width={150}
+                  height={150}
                   src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
                   alt={youtubeId}
                   className='m-auto pb-1 rounded'
@@ -78,11 +78,19 @@ const ContentSelection = ({
                     setGeneralTopicDisplayNameSelectedState(youtubeTag)
                   }
                   className={clsx(
-                    'm-auto pb-1 rounded',
+                    'pb-1 rounded w-full',
                     isThisDue ? 'bg-amber-500' : '',
                   )}
                 >
-                  {youtubeTag}
+                  <span
+                    className='text-ellipsis'
+                    style={{
+                      overflow: 'hidden',
+                      maxWidth: '15ch',
+                    }}
+                  >
+                    {youtubeTag}
+                  </span>
                 </Button>
               </li>
             );
