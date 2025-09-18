@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { getGeneralTopicName } from './get-general-topic-name';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import useData from './useData';
@@ -44,11 +43,8 @@ export const ContentSectionsForReciew = () => {
 const ContentSelection = ({
   generalTopicDisplayNameSelectedState,
   generalTopicDisplayNameState,
-  setGeneralTopicDisplayNameSelectedState,
-  selectedContentState,
-  youtubeContentTagsState,
 }) => {
-  const { getYoutubeID, handleSelectedContent, checkTopicNeedsReviewBool } =
+  const { getYoutubeID, handleSelectInitialTopic, checkTopicNeedsReviewBool } =
     useData();
 
   return (
@@ -72,9 +68,7 @@ const ContentSelection = ({
 
                 <Button
                   variant={'outline'}
-                  onClick={() =>
-                    setGeneralTopicDisplayNameSelectedState(youtubeTag)
-                  }
+                  onClick={() => handleSelectInitialTopic(youtubeTag)}
                   className={clsx(
                     'pb-1 rounded w-full',
                     isThisDue ? 'bg-amber-500' : '',
@@ -89,31 +83,6 @@ const ContentSelection = ({
                   >
                     {youtubeTag}
                   </span>
-                </Button>
-              </li>
-            );
-          })}
-      </ul>
-      <ul className='flex flex-wrap gap-1'>
-        {!selectedContentState &&
-          generalTopicDisplayNameSelectedState &&
-          youtubeContentTagsState?.length > 0 &&
-          youtubeContentTagsState.map((youtubeTag, index) => {
-            const title = youtubeTag.title;
-            const reviewed = youtubeTag.reviewed?.length > 0;
-            const isPartOfGeneralList = getGeneralTopicName(title);
-            if (isPartOfGeneralList !== generalTopicDisplayNameSelectedState) {
-              return null;
-            }
-
-            return (
-              <li key={index} className='w-fit'>
-                <Button
-                  variant={'outline'}
-                  onClick={() => handleSelectedContent(title)}
-                  className={clsx('', reviewed && 'text-white bg-red-700')}
-                >
-                  {title}
                 </Button>
               </li>
             );

@@ -14,7 +14,6 @@ import { toast, Toaster } from 'sonner';
 
 export const HomeContainer = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
-  const [youtubeContentTagsState, setYoutubeContentTags] = useState();
   const [isLoadingState, setIsLoadingState] = useState(false);
 
   const [currentTime, setCurrentTime] = useState(0);
@@ -25,7 +24,6 @@ export const HomeContainer = () => {
     generalTopicDisplayNameState,
     setGeneralTopicDisplayNameState,
     generalTopicDisplayNameSelectedState,
-    setGeneralTopicDisplayNameSelectedState,
     sentencesState,
     toastMessageState,
     setToastMessageState,
@@ -120,7 +118,6 @@ export const HomeContainer = () => {
         }
 
         setGeneralTopicDisplayNameState(generalTopicDisplayName);
-        setYoutubeContentTags([...new Set(youtubeContentTags)]);
       } catch (error) {
       } finally {
         setIsLoadingState(false);
@@ -174,11 +171,6 @@ export const HomeContainer = () => {
           generalTopicDisplayNameSelectedState
         }
         generalTopicDisplayNameState={generalTopicDisplayNameState}
-        setGeneralTopicDisplayNameSelectedState={
-          setGeneralTopicDisplayNameSelectedState
-        }
-        selectedContentState={selectedContentState}
-        youtubeContentTagsState={youtubeContentTagsState}
         isSentenceReviewState={isSentenceReviewState}
         setIsSentenceReviewState={setIsSentenceReviewState}
         numberOfSentences={numberOfSentences}

@@ -488,6 +488,14 @@ export const DataProvider = ({
     }
   };
 
+  const handleSelectInitialTopic = (youtubeTag) => {
+    const firstElOfYoutubeTitle = contentState.find(
+      (i) => i.generalTopicName === youtubeTag,
+    );
+    setGeneralTopicDisplayNameSelectedState(youtubeTag);
+    handleSelectedContent(firstElOfYoutubeTitle.title);
+  };
+
   const updateContentMetaData = async ({
     topicName,
     fieldToUpdate,
@@ -683,6 +691,7 @@ export const DataProvider = ({
         handleSelectedContent,
         checkTopicNeedsReviewBool,
         getGeneralContentMetaData,
+        handleSelectInitialTopic,
       }}
     >
       {children}
