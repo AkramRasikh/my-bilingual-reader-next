@@ -26,7 +26,7 @@ export const ContentSectionsForReciew = () => {
       }, {})
     : [];
   return hasReviewSentences > 0 ? (
-    <ul className='flex flex-wrap gap-1 m-auto'>
+    <ul className='flex flex-col flex-wrap gap-1'>
       {Object.entries(topicsWithReviews).map(([title, count]) => {
         const chapter = title.split('-');
         const chapterNum = chapter[chapter.length - 1];

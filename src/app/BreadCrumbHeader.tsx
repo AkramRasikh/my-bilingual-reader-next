@@ -79,7 +79,6 @@ const BreadcrumbComponent = () => {
                 </BreadcrumbItem>
               </>
             )}
-            <ContentSectionsForReciew />
           </BreadcrumbList>
         </Breadcrumb>
 

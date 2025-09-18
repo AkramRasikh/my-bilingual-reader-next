@@ -22,6 +22,7 @@ import clsx from 'clsx';
 import ProgressBarSnippet from './ProgressBarSnippet';
 import ComprehensiveTranscriptItem from './ComprehensiveTranscriptItem';
 import useLearningScreen from './useLearningScreen';
+import { ContentSectionsForReciew } from './ContentSelection';
 
 const LearningScreen = () => {
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
@@ -630,7 +631,8 @@ const LearningScreen = () => {
           marginTop: 20,
         }}
       >
-        <div className='flex-1 mt-5 max-w-xl m-auto'>
+        <ContentSectionsForReciew />
+        <div className='flex-1 max-w-xl mx-auto'>
           <VideoPlayer
             ref={ref}
             url={videoUrl}
