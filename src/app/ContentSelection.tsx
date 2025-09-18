@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
@@ -62,14 +63,43 @@ const ContentSelection = ({
   const { getYoutubeID, handleSelectInitialTopic, checkTopicNeedsReviewBool } =
     useData();
 
+  const [contentSelectionState, setContentSelectionState] = useState([]);
+
+  useEffect(() => {
+    if (generalTopicDisplayNameState) {
+      const comprehensiveState = generalTopicDisplayNameState
+        .map((youtubeTag) => {
+          const youtubeId = getYoutubeID(youtubeTag);
+          const isThisDue = checkTopicNeedsReviewBool(youtubeTag);
+
+          return {
+            youtubeTag,
+            youtubeId,
+            isThisDue,
+          };
+        })
+        .sort((a, b) => {
+          return a.isThisDue === b.isThisDue ? 0 : a.isThisDue ? -1 : 1;
+        });
+
+      setContentSelectionState(comprehensiveState);
+    }
+  }, [
+    generalTopicDisplayNameSelectedState,
+    checkTopicNeedsReviewBool,
+    getYoutubeID,
+    generalTopicDisplayNameState,
+  ]);
+
   return (
     <>
       <ul style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
         {!generalTopicDisplayNameSelectedState &&
-          generalTopicDisplayNameState?.length > 0 &&
-          generalTopicDisplayNameState.map((youtubeTag, index) => {
-            const youtubeId = getYoutubeID(youtubeTag);
-            const isThisDue = checkTopicNeedsReviewBool(youtubeTag);
+          contentSelectionState?.length > 0 &&
+          contentSelectionState.map((youtubeMetaData, index) => {
+            const youtubeTag = youtubeMetaData.youtubeTag;
+            const youtubeId = youtubeMetaData.youtubeId;
+            const isThisDue = youtubeMetaData.isThisDue;
 
             return (
               <li key={index}>

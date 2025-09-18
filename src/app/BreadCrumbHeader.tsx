@@ -10,7 +10,6 @@ import {
 import useData from './useData';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import { ContentSectionsForReciew } from './ContentSelection';
 import BasketDialogue from './BasketDialogue';
 
 const BreadcrumbComponent = () => {
@@ -42,9 +41,6 @@ const BreadcrumbComponent = () => {
     setSelectedContentState(null);
     setGeneralTopicDisplayNameSelectedState('');
   };
-  const handleThisGeneralTopic = () => {
-    setSelectedContentState(null);
-  };
 
   const title = selectedContentState?.title;
   const chapter = title?.split('-');
@@ -56,18 +52,16 @@ const BreadcrumbComponent = () => {
         <Breadcrumb className='my-auto mx-1'>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink onClick={handleOnHome}>Topics</BreadcrumbLink>
+              <BreadcrumbLink onClick={handleOnHome}>Home</BreadcrumbLink>
             </BreadcrumbItem>
             {generalTopicDisplayNameSelectedState && (
               <>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink onClick={handleThisGeneralTopic}>
-                    {generalTopicDisplayNameSelectedState}{' '}
-                    {theseSentencesDue?.length > 0
-                      ? `(${theseSentencesDue?.length})`
-                      : null}
-                  </BreadcrumbLink>
+                  {generalTopicDisplayNameSelectedState}{' '}
+                  {theseSentencesDue?.length > 0
+                    ? `(${theseSentencesDue?.length})`
+                    : null}
                 </BreadcrumbItem>
               </>
             )}

@@ -10,18 +10,16 @@ export default async function Home() {
   const targetLanguageLoadedContent = allStudyDataRes.content;
   const targetLanguageLoadedWords = allStudyDataRes.words;
 
-  const sortedContent = targetLanguageLoadedContent
-    ?.sort((a, b) => {
-      return a.isCore === b.isCore ? 0 : a.isCore ? -1 : 1;
-    })
-    .map((contentWidget, contentIndex) => ({
+  const sortedContent = targetLanguageLoadedContent?.map(
+    (contentWidget, contentIndex) => ({
       ...contentWidget,
       contentIndex: contentIndex,
       isFirst:
         contentWidget.title.endsWith('-1') ||
         contentWidget.title.endsWith('-01'),
       generalTopicName: getGeneralTopicName(contentWidget.title),
-    }));
+    }),
+  );
 
   return (
     <DataProvider
