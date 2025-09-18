@@ -11,6 +11,7 @@ import { WordCardContent } from './WordCard';
 import useData from './useData';
 import { isDueCheck } from './DataProvider';
 import clsx from 'clsx';
+import WordTabContent from './WordTabContent';
 
 export const WordDialogueContent = ({
   addWordToBasket,
@@ -21,13 +22,14 @@ export const WordDialogueContent = ({
   return (
     <div className='text-center m-auto p-1.5'>
       <ul className='flex flex-wrap gap-2.5'>
-        {wordsForSelectedTopic.map((word) => {
+        {wordsForSelectedTopic.map((word, index) => {
           const isInBasket = wordBasketState?.some((i) => i?.id === word.id);
 
           return (
             <li key={word.id}>
-              <WordCardContent
+              <WordTabContent
                 {...word}
+                indexNum={index + 1}
                 updateWordData={updateWordDataProvider}
                 addWordToBasket={addWordToBasket}
                 isInBasket={isInBasket}
