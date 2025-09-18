@@ -311,6 +311,7 @@ export const DataProvider = ({
         hasBeenReviewed: reviewHistory,
         sentencesNeedReview,
         title,
+        isSelected: selectedContentState.title === title,
       };
     });
   };

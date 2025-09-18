@@ -22,6 +22,7 @@ export const ContentSectionsForReciew = () => {
       {contentMetaData.map((thisContentMetaData) => {
         const chapterNum = thisContentMetaData.chapterNum;
         const title = thisContentMetaData.title;
+        const isSelected = thisContentMetaData.isSelected;
         const sentencesNeedReview = thisContentMetaData.sentencesNeedReview;
         const hasBeenReviewed = thisContentMetaData.hasBeenReviewed;
 
@@ -29,10 +30,24 @@ export const ContentSectionsForReciew = () => {
           <Button
             key={chapterNum}
             variant='outline'
-            className={clsx(hasBeenReviewed ? 'bg-green-600' : '')}
+            className={clsx(
+              hasBeenReviewed ? 'bg-green-200' : '',
+              isSelected ? 'border-black border-2' : '',
+              'relative p-5',
+            )}
             onClick={() => handleSelectedContent(title)}
           >
-            {chapterNum} <span>({sentencesNeedReview})</span>
+            {chapterNum}{' '}
+            {sentencesNeedReview > 0 && (
+              <span
+                className='italic absolute left-2/3 top-1/10'
+                style={{
+                  fontSize: 10,
+                }}
+              >
+                ({sentencesNeedReview})
+              </span>
+            )}
           </Button>
         );
       })}

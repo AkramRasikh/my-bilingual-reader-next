@@ -606,22 +606,6 @@ const LearningScreen = () => {
 
   return (
     <div>
-      <ContentActionBar
-        handleBulkReviews={handleBulkReviews}
-        hasContentToReview={hasContentToReview}
-        updateContentMetaData={updateContentMetaData}
-        topicName={selectedContentState.title}
-        nextReview={nextReview}
-        reviewHistory={reviewHistory}
-        contentIndex={contentIndex}
-        isInReviewMode={isInReviewMode}
-        setIsInReviewMode={setIsInReviewMode}
-        onlyShowEngState={onlyShowEngState}
-        setOnlyShowEngState={setOnlyShowEngState}
-        showOnVideoTranscriptState={showOnVideoTranscriptState}
-        setShowOnVideoTranscriptState={setShowOnVideoTranscriptState}
-        setShowWordsBasketState={setShowWordsBasketState}
-      />
       <div
         style={{
           display: 'flex',
@@ -642,6 +626,17 @@ const LearningScreen = () => {
               showOnVideoTranscriptState && masterPlayComprehensiveState
             }
           />
+          <ContentActionBar
+            nextReview={nextReview}
+            isInReviewMode={isInReviewMode}
+            setIsInReviewMode={setIsInReviewMode}
+            onlyShowEngState={onlyShowEngState}
+            setOnlyShowEngState={setOnlyShowEngState}
+            showOnVideoTranscriptState={showOnVideoTranscriptState}
+            setShowOnVideoTranscriptState={setShowOnVideoTranscriptState}
+            setShowWordsBasketState={setShowWordsBasketState}
+          />
+
           {threeSecondLoopState && (
             <div className='pt-1.5 m-auto flex justify-center gap-1.5 w-80'>
               <ProgressBarSnippet
@@ -720,6 +715,12 @@ const LearningScreen = () => {
             isInReviewMode={isInReviewMode}
             addWordToBasket={addWordToBasket}
             wordsForSelectedTopic={wordsForSelectedTopic}
+            hasContentToReview={hasContentToReview}
+            handleBulkReviews={handleBulkReviews}
+            reviewHistory={reviewHistory}
+            updateContentMetaData={updateContentMetaData}
+            topicName={!isFullReview && selectedContentState?.title}
+            contentIndex={contentIndex}
           />
         )}
       </div>

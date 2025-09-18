@@ -1,6 +1,7 @@
 import TranscriptItem from './TranscriptItem';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { WordDialogueContent } from './WordContainerDialogue';
+import { TabMetaContentData } from './ContentActionBar';
 
 const Transcript = ({
   hasPreviousVideo,
@@ -28,6 +29,12 @@ const Transcript = ({
   isInReviewMode,
   addWordToBasket,
   wordsForSelectedTopic,
+  hasContentToReview,
+  handleBulkReviews,
+  reviewHistory,
+  updateContentMetaData,
+  topicName,
+  contentIndex,
 }) => {
   const thisTopicHasWords = wordsForSelectedTopic?.length > 0;
   return (
@@ -50,6 +57,7 @@ const Transcript = ({
             <TabsTrigger value='words' disabled={!thisTopicHasWords}>
               Words {wordsForSelectedTopic.length}
             </TabsTrigger>
+            {topicName && <TabsTrigger value='meta'>Meta</TabsTrigger>}
           </TabsList>
 
           <TabsContent value='transcript'>
@@ -108,6 +116,18 @@ const Transcript = ({
               />
             </div>
           </TabsContent>
+          {topicName && (
+            <TabsContent value='meta'>
+              <TabMetaContentData
+                hasContentToReview={hasContentToReview}
+                handleBulkReviews={handleBulkReviews}
+                reviewHistory={reviewHistory}
+                updateContentMetaData={updateContentMetaData}
+                topicName={topicName}
+                contentIndex={contentIndex}
+              />
+            </TabsContent>
+          )}
         </Tabs>
         <div>
           {hasFollowingVideo && (

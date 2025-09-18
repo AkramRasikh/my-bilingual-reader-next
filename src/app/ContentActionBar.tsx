@@ -6,23 +6,17 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
-export default function ContentActionBar({
+export const TabMetaContentData = ({
   hasContentToReview,
   handleBulkReviews,
   reviewHistory,
   updateContentMetaData,
   topicName,
   contentIndex,
-  isInReviewMode,
-  setIsInReviewMode,
-  onlyShowEngState,
-  setOnlyShowEngState,
-  showOnVideoTranscriptState,
-  setShowOnVideoTranscriptState,
 }: {
   hasContentToReview: boolean;
   handleBulkReviews: (action: 'add' | 'remove') => Promise<void>;
-}) {
+}) => {
   const hasBeenReviewed = reviewHistory?.length > 0;
 
   const [showConfirm, setShowConfirm] = useState(false);
@@ -112,27 +106,6 @@ export default function ContentActionBar({
             disabled={isLoading}
           />
         </div>
-        <div className='flex gap-2 m-auto'>
-          <Label>Review Mode</Label>
-          <Switch
-            checked={isInReviewMode}
-            onCheckedChange={setIsInReviewMode}
-          />
-        </div>
-        <div className='flex gap-2 m-auto'>
-          <Label>No Eng 🇬🇧</Label>
-          <Switch
-            checked={onlyShowEngState}
-            onCheckedChange={setOnlyShowEngState}
-          />
-        </div>
-        <div className='flex gap-2 m-auto'>
-          <Label>Subs on Video</Label>
-          <Switch
-            checked={showOnVideoTranscriptState}
-            onCheckedChange={setShowOnVideoTranscriptState}
-          />
-        </div>
       </div>
 
       {showConfirm && !isLoading && (
@@ -151,6 +124,46 @@ export default function ContentActionBar({
           </button>
         </div>
       )}
+    </div>
+  );
+};
+
+export default function ContentActionBar({
+  isInReviewMode,
+  setIsInReviewMode,
+  onlyShowEngState,
+  setOnlyShowEngState,
+  showOnVideoTranscriptState,
+  setShowOnVideoTranscriptState,
+}: {
+  hasContentToReview: boolean;
+  handleBulkReviews: (action: 'add' | 'remove') => Promise<void>;
+}) {
+  return (
+    <div className='flex flex-col items-start gap-2 my-2 p-2'>
+      <div className='flex gap-2 mx-auto flex-wrap'>
+        <div className='flex gap-2 m-auto'>
+          <Label>Review Mode</Label>
+          <Switch
+            checked={isInReviewMode}
+            onCheckedChange={setIsInReviewMode}
+          />
+        </div>
+        <div className='flex gap-2 m-auto'>
+          <Label>🇬🇧</Label>
+          <Switch
+            checked={onlyShowEngState}
+            onCheckedChange={setOnlyShowEngState}
+          />
+        </div>
+        <div className='flex gap-2 m-auto'>
+          <Label>Subtitles</Label>
+          <Switch
+            checked={showOnVideoTranscriptState}
+            onCheckedChange={setShowOnVideoTranscriptState}
+          />
+        </div>
+      </div>
     </div>
   );
 }
