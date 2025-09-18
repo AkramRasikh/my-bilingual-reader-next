@@ -238,6 +238,36 @@ export const DataProvider = ({
       });
     });
   };
+  const checkTopicIsNew = (genTop) => {
+    if (generalTopicDisplayNameState?.length === 0) {
+      return null;
+    }
+
+    const contentHasBeenReviewed = contentState.some((contentEl) => {
+      if (contentEl.generalTopicName !== genTop) {
+        return;
+      }
+
+      return contentEl?.reviewHistory;
+    });
+
+    return !contentHasBeenReviewed;
+  };
+
+  const checkHasAllBeenReviewed = (genTop) => {
+    if (generalTopicDisplayNameState?.length === 0) {
+      return null;
+    }
+
+    const allTheseTopics = contentState.filter(
+      (i) => i.generalTopicName === genTop,
+    );
+    const isAllTopicsReviewed = allTheseTopics.filter(
+      (i) => i.reviewHistory?.length > 0,
+    );
+
+    return allTheseTopics.length === isAllTopicsReviewed.length;
+  };
 
   const checkHowManyOfTopicNeedsReview = () => {
     if (!generalTopicDisplayNameSelectedState) {
@@ -693,6 +723,8 @@ export const DataProvider = ({
         checkTopicNeedsReviewBool,
         getGeneralContentMetaData,
         handleSelectInitialTopic,
+        checkTopicIsNew,
+        checkHasAllBeenReviewed,
       }}
     >
       {children}
