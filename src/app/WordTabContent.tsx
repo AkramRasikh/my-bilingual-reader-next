@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CardContent, CardTitle } from '@/components/ui/card';
 import ReviewSRSToggles from './ReviewSRSToggles';
-import { Label } from '@/components/ui/label';
 import { isDueCheck } from './DataProvider';
 import clsx from 'clsx';
 import { getTimeDiffSRS } from './getTimeDiffSRS';
 import { srsCalculationAndText, srsRetentionKeyTypes } from './srs-algo';
 import LoadingSpinner from './LoadingSpinner';
+
+function ConditionalWrapper({ condition, wrapper, children }) {
+  return condition ? wrapper(children) : children;
+}
 
 const WordTabContent = ({
   id,
@@ -63,6 +66,8 @@ const WordTabContent = ({
     }
   };
 
+  const textTitle = indexNum + ') ' + definition;
+
   return (
     <div
       className={clsx(
@@ -80,22 +85,16 @@ const WordTabContent = ({
         </div>
       )}
       <div className='flex gap-3 flex-wrap justify-between'>
-        <Button
-          variant='secondary'
-          className='bg-transparent'
-          onClick={() => setOpenContentState(!openContentState)}
+        <CardTitle
+          style={{
+            overflow: 'hidden',
+            maxWidth: '27ch',
+          }}
+          className='my-auto text-ellipsis text-left'
         >
-          {indexNum + ') '}
-          <CardTitle
-            className='m-auto text-ellipsis'
-            style={{
-              overflow: 'hidden',
-              maxWidth: '27ch',
-            }}
-          >
-            {definition}
-          </CardTitle>
-        </Button>
+          {textTitle}
+        </CardTitle>
+
         <Button
           variant={isInBasket ? 'destructive' : 'default'}
           className={clsx(!isInBasket ? 'bg-transparent' : '')}
@@ -111,38 +110,67 @@ const WordTabContent = ({
         </Button>
       </div>
 
-      <CardContent
-        className='mt-2'
-        style={{
-          animation: 'fadeIn 0.5s ease-out forwards',
+      <ConditionalWrapper
+        condition={!openContentState}
+        wrapper={(children) => {
+          return (
+            <button onDoubleClick={() => setOpenContentState(true)}>
+              {children}
+            </button>
+          );
         }}
       >
-        <div
-          className={clsx(
-            !openContentState ? 'blur-xs' : '',
-            'flex flex-col gap-3 mb-4 flex-wrap',
-          )}
+        <CardContent
+          className='mt-2 text-left p-0'
+          style={{
+            animation: 'fadeIn 0.5s ease-out forwards',
+          }}
         >
-          {baseForm && <Label>baseForm: {surfaceForm}</Label>}
-          {surfaceForm && <Label>Surface Form: {surfaceForm}</Label>}
-          {phonetic && <Label>Phonetic: {phonetic}</Label>}
-          {transliteration && <Label>Transliteration: {transliteration}</Label>}
-          {definition && <Label>Definition: {definition}</Label>}
-        </div>
-        {isWordDue ? (
-          <ReviewSRSToggles
-            contentItem={{
-              id,
-              reviewData,
-              ...rest,
-            }}
-            handleReviewFunc={updateWordData}
-            isVocab
-          />
-        ) : (
-          <span>{isDueText}</span>
-        )}
-      </CardContent>
+          <div
+            className={clsx(
+              !openContentState ? 'blur-xs' : '',
+              'flex flex-col gap-1 mb-4 flex-wrap',
+            )}
+          >
+            {baseForm && (
+              <span className='text-sm font-medium'>
+                baseForm: {surfaceForm}
+              </span>
+            )}
+            {surfaceForm && (
+              <span className='text-sm font-medium'>
+                Surface Form: {surfaceForm}
+              </span>
+            )}
+            {phonetic && (
+              <span className='text-sm font-medium'>Phonetic: {phonetic}</span>
+            )}
+            {transliteration && (
+              <span className='text-sm font-medium'>
+                Transliteration: {transliteration}
+              </span>
+            )}
+            {definition && (
+              <span className='text-sm font-medium'>
+                Definition: {definition}
+              </span>
+            )}
+          </div>
+          {isWordDue ? (
+            <ReviewSRSToggles
+              contentItem={{
+                id,
+                reviewData,
+                ...rest,
+              }}
+              handleReviewFunc={updateWordData}
+              isVocab
+            />
+          ) : (
+            <span>{isDueText}</span>
+          )}
+        </CardContent>
+      </ConditionalWrapper>
 
       <style jsx>{`
         @keyframes fadeIn {
