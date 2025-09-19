@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'img.youtube.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'pub-b5ca1708937148638ba66e658bf7d03c.r2.dev',
+        pathname: '/**',
+      },
     ],
   },
 };

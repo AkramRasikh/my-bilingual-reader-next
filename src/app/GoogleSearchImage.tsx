@@ -1,4 +1,7 @@
-const GoogleSearchImage = ({ query = '散見' }) => {
+import { Button } from '@/components/ui/button';
+import { LucideSearch } from 'lucide-react';
+
+const GoogleSearchImage = ({ query }) => {
   const openGoogleImages = () => {
     const url = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(
       query,
@@ -7,15 +10,13 @@ const GoogleSearchImage = ({ query = '散見' }) => {
   };
 
   return (
-    <div>
-      <input
-        type='text'
-        value={query}
-        // onChange={(e) => setQuery(e.target.value)}
-        placeholder='Search images...'
-      />
-      <button onClick={openGoogleImages}>Search Images</button>
-    </div>
+    <Button
+      onClick={openGoogleImages}
+      variant='ghost'
+      className='border border-amber-500 h-7 w-7'
+    >
+      <LucideSearch />
+    </Button>
   );
 };
 

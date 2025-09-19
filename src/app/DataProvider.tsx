@@ -185,6 +185,31 @@ export const DataProvider = ({
     }
   };
 
+  const addImageDataProvider = async ({ wordId, formData }) => {
+    try {
+      const res = await fetch('/api/addWordImage', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data) {
+        const targetLanguageWordsStateUpdated = wordsState.map((item) => {
+          const thisWordId = item.id === wordId;
+          if (thisWordId) {
+            return {
+              ...item,
+              hasImage: true,
+            };
+          }
+          return item;
+        });
+        setWordsState(targetLanguageWordsStateUpdated);
+      }
+    } catch (error) {
+      console.log('## addImageDataProvider DataProvider', { error });
+    }
+  };
+
   const getSelectedTopicsWords = () => {
     if (!selectedContentState || wordsState?.length === 0) {
       return null;
@@ -725,6 +750,7 @@ export const DataProvider = ({
         handleSelectInitialTopic,
         checkTopicIsNew,
         checkHasAllBeenReviewed,
+        addImageDataProvider,
       }}
     >
       {children}
