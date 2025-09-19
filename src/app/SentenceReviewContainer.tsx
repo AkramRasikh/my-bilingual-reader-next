@@ -34,8 +34,8 @@ const SentenceReviewContainer = () => {
       <Toaster />
       <Progress value={progressState} className='w-full' />
 
+      <p className='text-center my-2'>{numberOfSentences} Sentences</p>
       <ul className='mt-1.5 mb-1.5'>
-        <p className='text-center my-2'>{numberOfSentences} Sentences</p>
         {slicedSentences?.map((sentence, index) => {
           const sentenceIndex = index + 1 + ') ';
           return (
