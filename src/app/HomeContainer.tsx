@@ -9,8 +9,8 @@ import checkIfVideoExists from './check-if-video-exists';
 import ContentSelection from './ContentSelection';
 import LoadingSpinner from './LoadingSpinner';
 import { LearningScreenProvider } from './LearningScreenProvider';
-import SentenceBlock from './SentenceBlock';
-import { toast, Toaster } from 'sonner';
+import { toast } from 'sonner';
+import SentenceReviewContainer from './SentenceReviewContainer';
 
 export const HomeContainer = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
@@ -130,27 +130,7 @@ export const HomeContainer = () => {
   const numberOfSentences = sentencesState.length;
 
   if (isSentenceReviewState && sentencesState.length > 0) {
-    const slicedSentences = sentencesState.slice(0, 5);
-
-    return (
-      <div style={{ padding: 10 }}>
-        <Toaster />
-        <ul className='mt-1.5 mb-1.5'>
-          <p className='text-center my-2'>{sentencesState?.length} Sentences</p>
-          {slicedSentences?.map((sentence, index) => {
-            const sentenceIndex = index + 1 + ') ';
-            return (
-              <li key={sentence.id} className='mb-2'>
-                <SentenceBlock
-                  sentence={sentence}
-                  sentenceIndex={sentenceIndex}
-                />
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    );
+    return <SentenceReviewContainer />;
   }
 
   return (
