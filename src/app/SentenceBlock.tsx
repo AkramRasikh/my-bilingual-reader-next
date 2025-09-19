@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import FormattedSentence from './FormattedSentence';
 import { getAudioURL } from './get-firebase-media-url';
 import { japanese } from './languages';
@@ -7,9 +7,29 @@ import useData from './useData';
 
 const SentenceBlock = ({ sentence, sentenceIndex }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
+  const [thisSentencesWordsState, setThisSentencesWordsState] = useState([]);
   const hoverTimerMasterRef = useRef<HTMLVideoElement>(null); // Reference to the video element
-
   const { wordsState, updateAdhocSentenceData } = useData();
+
+  useEffect(() => {
+    const relevantWordsFromSentence = sentence.targetLangformatted.filter(
+      (i) => i?.id,
+    );
+
+    if (relevantWordsFromSentence?.length > 0) {
+      const wordsMapped = relevantWordsFromSentence.map((o) => o.text);
+      const relevantWords = wordsState?.filter((item) => {
+        if (
+          wordsMapped.includes(item.baseForm) ||
+          wordsMapped.includes(item.surfaceForm)
+        ) {
+          return true;
+        }
+        return false;
+      });
+      setThisSentencesWordsState(relevantWords);
+    }
+  }, [sentence, wordsState]);
 
   const url = getAudioURL(sentence.id, japanese);
 
@@ -66,6 +86,21 @@ const SentenceBlock = ({ sentence, sentenceIndex }) => {
         contentItem={sentence}
         handleReviewFunc={handleReviewFunc}
       />
+      {thisSentencesWordsState.length > 0 && (
+        <ul>
+          {thisSentencesWordsState?.map((wordItem, index) => {
+            const num = index + 1;
+            return (
+              <li key={index}>
+                <span className='text-sm font-medium'>
+                  {num}) {wordItem.baseForm}, {wordItem.surfaceForm},{' '}
+                  {wordItem.transliteration}, {wordItem.definition}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 };
