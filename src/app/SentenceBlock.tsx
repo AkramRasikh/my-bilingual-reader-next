@@ -4,6 +4,7 @@ import { getAudioURL } from './get-firebase-media-url';
 import { japanese } from './languages';
 import ReviewSRSToggles from './ReviewSRSToggles';
 import useData from './useData';
+import AudioPlayer from './SentenceAudioPlayer';
 
 const SentenceBlock = ({ sentence, sentenceIndex }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
@@ -81,7 +82,7 @@ const SentenceBlock = ({ sentence, sentenceIndex }) => {
         />
       </p>
       <p className='text-right opacity-30'>{sentence.baseLang}</p>
-      <audio src={url} controls className='m-3 ml-auto w-full' />
+      <AudioPlayer src={url} />
       <ReviewSRSToggles
         contentItem={sentence}
         handleReviewFunc={handleReviewFunc}
