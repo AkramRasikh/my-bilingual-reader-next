@@ -44,7 +44,7 @@ export default function PasteImageCard({ id, addImage }) {
     >
       <CardContent className='text-center'>
         {!imageSrc ? (
-          <p className='text-gray-500 '>
+          <p className='text-gray-500'>
             Focus here and press{' '}
             <kbd className='px-1 py-0.5 border rounded bg-gray-100'>
               Ctrl + V

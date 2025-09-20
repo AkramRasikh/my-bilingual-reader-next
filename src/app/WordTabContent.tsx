@@ -44,6 +44,8 @@ const WordTabContent = ({
     ? getCloudflareImageURL(imageUrl, 'japanese')
     : '';
 
+  const previewImage = !openContentState && cloudflareImageUrl;
+
   const isDueText = !isWordDue
     ? getTimeDiffSRS({
         dueTimeStamp: new Date(reviewData.due),
@@ -122,6 +124,16 @@ const WordTabContent = ({
         wrapper={(children) => {
           return (
             <button onDoubleClick={() => setOpenContentState(true)}>
+              {previewImage && (
+                <div className='relative w-4/5 h-40 m-auto'>
+                  <Image
+                    src={cloudflareImageUrl}
+                    alt={baseForm}
+                    fill
+                    className='object-contain'
+                  />
+                </div>
+              )}
               {children}
             </button>
           );
@@ -133,37 +145,41 @@ const WordTabContent = ({
             animation: 'fadeIn 0.5s ease-out forwards',
           }}
         >
-          <div
-            className={clsx(
-              !openContentState ? 'blur-xs' : '',
-              'flex flex-col gap-1 mb-4 flex-wrap',
-            )}
-          >
-            {baseForm && (
-              <span className='text-sm font-medium my-auto'>
-                BaseForm: {baseForm}
-              </span>
-            )}
-            {surfaceForm && (
-              <span className='text-sm font-medium'>
-                Surface Form: {surfaceForm}
-              </span>
-            )}
-            {phonetic && (
-              <span className='text-sm font-medium'>Phonetic: {phonetic}</span>
-            )}
-            {transliteration && (
-              <span className='text-sm font-medium'>
-                Transliteration: {transliteration}
-              </span>
-            )}
-            {definition && (
-              <span className='text-sm font-medium'>
-                Definition: {definition}
-              </span>
-            )}
-          </div>
-          {cloudflareImageUrl ? (
+          {!previewImage && (
+            <div
+              className={clsx(
+                !openContentState ? 'blur-xs' : '',
+                'flex flex-col gap-1 mb-4 flex-wrap',
+              )}
+            >
+              {baseForm && (
+                <span className='text-sm font-medium my-auto'>
+                  BaseForm: {baseForm}
+                </span>
+              )}
+              {surfaceForm && (
+                <span className='text-sm font-medium'>
+                  Surface Form: {surfaceForm}
+                </span>
+              )}
+              {phonetic && (
+                <span className='text-sm font-medium'>
+                  Phonetic: {phonetic}
+                </span>
+              )}
+              {transliteration && (
+                <span className='text-sm font-medium'>
+                  Transliteration: {transliteration}
+                </span>
+              )}
+              {definition && (
+                <span className='text-sm font-medium'>
+                  Definition: {definition}
+                </span>
+              )}
+            </div>
+          )}
+          {openContentState && cloudflareImageUrl ? (
             <Image
               height={150}
               width={250}
@@ -171,12 +187,14 @@ const WordTabContent = ({
               alt={baseForm}
               className='m-auto pb-1 rounded'
             />
-          ) : (
+          ) : openContentState ? (
             <PasteImageCard id={id} addImage={addImage} />
+          ) : null}
+          {openContentState && (
+            <div className='flex flex-row-reverse'>
+              <GoogleSearchImage query={baseForm} />
+            </div>
           )}
-          <div className='flex flex-row-reverse'>
-            <GoogleSearchImage query={baseForm} />
-          </div>
           {isWordDue ? (
             <ReviewSRSToggles
               contentItem={{
