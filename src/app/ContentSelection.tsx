@@ -6,27 +6,41 @@ import useData from './useData';
 import { BookCheck } from 'lucide-react';
 
 export const ContentSectionsForReciew = () => {
+  const [contentMetaDataState, setContentMetaDataState] = useState([]);
+  const [contentMetaWordDataState, setContentMetaWordDataState] = useState([]);
   const {
     getGeneralContentMetaData,
     handleGetComprehensiveReview,
     generalTopicDisplayNameSelectedState,
     handleSelectedContent,
+    getGeneralContentWordData,
+    wordsState,
+    selectedContentState,
   } = useData();
 
-  const contentMetaData =
-    generalTopicDisplayNameSelectedState && getGeneralContentMetaData();
+  useEffect(() => {
+    const contentMetaData =
+      generalTopicDisplayNameSelectedState && getGeneralContentMetaData();
+    const wordMetaData =
+      generalTopicDisplayNameSelectedState && getGeneralContentWordData();
+
+    setContentMetaDataState(contentMetaData);
+    setContentMetaWordDataState(wordMetaData);
+  }, [wordsState, selectedContentState]);
 
   return (
     <ul className='flex flex-col gap-1 overflow-y-scroll max-h-96'>
       <Button variant='outline' onClick={handleGetComprehensiveReview}>
         All
       </Button>
-      {contentMetaData.map((thisContentMetaData) => {
+      {contentMetaDataState?.map((thisContentMetaData, index) => {
         const chapterNum = thisContentMetaData.chapterNum;
         const title = thisContentMetaData.title;
         const isSelected = thisContentMetaData.isSelected;
         const sentencesNeedReview = thisContentMetaData.sentencesNeedReview;
         const hasBeenReviewed = thisContentMetaData.hasBeenReviewed;
+
+        const wordsIndex = contentMetaWordDataState[index]?.length;
 
         return (
           <Button
@@ -48,6 +62,16 @@ export const ContentSectionsForReciew = () => {
                 }}
               >
                 ({sentencesNeedReview})
+              </span>
+            )}
+            {wordsIndex > 0 && (
+              <span
+                className='italic absolute left-2/3 top-6/10'
+                style={{
+                  fontSize: 10,
+                }}
+              >
+                ({wordsIndex})
               </span>
             )}
           </Button>

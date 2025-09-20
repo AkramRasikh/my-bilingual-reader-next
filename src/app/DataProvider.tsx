@@ -210,23 +210,34 @@ export const DataProvider = ({
     }
   };
 
-  const getSelectedTopicsWords = () => {
-    if (!selectedContentState || wordsState?.length === 0) {
-      return null;
-    }
-
-    const thisTopicsSentenceIds = selectedContentState.content.map((i) => i.id);
+  const getSelectedTopicsWordsFunc = (content, isDueBool) => {
+    const todayDateObj = new Date();
+    const thisTopicsSentenceIds = content.map((i) => i.id);
 
     const thisTopicsWordsArr = [];
 
     wordsState.forEach((word) => {
       const originalContextId = word.contexts[0];
       if (thisTopicsSentenceIds.includes(originalContextId)) {
-        thisTopicsWordsArr.push(word);
+        if (!isDueBool) {
+          thisTopicsWordsArr.push(word);
+          return;
+        }
+        if (isDueCheck(word, todayDateObj)) {
+          thisTopicsWordsArr.push(word);
+        }
       }
     });
 
     return thisTopicsWordsArr;
+  };
+
+  const getSelectedTopicsWords = () => {
+    if (!selectedContentState || wordsState?.length === 0) {
+      return null;
+    }
+
+    return getSelectedTopicsWordsFunc(selectedContentState.content);
   };
 
   const removeReviewFromContentStateFunc = ({ sentenceId, contentIndex }) => {
@@ -369,6 +380,23 @@ export const DataProvider = ({
         isSelected: selectedContentState.title === title,
       };
     });
+  };
+
+  const getGeneralContentWordData = () => {
+    if (!generalTopicDisplayNameSelectedState) {
+      return null;
+    }
+
+    const contentOfGeneralTopic = contentState.filter(
+      (contentEl) =>
+        contentEl.generalTopicName === generalTopicDisplayNameSelectedState,
+    );
+
+    const allContentDueWords = contentOfGeneralTopic.map((i) =>
+      getSelectedTopicsWordsFunc(i.content, true),
+    );
+
+    return allContentDueWords;
   };
 
   const updateSentenceDataFromContent = ({
@@ -751,6 +779,7 @@ export const DataProvider = ({
         checkTopicIsNew,
         checkHasAllBeenReviewed,
         addImageDataProvider,
+        getGeneralContentWordData,
       }}
     >
       {children}
