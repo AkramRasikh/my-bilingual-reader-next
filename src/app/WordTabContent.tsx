@@ -188,13 +188,14 @@ const WordTabContent = ({
               className='m-auto pb-1 rounded'
             />
           ) : openContentState ? (
-            <PasteImageCard id={id} addImage={addImage} />
-          ) : null}
-          {openContentState && (
-            <div className='flex flex-row-reverse'>
-              <GoogleSearchImage query={baseForm} />
+            <div className='flex gap-1.5'>
+              <PasteImageCard id={id} addImage={addImage} />
+              <div className='flex flex-row-reverse m-auto'>
+                <GoogleSearchImage query={baseForm} />
+              </div>
             </div>
-          )}
+          ) : null}
+
           {isWordDue ? (
             <ReviewSRSToggles
               contentItem={{
