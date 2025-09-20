@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         id: wordId,
-        fieldToUpdate: { hasImage: true },
+        fieldToUpdate: { imageUrl: filename },
         language: 'japanese',
       }),
     });

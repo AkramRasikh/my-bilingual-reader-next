@@ -6,6 +6,11 @@ import { isDueCheck } from './DataProvider';
 import clsx from 'clsx';
 import { getTimeDiffSRS } from './getTimeDiffSRS';
 import LoadingSpinner from './LoadingSpinner';
+import GoogleSearchImage from './GoogleSearchImage';
+import PasteImageCard from './PasteImageCard';
+import useData from './useData';
+import { getCloudflareImageURL } from './get-firebase-media-url';
+import Image from 'next/image';
 
 function ConditionalWrapper({ condition, wrapper, children }) {
   return condition ? wrapper(children) : children;
@@ -25,6 +30,7 @@ const WordTabContent = ({
   reviewData,
   reduceChar = true,
   indexNum,
+  imageUrl,
   ...rest
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
@@ -32,12 +38,29 @@ const WordTabContent = ({
   const timeNow = new Date();
   const isWordDue = isDueCheck({ reviewData }, timeNow);
 
+  const { addImageDataProvider } = useData();
+
+  const cloudflareImageUrl = imageUrl
+    ? getCloudflareImageURL(imageUrl, 'japanese')
+    : '';
+
   const isDueText = !isWordDue
     ? getTimeDiffSRS({
         dueTimeStamp: new Date(reviewData.due),
         timeNow: timeNow,
       })
     : '';
+
+  const addImage = async (formData) => {
+    try {
+      setIsLoadingState(true);
+      await addImageDataProvider({ wordId: id, formData });
+    } catch (error) {
+      console.log('## handleReviewFunc', error);
+    } finally {
+      setIsLoadingState(false);
+    }
+  };
 
   const handleReviewFunc = async (arg) => {
     try {
@@ -117,7 +140,9 @@ const WordTabContent = ({
             )}
           >
             {baseForm && (
-              <span className='text-sm font-medium'>BaseForm: {baseForm}</span>
+              <span className='text-sm font-medium my-auto'>
+                BaseForm: {baseForm}
+              </span>
             )}
             {surfaceForm && (
               <span className='text-sm font-medium'>
@@ -137,6 +162,20 @@ const WordTabContent = ({
                 Definition: {definition}
               </span>
             )}
+          </div>
+          {cloudflareImageUrl ? (
+            <Image
+              height={150}
+              width={250}
+              src={cloudflareImageUrl}
+              alt={baseForm}
+              className='m-auto pb-1 rounded'
+            />
+          ) : (
+            <PasteImageCard id={id} addImage={addImage} />
+          )}
+          <div className='flex flex-row-reverse'>
+            <GoogleSearchImage query={baseForm} />
           </div>
           {isWordDue ? (
             <ReviewSRSToggles

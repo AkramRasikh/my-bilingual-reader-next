@@ -4,10 +4,13 @@ export const getFirebaseVideoURL = (mp3FileName: string, language: string) => {
   const url = `${baseURL}${mp3FileName}.mp4`;
   return url;
 };
-export const getFirebaseImageURL = (mp3FileName: string, language: string) => {
+export const getCloudflareImageURL = (
+  mp3FileName: string,
+  language: string,
+) => {
   const languageParam = `${language}-words/`;
   const baseURL = process.env.NEXT_PUBLIC_FIREBASE_ASSETS_URL + languageParam;
-  const url = `${baseURL}${mp3FileName}.png`;
+  const url = `${baseURL}${mp3FileName}`;
   return url;
 };
 

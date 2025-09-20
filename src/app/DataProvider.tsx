@@ -198,7 +198,7 @@ export const DataProvider = ({
           if (thisWordId) {
             return {
               ...item,
-              hasImage: true,
+              imageUrl: data.imageUrl,
             };
           }
           return item;
