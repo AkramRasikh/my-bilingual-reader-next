@@ -5,6 +5,7 @@ import LoadingSpinner from './LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import CountdownTimer from './CountDownTimer';
 
 export const TabMetaContentData = ({
   hasContentToReview,
@@ -135,6 +136,7 @@ export default function ContentActionBar({
   setOnlyShowEngState,
   showOnVideoTranscriptState,
   setShowOnVideoTranscriptState,
+  ref,
 }: {
   hasContentToReview: boolean;
   handleBulkReviews: (action: 'add' | 'remove') => Promise<void>;
@@ -163,6 +165,7 @@ export default function ContentActionBar({
             onCheckedChange={setShowOnVideoTranscriptState}
           />
         </div>
+        <CountdownTimer audioTimeRef={ref} />
       </div>
     </div>
   );
