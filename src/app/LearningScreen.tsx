@@ -635,6 +635,7 @@ const LearningScreen = () => {
             showOnVideoTranscriptState={showOnVideoTranscriptState}
             setShowOnVideoTranscriptState={setShowOnVideoTranscriptState}
             setShowWordsBasketState={setShowWordsBasketState}
+            ref={ref}
           />
 
           {threeSecondLoopState && (
