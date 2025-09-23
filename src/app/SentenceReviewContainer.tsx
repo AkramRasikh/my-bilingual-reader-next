@@ -31,7 +31,7 @@ const SentenceReviewContainer = () => {
 
   return (
     <div style={{ padding: 10 }}>
-      <Toaster />
+      <Toaster position='top-center' />
       <Progress value={progressState} className='w-full' />
 
       <p className='text-center my-2'>{numberOfSentences} Sentences</p>

@@ -6,6 +6,7 @@ import { voicesSelectionMan, voicesSelectionWoman } from './voice-selection';
 import { formatChunksComprehensive } from '@/app/words/format-chunks';
 import { combineAudio } from './merge-audio-files';
 import { getAudioFileDuration } from '@/utils/get-audio-file-duration';
+import { cleanOldAudioFiles } from './cleanOldAudioFiles';
 
 function mergeDialogueLines(
   personA: { targetLang: string; baseLang: string },
@@ -128,6 +129,7 @@ ${JSON.stringify(jsonResponseObj)}
 
 `;
 
+    cleanOldAudioFiles();
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [

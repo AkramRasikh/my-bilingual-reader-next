@@ -10,14 +10,20 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {
 
   const timeNow = new Date();
 
-  const { nextScheduledOptions, againText, hardText, goodText, easyText } =
-    srsCalculationAndText({
-      reviewData,
-      contentType: isVocab
-        ? srsRetentionKeyTypes.vocab
-        : srsRetentionKeyTypes.sentences,
-      timeNow,
-    });
+  const {
+    nextScheduledOptions,
+    againText,
+    hardText,
+    goodText,
+    easyText,
+    isScheduledForDeletion,
+  } = srsCalculationAndText({
+    reviewData,
+    contentType: isVocab
+      ? srsRetentionKeyTypes.vocab
+      : srsRetentionKeyTypes.sentences,
+    timeNow,
+  });
 
   const handleNextReview = async (difficulty) => {
     const nextReviewData = nextScheduledOptions[difficulty].card;
@@ -93,13 +99,16 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {
       </Button>
       <Button
         variant='outline'
-        disabled={isLoadingSRSState}
+        disabled={isLoadingSRSState || isScheduledForDeletion}
         onClick={() => handleNextReview('4')}
       >
         {easyText}
       </Button>
       <Button
         variant='destructive'
+        className={clsx(
+          isScheduledForDeletion ? 'animate-pulse bg-amber-500' : '',
+        )}
         disabled={isLoadingSRSState}
         onClick={handleRemoveReviewReview}
       >

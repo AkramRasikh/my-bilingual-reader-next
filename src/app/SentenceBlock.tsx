@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import FormattedSentence from './FormattedSentence';
-import { getAudioURL } from './get-firebase-media-url';
+import { getAudioURL, getCloudflareImageURL } from './get-firebase-media-url';
 import { japanese } from './languages';
 import ReviewSRSToggles from './ReviewSRSToggles';
 import useData from './useData';
 import AudioPlayer from './SentenceAudioPlayer';
+import Image from 'next/image';
+import clsx from 'clsx';
 
 const SentenceBlock = ({ sentence, sentenceIndex }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
@@ -90,13 +92,29 @@ const SentenceBlock = ({ sentence, sentenceIndex }) => {
       {thisSentencesWordsState.length > 0 && (
         <ul>
           {thisSentencesWordsState?.map((wordItem, index) => {
+            const imageUrl = wordItem?.imageUrl;
             const num = index + 1;
             return (
-              <li key={index}>
-                <span className='text-sm font-medium'>
+              <li key={index} className={'flex gap-1.5'}>
+                <span
+                  className={clsx(
+                    'text-sm font-medium',
+                    imageUrl ? 'm-auto' : '',
+                  )}
+                >
                   {num}) {wordItem.baseForm}, {wordItem.surfaceForm},{' '}
                   {wordItem.transliteration}, {wordItem.definition}
                 </span>
+                {imageUrl && (
+                  <div className='relative w-4/5 h-30'>
+                    <Image
+                      src={getCloudflareImageURL(imageUrl, 'japanese')}
+                      alt={wordItem.baseForm}
+                      fill
+                      className='object-contain'
+                    />
+                  </div>
+                )}
               </li>
             );
           })}

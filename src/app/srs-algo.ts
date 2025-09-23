@@ -27,7 +27,9 @@ export const srsCalculationAndText = ({ reviewData, contentType, timeNow }) => {
   const diffHours = diffMinutes / 60;
   const diffDays = diffHours / 24;
 
-  const isScheduledForDeletion = Math.abs(diffDays) > sentenceHelperUpperLimit;
+  const isScheduledForDeletion =
+    srsRetentionKeyTypes.sentences === contentType &&
+    Math.abs(diffDays) > sentenceHelperUpperLimit;
 
   const againText = getTimeDiffSRS({
     dueTimeStamp: againDue,

@@ -17,6 +17,7 @@ import { sentenceReviewBulkAPI } from './bulk-sentence-review';
 import { breakdownSentenceAPI } from './breakdown-sentence';
 import { updateContentMetaDataAPI } from './update-content-meta-data';
 import { updateAdhocSentenceAPI } from './update-adhoc-sentence';
+import { getAudioURL } from './get-firebase-media-url';
 
 export const DataContext = createContext(null);
 
@@ -668,6 +669,7 @@ export const DataProvider = ({
       setStory({
         ...story,
         isSaved: true,
+        audioUrl: getAudioURL(data, 'japanese'),
       });
     }
 
