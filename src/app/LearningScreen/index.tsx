@@ -14,15 +14,12 @@ import {
   srsRetentionKeyTypes,
 } from '../srs-algo';
 import ContentActionBar from '../ContentActionBar';
-import { Button } from '@/components/ui/button';
-import { Repeat2 } from 'lucide-react';
-import clsx from 'clsx';
-import ProgressBarSnippet from '../ProgressBarSnippet';
 import ComprehensiveTranscriptItem from '../ComprehensiveTranscriptItem';
 import useLearningScreen from './useLearningScreen';
 import { ContentSectionsForReciew } from '../ContentSelection';
 import LearningScreenContentContainer from './LearningScreenContentContainer';
 import { isNumber } from '@/utils/is-number';
+import LearningScreenLoopUI from './LearningScreenLoopUI';
 
 const LearningScreen = () => {
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
@@ -370,26 +367,7 @@ const LearningScreen = () => {
             ref={ref}
           />
 
-          {threeSecondLoopState && (
-            <div className='pt-1.5 m-auto flex justify-center gap-1.5 w-80'>
-              <ProgressBarSnippet
-                snippetRef={ref}
-                threeSecondLoopState={threeSecondLoopState}
-                progress={progress}
-                setProgress={setProgress}
-                contractThreeSecondLoopState={contractThreeSecondLoopState}
-              />
-              <Button
-                id='stop-loop'
-                onClick={() => setThreeSecondLoopState(null)}
-                className={clsx(isVideoPlaying && 'animate-spin')}
-                size='icon'
-                variant={'destructive'}
-              >
-                <Repeat2 />
-              </Button>
-            </div>
-          )}
+          {threeSecondLoopState && <LearningScreenLoopUI />}
           {masterPlayComprehensiveState && (
             <ComprehensiveTranscriptItem
               contentItem={masterPlayComprehensiveState}
