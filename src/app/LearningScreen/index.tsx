@@ -38,7 +38,6 @@ const LearningScreen = () => {
     isVideoPlaying,
     setIsVideoPlaying,
     isPressDownShiftState,
-    setIsPressDownShiftState,
     isInReviewMode,
     setIsInReviewMode,
     sentenceHighlightingState,
@@ -617,7 +616,6 @@ const LearningScreen = () => {
           )}
           <KeyListener
             handleBreakdownMasterSentence={handleBreakdownMasterSentence}
-            setIsPressDownShiftState={setIsPressDownShiftState}
             handleLoopThisSentence={handleLoopThisSentence}
             handleLoopThis3Second={handleLoopThis3Second}
             threeSecondLoopState={threeSecondLoopState}

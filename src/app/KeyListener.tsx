@@ -8,7 +8,6 @@ const qRewindTime = 3;
 const KeyListener = ({
   handleBreakdownMasterSentence,
   handleAddMasterToReview,
-  setIsPressDownShiftState,
   handleLoopThisSentence,
   handleLoopThis3Second,
   threeSecondLoopState,
@@ -26,6 +25,7 @@ const KeyListener = ({
     handleRewind,
     handleJumpToSentenceViaKeys,
     isVideoPlaying,
+    setIsPressDownShiftState,
   } = useLearningScreen();
 
   useEffect(() => {
