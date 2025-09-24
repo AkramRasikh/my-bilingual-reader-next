@@ -58,6 +58,9 @@ export const LearningScreenProvider = ({
   };
   const handlePause = () => ref.current.pause();
 
+  const handleRewind = () =>
+    (ref.current.currentTime = ref.current.currentTime - 3);
+
   const masterPlay =
     currentTime &&
     secondsState?.length > 0 &&
@@ -109,6 +112,7 @@ export const LearningScreenProvider = ({
         masterPlay,
         handleFromHere,
         handlePause,
+        handleRewind,
       }}
     >
       {children}

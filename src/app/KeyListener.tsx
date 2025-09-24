@@ -13,7 +13,6 @@ const KeyListener = ({
   isVideoPlaying,
   handleJumpToSentenceViaKeys,
   handleBreakdownMasterSentence,
-  handleRewind,
   handleAddMasterToReview,
   setIsPressDownShiftState,
   handleLoopThisSentence,
@@ -28,7 +27,7 @@ const KeyListener = ({
   handleIsEasyReviewShortCut,
   setContractThreeSecondLoopState,
 }: Props) => {
-  const { handlePausePlay } = useLearningScreen();
+  const { handlePausePlay, handleRewind } = useLearningScreen();
 
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {

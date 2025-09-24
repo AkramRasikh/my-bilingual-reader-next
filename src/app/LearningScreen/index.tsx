@@ -552,9 +552,6 @@ const LearningScreen = () => {
     }
   };
 
-  const handleRewind = () =>
-    (ref.current.currentTime = ref.current.currentTime - 3);
-
   const getFormattedData = () => {
     const formattedTranscript = content.map((item) => {
       return {
@@ -645,7 +642,6 @@ const LearningScreen = () => {
           <KeyListener
             isVideoPlaying={isVideoPlaying}
             handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}
-            handleRewind={handleRewind}
             handleBreakdownMasterSentence={handleBreakdownMasterSentence}
             setIsPressDownShiftState={setIsPressDownShiftState}
             handleLoopThisSentence={handleLoopThisSentence}
