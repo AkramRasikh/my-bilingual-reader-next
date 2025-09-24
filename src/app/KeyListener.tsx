@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import useLearningScreen from './LearningScreen/useLearningScreen';
 
 const qRewindTime = 3;
 
@@ -14,7 +15,6 @@ const KeyListener = ({
   handleBreakdownMasterSentence,
   handleRewind,
   handleAddMasterToReview,
-  handlePausePlay,
   setIsPressDownShiftState,
   handleLoopThisSentence,
   handleLoopThis3Second,
@@ -28,6 +28,8 @@ const KeyListener = ({
   handleIsEasyReviewShortCut,
   setContractThreeSecondLoopState,
 }: Props) => {
+  const { handlePausePlay } = useLearningScreen();
+
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'Shift') {

@@ -150,19 +150,6 @@ const LearningScreen = () => {
     }
   }, [masterPlay, formattedTranscriptState]);
 
-  const handlePause = () => ref.current.pause();
-  const handlePausePlay = () => {
-    setIsVideoPlaying(!isVideoPlaying);
-  };
-
-  const handlePlayPauseViaRef = () => {
-    if (isVideoPlaying) {
-      handlePause();
-    } else {
-      ref.current.play();
-    }
-  };
-
   useEffect(() => {
     // can be split into two for efficiency but fine for now
     if (!ref.current) return;
@@ -657,11 +644,9 @@ const LearningScreen = () => {
           )}
           <KeyListener
             isVideoPlaying={isVideoPlaying}
-            handlePausePlay={handlePausePlay}
             handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}
             handleRewind={handleRewind}
             handleBreakdownMasterSentence={handleBreakdownMasterSentence}
-            handlePlayPauseViaRef={handlePlayPauseViaRef}
             setIsPressDownShiftState={setIsPressDownShiftState}
             handleLoopThisSentence={handleLoopThisSentence}
             handleLoopThis3Second={handleLoopThis3Second}
@@ -685,8 +670,6 @@ const LearningScreen = () => {
             setSecondsState={setSecondsState}
             formattedTranscriptState={formattedTranscriptState}
             isVideoPlaying={isVideoPlaying}
-            handlePause={handlePause}
-            handleFromHere={handleFromHere}
             masterPlay={masterPlay}
             handleReviewFunc={handleReviewFunc}
             handleBreakdownSentence={handleBreakdownSentence}
