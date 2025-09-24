@@ -5,13 +5,7 @@ import useLearningScreen from './LearningScreen/useLearningScreen';
 
 const qRewindTime = 3;
 
-type Props = {
-  isVideoPlaying: boolean;
-};
-
 const KeyListener = ({
-  isVideoPlaying,
-  handleJumpToSentenceViaKeys,
   handleBreakdownMasterSentence,
   handleAddMasterToReview,
   setIsPressDownShiftState,
@@ -27,7 +21,12 @@ const KeyListener = ({
   handleIsEasyReviewShortCut,
   setContractThreeSecondLoopState,
 }: Props) => {
-  const { handlePausePlay, handleRewind } = useLearningScreen();
+  const {
+    handlePausePlay,
+    handleRewind,
+    handleJumpToSentenceViaKeys,
+    isVideoPlaying,
+  } = useLearningScreen();
 
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {

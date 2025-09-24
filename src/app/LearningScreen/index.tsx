@@ -58,7 +58,6 @@ const LearningScreen = () => {
     progress,
     setProgress,
     ref,
-    handleFromHere,
     handleTimeUpdate,
     currentTime,
     onlyShowEngState,
@@ -463,29 +462,6 @@ const LearningScreen = () => {
     }
   };
 
-  const handleJumpToSentenceViaKeys = (nextIndex: number) => {
-    // defo revisit this
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[Math.floor(ref.current.currentTime)];
-
-    const thisSentenceIndex = formattedTranscriptState.findIndex(
-      (item) => item.id === currentMasterPlay,
-    );
-
-    if (thisSentenceIndex === -1) {
-      return;
-    }
-    if (thisSentenceIndex === 0 && nextIndex === -1) {
-      handleFromHere(formattedTranscriptState[thisSentenceIndex]?.time);
-    } else {
-      handleFromHere(
-        formattedTranscriptState[thisSentenceIndex + nextIndex]?.time,
-      );
-    }
-  };
-
   const handleAddMasterToReview = async () => {
     const currentSecond = Math.floor(ref.current.currentTime);
     const currentMasterPlay =
@@ -640,8 +616,6 @@ const LearningScreen = () => {
             />
           )}
           <KeyListener
-            isVideoPlaying={isVideoPlaying}
-            handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}
             handleBreakdownMasterSentence={handleBreakdownMasterSentence}
             setIsPressDownShiftState={setIsPressDownShiftState}
             handleLoopThisSentence={handleLoopThisSentence}

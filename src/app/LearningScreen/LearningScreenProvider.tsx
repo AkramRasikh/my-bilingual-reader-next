@@ -66,6 +66,25 @@ export const LearningScreenProvider = ({
     secondsState?.length > 0 &&
     secondsState[Math.floor(currentTime)];
 
+  const handleJumpToSentenceViaKeys = (nextIndex: number) => {
+    // defo revisit this
+
+    const thisSentenceIndex = formattedTranscriptState.findIndex(
+      (item) => item.id === masterPlay,
+    );
+
+    if (thisSentenceIndex === -1) {
+      return;
+    }
+    if (thisSentenceIndex === 0 && nextIndex === -1) {
+      handleFromHere(formattedTranscriptState[thisSentenceIndex]?.time);
+    } else {
+      handleFromHere(
+        formattedTranscriptState[thisSentenceIndex + nextIndex]?.time,
+      );
+    }
+  };
+
   return (
     <LearningScreenContext.Provider
       value={{
@@ -113,6 +132,7 @@ export const LearningScreenProvider = ({
         handleFromHere,
         handlePause,
         handleRewind,
+        handleJumpToSentenceViaKeys,
       }}
     >
       {children}
