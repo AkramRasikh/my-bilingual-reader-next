@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { getFirebaseVideoURL } from '../get-firebase-media-url';
 import { getGeneralTopicName } from '../get-general-topic-name';
 import { japanese } from '../languages';
@@ -22,8 +22,6 @@ import { isNumber } from '@/utils/is-number';
 import LearningScreenLoopUI from './LearningScreenLoopUI';
 
 const LearningScreen = () => {
-  const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
-
   const {
     formattedTranscriptState,
     setFormattedTranscriptState,
@@ -35,8 +33,6 @@ const LearningScreen = () => {
     isInReviewMode,
     setIsInReviewMode,
     setOverlappingSnippetDataState,
-    wordPopUpState,
-    setWordPopUpState,
     loopTranscriptState,
     threeSecondLoopState,
     progress,
@@ -54,7 +50,6 @@ const LearningScreen = () => {
 
   const {
     pureWords,
-    wordsState,
     sentenceReviewBulk,
     updateContentMetaData,
     getNextTranscript,
@@ -232,26 +227,6 @@ const LearningScreen = () => {
     formattedTranscriptState,
   ]);
 
-  const handleMouseEnter = (text) => {
-    hoverTimerMasterRef.current = setTimeout(() => {
-      const wordsAmongstHighlightedText = wordsState?.filter((item) => {
-        if (item.baseForm === text || item.surfaceForm === text) {
-          return true;
-        }
-        return false;
-      });
-
-      setWordPopUpState(wordsAmongstHighlightedText);
-    }, 300);
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverTimerMasterRef.current) {
-      clearTimeout(hoverTimerMasterRef.current); // Cancel if left early
-      hoverTimerMasterRef.current = null;
-    }
-  };
-
   const getFormattedData = () => {
     const formattedTranscript = content.map((item) => {
       return {
@@ -313,10 +288,6 @@ const LearningScreen = () => {
         {masterPlayComprehensiveState && (
           <ComprehensiveTranscriptItem
             contentItem={masterPlayComprehensiveState}
-            wordPopUpState={wordPopUpState}
-            setWordPopUpState={setWordPopUpState}
-            handleMouseEnter={handleMouseEnter}
-            handleMouseLeave={handleMouseLeave}
           />
         )}
         <KeyListener />
