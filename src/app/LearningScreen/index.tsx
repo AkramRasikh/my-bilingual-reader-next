@@ -18,7 +18,6 @@ import ComprehensiveTranscriptItem from '../ComprehensiveTranscriptItem';
 import useLearningScreen from './useLearningScreen';
 import { ContentSectionsForReciew } from '../ContentSelection';
 import LearningScreenContentContainer from './LearningScreenContentContainer';
-import { isNumber } from '@/utils/is-number';
 import LearningScreenLoopUI from './LearningScreenLoopUI';
 
 const LearningScreen = () => {
@@ -32,9 +31,7 @@ const LearningScreen = () => {
     setIsVideoPlaying,
     isInReviewMode,
     setIsInReviewMode,
-    loopTranscriptState,
     threeSecondLoopState,
-    progress,
     ref,
     handleTimeUpdate,
     currentTime,
@@ -43,8 +40,6 @@ const LearningScreen = () => {
     showOnVideoTranscriptState,
     setShowOnVideoTranscriptState,
     setShowWordsBasketState,
-    contractThreeSecondLoopState,
-    setContractThreeSecondLoopState,
   } = useLearningScreen();
 
   const {
@@ -123,44 +118,6 @@ const LearningScreen = () => {
       setMasterPlayComprehensiveState(thisItemTranscript);
     }
   }, [masterPlay, formattedTranscriptState]);
-
-  useEffect(() => {
-    // can be split into two for efficiency but fine for now
-    if (!ref.current) return;
-    if (isNumber(threeSecondLoopState)) {
-      //
-      const startTime =
-        threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
-      const endTime =
-        threeSecondLoopState + (contractThreeSecondLoopState ? 0.75 : 1.5);
-      const lessThan1500Seconds = ref.current.currentTime < startTime;
-      const moreThan1500Seconds = ref.current.currentTime > endTime;
-      if (lessThan1500Seconds || moreThan1500Seconds) {
-        ref.current.currentTime = startTime;
-        ref.current.play();
-        return;
-      }
-      return;
-    }
-    if (ref.current && loopTranscriptState?.length > 0) {
-      const loopTranscriptIds = loopTranscriptState.map((item) => item?.id);
-      const firstLoopScript = loopTranscriptState[0];
-      if (!loopTranscriptIds.includes(masterPlay)) {
-        ref.current.currentTime = firstLoopScript.time;
-        ref.current.play();
-      }
-    }
-    if (contractThreeSecondLoopState && !threeSecondLoopState) {
-      setContractThreeSecondLoopState(false);
-    }
-  }, [
-    loopTranscriptState,
-    ref,
-    masterPlay,
-    contractThreeSecondLoopState,
-    threeSecondLoopState,
-    progress,
-  ]);
 
   const handleBulkReviews = async () => {
     const emptyCard = getEmptyCard();

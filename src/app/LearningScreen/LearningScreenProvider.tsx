@@ -8,7 +8,8 @@ import {
   srsCalculationAndText,
   srsRetentionKeyTypes,
 } from '../srs-algo';
-import useManageLoops from './hooks/useManageLoops';
+import useManageThreeSecondLoop from './hooks/useManageThreeSecondLoop';
+import useManageLoopInit from './hooks/useManageLoopInit';
 
 export const LearningScreenContext = createContext(null);
 
@@ -54,12 +55,27 @@ export const LearningScreenProvider = ({
 
   const realStartTime = selectedContentState?.realStartTime || 0;
 
-  useManageLoops({
+  const masterPlay =
+    currentTime &&
+    secondsState?.length > 0 &&
+    secondsState[Math.floor(currentTime)];
+
+  useManageThreeSecondLoop({
     threeSecondLoopState,
     contractThreeSecondLoopState,
     formattedTranscriptState,
     realStartTime,
     setOverlappingSnippetDataState,
+  });
+
+  useManageLoopInit({
+    ref,
+    threeSecondLoopState,
+    contractThreeSecondLoopState,
+    loopTranscriptState,
+    setContractThreeSecondLoopState,
+    masterPlay,
+    progress,
   });
 
   const handleFromHere = (time) => {
@@ -75,11 +91,6 @@ export const LearningScreenProvider = ({
 
   const handleRewind = () =>
     (ref.current.currentTime = ref.current.currentTime - 3);
-
-  const masterPlay =
-    currentTime &&
-    secondsState?.length > 0 &&
-    secondsState[Math.floor(currentTime)];
 
   const handleJumpToSentenceViaKeys = (nextIndex: number) => {
     // defo revisit this

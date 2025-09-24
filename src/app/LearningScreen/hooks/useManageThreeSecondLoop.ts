@@ -1,7 +1,7 @@
 import { isNumber } from '@/utils/is-number';
 import { useEffect } from 'react';
 
-const useManageLoops = ({
+const useManageThreeSecondLoop = ({
   threeSecondLoopState,
   contractThreeSecondLoopState,
   formattedTranscriptState,
@@ -55,4 +55,4 @@ const useManageLoops = ({
   ]);
 };
 
-export default useManageLoops;
+export default useManageThreeSecondLoop;
