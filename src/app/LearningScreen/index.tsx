@@ -11,7 +11,6 @@ import useData from '../useData';
 import {
   getEmptyCard,
   getNextScheduledOptions,
-  srsCalculationAndText,
   srsRetentionKeyTypes,
 } from '../srs-algo';
 import ContentActionBar from '../ContentActionBar';
@@ -43,7 +42,6 @@ const LearningScreen = () => {
     sentenceHighlightingState,
     setSentenceHighlightingState,
     isGenericItemLoadingState,
-    setIsGenericItemLoadingState,
     breakdownSentencesArrState,
     setBreakdownSentencesArrState,
     overlappingSnippetDataState,
@@ -71,7 +69,6 @@ const LearningScreen = () => {
   const {
     pureWords,
     wordsState,
-    updateSentenceData,
     sentenceReviewBulk,
     breakdownSentence,
     updateContentMetaData,
@@ -186,34 +183,6 @@ const LearningScreen = () => {
     progress,
   ]);
 
-  const handleReviewFunc = async ({ sentenceId, isRemoveReview, nextDue }) => {
-    const cardDataRelativeToNow = getEmptyCard();
-    const nextScheduledOptions = getNextScheduledOptions({
-      card: cardDataRelativeToNow,
-      contentType: srsRetentionKeyTypes.sentences,
-    });
-
-    try {
-      await updateSentenceData({
-        topicName: isFullReview
-          ? getThisSentenceInfo(sentenceId).title
-          : selectedContentState.title,
-        sentenceId,
-        fieldToUpdate: {
-          reviewData: isRemoveReview
-            ? null
-            : nextDue || nextScheduledOptions['1'].card,
-        },
-        contentIndex: isFullReview
-          ? getThisSentenceInfo(sentenceId).contentIndex
-          : contentIndex,
-        isRemoveReview,
-      });
-    } catch (error) {
-      console.log('## handleReviewFunc error', error);
-    }
-  };
-
   const handleBulkReviews = async () => {
     const emptyCard = getEmptyCard();
 
@@ -278,69 +247,6 @@ const LearningScreen = () => {
     formattedTranscriptState,
   ]);
 
-  const handleUpdateLoopedSentence = (extendSentenceLoop) => {
-    if (extendSentenceLoop) {
-      const lastSentenceId =
-        loopTranscriptState[loopTranscriptState.length - 1]?.id;
-      if (!lastSentenceId) {
-        return;
-      }
-      const lastSentenceIdIndex = formattedTranscriptState.findIndex(
-        (i) => i.id === lastSentenceId,
-      );
-
-      const thisItemData = formattedTranscriptState[lastSentenceIdIndex + 1];
-
-      const nextElToAddToLoop = {
-        ...thisItemData,
-        time: realStartTime + thisItemData.time,
-      };
-
-      setLoopTranscriptState((prev) => [...prev, nextElToAddToLoop]);
-    } else {
-      setLoopTranscriptState((prev) => prev.slice(0, -1));
-    }
-  };
-
-  const handleShiftLoopSentence = (shiftForward) => {
-    if (shiftForward) {
-      setLoopTranscriptState((prev) => prev.slice(1));
-    }
-  };
-
-  const handleLoopThisSentence = () => {
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[Math.floor(ref.current.currentTime)];
-    const thisIndex = formattedTranscriptState.findIndex(
-      (item) => item.id === currentMasterPlay,
-    );
-    const masterItem = formattedTranscriptState[thisIndex];
-
-    if (
-      loopTranscriptState?.length === 1 &&
-      loopTranscriptState[0]?.id === currentMasterPlay
-    ) {
-      setLoopTranscriptState(null);
-      return;
-    }
-
-    setLoopTranscriptState([
-      {
-        ...masterItem,
-        time: realStartTime + masterItem.time,
-        nextTime:
-          realStartTime +
-          (thisIndex === formattedTranscriptState.length - 1
-            ? ref.current.duration - 0.05
-            : thisIndex === 0
-            ? realStartTime
-            : formattedTranscriptState[thisIndex - 1].time),
-      },
-    ]);
-  };
-
   const handleMouseEnter = (text) => {
     hoverTimerMasterRef.current = setTimeout(() => {
       const wordsAmongstHighlightedText = wordsState?.filter((item) => {
@@ -360,18 +266,7 @@ const LearningScreen = () => {
       hoverTimerMasterRef.current = null;
     }
   };
-  const handleLoopThis3Second = () => {
-    if (loopTranscriptState) {
-      setLoopTranscriptState(null);
-    }
-    if (isNumber(threeSecondLoopState)) {
-      setThreeSecondLoopState(null);
-      return;
-    }
 
-    setThreeSecondLoopState(ref.current.currentTime);
-    // account for the three seconds on both extremes
-  };
   const getThisSentenceInfo = (sentenceId) =>
     formattedTranscriptState.find((item) => item.id === sentenceId);
 
@@ -414,116 +309,6 @@ const LearningScreen = () => {
     } else {
       const updatedList = [...breakdownSentencesArrState, currentMasterPlay];
       setBreakdownSentencesArrState(updatedList);
-    }
-  };
-
-  const handleBreakdownMasterSentence = async () => {
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[Math.floor(ref.current.currentTime)];
-
-    if (!currentMasterPlay) return null;
-    const thisSentence = formattedTranscriptState.find(
-      (item) => item.id === currentMasterPlay,
-    );
-
-    const alreadyHasBreakdown = thisSentence?.sentenceStructure;
-    if (alreadyHasBreakdown) {
-      handleOpenBreakdownSentence();
-      return null;
-    }
-
-    const thisSentenceTargetLang = thisSentence.targetLang;
-    try {
-      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
-      await breakdownSentence({
-        topicName: selectedContentState.title,
-        sentenceId: currentMasterPlay,
-        language: japanese,
-        targetLang: thisSentenceTargetLang,
-        contentIndex,
-      });
-    } catch (error) {
-      console.log('## handleBreakdownMasterSentence error', error);
-    } finally {
-      setIsGenericItemLoadingState((prev) =>
-        prev.filter((item) => item !== currentMasterPlay),
-      );
-    }
-  };
-
-  const handleSlowDownAudio = (isSlow) => {
-    if (isSlow) {
-      ref.current.playbackRate = 0.75;
-    } else {
-      ref.current.playbackRate = 1;
-    }
-  };
-
-  const handleAddMasterToReview = async () => {
-    const currentSecond = Math.floor(ref.current.currentTime);
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[currentSecond]; // need to make sure its part of the content
-
-    const sentenceHasReview =
-      getThisSentenceInfo(currentMasterPlay)?.reviewData;
-
-    try {
-      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
-      await handleReviewFunc({
-        sentenceId: currentMasterPlay,
-        isRemoveReview: Boolean(sentenceHasReview),
-        nextDue: null,
-      });
-    } catch (error) {
-      console.log('## handleAddMasterToReview', error);
-    } finally {
-      setIsGenericItemLoadingState((prev) =>
-        prev.filter((item) => item !== currentMasterPlay),
-      );
-    }
-  };
-
-  const handleIsEasyReviewShortCut = async () => {
-    const currentSecond = Math.floor(ref.current.currentTime);
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[currentSecond]; // need to make sure its part of the content
-
-    const sentenceHasReview =
-      getThisSentenceInfo(currentMasterPlay)?.reviewData;
-
-    const { nextScheduledOptions } = srsCalculationAndText({
-      reviewData: sentenceHasReview,
-      contentType: srsRetentionKeyTypes.sentences,
-      timeNow: new Date(),
-    });
-
-    const nextReviewData = nextScheduledOptions['4'].card;
-
-    try {
-      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
-      await handleReviewFunc({
-        sentenceId: currentMasterPlay,
-        nextDue: nextReviewData,
-      });
-    } catch (error) {
-      console.log('## handleAddMasterToReview', error);
-    } finally {
-      setIsGenericItemLoadingState((prev) =>
-        prev.filter((item) => item !== currentMasterPlay),
-      );
-    }
-  };
-  const handleShiftSnippet = (shiftNumber: number) => {
-    if (isNumber(threeSecondLoopState) && threeSecondLoopState > 0) {
-      // factor in small descrepancy
-      const newCurrentNumber = threeSecondLoopState + shiftNumber;
-      setThreeSecondLoopState(newCurrentNumber);
     }
   };
 
@@ -614,21 +399,7 @@ const LearningScreen = () => {
               handleMouseLeave={handleMouseLeave}
             />
           )}
-          <KeyListener
-            handleBreakdownMasterSentence={handleBreakdownMasterSentence}
-            handleLoopThisSentence={handleLoopThisSentence}
-            handleLoopThis3Second={handleLoopThis3Second}
-            threeSecondLoopState={threeSecondLoopState}
-            handleShiftSnippet={handleShiftSnippet}
-            handleSlowDownAudio={handleSlowDownAudio}
-            loopTranscriptState={loopTranscriptState}
-            handleAddMasterToReview={handleAddMasterToReview}
-            handleUpdateLoopedSentence={handleUpdateLoopedSentence}
-            handleShiftLoopSentence={handleShiftLoopSentence}
-            handleIsEasyReviewShortCut={handleIsEasyReviewShortCut}
-            isInReviewMode={isInReviewMode}
-            setContractThreeSecondLoopState={setContractThreeSecondLoopState}
-          />
+          <KeyListener />
         </div>
         {secondsState && (
           <LearningScreenContentContainer
@@ -639,7 +410,6 @@ const LearningScreen = () => {
             formattedTranscriptState={formattedTranscriptState}
             isVideoPlaying={isVideoPlaying}
             masterPlay={masterPlay}
-            handleReviewFunc={handleReviewFunc}
             handleBreakdownSentence={handleBreakdownSentence}
             sentenceHighlightingState={sentenceHighlightingState}
             setSentenceHighlightingState={setSentenceHighlightingState}

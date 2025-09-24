@@ -2,31 +2,47 @@
 
 import { useEffect } from 'react';
 import useLearningScreen from './LearningScreen/useLearningScreen';
+import { isNumber } from '@/utils/is-number';
 
 const qRewindTime = 3;
 
-const KeyListener = ({
-  handleBreakdownMasterSentence,
-  handleAddMasterToReview,
-  handleLoopThisSentence,
-  handleLoopThis3Second,
-  threeSecondLoopState,
-  handleShiftSnippet,
-  handleSlowDownAudio,
-  loopTranscriptState,
-  handleUpdateLoopedSentence,
-  handleShiftLoopSentence,
-  isInReviewMode,
-  handleIsEasyReviewShortCut,
-  setContractThreeSecondLoopState,
-}: Props) => {
+const KeyListener = () => {
   const {
+    ref,
     handlePausePlay,
     handleRewind,
     handleJumpToSentenceViaKeys,
     isVideoPlaying,
     setIsPressDownShiftState,
+    handleLoopThis3Second,
+    handleShiftLoopSentence,
+    threeSecondLoopState,
+    setThreeSecondLoopState,
+    isInReviewMode,
+    handleLoopThisSentence,
+    setContractThreeSecondLoopState,
+    loopTranscriptState,
+    handleUpdateLoopedSentence,
+    handleBreakdownMasterSentence,
+    handleAddMasterToReview,
+    handleIsEasyReviewShortCut,
   } = useLearningScreen();
+
+  const handleSlowDownAudio = (isSlow) => {
+    if (isSlow) {
+      ref.current.playbackRate = 0.75;
+    } else {
+      ref.current.playbackRate = 1;
+    }
+  };
+
+  const handleShiftSnippet = (shiftNumber: number) => {
+    if (isNumber(threeSecondLoopState) && threeSecondLoopState > 0) {
+      // factor in small descrepancy
+      const newCurrentNumber = threeSecondLoopState + shiftNumber;
+      setThreeSecondLoopState(newCurrentNumber);
+    }
+  };
 
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {

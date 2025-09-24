@@ -2,6 +2,12 @@
 import { isNumber } from '@/utils/is-number';
 import { createContext, useState } from 'react';
 import useData from '../useData';
+import {
+  getEmptyCard,
+  getNextScheduledOptions,
+  srsCalculationAndText,
+  srsRetentionKeyTypes,
+} from '../srs-algo';
 
 export const LearningScreenContext = createContext(null);
 
@@ -43,7 +49,7 @@ export const LearningScreenProvider = ({
   const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
     useState(false);
 
-  const { selectedContentState } = useData();
+  const { selectedContentState, updateSentenceData } = useData();
 
   const realStartTime = selectedContentState?.realStartTime || 0;
 
@@ -81,6 +87,238 @@ export const LearningScreenProvider = ({
     } else {
       handleFromHere(
         formattedTranscriptState[thisSentenceIndex + nextIndex]?.time,
+      );
+    }
+  };
+
+  const handleReviewFunc = async ({ sentenceId, isRemoveReview, nextDue }) => {
+    const cardDataRelativeToNow = getEmptyCard();
+    const nextScheduledOptions = getNextScheduledOptions({
+      card: cardDataRelativeToNow,
+      contentType: srsRetentionKeyTypes.sentences,
+    });
+    const isFullReview = selectedContentState?.isFullReview;
+    const contentIndex = selectedContentState?.contentIndex;
+
+    try {
+      await updateSentenceData({
+        topicName: isFullReview
+          ? getThisSentenceInfo(sentenceId).title
+          : selectedContentState.title,
+        sentenceId,
+        fieldToUpdate: {
+          reviewData: isRemoveReview
+            ? null
+            : nextDue || nextScheduledOptions['1'].card,
+        },
+        contentIndex: isFullReview
+          ? getThisSentenceInfo(sentenceId).contentIndex
+          : contentIndex,
+        isRemoveReview,
+      });
+    } catch (error) {
+      console.log('## handleReviewFunc error', error);
+    }
+  };
+
+  const handleLoopThis3Second = () => {
+    if (loopTranscriptState) {
+      setLoopTranscriptState(null);
+    }
+    if (isNumber(threeSecondLoopState)) {
+      setThreeSecondLoopState(null);
+      return;
+    }
+
+    setThreeSecondLoopState(ref.current.currentTime);
+    // account for the three seconds on both extremes
+  };
+
+  const handleShiftLoopSentence = (shiftForward) => {
+    if (shiftForward) {
+      setLoopTranscriptState((prev) => prev.slice(1));
+    }
+  };
+
+  const handleLoopThisSentence = () => {
+    const currentMasterPlay =
+      isNumber(currentTime) &&
+      secondsState?.length > 0 &&
+      secondsState[Math.floor(ref.current.currentTime)];
+    const thisIndex = formattedTranscriptState.findIndex(
+      (item) => item.id === currentMasterPlay,
+    );
+    const masterItem = formattedTranscriptState[thisIndex];
+
+    if (
+      loopTranscriptState?.length === 1 &&
+      loopTranscriptState[0]?.id === currentMasterPlay
+    ) {
+      setLoopTranscriptState(null);
+      return;
+    }
+
+    setLoopTranscriptState([
+      {
+        ...masterItem,
+        time: realStartTime + masterItem.time,
+        nextTime:
+          realStartTime +
+          (thisIndex === formattedTranscriptState.length - 1
+            ? ref.current.duration - 0.05
+            : thisIndex === 0
+            ? realStartTime
+            : formattedTranscriptState[thisIndex - 1].time),
+      },
+    ]);
+  };
+
+  const handleUpdateLoopedSentence = (extendSentenceLoop) => {
+    if (extendSentenceLoop) {
+      const lastSentenceId =
+        loopTranscriptState[loopTranscriptState.length - 1]?.id;
+      if (!lastSentenceId) {
+        return;
+      }
+      const lastSentenceIdIndex = formattedTranscriptState.findIndex(
+        (i) => i.id === lastSentenceId,
+      );
+
+      const thisItemData = formattedTranscriptState[lastSentenceIdIndex + 1];
+
+      const nextElToAddToLoop = {
+        ...thisItemData,
+        time: realStartTime + thisItemData.time,
+      };
+
+      setLoopTranscriptState((prev) => [...prev, nextElToAddToLoop]);
+    } else {
+      setLoopTranscriptState((prev) => prev.slice(0, -1));
+    }
+  };
+
+  const handleOpenBreakdownSentence = () => {
+    const currentSecond = Math.floor(ref.current.currentTime);
+    const currentMasterPlay =
+      isNumber(currentTime) &&
+      secondsState?.length > 0 &&
+      secondsState[currentSecond];
+
+    if (!currentMasterPlay) return null;
+    const thisSentence = formattedTranscriptState.find(
+      (item) => item.id === currentMasterPlay,
+    );
+
+    const alreadyHasBreakdown = thisSentence?.sentenceStructure;
+    if (!alreadyHasBreakdown) return null;
+
+    const isOpen = breakdownSentencesArrState.includes(currentMasterPlay);
+
+    if (isOpen) {
+      const updatedList = breakdownSentencesArrState.filter(
+        (i) => i !== currentMasterPlay,
+      );
+      setBreakdownSentencesArrState(updatedList);
+    } else {
+      const updatedList = [...breakdownSentencesArrState, currentMasterPlay];
+      setBreakdownSentencesArrState(updatedList);
+    }
+  };
+
+  const handleBreakdownMasterSentence = async () => {
+    const currentMasterPlay =
+      isNumber(currentTime) &&
+      secondsState?.length > 0 &&
+      secondsState[Math.floor(ref.current.currentTime)];
+
+    if (!currentMasterPlay) return null;
+    const thisSentence = formattedTranscriptState.find(
+      (item) => item.id === currentMasterPlay,
+    );
+
+    const alreadyHasBreakdown = thisSentence?.sentenceStructure;
+    if (alreadyHasBreakdown) {
+      handleOpenBreakdownSentence();
+      return null;
+    }
+
+    const thisSentenceTargetLang = thisSentence.targetLang;
+    try {
+      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
+      await breakdownSentence({
+        topicName: selectedContentState.title,
+        sentenceId: currentMasterPlay,
+        language: japanese,
+        targetLang: thisSentenceTargetLang,
+        contentIndex,
+      });
+    } catch (error) {
+      console.log('## handleBreakdownMasterSentence error', error);
+    } finally {
+      setIsGenericItemLoadingState((prev) =>
+        prev.filter((item) => item !== currentMasterPlay),
+      );
+    }
+  };
+
+  const getThisSentenceInfo = (sentenceId) =>
+    formattedTranscriptState.find((item) => item.id === sentenceId);
+
+  const handleAddMasterToReview = async () => {
+    const currentSecond = Math.floor(ref.current.currentTime);
+    const currentMasterPlay =
+      isNumber(currentTime) &&
+      secondsState?.length > 0 &&
+      secondsState[currentSecond]; // need to make sure its part of the content
+
+    const sentenceHasReview =
+      getThisSentenceInfo(currentMasterPlay)?.reviewData;
+
+    try {
+      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
+      await handleReviewFunc({
+        sentenceId: currentMasterPlay,
+        isRemoveReview: Boolean(sentenceHasReview),
+        nextDue: null,
+      });
+    } catch (error) {
+      console.log('## handleAddMasterToReview', error);
+    } finally {
+      setIsGenericItemLoadingState((prev) =>
+        prev.filter((item) => item !== currentMasterPlay),
+      );
+    }
+  };
+
+  const handleIsEasyReviewShortCut = async () => {
+    const currentSecond = Math.floor(ref.current.currentTime);
+    const currentMasterPlay =
+      isNumber(currentTime) &&
+      secondsState?.length > 0 &&
+      secondsState[currentSecond]; // need to make sure its part of the content
+
+    const sentenceHasReview =
+      getThisSentenceInfo(currentMasterPlay)?.reviewData;
+
+    const { nextScheduledOptions } = srsCalculationAndText({
+      reviewData: sentenceHasReview,
+      contentType: srsRetentionKeyTypes.sentences,
+      timeNow: new Date(),
+    });
+
+    const nextReviewData = nextScheduledOptions['4'].card;
+
+    try {
+      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
+      await handleReviewFunc({
+        sentenceId: currentMasterPlay,
+        nextDue: nextReviewData,
+      });
+    } catch (error) {
+      console.log('## handleIsEasyReviewShortCut', error);
+    } finally {
+      setIsGenericItemLoadingState((prev) =>
+        prev.filter((item) => item !== currentMasterPlay),
       );
     }
   };
@@ -133,6 +371,13 @@ export const LearningScreenProvider = ({
         handlePause,
         handleRewind,
         handleJumpToSentenceViaKeys,
+        handleLoopThis3Second,
+        handleShiftLoopSentence,
+        handleLoopThisSentence,
+        handleUpdateLoopedSentence,
+        handleBreakdownMasterSentence,
+        handleAddMasterToReview,
+        handleIsEasyReviewShortCut,
       }}
     >
       {children}
