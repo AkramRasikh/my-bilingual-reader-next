@@ -13,12 +13,12 @@ import {
   getNextScheduledOptions,
   srsRetentionKeyTypes,
 } from '../srs-algo';
-import ContentActionBar from '../ContentActionBar';
 import ComprehensiveTranscriptItem from '../ComprehensiveTranscriptItem';
 import useLearningScreen from './useLearningScreen';
 import { ContentSectionsForReciew } from '../ContentSelection';
 import LearningScreenContentContainer from './LearningScreenContentContainer';
 import LearningScreenLoopUI from './LearningScreenLoopUI';
+import LearningScreenActionBar from './LearningScreenActionBar';
 
 const LearningScreen = () => {
   const {
@@ -175,7 +175,7 @@ const LearningScreen = () => {
             showOnVideoTranscriptState && masterPlayComprehensiveState
           }
         />
-        <ContentActionBar />
+        <LearningScreenActionBar />
 
         {threeSecondLoopState && <LearningScreenLoopUI />}
         {masterPlayComprehensiveState && (
