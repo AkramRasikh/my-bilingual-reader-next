@@ -8,7 +8,7 @@ import { japanese } from './languages';
 import checkIfVideoExists from './check-if-video-exists';
 import ContentSelection from './ContentSelection';
 import LoadingSpinner from './LoadingSpinner';
-import { LearningScreenProvider } from './LearningScreenProvider';
+import { LearningScreenProvider } from './LearningScreen/LearningScreenProvider';
 import { toast } from 'sonner';
 import SentenceReviewContainer from './SentenceReviewContainer';
 

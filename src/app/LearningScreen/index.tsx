@@ -21,7 +21,7 @@ import { Repeat2 } from 'lucide-react';
 import clsx from 'clsx';
 import ProgressBarSnippet from '../ProgressBarSnippet';
 import ComprehensiveTranscriptItem from '../ComprehensiveTranscriptItem';
-import useLearningScreen from '../useLearningScreen';
+import useLearningScreen from './useLearningScreen';
 import { ContentSectionsForReciew } from '../ContentSelection';
 
 const LearningScreen = () => {

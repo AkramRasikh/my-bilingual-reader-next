@@ -9,7 +9,7 @@ import { MenuIcon, Repeat2 } from 'lucide-react';
 import FormattedSentence from './FormattedSentence';
 import ReviewSRSToggles from './ReviewSRSToggles';
 import { getTimeDiffSRS } from './getTimeDiffSRS';
-import useLearningScreen from './useLearningScreen';
+import useLearningScreen from './LearningScreen/useLearningScreen';
 import { Button } from '@/components/ui/button';
 
 const TranscriptItem = ({
