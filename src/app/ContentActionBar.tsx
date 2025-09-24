@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import CountdownTimer from './CountDownTimer';
+import useLearningScreen from './LearningScreen/useLearningScreen';
 
 export const TabMetaContentData = ({
   hasContentToReview,
@@ -129,18 +130,17 @@ export const TabMetaContentData = ({
   );
 };
 
-export default function ContentActionBar({
-  isInReviewMode,
-  setIsInReviewMode,
-  onlyShowEngState,
-  setOnlyShowEngState,
-  showOnVideoTranscriptState,
-  setShowOnVideoTranscriptState,
-  ref,
-}: {
-  hasContentToReview: boolean;
-  handleBulkReviews: (action: 'add' | 'remove') => Promise<void>;
-}) {
+export default function ContentActionBar() {
+  const {
+    isInReviewMode,
+    setIsInReviewMode,
+    onlyShowEngState,
+    setOnlyShowEngState,
+    showOnVideoTranscriptState,
+    setShowOnVideoTranscriptState,
+    ref,
+  } = useLearningScreen();
+
   return (
     <div className='flex flex-col items-start gap-2 my-2 p-2'>
       <div className='flex gap-2 mx-auto flex-wrap'>

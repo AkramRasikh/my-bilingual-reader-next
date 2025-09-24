@@ -29,17 +29,11 @@ const LearningScreen = () => {
     masterPlayComprehensiveState,
     setMasterPlayComprehensiveState,
     setIsVideoPlaying,
-    isInReviewMode,
-    setIsInReviewMode,
     threeSecondLoopState,
     ref,
     handleTimeUpdate,
     currentTime,
-    onlyShowEngState,
-    setOnlyShowEngState,
     showOnVideoTranscriptState,
-    setShowOnVideoTranscriptState,
-    setShowWordsBasketState,
   } = useLearningScreen();
 
   const {
@@ -80,7 +74,6 @@ const LearningScreen = () => {
   const realStartTime = selectedContentState?.realStartTime || 0;
   const contentIndex = selectedContentState?.contentIndex;
 
-  const nextReview = selectedContentState?.nextReview;
   const reviewHistory = selectedContentState?.reviewHistory;
   const hasContentToReview = content?.some(
     (sentenceWidget) => sentenceWidget?.reviewData,
@@ -182,17 +175,7 @@ const LearningScreen = () => {
             showOnVideoTranscriptState && masterPlayComprehensiveState
           }
         />
-        <ContentActionBar
-          nextReview={nextReview}
-          isInReviewMode={isInReviewMode}
-          setIsInReviewMode={setIsInReviewMode}
-          onlyShowEngState={onlyShowEngState}
-          setOnlyShowEngState={setOnlyShowEngState}
-          showOnVideoTranscriptState={showOnVideoTranscriptState}
-          setShowOnVideoTranscriptState={setShowOnVideoTranscriptState}
-          setShowWordsBasketState={setShowWordsBasketState}
-          ref={ref}
-        />
+        <ContentActionBar />
 
         {threeSecondLoopState && <LearningScreenLoopUI />}
         {masterPlayComprehensiveState && (
