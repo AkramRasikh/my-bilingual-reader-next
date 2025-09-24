@@ -1,5 +1,7 @@
 'use client';
+import { isNumber } from '@/utils/is-number';
 import { createContext, useState } from 'react';
+import useData from '../useData';
 
 export const LearningScreenContext = createContext(null);
 
@@ -40,6 +42,26 @@ export const LearningScreenProvider = ({
   const [progress, setProgress] = useState(0);
   const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
     useState(false);
+
+  const { selectedContentState } = useData();
+
+  const realStartTime = selectedContentState?.realStartTime || 0;
+
+  const handleFromHere = (time) => {
+    if (!isNumber(time)) {
+      return null;
+    }
+
+    const thisStartTime = realStartTime + time;
+
+    handlePlayFromHere(thisStartTime);
+  };
+  const handlePause = () => ref.current.pause();
+
+  const masterPlay =
+    currentTime &&
+    secondsState?.length > 0 &&
+    secondsState[Math.floor(currentTime)];
 
   return (
     <LearningScreenContext.Provider
@@ -84,6 +106,9 @@ export const LearningScreenProvider = ({
         setShowWordsBasketState,
         contractThreeSecondLoopState,
         setContractThreeSecondLoopState,
+        masterPlay,
+        handleFromHere,
+        handlePause,
       }}
     >
       {children}

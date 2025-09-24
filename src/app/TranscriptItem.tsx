@@ -12,27 +12,26 @@ import { getTimeDiffSRS } from './getTimeDiffSRS';
 import useLearningScreen from './LearningScreen/useLearningScreen';
 import { Button } from '@/components/ui/button';
 
-const TranscriptItem = ({
-  contentItem,
-  isVideoPlaying,
-  handlePause,
-  handleFromHere,
-  masterPlay,
-  handleReviewFunc,
-  handleBreakdownSentence,
-  sentenceHighlightingState,
-  setSentenceHighlightingState,
-  isGenericItemLoadingState,
-  handleOpenBreakdownSentence,
-  breakdownSentencesArrState,
-  setBreakdownSentencesArrState,
-  isPressDownShiftState,
-  loopTranscriptState,
-  setLoopTranscriptState,
-  overlappingSnippetDataState,
-  threeSecondLoopState,
-  isInReviewMode,
-}) => {
+const TranscriptItem = ({ contentItem }) => {
+  const {
+    isVideoPlaying,
+    isPressDownShiftState,
+    isInReviewMode,
+    sentenceHighlightingState,
+    setSentenceHighlightingState,
+    isGenericItemLoadingState,
+    breakdownSentencesArrState,
+    setBreakdownSentencesArrState,
+    overlappingSnippetDataState,
+    loopTranscriptState,
+    setLoopTranscriptState,
+    threeSecondLoopState,
+    onlyShowEngState,
+    masterPlay,
+    handleFromHere,
+    handlePause,
+  } = useLearningScreen();
+
   const ulRef = useRef<HTMLUListElement>(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [showSentenceBreakdownState, setShowSentenceBreakdownState] =
@@ -50,8 +49,6 @@ const TranscriptItem = ({
 
   const { wordsState, handleSaveWord, handleDeleteWordDataProvider } =
     useData();
-
-  const { onlyShowEngState } = useLearningScreen();
 
   useEffect(() => {
     if (!threeSecondLoopState && thisSnippetOverlapState) {

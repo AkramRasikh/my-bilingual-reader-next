@@ -22,7 +22,8 @@ import ProgressBarSnippet from '../ProgressBarSnippet';
 import ComprehensiveTranscriptItem from '../ComprehensiveTranscriptItem';
 import useLearningScreen from './useLearningScreen';
 import { ContentSectionsForReciew } from '../ContentSelection';
-import LearningScreenTabsContainer from './LearningScreenTabsContainer';
+import LearningScreenContentContainer from './LearningScreenContentContainer';
+import { isNumber } from '@/utils/is-number';
 
 const LearningScreen = () => {
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
@@ -57,7 +58,7 @@ const LearningScreen = () => {
     progress,
     setProgress,
     ref,
-    handlePlayFromHere,
+    handleFromHere,
     handleTimeUpdate,
     currentTime,
     onlyShowEngState,
@@ -134,10 +135,6 @@ const LearningScreen = () => {
 
     setSecondsState(arrOfSeconds);
   }, [ref.current, secondsState, content, realStartTime]);
-
-  const isNumber = (value) => {
-    return typeof value === 'number';
-  };
 
   const masterPlay =
     currentTime &&
@@ -571,15 +568,6 @@ const LearningScreen = () => {
   const handleRewind = () =>
     (ref.current.currentTime = ref.current.currentTime - 3);
 
-  const handleFromHere = (time) => {
-    if (!isNumber(time)) {
-      return null;
-    }
-    const thisStartTime = realStartTime + time;
-
-    handlePlayFromHere(thisStartTime);
-  };
-
   const getFormattedData = () => {
     const formattedTranscript = content.map((item) => {
       return {
@@ -690,7 +678,7 @@ const LearningScreen = () => {
           />
         </div>
         {secondsState && (
-          <LearningScreenTabsContainer
+          <LearningScreenContentContainer
             hasPreviousVideo={hasPreviousVideo}
             hasFollowingVideo={hasFollowingVideo}
             getNextTranscript={getNextTranscript}
