@@ -277,68 +277,66 @@ const LearningScreen = () => {
   );
 
   return (
-    <div>
-      <div
-        style={{
-          display: 'flex',
-          gap: 20,
-          width: 'fit-content',
-          margin: 'auto',
-          marginTop: 20,
-        }}
-      >
-        <ContentSectionsForReciew />
-        <div className='flex-1 max-w-xl mx-auto'>
-          <VideoPlayer
-            ref={ref}
-            url={videoUrl}
-            handleTimeUpdate={handleTimeUpdate}
-            setIsVideoPlaying={setIsVideoPlaying}
-            masterPlayComprehensiveState={
-              showOnVideoTranscriptState && masterPlayComprehensiveState
-            }
-          />
-          <ContentActionBar
-            nextReview={nextReview}
-            isInReviewMode={isInReviewMode}
-            setIsInReviewMode={setIsInReviewMode}
-            onlyShowEngState={onlyShowEngState}
-            setOnlyShowEngState={setOnlyShowEngState}
-            showOnVideoTranscriptState={showOnVideoTranscriptState}
-            setShowOnVideoTranscriptState={setShowOnVideoTranscriptState}
-            setShowWordsBasketState={setShowWordsBasketState}
-            ref={ref}
-          />
+    <div
+      style={{
+        display: 'flex',
+        gap: 20,
+        width: 'fit-content',
+        margin: 'auto',
+        marginTop: 20,
+      }}
+    >
+      <ContentSectionsForReciew />
+      <div className='flex-1 max-w-xl mx-auto'>
+        <VideoPlayer
+          ref={ref}
+          url={videoUrl}
+          handleTimeUpdate={handleTimeUpdate}
+          setIsVideoPlaying={setIsVideoPlaying}
+          masterPlayComprehensiveState={
+            showOnVideoTranscriptState && masterPlayComprehensiveState
+          }
+        />
+        <ContentActionBar
+          nextReview={nextReview}
+          isInReviewMode={isInReviewMode}
+          setIsInReviewMode={setIsInReviewMode}
+          onlyShowEngState={onlyShowEngState}
+          setOnlyShowEngState={setOnlyShowEngState}
+          showOnVideoTranscriptState={showOnVideoTranscriptState}
+          setShowOnVideoTranscriptState={setShowOnVideoTranscriptState}
+          setShowWordsBasketState={setShowWordsBasketState}
+          ref={ref}
+        />
 
-          {threeSecondLoopState && <LearningScreenLoopUI />}
-          {masterPlayComprehensiveState && (
-            <ComprehensiveTranscriptItem
-              contentItem={masterPlayComprehensiveState}
-              wordPopUpState={wordPopUpState}
-              setWordPopUpState={setWordPopUpState}
-              handleMouseEnter={handleMouseEnter}
-              handleMouseLeave={handleMouseLeave}
-            />
-          )}
-          <KeyListener />
-        </div>
-        {secondsState && (
-          <LearningScreenContentContainer
-            hasPreviousVideo={hasPreviousVideo}
-            hasFollowingVideo={hasFollowingVideo}
-            getNextTranscript={getNextTranscript}
-            setSecondsState={setSecondsState}
-            addWordToBasket={addWordToBasket}
-            wordsForSelectedTopic={wordsForSelectedTopic}
-            hasContentToReview={hasContentToReview}
-            handleBulkReviews={handleBulkReviews}
-            reviewHistory={reviewHistory}
-            updateContentMetaData={updateContentMetaData}
-            topicName={!isFullReview && selectedContentState?.title}
-            contentIndex={contentIndex}
+        {threeSecondLoopState && <LearningScreenLoopUI />}
+        {masterPlayComprehensiveState && (
+          <ComprehensiveTranscriptItem
+            contentItem={masterPlayComprehensiveState}
+            wordPopUpState={wordPopUpState}
+            setWordPopUpState={setWordPopUpState}
+            handleMouseEnter={handleMouseEnter}
+            handleMouseLeave={handleMouseLeave}
           />
         )}
+        <KeyListener />
       </div>
+      {secondsState && (
+        <LearningScreenContentContainer
+          hasPreviousVideo={hasPreviousVideo}
+          hasFollowingVideo={hasFollowingVideo}
+          getNextTranscript={getNextTranscript}
+          setSecondsState={setSecondsState}
+          addWordToBasket={addWordToBasket}
+          wordsForSelectedTopic={wordsForSelectedTopic}
+          hasContentToReview={hasContentToReview}
+          handleBulkReviews={handleBulkReviews}
+          reviewHistory={reviewHistory}
+          updateContentMetaData={updateContentMetaData}
+          topicName={!isFullReview && selectedContentState?.title}
+          contentIndex={contentIndex}
+        />
+      )}
     </div>
   );
 };
