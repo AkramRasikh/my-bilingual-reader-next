@@ -4,29 +4,13 @@ import { WordDialogueContent } from '../WordContainerDialogue';
 import { TabMetaContentData } from '../ContentActionBar';
 import LearningScreenTabs from './LearningScreenTabs';
 import LearningScreenChapterToggleWrapper from './LearningScreenChapterToggleWrapper';
+import useLearningScreen from './useLearningScreen';
 
 const LearningScreenContentContainer = ({
   hasPreviousVideo,
   hasFollowingVideo,
   getNextTranscript,
   setSecondsState,
-  formattedTranscriptState,
-  isVideoPlaying,
-  masterPlay,
-  handleReviewFunc,
-  handleBreakdownSentence,
-  sentenceHighlightingState,
-  setSentenceHighlightingState,
-  isGenericItemLoadingState,
-  breakdownSentencesArrState,
-  handleOpenBreakdownSentence,
-  setBreakdownSentencesArrState,
-  isPressDownShiftState,
-  loopTranscriptState,
-  setLoopTranscriptState,
-  overlappingSnippetDataState,
-  threeSecondLoopState,
-  isInReviewMode,
   addWordToBasket,
   wordsForSelectedTopic,
   hasContentToReview,
@@ -36,6 +20,7 @@ const LearningScreenContentContainer = ({
   topicName,
   contentIndex,
 }) => {
+  const { formattedTranscriptState } = useLearningScreen();
   return (
     <LearningScreenChapterToggleWrapper
       hasPreviousVideo={hasPreviousVideo}
@@ -50,31 +35,9 @@ const LearningScreenContentContainer = ({
           className='border rounded-lg p-1 max-h-150 overflow-y-auto'
         >
           <ul className='flex flex-col gap-1'>
-            {formattedTranscriptState.map((contentItem, index) => {
-              return (
-                <TranscriptItem
-                  key={index}
-                  contentItem={contentItem}
-                  // isGenericItemLoadingState={isGenericItemLoadingState}
-                  // isVideoPlaying={isVideoPlaying}
-                  // handleFromHere={handleFromHere}
-                  // masterPlay={masterPlay}
-                  // handleReviewFunc={handleReviewFunc}
-                  // handleBreakdownSentence={handleBreakdownSentence}
-                  // sentenceHighlightingState={sentenceHighlightingState}
-                  // setSentenceHighlightingState={setSentenceHighlightingState}
-                  // handleOpenBreakdownSentence={handleOpenBreakdownSentence}
-                  // breakdownSentencesArrState={breakdownSentencesArrState}
-                  // setBreakdownSentencesArrState={setBreakdownSentencesArrState}
-                  // isPressDownShiftState={isPressDownShiftState}
-                  // loopTranscriptState={loopTranscriptState}
-                  // setLoopTranscriptState={setLoopTranscriptState}
-                  // overlappingSnippetDataState={overlappingSnippetDataState}
-                  // threeSecondLoopState={threeSecondLoopState}
-                  // isInReviewMode={isInReviewMode}
-                />
-              );
-            })}
+            {formattedTranscriptState.map((contentItem, index) => (
+              <TranscriptItem key={index} contentItem={contentItem} />
+            ))}
           </ul>
         </TabsContent>
         <TabsContent value='words'>

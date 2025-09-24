@@ -31,26 +31,15 @@ const LearningScreen = () => {
     setSecondsState,
     masterPlayComprehensiveState,
     setMasterPlayComprehensiveState,
-    isVideoPlaying,
     setIsVideoPlaying,
-    isPressDownShiftState,
     isInReviewMode,
     setIsInReviewMode,
-    sentenceHighlightingState,
-    setSentenceHighlightingState,
-    isGenericItemLoadingState,
-    breakdownSentencesArrState,
-    setBreakdownSentencesArrState,
-    overlappingSnippetDataState,
     setOverlappingSnippetDataState,
     wordPopUpState,
     setWordPopUpState,
     loopTranscriptState,
-    setLoopTranscriptState,
     threeSecondLoopState,
-    setThreeSecondLoopState,
     progress,
-    setProgress,
     ref,
     handleTimeUpdate,
     currentTime,
@@ -67,7 +56,6 @@ const LearningScreen = () => {
     pureWords,
     wordsState,
     sentenceReviewBulk,
-    breakdownSentence,
     updateContentMetaData,
     getNextTranscript,
     selectedContentState,
@@ -264,51 +252,6 @@ const LearningScreen = () => {
     }
   };
 
-  const getThisSentenceInfo = (sentenceId) =>
-    formattedTranscriptState.find((item) => item.id === sentenceId);
-
-  const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {
-    await breakdownSentence({
-      topicName: isFullReview
-        ? getThisSentenceInfo(sentenceId).title
-        : selectedContentState.title,
-      sentenceId,
-      language: japanese,
-      targetLang,
-      contentIndex: isFullReview
-        ? getThisSentenceInfo(sentenceId).contentIndex
-        : contentIndex,
-    });
-  };
-
-  const handleOpenBreakdownSentence = () => {
-    const currentSecond = Math.floor(ref.current.currentTime);
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[currentSecond];
-
-    if (!currentMasterPlay) return null;
-    const thisSentence = formattedTranscriptState.find(
-      (item) => item.id === currentMasterPlay,
-    );
-
-    const alreadyHasBreakdown = thisSentence?.sentenceStructure;
-    if (!alreadyHasBreakdown) return null;
-
-    const isOpen = breakdownSentencesArrState.includes(currentMasterPlay);
-
-    if (isOpen) {
-      const updatedList = breakdownSentencesArrState.filter(
-        (i) => i !== currentMasterPlay,
-      );
-      setBreakdownSentencesArrState(updatedList);
-    } else {
-      const updatedList = [...breakdownSentencesArrState, currentMasterPlay];
-      setBreakdownSentencesArrState(updatedList);
-    }
-  };
-
   const getFormattedData = () => {
     const formattedTranscript = content.map((item) => {
       return {
@@ -385,22 +328,6 @@ const LearningScreen = () => {
             hasFollowingVideo={hasFollowingVideo}
             getNextTranscript={getNextTranscript}
             setSecondsState={setSecondsState}
-            formattedTranscriptState={formattedTranscriptState}
-            isVideoPlaying={isVideoPlaying}
-            masterPlay={masterPlay}
-            handleBreakdownSentence={handleBreakdownSentence}
-            sentenceHighlightingState={sentenceHighlightingState}
-            setSentenceHighlightingState={setSentenceHighlightingState}
-            isGenericItemLoadingState={isGenericItemLoadingState}
-            breakdownSentencesArrState={breakdownSentencesArrState}
-            setBreakdownSentencesArrState={setBreakdownSentencesArrState}
-            handleOpenBreakdownSentence={handleOpenBreakdownSentence}
-            isPressDownShiftState={isPressDownShiftState}
-            loopTranscriptState={loopTranscriptState}
-            setLoopTranscriptState={setLoopTranscriptState}
-            overlappingSnippetDataState={overlappingSnippetDataState}
-            threeSecondLoopState={threeSecondLoopState}
-            isInReviewMode={isInReviewMode}
             addWordToBasket={addWordToBasket}
             wordsForSelectedTopic={wordsForSelectedTopic}
             hasContentToReview={hasContentToReview}
