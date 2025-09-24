@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { getFirebaseVideoURL } from '../get-firebase-media-url';
 import { getGeneralTopicName } from '../get-general-topic-name';
 import { japanese } from '../languages';
-import { mapSentenceIdsToSeconds } from '../map-sentence-ids-to-seconds';
 import KeyListener from '../KeyListener';
 import VideoPlayer from '../VideoPlayer';
 import useData from '../useData';
@@ -49,28 +48,12 @@ const LearningScreen = () => {
     : getGeneralTopicName(selectedContentState.title);
   const videoUrl = getFirebaseVideoURL(generalTopic, japanese);
   const content = selectedContentState.content;
-  const realStartTime = selectedContentState?.realStartTime || 0;
   const contentIndex = selectedContentState?.contentIndex;
 
   const reviewHistory = selectedContentState?.reviewHistory;
   const hasContentToReview = content?.some(
     (sentenceWidget) => sentenceWidget?.reviewData,
   );
-
-  useEffect(() => {
-    if (!ref.current?.duration || secondsState?.length > 0) {
-      return;
-    }
-
-    const arrOfSeconds = mapSentenceIdsToSeconds({
-      content,
-      duration: ref.current?.duration,
-      isVideoModeState: true,
-      realStartTime,
-    });
-
-    setSecondsState(arrOfSeconds);
-  }, [ref.current, secondsState, content, realStartTime]);
 
   const masterPlay =
     currentTime &&
