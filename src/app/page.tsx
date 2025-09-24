@@ -18,8 +18,8 @@ export default async function Home() {
         contentWidget.title.endsWith('-01');
       const isLastInTotalArr =
         targetLanguageLoadedContent.length === contentIndex + 1;
-      const isLast = isLastInTotalArr
-        ? true
+      const hasFollowingVideo = isLastInTotalArr
+        ? false
         : generalTopicName ===
           getGeneralTopicName(
             targetLanguageLoadedContent[contentIndex + 1].title,
@@ -29,7 +29,7 @@ export default async function Home() {
         ...contentWidget,
         contentIndex: contentIndex,
         isFirst,
-        isLast,
+        hasFollowingVideo,
         generalTopicName,
       };
     },

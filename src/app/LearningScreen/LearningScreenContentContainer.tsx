@@ -11,15 +11,13 @@ const LearningScreenContentContainer = ({
   hasPreviousVideo,
   hasFollowingVideo,
   getNextTranscript,
-  setSecondsState,
   hasContentToReview,
-  handleBulkReviews,
   reviewHistory,
   updateContentMetaData,
   topicName,
   contentIndex,
 }) => {
-  const { formattedTranscriptState } = useLearningScreen();
+  const { formattedTranscriptState, setSecondsState } = useLearningScreen();
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
   return (
     <LearningScreenChapterToggleWrapper
@@ -47,7 +45,6 @@ const LearningScreenContentContainer = ({
           <TabsContent value='meta' className={contentClasses}>
             <TabMetaContentData
               hasContentToReview={hasContentToReview}
-              handleBulkReviews={handleBulkReviews}
               reviewHistory={reviewHistory}
               updateContentMetaData={updateContentMetaData}
               topicName={topicName}

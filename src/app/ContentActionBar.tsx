@@ -5,10 +5,10 @@ import LoadingSpinner from './LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import useData from './useData';
 
 export const TabMetaContentData = ({
   hasContentToReview,
-  handleBulkReviews,
   reviewHistory,
   updateContentMetaData,
   topicName,
@@ -21,6 +21,8 @@ export const TabMetaContentData = ({
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { handleBulkReviews } = useData();
 
   const today = new Date();
 

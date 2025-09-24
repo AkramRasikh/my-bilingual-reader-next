@@ -1,16 +1,11 @@
 'use client';
-import { useEffect } from 'react';
+
 import { getFirebaseVideoURL } from '../get-firebase-media-url';
 import { getGeneralTopicName } from '../get-general-topic-name';
 import { japanese } from '../languages';
 import KeyListener from '../KeyListener';
 import VideoPlayer from '../VideoPlayer';
 import useData from '../useData';
-import {
-  getEmptyCard,
-  getNextScheduledOptions,
-  srsRetentionKeyTypes,
-} from '../srs-algo';
 import ComprehensiveTranscriptItem from '../ComprehensiveTranscriptItem';
 import useLearningScreen from './useLearningScreen';
 import { ContentSectionsForReciew } from '../ContentSelection';
@@ -22,7 +17,6 @@ const LearningScreen = () => {
   const {
     formattedTranscriptState,
     secondsState,
-    setSecondsState,
     masterPlayComprehensiveState,
     setIsVideoPlaying,
     threeSecondLoopState,
@@ -31,12 +25,8 @@ const LearningScreen = () => {
     showOnVideoTranscriptState,
   } = useLearningScreen();
 
-  const {
-    sentenceReviewBulk,
-    updateContentMetaData,
-    getNextTranscript,
-    selectedContentState,
-  } = useData();
+  const { updateContentMetaData, getNextTranscript, selectedContentState } =
+    useData();
 
   const isFullReview = selectedContentState?.isFullReview;
 
@@ -52,41 +42,15 @@ const LearningScreen = () => {
     (sentenceWidget) => sentenceWidget?.reviewData,
   );
 
-  const handleBulkReviews = async () => {
-    const emptyCard = getEmptyCard();
-
-    const nextScheduledOptions = getNextScheduledOptions({
-      card: emptyCard,
-      contentType: srsRetentionKeyTypes.sentences,
-    });
-    const nextDueCard = nextScheduledOptions['2'].card;
-    await sentenceReviewBulk({
-      topicName: selectedContentState.title,
-      fieldToUpdate: {
-        reviewData: nextDueCard,
-      },
-      contentIndex: contentIndex,
-      removeReview: hasContentToReview,
-    });
-  };
-
   if (!formattedTranscriptState) {
     return null;
   }
 
   const hasPreviousVideo = !selectedContentState.isFirst;
-  const hasFollowingVideo = selectedContentState.isLast;
+  const hasFollowingVideo = selectedContentState.hasFollowingVideo;
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        gap: 20,
-        width: 'fit-content',
-        margin: 'auto',
-        marginTop: 20,
-      }}
-    >
+    <div className='flex gap-5 w-fit mx-auto'>
       <ContentSectionsForReciew />
       <div className='flex-1 max-w-xl mx-auto'>
         <VideoPlayer
@@ -113,9 +77,7 @@ const LearningScreen = () => {
           hasPreviousVideo={hasPreviousVideo}
           hasFollowingVideo={hasFollowingVideo}
           getNextTranscript={getNextTranscript}
-          setSecondsState={setSecondsState}
           hasContentToReview={hasContentToReview}
-          handleBulkReviews={handleBulkReviews}
           reviewHistory={reviewHistory}
           updateContentMetaData={updateContentMetaData}
           topicName={!isFullReview && selectedContentState?.title}

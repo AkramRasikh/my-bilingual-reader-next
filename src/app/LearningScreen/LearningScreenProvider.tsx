@@ -54,7 +54,12 @@ export const LearningScreenProvider = ({
   const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
     useState(false);
 
-  const { selectedContentState, updateSentenceData, pureWords } = useData();
+  const {
+    selectedContentState,
+    updateSentenceData,
+    sentenceReviewBulk,
+    pureWords,
+  } = useData();
 
   const realStartTime = selectedContentState?.realStartTime || 0;
 
@@ -147,6 +152,30 @@ export const LearningScreenProvider = ({
         formattedTranscriptState[thisSentenceIndex + nextIndex]?.time,
       );
     }
+  };
+
+  const handleBulkReviews = async () => {
+    const emptyCard = getEmptyCard();
+
+    const nextScheduledOptions = getNextScheduledOptions({
+      card: emptyCard,
+      contentType: srsRetentionKeyTypes.sentences,
+    });
+
+    const contentIndex = selectedContentState?.contentIndex;
+    const hasContentToReview = content?.some(
+      (sentenceWidget) => sentenceWidget?.reviewData,
+    );
+
+    const nextDueCard = nextScheduledOptions['2'].card;
+    await sentenceReviewBulk({
+      topicName: selectedContentState.title,
+      fieldToUpdate: {
+        reviewData: nextDueCard,
+      },
+      contentIndex: contentIndex,
+      removeReview: hasContentToReview,
+    });
   };
 
   const handleReviewFunc = async ({ sentenceId, isRemoveReview, nextDue }) => {
@@ -436,6 +465,7 @@ export const LearningScreenProvider = ({
         handleBreakdownMasterSentence,
         handleAddMasterToReview,
         handleIsEasyReviewShortCut,
+        handleBulkReviews,
       }}
     >
       {children}
