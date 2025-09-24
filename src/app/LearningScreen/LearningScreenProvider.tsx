@@ -8,6 +8,7 @@ import {
   srsCalculationAndText,
   srsRetentionKeyTypes,
 } from '../srs-algo';
+import useManageLoops from './hooks/useManageLoops';
 
 export const LearningScreenContext = createContext(null);
 
@@ -52,6 +53,14 @@ export const LearningScreenProvider = ({
   const { selectedContentState, updateSentenceData } = useData();
 
   const realStartTime = selectedContentState?.realStartTime || 0;
+
+  useManageLoops({
+    threeSecondLoopState,
+    contractThreeSecondLoopState,
+    formattedTranscriptState,
+    realStartTime,
+    setOverlappingSnippetDataState,
+  });
 
   const handleFromHere = (time) => {
     if (!isNumber(time)) {
