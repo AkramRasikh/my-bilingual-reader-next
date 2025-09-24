@@ -418,12 +418,6 @@ export const DataProvider = ({
     });
   };
 
-  const checkIsThereFollowingContent = (contentIndex, generalTitle) => {
-    const isOfSameTopic =
-      contentState[contentIndex + 1]?.generalTopicName === generalTitle;
-    return isOfSameTopic;
-  };
-
   useEffect(() => {
     // figure out conditions here
     if (selectedContentState && !selectedContentState?.isFullReview) {
@@ -753,7 +747,6 @@ export const DataProvider = ({
         breakdownSentence,
         updateContentMetaData,
         getNextTranscript,
-        checkIsThereFollowingContent,
         generalTopicDisplayNameState,
         setGeneralTopicDisplayNameState,
         generalTopicDisplayNameSelectedState,

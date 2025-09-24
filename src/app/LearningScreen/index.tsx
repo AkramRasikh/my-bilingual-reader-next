@@ -36,7 +36,6 @@ const LearningScreen = () => {
     updateContentMetaData,
     getNextTranscript,
     selectedContentState,
-    checkIsThereFollowingContent,
   } = useData();
 
   const isFullReview = selectedContentState?.isFullReview;
@@ -76,10 +75,7 @@ const LearningScreen = () => {
   }
 
   const hasPreviousVideo = !selectedContentState.isFirst;
-  const hasFollowingVideo = checkIsThereFollowingContent(
-    selectedContentState.contentIndex,
-    selectedContentState.generalTopicName,
-  );
+  const hasFollowingVideo = selectedContentState.isLast;
 
   return (
     <div

@@ -11,14 +11,28 @@ export default async function Home() {
   const targetLanguageLoadedWords = allStudyDataRes.words;
 
   const sortedContent = targetLanguageLoadedContent?.map(
-    (contentWidget, contentIndex) => ({
-      ...contentWidget,
-      contentIndex: contentIndex,
-      isFirst:
+    (contentWidget, contentIndex) => {
+      const generalTopicName = getGeneralTopicName(contentWidget.title);
+      const isFirst =
         contentWidget.title.endsWith('-1') ||
-        contentWidget.title.endsWith('-01'),
-      generalTopicName: getGeneralTopicName(contentWidget.title),
-    }),
+        contentWidget.title.endsWith('-01');
+      const isLastInTotalArr =
+        targetLanguageLoadedContent.length === contentIndex + 1;
+      const isLast = isLastInTotalArr
+        ? true
+        : generalTopicName ===
+          getGeneralTopicName(
+            targetLanguageLoadedContent[contentIndex + 1].title,
+          );
+
+      return {
+        ...contentWidget,
+        contentIndex: contentIndex,
+        isFirst,
+        isLast,
+        generalTopicName,
+      };
+    },
   );
 
   return (
