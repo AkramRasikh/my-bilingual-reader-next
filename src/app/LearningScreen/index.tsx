@@ -24,12 +24,10 @@ const LearningScreen = () => {
     secondsState,
     setSecondsState,
     masterPlayComprehensiveState,
-    setMasterPlayComprehensiveState,
     setIsVideoPlaying,
     threeSecondLoopState,
     ref,
     handleTimeUpdate,
-    currentTime,
     showOnVideoTranscriptState,
   } = useLearningScreen();
 
@@ -54,20 +52,6 @@ const LearningScreen = () => {
   const hasContentToReview = content?.some(
     (sentenceWidget) => sentenceWidget?.reviewData,
   );
-
-  const masterPlay =
-    currentTime &&
-    secondsState?.length > 0 &&
-    secondsState[Math.floor(currentTime)];
-
-  useEffect(() => {
-    if (masterPlay && formattedTranscriptState) {
-      const thisItemTranscript = formattedTranscriptState.find(
-        (item) => item.id === masterPlay,
-      );
-      setMasterPlayComprehensiveState(thisItemTranscript);
-    }
-  }, [masterPlay, formattedTranscriptState]);
 
   const handleBulkReviews = async () => {
     const emptyCard = getEmptyCard();

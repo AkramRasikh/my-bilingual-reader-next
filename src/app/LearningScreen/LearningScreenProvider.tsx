@@ -12,6 +12,7 @@ import useManageThreeSecondLoop from './hooks/useManageThreeSecondLoop';
 import useManageLoopInit from './hooks/useManageLoopInit';
 import { useHighlightWordToWordBank } from '../useHighlightWordToWordBank';
 import useMapTranscriptToSeconds from './hooks/useMapTranscriptToSeconds';
+import useTrackMasterTranscript from './hooks/useTrackMasterTranscript';
 
 export const LearningScreenContext = createContext(null);
 
@@ -107,6 +108,12 @@ export const LearningScreenProvider = ({
     realStartTime,
     secondsState,
     setSecondsState,
+  });
+
+  useTrackMasterTranscript({
+    masterPlay,
+    formattedTranscriptState,
+    setMasterPlayComprehensiveState,
   });
 
   const handleFromHere = (time) => {
