@@ -154,8 +154,8 @@ export default function ContentActionBar({
         <div className='flex gap-2 m-auto'>
           <Label>🇬🇧</Label>
           <Switch
-            checked={onlyShowEngState}
-            onCheckedChange={setOnlyShowEngState}
+            checked={!onlyShowEngState}
+            onCheckedChange={() => setOnlyShowEngState(!onlyShowEngState)}
           />
         </div>
         <div className='flex gap-2 m-auto'>
