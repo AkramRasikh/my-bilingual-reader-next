@@ -1,6 +1,6 @@
 'use client';
 import { isNumber } from '@/utils/is-number';
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import useData from '../useData';
 import {
   getEmptyCard,
@@ -10,6 +10,7 @@ import {
 } from '../srs-algo';
 import useManageThreeSecondLoop from './hooks/useManageThreeSecondLoop';
 import useManageLoopInit from './hooks/useManageLoopInit';
+import { useHighlightWordToWordBank } from '../useHighlightWordToWordBank';
 
 export const LearningScreenContext = createContext(null);
 
@@ -51,7 +52,7 @@ export const LearningScreenProvider = ({
   const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
     useState(false);
 
-  const { selectedContentState, updateSentenceData } = useData();
+  const { selectedContentState, updateSentenceData, pureWords } = useData();
 
   const realStartTime = selectedContentState?.realStartTime || 0;
 
@@ -59,6 +60,28 @@ export const LearningScreenProvider = ({
     currentTime &&
     secondsState?.length > 0 &&
     secondsState[Math.floor(currentTime)];
+
+  const content = selectedContentState?.content;
+
+  const { underlineWordsInSentence } = useHighlightWordToWordBank({
+    pureWordsUnique: pureWords,
+  });
+
+  const getFormattedData = () => {
+    const formattedTranscript = content.map((item) => {
+      return {
+        ...item,
+        targetLangformatted: underlineWordsInSentence(item.targetLang),
+      };
+    });
+
+    setFormattedTranscriptState(formattedTranscript);
+  };
+
+  useEffect(() => {
+    console.log('## Called!!!');
+    getFormattedData();
+  }, [pureWords, content]);
 
   useManageThreeSecondLoop({
     threeSecondLoopState,

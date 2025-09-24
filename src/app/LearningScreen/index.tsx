@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { getFirebaseVideoURL } from '../get-firebase-media-url';
 import { getGeneralTopicName } from '../get-general-topic-name';
 import { japanese } from '../languages';
-import { useHighlightWordToWordBank } from '../useHighlightWordToWordBank';
 import { mapSentenceIdsToSeconds } from '../map-sentence-ids-to-seconds';
 import KeyListener from '../KeyListener';
 import VideoPlayer from '../VideoPlayer';
@@ -23,7 +22,6 @@ import LearningScreenActionBar from './LearningScreenActionBar';
 const LearningScreen = () => {
   const {
     formattedTranscriptState,
-    setFormattedTranscriptState,
     secondsState,
     setSecondsState,
     masterPlayComprehensiveState,
@@ -37,7 +35,6 @@ const LearningScreen = () => {
   } = useLearningScreen();
 
   const {
-    pureWords,
     sentenceReviewBulk,
     updateContentMetaData,
     getNextTranscript,
@@ -78,10 +75,6 @@ const LearningScreen = () => {
   const hasContentToReview = content?.some(
     (sentenceWidget) => sentenceWidget?.reviewData,
   );
-
-  const { underlineWordsInSentence } = useHighlightWordToWordBank({
-    pureWordsUnique: pureWords,
-  });
 
   useEffect(() => {
     if (!ref.current?.duration || secondsState?.length > 0) {
@@ -129,20 +122,6 @@ const LearningScreen = () => {
       removeReview: hasContentToReview,
     });
   };
-
-  const getFormattedData = () => {
-    const formattedTranscript = content.map((item) => {
-      return {
-        ...item,
-        targetLangformatted: underlineWordsInSentence(item.targetLang),
-      };
-    });
-
-    setFormattedTranscriptState(formattedTranscript);
-  };
-  useEffect(() => {
-    getFormattedData();
-  }, [pureWords, content]);
 
   if (!formattedTranscriptState) {
     return null;
