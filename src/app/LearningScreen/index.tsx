@@ -15,7 +15,6 @@ import {
   srsRetentionKeyTypes,
 } from '../srs-algo';
 import ContentActionBar from '../ContentActionBar';
-import Transcript from '../Transcript';
 import { Button } from '@/components/ui/button';
 import { Repeat2 } from 'lucide-react';
 import clsx from 'clsx';
@@ -23,6 +22,7 @@ import ProgressBarSnippet from '../ProgressBarSnippet';
 import ComprehensiveTranscriptItem from '../ComprehensiveTranscriptItem';
 import useLearningScreen from './useLearningScreen';
 import { ContentSectionsForReciew } from '../ContentSelection';
+import LearningScreenTabsContainer from './LearningScreenTabsContainer';
 
 const LearningScreen = () => {
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
@@ -690,7 +690,7 @@ const LearningScreen = () => {
           />
         </div>
         {secondsState && (
-          <Transcript
+          <LearningScreenTabsContainer
             hasPreviousVideo={hasPreviousVideo}
             hasFollowingVideo={hasFollowingVideo}
             getNextTranscript={getNextTranscript}
