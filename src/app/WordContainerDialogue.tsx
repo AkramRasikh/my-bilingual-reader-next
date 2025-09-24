@@ -13,11 +13,25 @@ import { isDueCheck } from './DataProvider';
 import clsx from 'clsx';
 import WordTabContent from './WordTabContent';
 
-export const WordDialogueContent = ({
-  addWordToBasket,
-  wordsForSelectedTopic,
-}) => {
-  const { wordBasketState, updateWordDataProvider } = useData();
+export const WordDialogueContent = () => {
+  const { wordsForSelectedTopic, wordBasketState, updateWordDataProvider } =
+    useData();
+
+  const addWordToBasket = (word) => {
+    const wordIsInBasic = wordBasketState.some(
+      (wordItem) => wordItem?.id === word.id,
+    );
+
+    if (wordIsInBasic) {
+      const updatedBasket = wordBasketState.filter(
+        (item) => item.id !== word.id,
+      );
+      setWordBasketState(updatedBasket);
+      return;
+    }
+
+    setWordBasketState((prev) => [...prev, word]);
+  };
 
   return (
     <div className='text-center m-auto p-1.5'>

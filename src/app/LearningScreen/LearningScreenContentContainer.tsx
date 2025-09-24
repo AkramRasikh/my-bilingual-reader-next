@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import TranscriptItem from '../TranscriptItem';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { WordDialogueContent } from '../WordContainerDialogue';
@@ -11,8 +12,6 @@ const LearningScreenContentContainer = ({
   hasFollowingVideo,
   getNextTranscript,
   setSecondsState,
-  addWordToBasket,
-  wordsForSelectedTopic,
   hasContentToReview,
   handleBulkReviews,
   reviewHistory,
@@ -21,6 +20,7 @@ const LearningScreenContentContainer = ({
   contentIndex,
 }) => {
   const { formattedTranscriptState } = useLearningScreen();
+  const contentClasses = 'p-1 max-h-150 overflow-y-auto';
   return (
     <LearningScreenChapterToggleWrapper
       hasPreviousVideo={hasPreviousVideo}
@@ -32,7 +32,7 @@ const LearningScreenContentContainer = ({
         <LearningScreenTabs topicName={topicName} />
         <TabsContent
           value='transcript'
-          className='border rounded-lg p-1 max-h-150 overflow-y-auto'
+          className={clsx(contentClasses, 'border rounded-lg')}
         >
           <ul className='flex flex-col gap-1'>
             {formattedTranscriptState.map((contentItem, index) => (
@@ -40,21 +40,11 @@ const LearningScreenContentContainer = ({
             ))}
           </ul>
         </TabsContent>
-        <TabsContent value='words'>
-          <div
-            style={{
-              overflow: 'scroll',
-              maxHeight: '600px',
-            }}
-          >
-            <WordDialogueContent
-              addWordToBasket={addWordToBasket}
-              wordsForSelectedTopic={wordsForSelectedTopic}
-            />
-          </div>
+        <TabsContent value='words' className={contentClasses}>
+          <WordDialogueContent />
         </TabsContent>
         {topicName && (
-          <TabsContent value='meta'>
+          <TabsContent value='meta' className={contentClasses}>
             <TabMetaContentData
               hasContentToReview={hasContentToReview}
               handleBulkReviews={handleBulkReviews}

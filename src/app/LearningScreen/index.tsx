@@ -40,26 +40,7 @@ const LearningScreen = () => {
     getNextTranscript,
     selectedContentState,
     checkIsThereFollowingContent,
-    wordsForSelectedTopic,
-    wordBasketState,
-    setWordBasketState,
   } = useData();
-
-  const addWordToBasket = (word) => {
-    const wordIsInBasic = wordBasketState.some(
-      (wordItem) => wordItem?.id === word.id,
-    );
-
-    if (wordIsInBasic) {
-      const updatedBasket = wordBasketState.filter(
-        (item) => item.id !== word.id,
-      );
-      setWordBasketState(updatedBasket);
-      return;
-    }
-
-    setWordBasketState((prev) => [...prev, word]);
-  };
 
   const isFullReview = selectedContentState?.isFullReview;
 
@@ -170,8 +151,6 @@ const LearningScreen = () => {
           hasFollowingVideo={hasFollowingVideo}
           getNextTranscript={getNextTranscript}
           setSecondsState={setSecondsState}
-          addWordToBasket={addWordToBasket}
-          wordsForSelectedTopic={wordsForSelectedTopic}
           hasContentToReview={hasContentToReview}
           handleBulkReviews={handleBulkReviews}
           reviewHistory={reviewHistory}
