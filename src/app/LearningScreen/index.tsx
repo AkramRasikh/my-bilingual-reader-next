@@ -1,28 +1,28 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { getFirebaseVideoURL } from './get-firebase-media-url';
-import { getGeneralTopicName } from './get-general-topic-name';
-import { japanese } from './languages';
-import { useHighlightWordToWordBank } from './useHighlightWordToWordBank';
-import { mapSentenceIdsToSeconds } from './map-sentence-ids-to-seconds';
-import KeyListener from './KeyListener';
-import VideoPlayer from './VideoPlayer';
-import useData from './useData';
+import { getFirebaseVideoURL } from '../get-firebase-media-url';
+import { getGeneralTopicName } from '../get-general-topic-name';
+import { japanese } from '../languages';
+import { useHighlightWordToWordBank } from '../useHighlightWordToWordBank';
+import { mapSentenceIdsToSeconds } from '../map-sentence-ids-to-seconds';
+import KeyListener from '../KeyListener';
+import VideoPlayer from '../VideoPlayer';
+import useData from '../useData';
 import {
   getEmptyCard,
   getNextScheduledOptions,
   srsCalculationAndText,
   srsRetentionKeyTypes,
-} from './srs-algo';
-import ContentActionBar from './ContentActionBar';
-import Transcript from './Transcript';
+} from '../srs-algo';
+import ContentActionBar from '../ContentActionBar';
+import Transcript from '../Transcript';
 import { Button } from '@/components/ui/button';
 import { Repeat2 } from 'lucide-react';
 import clsx from 'clsx';
-import ProgressBarSnippet from './ProgressBarSnippet';
-import ComprehensiveTranscriptItem from './ComprehensiveTranscriptItem';
-import useLearningScreen from './useLearningScreen';
-import { ContentSectionsForReciew } from './ContentSelection';
+import ProgressBarSnippet from '../ProgressBarSnippet';
+import ComprehensiveTranscriptItem from '../ComprehensiveTranscriptItem';
+import useLearningScreen from '../useLearningScreen';
+import { ContentSectionsForReciew } from '../ContentSelection';
 
 const LearningScreen = () => {
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
