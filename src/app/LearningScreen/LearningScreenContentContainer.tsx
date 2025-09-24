@@ -12,8 +12,6 @@ const LearningScreenContentContainer = ({
   setSecondsState,
   formattedTranscriptState,
   isVideoPlaying,
-  handlePause,
-  handleFromHere,
   masterPlay,
   handleReviewFunc,
   handleBreakdownSentence,
@@ -57,8 +55,6 @@ const LearningScreenContentContainer = ({
                 <TranscriptItem
                   key={index}
                   contentItem={contentItem}
-                  handleFromHere={handleFromHere}
-                  handlePause={handlePause}
                   // isGenericItemLoadingState={isGenericItemLoadingState}
                   // isVideoPlaying={isVideoPlaying}
                   // handleFromHere={handleFromHere}
