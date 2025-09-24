@@ -11,6 +11,7 @@ import {
 import useManageThreeSecondLoop from './hooks/useManageThreeSecondLoop';
 import useManageLoopInit from './hooks/useManageLoopInit';
 import { useHighlightWordToWordBank } from '../useHighlightWordToWordBank';
+import useMapTranscriptToSeconds from './hooks/useMapTranscriptToSeconds';
 
 export const LearningScreenContext = createContext(null);
 
@@ -79,7 +80,6 @@ export const LearningScreenProvider = ({
   };
 
   useEffect(() => {
-    console.log('## Called!!!');
     getFormattedData();
   }, [pureWords, content]);
 
@@ -99,6 +99,14 @@ export const LearningScreenProvider = ({
     setContractThreeSecondLoopState,
     masterPlay,
     progress,
+  });
+
+  useMapTranscriptToSeconds({
+    ref,
+    content,
+    realStartTime,
+    secondsState,
+    setSecondsState,
   });
 
   const handleFromHere = (time) => {
