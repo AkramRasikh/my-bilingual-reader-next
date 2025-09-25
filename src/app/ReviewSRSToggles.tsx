@@ -47,7 +47,7 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {
       setIsLoadingSRSState(false);
     }
   };
-  const handleRemoveReviewReview = async () => {
+  const handleRemoveReview = async () => {
     try {
       setIsLoadingSRSState(true);
       if (isVocab) {
@@ -63,7 +63,7 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {
         });
       }
     } catch (error) {
-      console.log('## handleRemoveReviewReview', { error });
+      console.log('## handleRemoveReview', { error });
     } finally {
       setIsLoadingSRSState(false);
     }
@@ -110,7 +110,7 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {
           isScheduledForDeletion ? 'animate-pulse bg-amber-500' : '',
         )}
         disabled={isLoadingSRSState}
-        onClick={handleRemoveReviewReview}
+        onClick={handleRemoveReview}
       >
         <Trash />
       </Button>

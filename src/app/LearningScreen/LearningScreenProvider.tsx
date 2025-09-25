@@ -16,6 +16,8 @@ import useTrackMasterTranscript from './hooks/useTrackMasterTranscript';
 
 export const LearningScreenContext = createContext(null);
 
+// type time
+
 export const LearningScreenProvider = ({
   handlePlayFromHere,
   handleTimeUpdate,
@@ -466,6 +468,7 @@ export const LearningScreenProvider = ({
         handleAddMasterToReview,
         handleIsEasyReviewShortCut,
         handleBulkReviews,
+        handleReviewFunc,
       }}
     >
       {children}

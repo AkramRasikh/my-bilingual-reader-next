@@ -30,6 +30,8 @@ const TranscriptItem = ({ contentItem }) => {
     masterPlay,
     handleFromHere,
     handlePause,
+    handleReviewFunc,
+    handleOpenBreakdownSentence,
   } = useLearningScreen();
 
   const ulRef = useRef<HTMLUListElement>(null);
