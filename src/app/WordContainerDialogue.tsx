@@ -14,8 +14,12 @@ import clsx from 'clsx';
 import WordTabContent from './WordTabContent';
 
 export const WordDialogueContent = () => {
-  const { wordsForSelectedTopic, wordBasketState, updateWordDataProvider } =
-    useData();
+  const {
+    wordsForSelectedTopic,
+    wordBasketState,
+    setWordBasketState,
+    updateWordDataProvider,
+  } = useData();
 
   const addWordToBasket = (word) => {
     const wordIsInBasic = wordBasketState.some(
