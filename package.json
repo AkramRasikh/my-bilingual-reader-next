@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:mock": "NEXT_PUBLIC_IS_MOCK=true npm run dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
