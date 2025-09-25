@@ -664,7 +664,7 @@ export const DataProvider = ({
       setStory({
         ...story,
         isSaved: true,
-        audioUrl: getAudioURL(data, 'japanese'),
+        audioUrl: getAudioURL(data[0].id, 'japanese'),
       });
     }
 
