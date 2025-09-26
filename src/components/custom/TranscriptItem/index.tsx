@@ -4,12 +4,11 @@ import { NewSentenceBreakdown } from '@/app/SentenceBreakdown';
 import LoadingSpinner from '@/app/LoadingSpinner';
 import { Repeat2 } from 'lucide-react';
 import FormattedSentence from '@/app/FormattedSentence';
-import { getTimeDiffSRS } from '@/app/getTimeDiffSRS';
-import ReviewSRSToggles from '@/app/ReviewSRSToggles';
 import useTranscriptItem from './useTranscriptItem';
 import TranscriptItemWrapper from './TranscriptItemWrapper';
 import TranscriptItemTimeOverlappingIndicator from './TranscriptItemTimeOverlappingIndicator';
 import TranscriptItemMenuSection from './TranscriptItemMenuSection';
+import TranscriptItemReviewSection from './TranscriptItemReviewSection';
 
 const TranscriptItem = () => {
   const {
@@ -30,11 +29,9 @@ const TranscriptItem = () => {
     masterPlay,
     isGenericItemLoadingState,
     handleSaveFunc,
-    isInReviewMode,
     onlyShowEngState,
     setBreakdownSentencesArrState,
     setLoopTranscriptState,
-    handleReviewFunc,
     isVideoPlaying,
     handlePause,
     handleFromHere,
@@ -42,9 +39,6 @@ const TranscriptItem = () => {
 
   const baseLang = contentItem.baseLang;
   const targetLangformatted = contentItem.targetLangformatted;
-  const hasBeenReviewed = contentItem?.reviewData?.due;
-  const timeNow = new Date();
-  const isDueNow = new Date(hasBeenReviewed) < timeNow;
 
   const thisTime = contentItem.time;
   const thisSentenceIsPlaying = contentItem.id === masterPlay;
@@ -172,17 +166,7 @@ const TranscriptItem = () => {
           <TranscriptItemMenuSection />
         </div>
       </div>
-      {isInReviewMode && isDueNow ? (
-        <ReviewSRSToggles
-          contentItem={contentItem}
-          handleReviewFunc={handleReviewFunc}
-        />
-      ) : isInReviewMode && hasBeenReviewed ? (
-        <p className='italic m-1 text-center'>
-          Due in{' '}
-          {getTimeDiffSRS({ dueTimeStamp: new Date(hasBeenReviewed), timeNow })}
-        </p>
-      ) : null}
+      <TranscriptItemReviewSection />
       {highlightedTextState && (
         <HighlightedTextSection
           isLoadingState={isLoadingState}
