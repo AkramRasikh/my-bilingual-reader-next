@@ -28,11 +28,15 @@ export const ContentSectionsForReciew = () => {
     setContentMetaWordDataState(wordMetaData);
   }, [wordsState, selectedContentState]);
 
+  const hasUnifiedChapter = contentMetaDataState.length === 1;
+
   return (
     <ul className='flex flex-col gap-1 overflow-y-scroll max-h-96'>
-      <Button variant='outline' onClick={handleGetComprehensiveReview}>
-        All
-      </Button>
+      {!hasUnifiedChapter && (
+        <Button variant='outline' onClick={handleGetComprehensiveReview}>
+          All
+        </Button>
+      )}
       {contentMetaDataState?.map((thisContentMetaData, index) => {
         const chapterNum = thisContentMetaData.chapterNum;
         const title = thisContentMetaData.title;
