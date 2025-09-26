@@ -52,6 +52,7 @@ const LearningScreenContentContainer = () => {
     isVideoPlaying,
     handlePause,
     handleFromHere,
+    handleBreakdownSentence,
   } = useLearningScreen();
 
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
@@ -91,7 +92,7 @@ const LearningScreenContentContainer = () => {
                 isVideoPlaying={isVideoPlaying}
                 handlePause={handlePause}
                 handleFromHere={handleFromHere}
-                breakdownSentence={breakdownSentence}
+                handleBreakdownSentence={handleBreakdownSentence}
               >
                 <TranscriptItem />
               </TranscriptItemProvider>

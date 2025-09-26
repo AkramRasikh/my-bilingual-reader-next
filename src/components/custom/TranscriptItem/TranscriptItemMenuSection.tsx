@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import useTranscriptItem from './useTranscriptItem';
 import { MenuIcon } from 'lucide-react';
+import TranscriptItemBreakdownSentence from './TranscriptItemBreakdownSentence';
 
 const TranscriptItemMenuSection = () => {
   const {
@@ -27,35 +28,42 @@ const TranscriptItemMenuSection = () => {
     });
 
   return (
-    <div className='flex flex-col gap-0.5'>
+    <>
       {showMenuState ? (
-        <>
-          <Button
-            id='show-menu'
-            variant='secondary'
-            size='icon'
-            className='bgmt-0 rounded transparent'
-            onClick={() => setShowMenuState(!showMenuState)}
-          >
-            <MenuIcon />
-          </Button>
-          <Button
-            id='copy'
-            variant='ghost'
-            className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
-            onClick={handleCopy}
-          >
-            📋
-          </Button>
-          <Button
-            id='review'
-            variant='ghost'
-            className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
-            onClick={handleReview}
-          >
-            {hasBeenReviewed ? '🗑️' : '⏰'}
-          </Button>
-        </>
+        <div
+          className='flex flex-col gap-0.5'
+          style={{
+            animation: 'fadeIn 0.5s ease-out forwards',
+          }}
+        >
+          <>
+            <Button
+              id='show-menu'
+              variant='secondary'
+              className='rounded transparent'
+              onClick={() => setShowMenuState(!showMenuState)}
+            >
+              <MenuIcon />
+            </Button>
+            <Button
+              id='copy'
+              variant='ghost'
+              className='border rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+              onClick={handleCopy}
+            >
+              📋
+            </Button>
+            <Button
+              id='review'
+              variant='ghost'
+              className='border rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+              onClick={handleReview}
+            >
+              {hasBeenReviewed ? '🗑️' : '⏰'}
+            </Button>
+            <TranscriptItemBreakdownSentence />
+          </>
+        </div>
       ) : (
         <Button
           id='show-menu'
@@ -67,7 +75,7 @@ const TranscriptItemMenuSection = () => {
           <MenuIcon />
         </Button>
       )}
-    </div>
+    </>
   );
 };
 

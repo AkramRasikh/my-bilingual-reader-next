@@ -24,7 +24,7 @@ export const TranscriptItemProvider = ({
   isVideoPlaying,
   handlePause,
   handleFromHere,
-  breakdownSentence,
+  handleBreakdownSentence,
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -209,6 +209,7 @@ export const TranscriptItemProvider = ({
         handlePause,
         handleFromHere,
         handleReviewTranscriptItem,
+        handleBreakdownSentence,
       }}
     >
       {children}

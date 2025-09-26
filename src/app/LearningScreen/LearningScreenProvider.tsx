@@ -415,6 +415,17 @@ export const LearningScreenProvider = ({
     }
   };
 
+  const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {
+    const contentIndex = selectedContentState?.contentIndex;
+    await breakdownSentence({
+      topicName: selectedContentState.title,
+      sentenceId,
+      language: 'japanese',
+      targetLang,
+      contentIndex,
+    });
+  };
+
   return (
     <LearningScreenContext.Provider
       value={{
@@ -472,6 +483,7 @@ export const LearningScreenProvider = ({
         handleIsEasyReviewShortCut,
         handleBulkReviews,
         handleReviewFunc,
+        handleBreakdownSentence,
       }}
     >
       {children}
