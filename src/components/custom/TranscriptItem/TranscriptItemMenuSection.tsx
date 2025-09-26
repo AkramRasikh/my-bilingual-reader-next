@@ -67,8 +67,8 @@ const TranscriptItemMenuSection = () => {
       ) : (
         <Button
           id='show-menu'
-          className='mt-0 rounded'
-          variant='secondary'
+          className='mt-0 rounded border'
+          variant='ghost'
           size='icon'
           onClick={() => setShowMenuState(!showMenuState)}
         >
