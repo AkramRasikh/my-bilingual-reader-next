@@ -61,6 +61,7 @@ export const LearningScreenProvider = ({
     updateSentenceData,
     sentenceReviewBulk,
     pureWords,
+    breakdownSentence,
   } = useData();
 
   const realStartTime = selectedContentState?.realStartTime || 0;
@@ -332,12 +333,14 @@ export const LearningScreenProvider = ({
     }
 
     const thisSentenceTargetLang = thisSentence.targetLang;
+    const contentIndex = selectedContentState?.contentIndex;
+
     try {
       setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
       await breakdownSentence({
         topicName: selectedContentState.title,
         sentenceId: currentMasterPlay,
-        language: japanese,
+        language: 'japanese',
         targetLang: thisSentenceTargetLang,
         contentIndex,
       });
