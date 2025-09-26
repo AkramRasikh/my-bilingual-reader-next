@@ -45,6 +45,8 @@ export const TranscriptItemProvider = ({
     contentItem.id,
   );
 
+  const hasSentenceBreakdown = contentItem?.sentenceStructure;
+
   useEffect(() => {
     if (!threeSecondLoopState && thisSnippetOverlapState) {
       setThisSnippetOverlapState(null);
