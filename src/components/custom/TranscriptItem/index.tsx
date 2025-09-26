@@ -1,16 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import useData from './useData';
-import HighlightedTextSection from './HighlightedTextSection';
-import { NewSentenceBreakdown } from './SentenceBreakdown';
 import clsx from 'clsx';
-import MenuSection from './MenuSection';
-import LoadingSpinner from './LoadingSpinner';
+import HighlightedTextSection from '@/app/HighlightedTextSection';
+import { NewSentenceBreakdown } from '@/app/SentenceBreakdown';
+import LoadingSpinner from '@/app/LoadingSpinner';
 import { MenuIcon, Repeat2 } from 'lucide-react';
-import FormattedSentence from './FormattedSentence';
-import ReviewSRSToggles from './ReviewSRSToggles';
-import { getTimeDiffSRS } from './getTimeDiffSRS';
-import useLearningScreen from './LearningScreen/useLearningScreen';
+import FormattedSentence from '@/app/FormattedSentence';
 import { Button } from '@/components/ui/button';
+import useLearningScreen from '@/app/LearningScreen/useLearningScreen';
+import { getTimeDiffSRS } from '@/app/getTimeDiffSRS';
+import ReviewSRSToggles from '@/app/ReviewSRSToggles';
+import useData from '@/app/useData';
 
 const TranscriptItem = ({ contentItem }) => {
   const {

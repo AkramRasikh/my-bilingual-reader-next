@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import TranscriptItem from '../TranscriptItem';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { WordDialogueContent } from '../WordContainerDialogue';
 import { TabMetaContentData } from '../ContentActionBar';
@@ -7,6 +6,7 @@ import LearningScreenTabs from './LearningScreenTabs';
 import LearningScreenChapterToggleWrapper from './LearningScreenChapterToggleWrapper';
 import useLearningScreen from './useLearningScreen';
 import useData from '../useData';
+import TranscriptItem from '@/components/custom/TranscriptItem';
 
 const LearningScreenContentContainer = () => {
   const { updateContentMetaData, getNextTranscript, selectedContentState } =
