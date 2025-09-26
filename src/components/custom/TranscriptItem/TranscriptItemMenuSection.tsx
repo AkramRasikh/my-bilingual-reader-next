@@ -3,8 +3,12 @@ import useTranscriptItem from './useTranscriptItem';
 import { MenuIcon } from 'lucide-react';
 
 const TranscriptItemMenuSection = () => {
-  const { showMenuState, setShowMenuState, contentItem, handleReviewFunc } =
-    useTranscriptItem();
+  const {
+    showMenuState,
+    setShowMenuState,
+    contentItem,
+    handleReviewTranscriptItem,
+  } = useTranscriptItem();
 
   const hasBeenReviewed = contentItem?.reviewData?.due;
 
@@ -15,6 +19,12 @@ const TranscriptItemMenuSection = () => {
       console.error('Failed to copy: ', err);
     }
   };
+
+  const handleReview = () =>
+    handleReviewTranscriptItem({
+      sentenceId: contentItem.id,
+      isRemoveReview: hasBeenReviewed,
+    });
 
   return (
     <div className='flex flex-col gap-0.5'>
@@ -29,48 +39,22 @@ const TranscriptItemMenuSection = () => {
           >
             <MenuIcon />
           </Button>
-          <button
+          <Button
             id='copy'
+            variant='ghost'
             className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
             onClick={handleCopy}
           >
             📋
-          </button>
-          {hasBeenReviewed ? (
-            <button
-              id='review'
-              className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
-              onClick={async () =>
-                await handleReviewFunc({
-                  sentenceId: contentItem.id,
-                  isRemoveReview: true,
-                })
-              }
-            >
-              🗑️
-            </button>
-          ) : (
-            <button
-              id='review'
-              onClick={async () =>
-                await handleReviewFunc({
-                  sentenceId: contentItem.id,
-                  isRemoveReview: false,
-                })
-              }
-              className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
-            >
-              ⏰
-            </button>
-          )}
-          {/* <MenuSection
-                  contentItem={contentItem}
-                  setShowSentenceBreakdownState={setShowSentenceBreakdownState}
-                  showSentenceBreakdownState={showSentenceBreakdownState}
-                  handleBreakdownSentence={handleBreakdownSentence}
-                  handleOpenBreakdownSentence={handleOpenBreakdownSentence}
-                  setBreakdownSentencesArrState={setBreakdownSentencesArrState}
-                /> */}
+          </Button>
+          <Button
+            id='review'
+            variant='ghost'
+            className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+            onClick={handleReview}
+          >
+            {hasBeenReviewed ? '🗑️' : '⏰'}
+          </Button>
         </>
       ) : (
         <Button

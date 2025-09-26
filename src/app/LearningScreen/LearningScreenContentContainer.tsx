@@ -17,6 +17,7 @@ const LearningScreenContentContainer = () => {
     handleSaveWord,
     handleDeleteWordDataProvider,
     wordsState,
+    breakdownSentence,
   } = useData();
 
   const isFullReview = selectedContentState?.isFullReview;
@@ -90,6 +91,7 @@ const LearningScreenContentContainer = () => {
                 isVideoPlaying={isVideoPlaying}
                 handlePause={handlePause}
                 handleFromHere={handleFromHere}
+                breakdownSentence={breakdownSentence}
               >
                 <TranscriptItem />
               </TranscriptItemProvider>

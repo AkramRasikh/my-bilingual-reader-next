@@ -24,6 +24,7 @@ export const TranscriptItemProvider = ({
   isVideoPlaying,
   handlePause,
   handleFromHere,
+  breakdownSentence,
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -154,6 +155,17 @@ export const TranscriptItemProvider = ({
     setShowThisSentenceBreakdownPreviewState(true);
   };
 
+  const handleReviewTranscriptItem = async (arg) => {
+    try {
+      setIsLoadingState(true);
+      await handleReviewFunc(arg);
+    } catch (error) {
+      console.log('## handleReviewTranscriptItem error', error);
+    } finally {
+      setIsLoadingState(false);
+    }
+  };
+
   const isSentenceLooping = loopTranscriptState?.some(
     (i) => i?.id === contentItem.id,
   );
@@ -196,6 +208,7 @@ export const TranscriptItemProvider = ({
         isVideoPlaying,
         handlePause,
         handleFromHere,
+        handleReviewTranscriptItem,
       }}
     >
       {children}
