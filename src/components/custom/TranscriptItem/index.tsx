@@ -7,7 +7,7 @@ import FormattedSentence from '@/app/FormattedSentence';
 import { getTimeDiffSRS } from '@/app/getTimeDiffSRS';
 import ReviewSRSToggles from '@/app/ReviewSRSToggles';
 import useTranscriptItem from './useTranscriptItem';
-import TranscriptItemWrapper from './TransciptItemWrapper';
+import TranscriptItemWrapper from './TranscriptItemWrapper';
 import TranscriptItemTimeOverlappingIndicator from './TranscriptItemTimeOverlappingIndicator';
 import TranscriptItemMenuSection from './TranscriptItemMenuSection';
 
