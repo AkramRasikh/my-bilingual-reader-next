@@ -1,14 +1,13 @@
 import clsx from 'clsx';
 import HighlightedTextSection from '@/app/HighlightedTextSection';
 import { NewSentenceBreakdown } from '@/app/SentenceBreakdown';
-import LoadingSpinner from '@/app/LoadingSpinner';
-import { Repeat2 } from 'lucide-react';
 import FormattedSentence from '@/app/FormattedSentence';
 import useTranscriptItem from './useTranscriptItem';
 import TranscriptItemWrapper from './TranscriptItemWrapper';
 import TranscriptItemTimeOverlappingIndicator from './TranscriptItemTimeOverlappingIndicator';
 import TranscriptItemMenuSection from './TranscriptItemMenuSection';
 import TranscriptItemReviewSection from './TranscriptItemReviewSection';
+import TranscriptItemActionBar from './TranscriptItemActionBar';
 
 const TranscriptItem = () => {
   const {
@@ -24,23 +23,14 @@ const TranscriptItem = () => {
     contentItem,
     handleMouseEnter,
     handleMouseLeave,
-    closeBreakdown,
-    isSentenceLooping,
     masterPlay,
-    isGenericItemLoadingState,
     handleSaveFunc,
     onlyShowEngState,
-    setBreakdownSentencesArrState,
-    setLoopTranscriptState,
-    isVideoPlaying,
-    handlePause,
-    handleFromHere,
   } = useTranscriptItem();
 
   const baseLang = contentItem.baseLang;
   const targetLangformatted = contentItem.targetLangformatted;
 
-  const thisTime = contentItem.time;
   const thisSentenceIsPlaying = contentItem.id === masterPlay;
 
   const thisSentencesSavedWords = contentItem.targetLangformatted.filter(
@@ -49,10 +39,6 @@ const TranscriptItem = () => {
 
   const hasSentenceBreakdown = contentItem?.sentenceStructure;
 
-  const isGenericallyDoingAsyncAction = isGenericItemLoadingState.includes(
-    contentItem.id,
-  );
-
   return (
     <TranscriptItemWrapper>
       {thisSnippetOverlapState && (
@@ -60,82 +46,9 @@ const TranscriptItem = () => {
           thisSnippetOverlapState={thisSnippetOverlapState}
         />
       )}
-      <div
-        style={{
-          display: 'flex',
-          gap: 5,
-        }}
-      >
-        <div className='flex flex-col gap-1 h-fit'>
-          <button
-            style={{
-              padding: 5,
-              borderRadius: 5,
-              margin: 'auto 0',
-              marginTop: 0,
-            }}
-            className={clsx(
-              'bg-gray-300',
-              thisSentenceIsPlaying && isVideoPlaying && 'bg-yellow-200',
-            )}
-            onClick={
-              thisSentenceIsPlaying && isVideoPlaying
-                ? handlePause
-                : () => handleFromHere(thisTime)
-            }
-          >
-            <span
-              style={{
-                height: 16,
-              }}
-            >
-              {thisSentenceIsPlaying && isVideoPlaying ? '⏸️' : '▶️'}
-            </span>
-          </button>
-
-          {hasSentenceBreakdown && (
-            <button
-              id='show-breakdown'
-              onClick={() => {
-                if (showSentenceBreakdownState) {
-                  closeBreakdown();
-                } else {
-                  setBreakdownSentencesArrState((prev) => [
-                    ...prev,
-                    contentItem.id,
-                  ]);
-                }
-              }}
-            >
-              <span className='m-auto'>
-                {showSentenceBreakdownState ? '❌' : '🧱'}
-              </span>
-            </button>
-          )}
-          {isSentenceLooping && (
-            <button
-              id='stop-loop'
-              onClick={() => setLoopTranscriptState(null)}
-              className='animate-spin'
-            >
-              <Repeat2 />
-            </button>
-          )}
-
-          {(isGenericallyDoingAsyncAction || isLoadingState) && (
-            <div className='m-auto'>
-              <LoadingSpinner />
-            </div>
-          )}
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            width: '100%',
-          }}
-        >
+      <div className='flex gap-1'>
+        <TranscriptItemActionBar />
+        <div className='flex w-full justify-between'>
           <div className={clsx(thisSentenceIsPlaying && 'bg-yellow-200 h-fit')}>
             {(showSentenceBreakdownState && hasSentenceBreakdown) ||
             showThisSentenceBreakdownPreviewState ? (
