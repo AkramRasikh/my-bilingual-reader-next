@@ -59,14 +59,6 @@ const TranscriptItem = () => {
     contentItem.id,
   );
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(contentItem.targetLang);
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
-  };
-
   return (
     <TranscriptItemWrapper>
       {thisSnippetOverlapState && (
