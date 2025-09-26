@@ -2,21 +2,20 @@ import clsx from 'clsx';
 import HighlightedTextSection from '@/app/HighlightedTextSection';
 import { NewSentenceBreakdown } from '@/app/SentenceBreakdown';
 import LoadingSpinner from '@/app/LoadingSpinner';
-import { MenuIcon, Repeat2 } from 'lucide-react';
+import { Repeat2 } from 'lucide-react';
 import FormattedSentence from '@/app/FormattedSentence';
-import { Button } from '@/components/ui/button';
 import { getTimeDiffSRS } from '@/app/getTimeDiffSRS';
 import ReviewSRSToggles from '@/app/ReviewSRSToggles';
 import useTranscriptItem from './useTranscriptItem';
 import TranscriptItemWrapper from './TransciptItemWrapper';
+import TranscriptItemTimeOverlappingIndicator from './TranscriptItemTimeOverlappingIndicator';
+import TranscriptItemMenuSection from './TranscriptItemMenuSection';
 
 const TranscriptItem = () => {
   const {
     highlightedTextState,
     setHighlightedTextState,
     showSentenceBreakdownState,
-    showMenuState,
-    setShowMenuState,
     thisSnippetOverlapState,
     isLoadingState,
     showThisSentenceBreakdownPreviewState,
@@ -71,16 +70,9 @@ const TranscriptItem = () => {
   return (
     <TranscriptItemWrapper>
       {thisSnippetOverlapState && (
-        <div className='relative h-1'>
-          <div
-            className='absolute bg-red-500 opacity-50 rounded'
-            style={{
-              width: `${thisSnippetOverlapState.percentageOverlap}%`,
-              left: `${thisSnippetOverlapState.startPoint}%`,
-              height: '100%',
-            }}
-          />
-        </div>
+        <TranscriptItemTimeOverlappingIndicator
+          thisSnippetOverlapState={thisSnippetOverlapState}
+        />
       )}
       <div
         style={{
@@ -185,73 +177,7 @@ const TranscriptItem = () => {
             )}
           </div>
 
-          <div className='flex flex-col gap-0.5'>
-            {showMenuState ? (
-              <>
-                <Button
-                  id='show-menu'
-                  variant='secondary'
-                  size='icon'
-                  className='bgmt-0 rounded transparent'
-                  onClick={() => setShowMenuState(!showMenuState)}
-                >
-                  <MenuIcon />
-                </Button>
-                <button
-                  id='copy'
-                  className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
-                  onClick={handleCopy}
-                >
-                  📋
-                </button>
-                {hasBeenReviewed ? (
-                  <button
-                    id='review'
-                    className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
-                    onClick={async () =>
-                      await handleReviewFunc({
-                        sentenceId: contentItem.id,
-                        isRemoveReview: true,
-                      })
-                    }
-                  >
-                    🗑️
-                  </button>
-                ) : (
-                  <button
-                    id='review'
-                    onClick={async () =>
-                      await handleReviewFunc({
-                        sentenceId: contentItem.id,
-                        isRemoveReview: false,
-                      })
-                    }
-                    className='border border-amber-200 rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
-                  >
-                    ⏰
-                  </button>
-                )}
-                {/* <MenuSection
-                  contentItem={contentItem}
-                  setShowSentenceBreakdownState={setShowSentenceBreakdownState}
-                  showSentenceBreakdownState={showSentenceBreakdownState}
-                  handleBreakdownSentence={handleBreakdownSentence}
-                  handleOpenBreakdownSentence={handleOpenBreakdownSentence}
-                  setBreakdownSentencesArrState={setBreakdownSentencesArrState}
-                /> */}
-              </>
-            ) : (
-              <Button
-                id='show-menu'
-                className='mt-0 rounded'
-                variant='secondary'
-                size='icon'
-                onClick={() => setShowMenuState(!showMenuState)}
-              >
-                <MenuIcon />
-              </Button>
-            )}
-          </div>
+          <TranscriptItemMenuSection />
         </div>
       </div>
       {isInReviewMode && isDueNow ? (
