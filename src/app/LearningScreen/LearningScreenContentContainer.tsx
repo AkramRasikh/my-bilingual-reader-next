@@ -53,6 +53,7 @@ const LearningScreenContentContainer = () => {
     handlePause,
     handleFromHere,
     handleBreakdownSentence,
+    setBreakdownSentencesArrState,
   } = useLearningScreen();
 
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
@@ -93,6 +94,7 @@ const LearningScreenContentContainer = () => {
                 handlePause={handlePause}
                 handleFromHere={handleFromHere}
                 handleBreakdownSentence={handleBreakdownSentence}
+                setBreakdownSentencesArrState={setBreakdownSentencesArrState}
               >
                 <TranscriptItem />
               </TranscriptItemProvider>

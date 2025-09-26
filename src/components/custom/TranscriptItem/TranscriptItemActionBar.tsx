@@ -34,6 +34,14 @@ const TranscriptItemActionBar = () => {
       ? handlePause()
       : handleFromHere(thisTime);
 
+  const handleBreakdownClick = () => {
+    if (showSentenceBreakdownState) {
+      closeBreakdown();
+    } else {
+      setBreakdownSentencesArrState((prev) => [...prev, contentItem.id]);
+    }
+  };
+
   return (
     <div className='flex flex-col gap-1 h-fit'>
       <Button
@@ -52,19 +60,7 @@ const TranscriptItemActionBar = () => {
       </Button>
 
       {hasSentenceBreakdown && (
-        <button
-          id='show-breakdown'
-          onClick={() => {
-            if (showSentenceBreakdownState) {
-              closeBreakdown();
-            } else {
-              setBreakdownSentencesArrState((prev) => [
-                ...prev,
-                contentItem.id,
-              ]);
-            }
-          }}
-        >
+        <button id='show-breakdown' onClick={handleBreakdownClick}>
           <span className='m-auto'>
             {showSentenceBreakdownState ? '❌' : '🧱'}
           </span>
