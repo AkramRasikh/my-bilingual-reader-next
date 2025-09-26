@@ -7,10 +7,17 @@ import LearningScreenChapterToggleWrapper from './LearningScreenChapterToggleWra
 import useLearningScreen from './useLearningScreen';
 import useData from '../useData';
 import TranscriptItem from '@/components/custom/TranscriptItem';
+import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 
 const LearningScreenContentContainer = () => {
-  const { updateContentMetaData, getNextTranscript, selectedContentState } =
-    useData();
+  const {
+    updateContentMetaData,
+    getNextTranscript,
+    selectedContentState,
+    handleSaveWord,
+    handleDeleteWordDataProvider,
+    wordsState,
+  } = useData();
 
   const isFullReview = selectedContentState?.isFullReview;
 
@@ -26,7 +33,26 @@ const LearningScreenContentContainer = () => {
 
   const topicName = !isFullReview && selectedContentState?.title;
 
-  const { formattedTranscriptState, setSecondsState } = useLearningScreen();
+  const {
+    formattedTranscriptState,
+    setSecondsState,
+    threeSecondLoopState,
+    overlappingSnippetDataState,
+    setSentenceHighlightingState,
+    sentenceHighlightingState,
+    isPressDownShiftState,
+    breakdownSentencesArrState,
+    masterPlay,
+    isGenericItemLoadingState,
+    isInReviewMode,
+    onlyShowEngState,
+    setLoopTranscriptState,
+    handleReviewFunc,
+    isVideoPlaying,
+    handlePause,
+    handleFromHere,
+  } = useLearningScreen();
+
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
   return (
     <LearningScreenChapterToggleWrapper
@@ -43,7 +69,30 @@ const LearningScreenContentContainer = () => {
         >
           <ul className='flex flex-col gap-1'>
             {formattedTranscriptState.map((contentItem, index) => (
-              <TranscriptItem key={index} contentItem={contentItem} />
+              <TranscriptItemProvider
+                key={index}
+                threeSecondLoopState={threeSecondLoopState}
+                overlappingSnippetDataState={overlappingSnippetDataState}
+                setSentenceHighlightingState={setSentenceHighlightingState}
+                sentenceHighlightingState={sentenceHighlightingState}
+                contentItem={contentItem}
+                isPressDownShiftState={isPressDownShiftState}
+                breakdownSentencesArrState={breakdownSentencesArrState}
+                masterPlay={masterPlay}
+                isGenericItemLoadingState={isGenericItemLoadingState}
+                handleSaveWord={handleSaveWord}
+                handleDeleteWordDataProvider={handleDeleteWordDataProvider}
+                wordsState={wordsState}
+                isInReviewMode={isInReviewMode}
+                onlyShowEngState={onlyShowEngState}
+                setLoopTranscriptState={setLoopTranscriptState}
+                handleReviewFunc={handleReviewFunc}
+                isVideoPlaying={isVideoPlaying}
+                handlePause={handlePause}
+                handleFromHere={handleFromHere}
+              >
+                <TranscriptItem />
+              </TranscriptItemProvider>
             ))}
           </ul>
         </TabsContent>
