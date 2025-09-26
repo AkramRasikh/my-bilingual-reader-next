@@ -1,7 +1,8 @@
 import clsx from 'clsx';
 import LoadingSpinner from '@/app/LoadingSpinner';
-import { Repeat2 } from 'lucide-react';
+import { LucidePauseCircle, LucidePlayCircle, Repeat2 } from 'lucide-react';
 import useTranscriptItem from './useTranscriptItem';
+import { Button } from '@/components/ui/button';
 
 const TranscriptItemActionBar = () => {
   const {
@@ -28,33 +29,27 @@ const TranscriptItemActionBar = () => {
     contentItem.id,
   );
 
+  const handlePlayActionBar = () =>
+    thisSentenceIsPlaying && isVideoPlaying
+      ? handlePause()
+      : handleFromHere(thisTime);
+
   return (
     <div className='flex flex-col gap-1 h-fit'>
-      <button
-        style={{
-          padding: 5,
-          borderRadius: 5,
-          margin: 'auto 0',
-          marginTop: 0,
-        }}
+      <Button
         className={clsx(
-          'bg-gray-300',
+          'bg-gray-300 h-7 w-7',
           thisSentenceIsPlaying && isVideoPlaying && 'bg-yellow-200',
         )}
-        onClick={
-          thisSentenceIsPlaying && isVideoPlaying
-            ? handlePause
-            : () => handleFromHere(thisTime)
-        }
+        variant='ghost'
+        onClick={handlePlayActionBar}
       >
-        <span
-          style={{
-            height: 16,
-          }}
-        >
-          {thisSentenceIsPlaying && isVideoPlaying ? '⏸️' : '▶️'}
-        </span>
-      </button>
+        {thisSentenceIsPlaying && isVideoPlaying ? (
+          <LucidePauseCircle />
+        ) : (
+          <LucidePlayCircle />
+        )}
+      </Button>
 
       {hasSentenceBreakdown && (
         <button
