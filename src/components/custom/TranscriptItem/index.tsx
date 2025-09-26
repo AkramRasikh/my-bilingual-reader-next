@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { getTimeDiffSRS } from '@/app/getTimeDiffSRS';
 import ReviewSRSToggles from '@/app/ReviewSRSToggles';
 import useTranscriptItem from './useTranscriptItem';
+import TranscriptItemWrapper from './TransciptItemWrapper';
 
 const TranscriptItem = () => {
   const {
@@ -19,7 +20,6 @@ const TranscriptItem = () => {
     thisSnippetOverlapState,
     isLoadingState,
     showThisSentenceBreakdownPreviewState,
-    setShowThisSentenceBreakdownPreviewState,
     wordPopUpState,
     setWordPopUpState,
     ulRef,
@@ -31,7 +31,6 @@ const TranscriptItem = () => {
     masterPlay,
     isGenericItemLoadingState,
     handleSaveFunc,
-    handleOnMouseEnterSentence,
     isInReviewMode,
     onlyShowEngState,
     setBreakdownSentencesArrState,
@@ -70,26 +69,7 @@ const TranscriptItem = () => {
   };
 
   return (
-    <div
-      className={clsx(
-        'rounded-lg px-2 py-1 shadow h-fit border-2 ',
-        isDueNow
-          ? 'border-red-500'
-          : hasBeenReviewed
-          ? 'border-amber-500'
-          : 'border-blue-200',
-        !(isDueNow && isInReviewMode) ? 'opacity-25' : 'opacity-100',
-      )}
-      style={{
-        gap: 5,
-        animation: !isInReviewMode ? 'fadeIn 0.5s ease-out forwards' : '',
-      }}
-      onMouseEnter={handleOnMouseEnterSentence}
-      onMouseLeave={() => {
-        setWordPopUpState([]);
-        setShowThisSentenceBreakdownPreviewState(false);
-      }}
-    >
+    <TranscriptItemWrapper>
       {thisSnippetOverlapState && (
         <div className='relative h-1'>
           <div
@@ -296,18 +276,7 @@ const TranscriptItem = () => {
       {contentItem?.title && (
         <p className='flex justify-end opacity-50'>{contentItem.title}</p>
       )}
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-      `}</style>
-    </div>
+    </TranscriptItemWrapper>
   );
 };
 
