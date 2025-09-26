@@ -153,13 +153,25 @@ const KeyListener = () => {
         case 'a':
           handleJumpToSentenceViaKeys(-1);
           break;
+        case ';':
+          handleJumpToSentenceViaKeys(-1);
+          break;
         case 's':
+          handleJumpToSentenceViaKeys(0);
+          break;
+        case "'":
           handleJumpToSentenceViaKeys(0);
           break;
         case 'd':
           handleJumpToSentenceViaKeys(1);
           break;
+        case '\\':
+          handleJumpToSentenceViaKeys(1);
+          break;
         case 'q':
+          handleRewind(qRewindTime);
+          break;
+        case 'l':
           handleRewind(qRewindTime);
           break;
         default:

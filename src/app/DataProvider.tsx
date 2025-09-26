@@ -73,8 +73,7 @@ export const DataProvider = ({
     if (
       sentencesState.length === 0 &&
       targetLanguageLoadedSentences.length > 0 &&
-      pureWordsState.length > 0 &&
-      !sentencesState // not sure why this is needed
+      pureWordsState.length > 0
     ) {
       const dateNow = new Date();
       const dueCardsNow = targetLanguageLoadedSentences.filter((sentence) =>
