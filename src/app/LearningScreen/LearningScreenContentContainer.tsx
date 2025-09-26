@@ -6,17 +6,26 @@ import { TabMetaContentData } from '../ContentActionBar';
 import LearningScreenTabs from './LearningScreenTabs';
 import LearningScreenChapterToggleWrapper from './LearningScreenChapterToggleWrapper';
 import useLearningScreen from './useLearningScreen';
+import useData from '../useData';
 
-const LearningScreenContentContainer = ({
-  hasPreviousVideo,
-  hasFollowingVideo,
-  getNextTranscript,
-  hasContentToReview,
-  reviewHistory,
-  updateContentMetaData,
-  topicName,
-  contentIndex,
-}) => {
+const LearningScreenContentContainer = () => {
+  const { updateContentMetaData, getNextTranscript, selectedContentState } =
+    useData();
+
+  const isFullReview = selectedContentState?.isFullReview;
+
+  const content = selectedContentState.content;
+  const contentIndex = selectedContentState?.contentIndex;
+
+  const reviewHistory = selectedContentState?.reviewHistory;
+  const hasContentToReview = content?.some(
+    (sentenceWidget) => sentenceWidget?.reviewData,
+  );
+  const hasPreviousVideo = !selectedContentState.isFirst;
+  const hasFollowingVideo = selectedContentState.hasFollowingVideo;
+
+  const topicName = !isFullReview && selectedContentState?.title;
+
   const { formattedTranscriptState, setSecondsState } = useLearningScreen();
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
   return (
