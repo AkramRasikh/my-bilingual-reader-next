@@ -13,6 +13,7 @@ import useManageLoopInit from './hooks/useManageLoopInit';
 import { useHighlightWordToWordBank } from '../useHighlightWordToWordBank';
 import useMapTranscriptToSeconds from './hooks/useMapTranscriptToSeconds';
 import useTrackMasterTranscript from './hooks/useTrackMasterTranscript';
+import { isDueCheck } from '../DataProvider';
 
 export const LearningScreenContext = createContext(null);
 
@@ -38,6 +39,10 @@ export const LearningScreenProvider = ({
     useState(true);
   const [sentenceHighlightingState, setSentenceHighlightingState] =
     useState('');
+  const [latestDueIdState, setLatestDueIdState] = useState({
+    id: '',
+    triggerScroll: false,
+  });
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
   );
@@ -80,13 +85,21 @@ export const LearningScreenProvider = ({
   });
 
   const getFormattedData = () => {
+    const now = new Date();
+    let latestIsDueEl = '';
+
     const formattedTranscript = content.map((item) => {
+      if (item?.reviewData && isDueCheck(item, now)) {
+        latestIsDueEl = item.id;
+      }
+
       return {
         ...item,
         targetLangformatted: underlineWordsInSentence(item.targetLang),
       };
     });
 
+    setLatestDueIdState({ id: latestIsDueEl, triggerScroll: false });
     setFormattedTranscriptState(formattedTranscript);
   };
 
@@ -487,6 +500,8 @@ export const LearningScreenProvider = ({
         handleReviewFunc,
         handleBreakdownSentence,
         isBreakingDownSentenceArrState,
+        latestDueIdState,
+        setLatestDueIdState,
       }}
     >
       {children}

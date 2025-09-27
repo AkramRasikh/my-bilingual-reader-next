@@ -26,6 +26,7 @@ export const TranscriptItemProvider = ({
   handleFromHere,
   handleBreakdownSentence,
   isBreakingDownSentenceArrState,
+  latestDueIdState,
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -54,6 +55,19 @@ export const TranscriptItemProvider = ({
   const breakdownMasterState =
     isBreakdownSentenceLoadingState ||
     isBreakingDownSentenceArrState.includes(contentItem.id);
+
+  useEffect(() => {
+    if (
+      ulRef.current &&
+      latestDueIdState?.triggerScroll &&
+      latestDueIdState?.id === contentItem.id
+    ) {
+      ulRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [ulRef.current, latestDueIdState]);
 
   useEffect(() => {
     if (!threeSecondLoopState && thisSnippetOverlapState) {

@@ -2,6 +2,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import CountdownTimer from '../CountDownTimer';
 import useLearningScreen from './useLearningScreen';
+import { Button } from '@/components/ui/button';
 
 const LearningScreenActionBar = () => {
   const {
@@ -12,7 +13,11 @@ const LearningScreenActionBar = () => {
     showOnVideoTranscriptState,
     setShowOnVideoTranscriptState,
     ref,
+    setLatestDueIdState,
   } = useLearningScreen();
+
+  const scrollToLastReviewed = () =>
+    setLatestDueIdState((prev) => ({ ...prev, triggerScroll: true }));
 
   return (
     <div className='flex flex-col items-start gap-2 my-2 p-2'>
@@ -39,6 +44,9 @@ const LearningScreenActionBar = () => {
           />
         </div>
         <CountdownTimer audioTimeRef={ref} />
+        <Button variant={'link'} onClick={scrollToLastReviewed}>
+          Last reviewed
+        </Button>
       </div>
     </div>
   );

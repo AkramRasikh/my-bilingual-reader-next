@@ -55,6 +55,7 @@ const LearningScreenContentContainer = () => {
     handleFromHere,
     handleBreakdownSentence,
     setBreakdownSentencesArrState,
+    latestDueIdState,
   } = useLearningScreen();
 
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
@@ -98,6 +99,7 @@ const LearningScreenContentContainer = () => {
                 handleBreakdownSentence={handleBreakdownSentence}
                 setBreakdownSentencesArrState={setBreakdownSentencesArrState}
                 isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+                latestDueIdState={latestDueIdState}
               >
                 <TranscriptItem />
               </TranscriptItemProvider>
