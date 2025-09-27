@@ -25,6 +25,7 @@ export const TranscriptItemProvider = ({
   handlePause,
   handleFromHere,
   handleBreakdownSentence,
+  isBreakingDownSentenceArrState,
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -35,6 +36,8 @@ export const TranscriptItemProvider = ({
   const [thisSnippetOverlapState, setThisSnippetOverlapState] = useState();
 
   const [isLoadingState, setIsLoadingState] = useState(false);
+  const [isBreakdownSentenceLoadingState, setIsBreakdownSentenceLoadingState] =
+    useState(false);
   const [
     showThisSentenceBreakdownPreviewState,
     setShowThisSentenceBreakdownPreviewState,
@@ -47,6 +50,10 @@ export const TranscriptItemProvider = ({
   );
 
   const hasSentenceBreakdown = contentItem?.sentenceStructure;
+
+  const breakdownMasterState =
+    isBreakdownSentenceLoadingState ||
+    isBreakingDownSentenceArrState.includes(contentItem.id);
 
   useEffect(() => {
     if (!threeSecondLoopState && thisSnippetOverlapState) {
@@ -138,6 +145,19 @@ export const TranscriptItemProvider = ({
     }
   };
 
+  const handleBreakdownSentenceTranscriptItem = async () => {
+    try {
+      setIsBreakdownSentenceLoadingState(true);
+      await handleBreakdownSentence({
+        sentenceId: contentItem.id,
+        targetLang: contentItem.targetLang,
+      });
+    } catch (error) {
+    } finally {
+      setIsBreakdownSentenceLoadingState(false);
+    }
+  };
+
   const handleDeleteFunc = async (wordData) => {
     try {
       const resBool = await handleDeleteWordDataProvider(wordData);
@@ -210,6 +230,9 @@ export const TranscriptItemProvider = ({
         handleFromHere,
         handleReviewTranscriptItem,
         handleBreakdownSentence,
+        isBreakdownSentenceLoadingState: breakdownMasterState,
+        setIsBreakdownSentenceLoadingState,
+        handleBreakdownSentenceTranscriptItem,
       }}
     >
       {children}

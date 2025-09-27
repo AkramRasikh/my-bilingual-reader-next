@@ -44,6 +44,7 @@ const LearningScreenContentContainer = () => {
     breakdownSentencesArrState,
     masterPlay,
     isGenericItemLoadingState,
+    isBreakingDownSentenceArrState,
     isInReviewMode,
     onlyShowEngState,
     setLoopTranscriptState,
@@ -96,6 +97,7 @@ const LearningScreenContentContainer = () => {
                 handleFromHere={handleFromHere}
                 handleBreakdownSentence={handleBreakdownSentence}
                 setBreakdownSentencesArrState={setBreakdownSentencesArrState}
+                isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
               >
                 <TranscriptItem />
               </TranscriptItemProvider>

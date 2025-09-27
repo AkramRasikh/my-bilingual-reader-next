@@ -41,6 +41,8 @@ export const LearningScreenProvider = ({
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
   );
+  const [isBreakingDownSentenceArrState, setIsBreakingDownSentenceArrState] =
+    useState([]);
   const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
     [],
   );
@@ -336,7 +338,7 @@ export const LearningScreenProvider = ({
     const contentIndex = selectedContentState?.contentIndex;
 
     try {
-      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
+      setIsBreakingDownSentenceArrState((prev) => [...prev, currentMasterPlay]);
       await breakdownSentence({
         topicName: selectedContentState.title,
         sentenceId: currentMasterPlay,
@@ -347,7 +349,7 @@ export const LearningScreenProvider = ({
     } catch (error) {
       console.log('## handleBreakdownMasterSentence error', error);
     } finally {
-      setIsGenericItemLoadingState((prev) =>
+      setIsBreakingDownSentenceArrState((prev) =>
         prev.filter((item) => item !== currentMasterPlay),
       );
     }
@@ -484,6 +486,7 @@ export const LearningScreenProvider = ({
         handleBulkReviews,
         handleReviewFunc,
         handleBreakdownSentence,
+        isBreakingDownSentenceArrState,
       }}
     >
       {children}

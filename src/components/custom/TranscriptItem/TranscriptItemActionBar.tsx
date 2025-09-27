@@ -1,6 +1,11 @@
 import clsx from 'clsx';
 import LoadingSpinner from '@/app/LoadingSpinner';
-import { LucidePauseCircle, LucidePlayCircle, Repeat2 } from 'lucide-react';
+import {
+  LucideHammer,
+  LucidePauseCircle,
+  LucidePlayCircle,
+  Repeat2,
+} from 'lucide-react';
 import useTranscriptItem from './useTranscriptItem';
 import { Button } from '@/components/ui/button';
 
@@ -18,6 +23,7 @@ const TranscriptItemActionBar = () => {
     isVideoPlaying,
     handlePause,
     handleFromHere,
+    isBreakdownSentenceLoadingState,
   } = useTranscriptItem();
 
   const thisTime = contentItem.time;
@@ -59,13 +65,22 @@ const TranscriptItemActionBar = () => {
         )}
       </Button>
 
-      {hasSentenceBreakdown && (
+      {hasSentenceBreakdown ? (
         <button id='show-breakdown' onClick={handleBreakdownClick}>
           <span className='m-auto'>
             {showSentenceBreakdownState ? '❌' : '🧱'}
           </span>
         </button>
-      )}
+      ) : isBreakdownSentenceLoadingState ? (
+        <div className='animate-pulse '>
+          <LucideHammer
+            color='brown'
+            className='animate-bounce mx-auto fill-amber-700 rounded-4xl'
+            size={16}
+          />
+        </div>
+      ) : null}
+
       {isSentenceLooping && (
         <button
           id='stop-loop'
