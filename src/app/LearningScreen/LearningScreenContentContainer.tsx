@@ -17,7 +17,6 @@ const LearningScreenContentContainer = () => {
     handleSaveWord,
     handleDeleteWordDataProvider,
     wordsState,
-    breakdownSentence,
   } = useData();
 
   const isFullReview = selectedContentState?.isFullReview;
@@ -48,6 +47,7 @@ const LearningScreenContentContainer = () => {
     isInReviewMode,
     onlyShowEngState,
     setLoopTranscriptState,
+    loopTranscriptState,
     handleReviewFunc,
     isVideoPlaying,
     handlePause,
@@ -89,6 +89,7 @@ const LearningScreenContentContainer = () => {
                 isInReviewMode={isInReviewMode}
                 onlyShowEngState={onlyShowEngState}
                 setLoopTranscriptState={setLoopTranscriptState}
+                loopTranscriptState={loopTranscriptState}
                 handleReviewFunc={handleReviewFunc}
                 isVideoPlaying={isVideoPlaying}
                 handlePause={handlePause}

@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useReducer, useState } from 'react';
 import saveWordAPI from './save-word';
 import {
   getEmptyCard,
@@ -13,11 +13,11 @@ import {
 import { deleteWordAPI } from './delete-word';
 import { japanese } from './languages';
 import { updateSentenceDataAPI } from './update-sentence-api';
-import { sentenceReviewBulkAPI } from './bulk-sentence-review';
 import { breakdownSentenceAPI } from './breakdown-sentence';
 import { updateContentMetaDataAPI } from './update-content-meta-data';
 import { updateAdhocSentenceAPI } from './update-adhoc-sentence';
 import { getAudioURL } from './get-firebase-media-url';
+import { contentReducer } from './content-reducer';
 
 export const DataContext = createContext(null);
 
@@ -37,7 +37,6 @@ export const DataProvider = ({
   const [wordsState, setWordsState] = useState(targetLanguageLoadedWords);
   const [sentencesState, setSentencesState] = useState([]);
   const [story, setStory] = useState();
-  const [contentState, setContentState] = useState(sortedContent);
   const [pureWordsState, setPureWordsState] = useState([]);
   const [selectedContentState, setSelectedContentState] = useState(null);
   const [generalTopicDisplayNameState, setGeneralTopicDisplayNameState] =
@@ -51,6 +50,11 @@ export const DataProvider = ({
   ] = useState('');
   const [toastMessageState, setToastMessageState] = useState('');
   const [isSentenceReviewState, setIsSentenceReviewState] = useState(false);
+
+  const [contentState, dispatchContent] = useReducer(
+    contentReducer,
+    sortedContent,
+  );
 
   const wordsFromSentences = [];
 
@@ -241,22 +245,6 @@ export const DataProvider = ({
     return getSelectedTopicsWordsFunc(selectedContentState.content);
   };
 
-  const removeReviewFromContentStateFunc = ({ sentenceId, contentIndex }) => {
-    setContentState((prev) => {
-      const newContent = [...prev]; // clone top-level array
-
-      const topic = { ...newContent[contentIndex] }; // clone topic object
-      const updatedContent = topic.content.map((s) =>
-        s.id === sentenceId ? (({ reviewData, ...rest }) => rest)(s) : s,
-      );
-
-      topic.content = updatedContent;
-      newContent[contentIndex] = topic;
-
-      return newContent;
-    });
-  };
-
   const checkTopicNeedsReviewBool = (genTop) => {
     const todayDateObj = new Date();
 
@@ -400,23 +388,6 @@ export const DataProvider = ({
     return allContentDueWords;
   };
 
-  const updateSentenceDataFromContent = ({
-    sentenceId,
-    fieldToUpdate,
-    contentIndex,
-  }) => {
-    setContentState((prev) => {
-      const newContent = [...prev]; // clone top-level array
-      const thisTopicData = { ...newContent[contentIndex] }; // clone topic
-      const newContentList = thisTopicData.content.map((s) =>
-        s.id === sentenceId ? { ...s, ...fieldToUpdate } : s,
-      );
-      thisTopicData.content = newContentList;
-      newContent[contentIndex] = thisTopicData;
-      return newContent;
-    });
-  };
-
   useEffect(() => {
     // figure out conditions here
     if (selectedContentState && !selectedContentState?.isFullReview) {
@@ -487,7 +458,6 @@ export const DataProvider = ({
     isRemoveReview,
   }) => {
     try {
-      // setUpdatingSentenceState(sentenceId);
       const updatedFieldFromDB = await updateSentenceDataAPI({
         topicName,
         sentenceId,
@@ -496,12 +466,14 @@ export const DataProvider = ({
       });
 
       if (isRemoveReview) {
-        removeReviewFromContentStateFunc({ sentenceId, contentIndex });
+        dispatchContent({ type: 'removeReview', contentIndex, sentenceId });
       } else {
-        updateSentenceDataFromContent({
-          sentenceId,
-          fieldToUpdate: updatedFieldFromDB,
+        const { reviewData } = updatedFieldFromDB;
+        dispatchContent({
+          type: 'updateSentence',
           contentIndex,
+          sentenceId,
+          fields: { reviewData },
         });
       }
 
@@ -516,12 +488,9 @@ export const DataProvider = ({
         });
       }
 
-      return updatedFieldFromDB;
+      return updatedFieldFromDB?.reviewData;
     } catch (error) {
       console.log('## updateSentenceData', { error });
-      // updatePromptFunc(`Error updating sentence for ${topicName}`);
-    } finally {
-      // setUpdatingSentenceState('');
     }
   };
 
@@ -588,15 +557,11 @@ export const DataProvider = ({
       });
 
       if (resObj) {
-        const updatedState = [...contentState];
-        const thisTopicData = updatedState[contentIndex];
-        const newTopicState = { ...thisTopicData, ...resObj };
-        updatedState[contentIndex] = {
-          ...newTopicState,
-        };
-        setContentState(updatedState);
-
-        return newTopicState;
+        dispatchContent({
+          type: 'updateMetaData',
+          contentIndex,
+          fieldToUpdate: resObj,
+        });
       }
     } catch (error) {
       console.log('## updateContentMetaData', error);
@@ -609,28 +574,26 @@ export const DataProvider = ({
     contentIndex,
     removeReview,
   }) => {
-    try {
-      const updatedContentRes = await sentenceReviewBulkAPI({
-        title: topicName,
-        fieldToUpdate,
-        language: japanese,
-        removeReview,
-      });
-
-      if (updatedContentRes) {
-        const updatedState = [...contentState];
-        const thisTopicData = updatedState[contentIndex];
-        const newTopicState = { ...thisTopicData, ...updatedContentRes };
-        updatedState[contentIndex] = {
-          ...newTopicState,
-        };
-        setContentState(updatedState);
-
-        return newTopicState;
-      }
-    } catch (error) {
-      console.log('## sentenceReviewBulk error', error);
-    }
+    // try {
+    //   const updatedContentRes = await sentenceReviewBulkAPI({
+    //     title: topicName,
+    //     fieldToUpdate,
+    //     language: japanese,
+    //     removeReview,
+    //   });
+    //   if (updatedContentRes) {
+    //     const updatedState = [...contentState];
+    //     const thisTopicData = updatedState[contentIndex];
+    //     const newTopicState = { ...thisTopicData, ...updatedContentRes };
+    //     updatedState[contentIndex] = {
+    //       ...newTopicState,
+    //     };
+    //     setContentState(updatedState);
+    //     return newTopicState;
+    //   }
+    // } catch (error) {
+    //   console.log('## sentenceReviewBulk error', error);
+    // }
   };
 
   const handleGetComprehensiveReview = () => {
@@ -685,33 +648,22 @@ export const DataProvider = ({
         language,
       });
 
-      const updatedState = [...contentState];
-      const thisTopicData = updatedState[contentIndex];
-
-      const updatedContent = thisTopicData.content.map((sentenceData) => {
-        if (sentenceData.id === sentenceId) {
-          return {
-            ...sentenceData,
-            ...resObj,
-          };
-        }
-        return sentenceData;
+      dispatchContent({
+        type: 'updateSentence',
+        contentIndex,
+        sentenceId,
+        fields: { ...resObj },
       });
-
-      updatedState[contentIndex] = {
-        ...thisTopicData,
-        content: updatedContent,
-      };
-
-      setContentState(updatedState);
-
       if (selectedContentState?.isFullReview) {
         const updatedReviewSpecificState = selectedContentState.content.map(
           (sentenceData) => {
             if (sentenceData.id === sentenceId) {
+              const { sentenceStructure, vocab, meaning } = resObj;
               return {
                 ...sentenceData,
-                ...resObj,
+                sentenceStructure,
+                vocab,
+                meaning,
               };
             }
             return sentenceData;
