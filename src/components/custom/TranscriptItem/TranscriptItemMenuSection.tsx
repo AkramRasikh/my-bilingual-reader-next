@@ -48,7 +48,7 @@ const TranscriptItemMenuSection = () => {
             <Button
               id='copy'
               variant='ghost'
-              className='border rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+              className='border rounded-sm p-0.5 transition-transform duration-150 active:scale-75'
               onClick={handleCopy}
             >
               📋
