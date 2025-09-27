@@ -28,6 +28,7 @@ export const LearningScreenProvider = ({
 }: PropsWithChildren<object>) => {
   const [formattedTranscriptState, setFormattedTranscriptState] = useState();
   const [secondsState, setSecondsState] = useState([]);
+  const [loopSecondsState, setLoopSecondsState] = useState([]);
   const [masterPlayComprehensiveState, setMasterPlayComprehensiveState] =
     useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
@@ -55,7 +56,7 @@ export const LearningScreenProvider = ({
     useState([]);
   const [wordPopUpState, setWordPopUpState] = useState([]);
 
-  const [loopTranscriptState, setLoopTranscriptState] = useState();
+  const [loopTranscriptState, setLoopTranscriptState] = useState([]);
   const [threeSecondLoopState, setThreeSecondLoopState] = useState<
     number | null
   >();
@@ -74,9 +75,11 @@ export const LearningScreenProvider = ({
   const realStartTime = selectedContentState?.realStartTime || 0;
 
   const masterPlay =
-    currentTime &&
-    secondsState?.length > 0 &&
-    secondsState[Math.floor(currentTime)];
+    currentTime && loopSecondsState.length > 0
+      ? loopSecondsState[Math.floor(currentTime)]
+      : secondsState?.length > 0
+      ? secondsState[Math.floor(currentTime)]
+      : '';
 
   const content = selectedContentState?.content;
 
@@ -131,6 +134,8 @@ export const LearningScreenProvider = ({
     realStartTime,
     secondsState,
     setSecondsState,
+    setLoopSecondsState,
+    loopTranscriptState,
   });
 
   useTrackMasterTranscript({
