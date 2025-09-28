@@ -180,6 +180,9 @@ export const LearningScreenProvider = ({
   const handleBulkReviews = async () => {
     const emptyCard = getEmptyCard();
 
+    const sentenceIdData =
+      loopTranscriptState.filter((item) => !item?.reviewData) || [];
+
     const nextScheduledOptions = getNextScheduledOptions({
       card: emptyCard,
       contentType: srsRetentionKeyTypes.sentences,
@@ -191,14 +194,31 @@ export const LearningScreenProvider = ({
     );
 
     const nextDueCard = nextScheduledOptions['2'].card;
-    await sentenceReviewBulk({
-      topicName: selectedContentState.title,
-      fieldToUpdate: {
-        reviewData: nextDueCard,
-      },
-      contentIndex: contentIndex,
-      removeReview: hasContentToReview,
-    });
+
+    if (sentenceIdData.length === 0) {
+      console.log('## no sentenceIds');
+      return;
+    }
+
+    const sentenceIds = sentenceIdData.map((item) => item.id);
+
+    try {
+      setIsGenericItemLoadingState((prev) => [...prev, ...sentenceIds]);
+      await sentenceReviewBulk({
+        topicName: selectedContentState.title,
+        fieldToUpdate: {
+          reviewData: nextDueCard,
+        },
+        contentIndex: contentIndex,
+        removeReview: hasContentToReview,
+        sentenceIds,
+      });
+    } catch (error) {
+    } finally {
+      setIsGenericItemLoadingState((prev) =>
+        prev.filter((item) => !sentenceIds.includes(item)),
+      );
+    }
   };
 
   const handleReviewFunc = async ({ sentenceId, isRemoveReview, nextDue }) => {

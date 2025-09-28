@@ -14,8 +14,11 @@ const LearningScreenActionBar = () => {
     setShowOnVideoTranscriptState,
     ref,
     setLatestDueIdState,
+    loopTranscriptState,
+    handleBulkReviews,
   } = useLearningScreen();
 
+  const isLooping = loopTranscriptState?.length > 0;
   const scrollToLastReviewed = () =>
     setLatestDueIdState((prev) => ({ ...prev, triggerScroll: true }));
 
@@ -47,6 +50,11 @@ const LearningScreenActionBar = () => {
         <Button variant={'link'} onClick={scrollToLastReviewed}>
           Last reviewed
         </Button>
+        {isLooping && (
+          <Button variant={'outline'} onClick={handleBulkReviews}>
+            Add To Review
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -16,6 +16,20 @@ export function contentReducer(state, action) {
             }
           : topic,
       );
+    case 'updateSentences':
+      return state.map((topic, idx) =>
+        idx === action.contentIndex
+          ? {
+              ...topic,
+              content: topic.content.map((s) =>
+                action.sentenceIds.includes(s.id)
+                  ? { ...s, ...action.fields }
+                  : s,
+              ),
+            }
+          : topic,
+      );
+
     case 'removeReview':
       return state.map((topic, idx) =>
         idx === action.contentIndex

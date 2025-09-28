@@ -39,7 +39,7 @@ export const TabMetaContentData = ({
   const handleConfirm = async () => {
     setIsLoading(true);
     try {
-      await handleBulkReviews(action);
+      // await handleBulkReviews(action);
     } finally {
       setIsLoading(false);
       setShowConfirm(false);

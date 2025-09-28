@@ -18,6 +18,7 @@ import { updateContentMetaDataAPI } from './update-content-meta-data';
 import { updateAdhocSentenceAPI } from './update-adhoc-sentence';
 import { getAudioURL } from './get-firebase-media-url';
 import { contentReducer } from './content-reducer';
+import { sentenceReviewBulkAPI } from './bulk-sentence-review';
 
 export const DataContext = createContext(null);
 
@@ -573,27 +574,27 @@ export const DataProvider = ({
     topicName,
     contentIndex,
     removeReview,
+    sentenceIds,
   }) => {
-    // try {
-    //   const updatedContentRes = await sentenceReviewBulkAPI({
-    //     title: topicName,
-    //     fieldToUpdate,
-    //     language: japanese,
-    //     removeReview,
-    //   });
-    //   if (updatedContentRes) {
-    //     const updatedState = [...contentState];
-    //     const thisTopicData = updatedState[contentIndex];
-    //     const newTopicState = { ...thisTopicData, ...updatedContentRes };
-    //     updatedState[contentIndex] = {
-    //       ...newTopicState,
-    //     };
-    //     setContentState(updatedState);
-    //     return newTopicState;
-    //   }
-    // } catch (error) {
-    //   console.log('## sentenceReviewBulk error', error);
-    // }
+    try {
+      const updatedSentenceIds = await sentenceReviewBulkAPI({
+        title: topicName,
+        fieldToUpdate,
+        language: japanese,
+        removeReview,
+        sentenceIds,
+      });
+      if (updatedSentenceIds) {
+        dispatchContent({
+          type: 'updateSentences',
+          contentIndex,
+          sentenceIds: updatedSentenceIds,
+          fields: { ...fieldToUpdate },
+        });
+      }
+    } catch (error) {
+      console.log('## sentenceReviewBulk error', error);
+    }
   };
 
   const handleGetComprehensiveReview = () => {
