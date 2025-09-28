@@ -78,7 +78,7 @@ const LearningScreenContentChapterNavigation = () => {
                     fontSize: 10,
                   }}
                 >
-                  🔤
+                  👀
                 </span>
                 <span
                   className='italic absolute left-1/12 top-2/12'
