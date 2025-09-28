@@ -70,20 +70,30 @@ const LearningScreenContentChapterNavigation = () => {
             )}
             onClick={() => handleSelectedContent(title)}
           >
-            {chapterNum}{' '}
             {sentencesNeedReview > 0 && (
-              <span
-                className='italic absolute left-2/3 top-1/10'
-                style={{
-                  fontSize: 10,
-                }}
-              >
-                ({sentencesNeedReview})
-              </span>
+              <>
+                <span
+                  className='absolute left-1/12 top-8/12'
+                  style={{
+                    fontSize: 10,
+                  }}
+                >
+                  🔤
+                </span>
+                <span
+                  className='italic absolute left-1/12 top-2/12'
+                  style={{
+                    fontSize: 10,
+                  }}
+                >
+                  ({sentencesNeedReview})
+                </span>
+              </>
             )}
+            {chapterNum}
             {wordsIndex > 0 && (
               <span
-                className='italic absolute left-2/3 top-6/10'
+                className='absolute left-2/3'
                 style={{
                   fontSize: 10,
                 }}

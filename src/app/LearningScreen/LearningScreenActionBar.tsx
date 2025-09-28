@@ -52,7 +52,7 @@ const LearningScreenActionBar = () => {
         </Button>
         {isLooping && (
           <Button variant={'outline'} onClick={handleBulkReviews}>
-            Add To Review
+            Loop ➡️ Review (shft + ⤶)
           </Button>
         )}
       </div>

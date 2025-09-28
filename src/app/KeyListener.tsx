@@ -26,6 +26,7 @@ const KeyListener = () => {
     handleBreakdownMasterSentence,
     handleAddMasterToReview,
     handleIsEasyReviewShortCut,
+    handleBulkReviews,
   } = useLearningScreen();
 
   const handleSlowDownAudio = (isSlow) => {
@@ -110,6 +111,7 @@ const KeyListener = () => {
           handleSlowDownAudio(true);
           return;
         }
+
         if (shiftKey && loopTranscriptState && !threeSecondLoopState) {
           if (e.key.toLowerCase() === 'arrowdown') {
             handleUpdateLoopedSentence(true);
@@ -117,6 +119,8 @@ const KeyListener = () => {
             handleUpdateLoopedSentence(false);
           } else if (e.key.toLowerCase() === 'arrowright') {
             handleShiftLoopSentence(true);
+          } else if (e.key.toLowerCase() === 'enter') {
+            handleBulkReviews();
           }
         }
       }
@@ -204,6 +208,7 @@ const KeyListener = () => {
     isInReviewMode,
     handleIsEasyReviewShortCut,
     setContractThreeSecondLoopState,
+    handleBulkReviews,
   ]);
 
   return null;
