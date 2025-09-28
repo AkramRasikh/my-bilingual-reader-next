@@ -28,6 +28,19 @@ const LearningScreenContentChapterNavigation = () => {
 
   const hasUnifiedChapter = contentMetaDataState.length === 1;
 
+  if (hasUnifiedChapter) {
+    const sentencesNeedReview = contentMetaDataState[0]?.sentencesNeedReview;
+
+    return (
+      <div>
+        <p className='text-xs font-medium'>Sentences: {sentencesNeedReview}</p>
+        <p className='text-xs font-medium'>
+          Words: {contentMetaWordDataState[0].length}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <ul className='flex flex-col gap-1 overflow-y-scroll max-h-96'>
       {!hasUnifiedChapter && (

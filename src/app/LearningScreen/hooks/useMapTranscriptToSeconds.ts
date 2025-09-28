@@ -11,7 +11,7 @@ const useMapTranscriptToSeconds = ({
   loopTranscriptState,
 }) => {
   useEffect(() => {
-    if (secondsState.length > 0 && loopTranscriptState?.length > 0) {
+    if (secondsState?.length > 0 && loopTranscriptState?.length > 0) {
       const loopIds = loopTranscriptState.map((item) => item.id);
       const validSeconds = secondsState.map((secondEl) =>
         loopIds.includes(secondEl) ? secondEl : '',

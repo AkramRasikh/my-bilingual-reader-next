@@ -14,7 +14,8 @@ const HoverWordCard = ({ text, wordPopUpState, setWordPopUpState }) => {
   const [isOriginalWordSettingState, setIsOriginalWordSettingState] =
     useState(false);
 
-  const { wordsState, wordsForSelectedTopic } = useData();
+  const { wordsState, wordsForSelectedTopic, handleDeleteWordDataProvider } =
+    useData();
 
   useEffect(() => {
     const textIsOriginalToSelectedTopic = wordsForSelectedTopic.some(
@@ -28,8 +29,14 @@ const HoverWordCard = ({ text, wordPopUpState, setWordPopUpState }) => {
 
   const handleDeleteFunc = async () => {
     try {
+      const wordDataToDelete = wordPopUpState.find(
+        (item) => item.baseForm === text || item.surfaceForm === text,
+      );
+
       setIsLoadingState(true);
-      await handleDelete({ wordId: word.id, wordBaseForm: word.baseForm });
+      await handleDeleteWordDataProvider({
+        wordId: wordDataToDelete.id,
+      });
     } catch (error) {
     } finally {
       setIsLoadingState(false);
