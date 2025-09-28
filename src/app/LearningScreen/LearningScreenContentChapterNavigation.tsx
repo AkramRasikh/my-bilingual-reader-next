@@ -33,8 +33,10 @@ const LearningScreenContentChapterNavigation = () => {
 
     return (
       <div>
-        <p className='text-xs font-medium'>Sentences: {sentencesNeedReview}</p>
-        <p className='text-xs font-medium'>
+        <p className='text-xs font-medium m-auto w-fit'>
+          Sentences: {sentencesNeedReview}
+        </p>
+        <p className='text-xs font-medium m-auto w-fit'>
           Words: {contentMetaWordDataState[0].length}
         </p>
       </div>
