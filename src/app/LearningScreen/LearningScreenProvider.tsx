@@ -108,14 +108,26 @@ export const LearningScreenProvider = ({
         latestIsDueEl = item.id;
       }
 
+      const hasBeenReviewed = item?.reviewData?.due;
+      const isDueNow = new Date(hasBeenReviewed) < now;
+
+      const dueStatus = !hasBeenReviewed ? '' : isDueNow ? 'now' : 'pending';
+
       return {
         ...item,
         targetLangformatted: underlineWordsInSentence(item.targetLang),
+        dueStatus,
       };
     });
 
+    const adjustedTranscript = formattedTranscript.map((item, index, arr) => {
+      if (index > 0 && arr[index + 1]?.dueStatus === 'now') {
+        return { ...item, helperReviewSentence: true };
+      }
+      return item;
+    });
     setLatestDueIdState({ id: latestIsDueEl, triggerScroll: false });
-    setFormattedTranscriptState(formattedTranscript);
+    setFormattedTranscriptState(adjustedTranscript);
   };
 
   useEffect(() => {

@@ -33,6 +33,7 @@ export const TranscriptItemProvider = ({
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [showSentenceBreakdownState, setShowSentenceBreakdownState] =
     useState(false);
+  const [overrideMiniReviewState, setOverrideMiniReviewState] = useState(false);
   const [showMenuState, setShowMenuState] = useState(false);
   const [thisSnippetOverlapState, setThisSnippetOverlapState] = useState();
 
@@ -247,6 +248,8 @@ export const TranscriptItemProvider = ({
         isBreakdownSentenceLoadingState: breakdownMasterState,
         setIsBreakdownSentenceLoadingState,
         handleBreakdownSentenceTranscriptItem,
+        overrideMiniReviewState,
+        setOverrideMiniReviewState,
       }}
     >
       {children}

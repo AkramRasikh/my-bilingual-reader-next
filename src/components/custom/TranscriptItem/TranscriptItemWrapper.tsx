@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import useTranscriptItem from './useTranscriptItem';
+import TranscriptItemInReviewMiniActionBar from './TranscriptItemInReviewMiniActionBar';
 
 const TranscriptItemWrapper = ({ children }) => {
   const {
@@ -8,22 +9,35 @@ const TranscriptItemWrapper = ({ children }) => {
     contentItem,
     handleOnMouseEnterSentence,
     isInReviewMode,
+    overrideMiniReviewState,
   } = useTranscriptItem();
 
   const hasBeenReviewed = contentItem?.reviewData?.due;
-  const timeNow = new Date();
-  const isDueNow = new Date(hasBeenReviewed) < timeNow;
+  const dueStatus = contentItem?.dueStatus;
+  const notDue = dueStatus !== 'now';
+
+  const helperReviewSentence = contentItem?.helperReviewSentence;
+  const showMiniReviewWidget =
+    isInReviewMode &&
+    notDue &&
+    !helperReviewSentence &&
+    !overrideMiniReviewState;
+
+  if (showMiniReviewWidget) {
+    return <TranscriptItemInReviewMiniActionBar />;
+  }
 
   return (
     <div
       className={clsx(
         'rounded-lg px-2 py-1 shadow h-fit border-2 ',
-        isDueNow
+        dueStatus === 'now'
           ? 'border-red-500'
           : hasBeenReviewed
           ? 'border-amber-500'
           : 'border-blue-200',
-        !(isDueNow && isInReviewMode) ? 'opacity-25' : 'opacity-100',
+        !dueStatus ? 'opacity-25' : 'opacity-100',
+        isInReviewMode ? 'w-full' : '',
       )}
       style={{
         gap: 5,

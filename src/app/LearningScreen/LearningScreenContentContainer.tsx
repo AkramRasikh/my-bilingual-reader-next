@@ -72,7 +72,12 @@ const LearningScreenContentContainer = () => {
           value='transcript'
           className={clsx(contentClasses, 'border rounded-lg')}
         >
-          <ul className='flex flex-col gap-1'>
+          <ul
+            className={clsx(
+              'gap-1',
+              isInReviewMode ? 'inline-flex flex-wrap' : 'flex flex-col',
+            )}
+          >
             {formattedTranscriptState.map((contentItem, index) => (
               <TranscriptItemProvider
                 key={index}
