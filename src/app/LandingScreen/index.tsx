@@ -137,7 +137,7 @@ const LandingScreen = () => {
   }
 
   return (
-    <div style={{ padding: 10 }}>
+    <div className='p-3'>
       {isMockEnv && <LandingScreenMockFlag />}
       {isLoadingState && <LandingScreenSpinner />}
       <LandingScreenContentSelection
