@@ -36,7 +36,7 @@ const TranscriptItemWrapper = ({ children }) => {
           : hasBeenReviewed
           ? 'border-amber-500'
           : 'border-blue-200',
-        !dueStatus ? 'opacity-25' : 'opacity-100',
+        dueStatus !== 'now' ? 'opacity-50' : 'opacity-100',
         isInReviewMode ? 'w-full' : '',
       )}
       style={{
