@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import LoadingSpinner from '@/app/LoadingSpinner';
+import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import {
   LucideHammer,
   LucidePauseCircle,

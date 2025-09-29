@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '../components/custom/LoadingSpinner';
 
 const HighlightedTextSection = ({
   isLoadingState,

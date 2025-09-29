@@ -10,7 +10,7 @@ import { isDueCheck } from './DataProvider';
 import clsx from 'clsx';
 import { getTimeDiffSRS } from './getTimeDiffSRS';
 import { srsCalculationAndText, srsRetentionKeyTypes } from './srs-algo';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '../components/custom/LoadingSpinner';
 
 export const WordCardContent = ({
   id,

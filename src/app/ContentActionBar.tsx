@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '../components/custom/LoadingSpinner';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';

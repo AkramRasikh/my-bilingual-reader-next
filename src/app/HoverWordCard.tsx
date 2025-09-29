@@ -5,7 +5,7 @@ import {
 } from '@/components/ui/hover-card';
 import useData from './useData';
 import { useEffect, useState } from 'react';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '../components/custom/LoadingSpinner';
 import clsx from 'clsx';
 
 const HoverWordCard = ({ text, wordPopUpState, setWordPopUpState }) => {

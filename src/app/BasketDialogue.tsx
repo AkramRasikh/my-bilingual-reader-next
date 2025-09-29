@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import useData from './useData';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '../components/custom/LoadingSpinner';
 import { useState } from 'react';
 import StoryComponent from './words/StoryComponent';
 

@@ -5,7 +5,7 @@ import ReviewSRSToggles from './ReviewSRSToggles';
 import { isDueCheck } from './DataProvider';
 import clsx from 'clsx';
 import { getTimeDiffSRS } from './getTimeDiffSRS';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '../components/custom/LoadingSpinner';
 import GoogleSearchImage from './GoogleSearchImage';
 import PasteImageCard from './PasteImageCard';
 import useData from './useData';

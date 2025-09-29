@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from '../components/custom/LoadingSpinner';
 
 export default function PopUpWordCard({
   word,
