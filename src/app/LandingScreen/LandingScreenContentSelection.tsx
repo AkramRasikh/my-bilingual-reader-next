@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import useData from './useData';
+import useData from '../useData';
 import { BookCheck } from 'lucide-react';
 
-const ContentSelection = ({
+const LandingScreenContentSelection = ({
   generalTopicDisplayNameSelectedState,
   generalTopicDisplayNameState,
 }) => {
@@ -125,4 +125,4 @@ const ContentSelection = ({
   );
 };
 
-export default ContentSelection;
+export default LandingScreenContentSelection;

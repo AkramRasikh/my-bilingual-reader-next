@@ -6,16 +6,16 @@ import { getFirebaseVideoURL } from '../get-firebase-media-url';
 import { getGeneralTopicName } from '../get-general-topic-name';
 import { japanese } from '../languages';
 import checkIfVideoExists from '../check-if-video-exists';
-import ContentSelection from '../ContentSelection';
-import LoadingSpinner from '../LoadingSpinner';
+import LandingScreenContentSelection from './LandingScreenContentSelection';
 import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
 import { toast } from 'sonner';
 import SentenceReviewContainer from '../SentenceReviewContainer';
-import { LucideFlag } from 'lucide-react';
+import LandingScreenSpinner from './LandingScreenSpinner';
+import LandingScreenMockFlag from './LandingScreenMockFlag';
 
 const LandingScreen = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
-  const [isLoadingState, setIsLoadingState] = useState(false);
+  const [isLoadingState, setIsLoadingState] = useState(true);
 
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
 
@@ -138,29 +138,9 @@ const LandingScreen = () => {
 
   return (
     <div style={{ padding: 10 }}>
-      {isMockEnv && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '1%',
-            left: '1%',
-          }}
-        >
-          <LucideFlag />
-        </div>
-      )}
-      {isLoadingState && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-          }}
-        >
-          <LoadingSpinner />
-        </div>
-      )}
-      <ContentSelection
+      {isMockEnv && <LandingScreenMockFlag />}
+      {isLoadingState && <LandingScreenSpinner />}
+      <LandingScreenContentSelection
         generalTopicDisplayNameSelectedState={
           generalTopicDisplayNameSelectedState
         }
