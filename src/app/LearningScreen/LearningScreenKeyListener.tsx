@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect } from 'react';
-import useLearningScreen from './LearningScreen/useLearningScreen';
+import useLearningScreen from './useLearningScreen';
 import { isNumber } from '@/utils/is-number';
 
 const qRewindTime = 3;
 
-const KeyListener = () => {
+const LearningScreenKeyListener = () => {
   const {
     ref,
     handlePausePlay,
@@ -214,4 +214,4 @@ const KeyListener = () => {
   return null;
 };
 
-export default KeyListener;
+export default LearningScreenKeyListener;

@@ -1,7 +1,7 @@
 import { getFirebaseVideoURL } from '../get-firebase-media-url';
 import { getGeneralTopicName } from '../get-general-topic-name';
 import { japanese } from '../languages';
-import KeyListener from '../KeyListener';
+import KeyListener from './LearningScreenKeyListener';
 import VideoPlayer from '../VideoPlayer';
 import useData from '../useData';
 import ComprehensiveTranscriptItem from '../ComprehensiveTranscriptItem';
