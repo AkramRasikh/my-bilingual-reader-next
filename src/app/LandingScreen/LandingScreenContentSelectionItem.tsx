@@ -55,7 +55,7 @@ const LandingScreenContentSelectionItem = ({
         onClick={() => handleSelectInitialTopic(youtubeTag)}
         className={clsx(
           'pb-1 rounded w-full relative',
-          isThisDue ? 'bg-amber-500' : '',
+          isThisDue ? 'bg-amber-300' : '',
         )}
       >
         <span
