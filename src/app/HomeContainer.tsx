@@ -11,10 +11,13 @@ import LoadingSpinner from './LoadingSpinner';
 import { LearningScreenProvider } from './LearningScreen/LearningScreenProvider';
 import { toast } from 'sonner';
 import SentenceReviewContainer from './SentenceReviewContainer';
+import { LucideFlag } from 'lucide-react';
 
 export const HomeContainer = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
   const [isLoadingState, setIsLoadingState] = useState(false);
+
+  const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
 
   const [currentTime, setCurrentTime] = useState(0);
 
@@ -135,6 +138,17 @@ export const HomeContainer = () => {
 
   return (
     <div style={{ padding: 10 }}>
+      {isMockEnv && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '1%',
+            left: '1%',
+          }}
+        >
+          <LucideFlag />
+        </div>
+      )}
       {isLoadingState && (
         <div
           style={{
