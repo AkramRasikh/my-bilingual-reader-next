@@ -40,6 +40,7 @@ export const DataProvider = ({
   const [story, setStory] = useState();
   const [pureWordsState, setPureWordsState] = useState([]);
   const [selectedContentState, setSelectedContentState] = useState(null);
+  const [mountedState, setMountedState] = useState(false);
   const [generalTopicDisplayNameState, setGeneralTopicDisplayNameState] =
     useState([]);
   const [wordBasketState, setWordBasketState] = useState([]);
@@ -78,7 +79,8 @@ export const DataProvider = ({
     if (
       sentencesState.length === 0 &&
       targetLanguageLoadedSentences.length > 0 &&
-      pureWordsState.length > 0
+      pureWordsState.length > 0 &&
+      !mountedState
     ) {
       const dateNow = new Date();
       const dueCardsNow = targetLanguageLoadedSentences.filter((sentence) =>
@@ -91,9 +93,11 @@ export const DataProvider = ({
           targetLangformatted: underlineWordsInSentence(item.targetLang),
         };
       });
+
+      setMountedState(true);
       setSentencesState(formatSentence);
     }
-  }, [sentencesState, pureWordsState]);
+  }, [sentencesState, mountedState, pureWordsState]);
 
   const handleSelectedContent = (thisYoutubeTitle) => {
     const thisContent = contentState.find(
