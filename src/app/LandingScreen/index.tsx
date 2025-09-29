@@ -1,19 +1,19 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import LearningScreen from './LearningScreen';
-import useData from './useData';
-import { getFirebaseVideoURL } from './get-firebase-media-url';
-import { getGeneralTopicName } from './get-general-topic-name';
-import { japanese } from './languages';
-import checkIfVideoExists from './check-if-video-exists';
-import ContentSelection from './ContentSelection';
-import LoadingSpinner from './LoadingSpinner';
-import { LearningScreenProvider } from './LearningScreen/LearningScreenProvider';
+import LearningScreen from '../LearningScreen';
+import useData from '../useData';
+import { getFirebaseVideoURL } from '../get-firebase-media-url';
+import { getGeneralTopicName } from '../get-general-topic-name';
+import { japanese } from '../languages';
+import checkIfVideoExists from '../check-if-video-exists';
+import ContentSelection from '../ContentSelection';
+import LoadingSpinner from '../LoadingSpinner';
+import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
 import { toast } from 'sonner';
-import SentenceReviewContainer from './SentenceReviewContainer';
+import SentenceReviewContainer from '../SentenceReviewContainer';
 import { LucideFlag } from 'lucide-react';
 
-export const HomeContainer = () => {
+const LandingScreen = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
   const [isLoadingState, setIsLoadingState] = useState(false);
 
@@ -182,3 +182,5 @@ export const HomeContainer = () => {
     </div>
   );
 };
+
+export default LandingScreen;
