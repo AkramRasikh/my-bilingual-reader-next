@@ -1,6 +1,6 @@
 'use client';
 import { isNumber } from '@/utils/is-number';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 import useData from '../useData';
 import {
   getEmptyCard,
@@ -20,12 +20,24 @@ export const LearningScreenContext = createContext(null);
 // type time
 
 export const LearningScreenProvider = ({
-  handlePlayFromHere,
-  handleTimeUpdate,
-  ref,
-  currentTime,
   children,
 }: PropsWithChildren<object>) => {
+  const ref = useRef<HTMLVideoElement>(null); // Reference to the video element
+
+  const [currentTime, setCurrentTime] = useState(0);
+  const handlePlayFromHere = (time: number) => {
+    if (ref.current) {
+      ref.current.currentTime = time;
+      ref.current.play();
+    }
+  };
+
+  // Update current time as video plays
+  const handleTimeUpdate = () => {
+    if (ref.current) {
+      setCurrentTime(ref.current.currentTime);
+    }
+  };
   const [formattedTranscriptState, setFormattedTranscriptState] = useState();
   const [secondsState, setSecondsState] = useState([]);
   const [loopSecondsState, setLoopSecondsState] = useState([]);
