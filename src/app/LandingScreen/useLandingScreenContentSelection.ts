@@ -50,7 +50,7 @@ const useLandingScreenContentSelection = ({
     generalTopicDisplayNameState,
   ]);
 
-  return { contentSelectionState, setContentSelectionState };
+  return { contentSelectionState };
 };
 
 export default useLandingScreenContentSelection;
