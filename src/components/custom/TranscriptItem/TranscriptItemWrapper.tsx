@@ -30,7 +30,7 @@ const TranscriptItemWrapper = ({ children }) => {
   return (
     <div
       className={clsx(
-        'rounded-lg px-2 py-1 shadow h-fit border-2 ',
+        'rounded-lg px-2 py-1 shadow h-fit border-2 gap-1.5',
         dueStatus === 'now'
           ? 'border-red-500'
           : hasBeenReviewed
@@ -40,7 +40,6 @@ const TranscriptItemWrapper = ({ children }) => {
         isInReviewMode ? 'w-full' : '',
       )}
       style={{
-        gap: 5,
         animation: !isInReviewMode ? 'fadeIn 0.5s ease-out forwards' : '',
       }}
       onMouseEnter={handleOnMouseEnterSentence}
