@@ -250,53 +250,45 @@ export const DataProvider = ({
     return getSelectedTopicsWordsFunc(selectedContentState.content);
   };
 
-  const checkTopicNeedsReviewBool = (genTop) => {
-    const todayDateObj = new Date();
-
-    return contentState.some((contentEl) => {
-      if (contentEl.generalTopicName !== genTop) {
-        return;
-      }
-
-      const transcript = contentEl.content;
-
-      return transcript.some((transcriptEl) => {
-        if (!transcriptEl?.reviewData?.due) {
-          return;
-        }
-        return isDueCheck(transcriptEl, todayDateObj);
-      });
-    });
-  };
-  const checkTopicIsNew = (genTop) => {
-    if (generalTopicDisplayNameState?.length === 0) {
-      return null;
-    }
-
-    const contentHasBeenReviewed = contentState.some((contentEl) => {
-      if (contentEl.generalTopicName !== genTop) {
-        return;
-      }
-
-      return contentEl?.reviewHistory;
-    });
-
-    return !contentHasBeenReviewed;
-  };
-
-  const checkHasAllBeenReviewed = (genTop) => {
-    if (generalTopicDisplayNameState?.length === 0) {
-      return null;
-    }
-
+  const getTopicStatus = (genTop, todayDateObj) => {
     const allTheseTopics = contentState.filter(
-      (i) => i.generalTopicName === genTop,
-    );
-    const isAllTopicsReviewed = allTheseTopics.filter(
-      (i) => i.reviewHistory?.length > 0,
+      (el) => el.generalTopicName === genTop,
     );
 
-    return allTheseTopics.length === isAllTopicsReviewed.length;
+    if (allTheseTopics.length === 0) {
+      return {
+        isThisDue: null,
+        isThisNew: null,
+        hasAllBeenReviewed: null,
+      };
+    }
+
+    let isThisDue = false;
+    let isThisNew = true;
+    let hasAllBeenReviewed = true;
+
+    for (const contentEl of allTheseTopics) {
+      // --- Check for due items
+      if (!isThisDue && contentEl.content) {
+        for (const transcriptEl of contentEl.content) {
+          if (transcriptEl?.reviewData?.due) {
+            if (isDueCheck(transcriptEl, todayDateObj)) {
+              isThisDue = true;
+              break; // no need to check further
+            }
+          }
+        }
+      }
+
+      // --- Check if topic is new (any review history means it's not new)
+      if (contentEl.reviewHistory && contentEl.reviewHistory.length > 0) {
+        isThisNew = false;
+      } else {
+        hasAllBeenReviewed = false;
+      }
+    }
+
+    return { isThisDue, isThisNew, hasAllBeenReviewed };
   };
 
   const checkHowManyOfTopicNeedsReview = () => {
@@ -725,13 +717,11 @@ export const DataProvider = ({
         setStory,
         addGeneratedSentence,
         handleSelectedContent,
-        checkTopicNeedsReviewBool,
         getGeneralContentMetaData,
         handleSelectInitialTopic,
-        checkTopicIsNew,
-        checkHasAllBeenReviewed,
         addImageDataProvider,
         getGeneralContentWordData,
+        getTopicStatus,
       }}
     >
       {children}

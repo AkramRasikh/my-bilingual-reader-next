@@ -5,22 +5,19 @@ const useLandingScreenContentSelection = ({
   generalTopicDisplayNameSelectedState,
   generalTopicDisplayNameState,
 }) => {
-  const {
-    getYoutubeID,
-    checkTopicNeedsReviewBool,
-    checkTopicIsNew,
-    checkHasAllBeenReviewed,
-  } = useData();
+  const { getYoutubeID, checkTopicNeedsReviewBool, getTopicStatus } = useData();
   const [contentSelectionState, setContentSelectionState] = useState([]);
 
   useEffect(() => {
     if (generalTopicDisplayNameState?.length > 0) {
+      const today = new Date();
       const comprehensiveState = generalTopicDisplayNameState.map(
         (youtubeTag) => {
           const youtubeId = getYoutubeID(youtubeTag);
-          const isThisDue = checkTopicNeedsReviewBool(youtubeTag);
-          const isThisNew = checkTopicIsNew(youtubeTag);
-          const hasAllBeenReviewed = checkHasAllBeenReviewed(youtubeTag);
+          const { isThisDue, isThisNew, hasAllBeenReviewed } = getTopicStatus(
+            youtubeTag,
+            today,
+          );
 
           return {
             youtubeTag,
