@@ -15,7 +15,7 @@ import LandingScreenMockFlag from './LandingScreenMockFlag';
 
 const LandingScreen = () => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
-  const [isLoadingState, setIsLoadingState] = useState(true);
+  const [isLoadingState, setIsLoadingState] = useState(false);
 
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
 
