@@ -110,7 +110,7 @@ export const NewSentenceBreakdown = ({
           );
         })}
       </ul>
-      <p>{sentenceStructure}</p>
+      {/* <p>{sentenceStructure}</p> */}
       {vocab.map((_, index) => {
         const isInHoveredState = hoveredXStates === index;
 
@@ -126,6 +126,7 @@ export const NewSentenceBreakdown = ({
           />
         );
       })}
+
       <hr className='m-1' />
       <p>{meaning}</p>
     </div>
