@@ -56,7 +56,16 @@ const LearningScreenContentContainer = () => {
     handleBreakdownSentence,
     setBreakdownSentencesArrState,
     latestDueIdState,
+    firstDueIndexState,
   } = useLearningScreen();
+
+  const learnFormattedTranscript =
+    isInReviewMode && latestDueIdState?.id
+      ? formattedTranscriptState.slice(
+          firstDueIndexState,
+          latestDueIdState?.index,
+        )
+      : formattedTranscriptState;
 
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
   return (
@@ -78,7 +87,7 @@ const LearningScreenContentContainer = () => {
               isInReviewMode ? 'inline-flex flex-wrap' : 'flex flex-col',
             )}
           >
-            {formattedTranscriptState.map((contentItem, index) => (
+            {learnFormattedTranscript.map((contentItem, index) => (
               <TranscriptItemProvider
                 key={index}
                 threeSecondLoopState={threeSecondLoopState}

@@ -56,6 +56,7 @@ export const LearningScreenProvider = ({
     id: '',
     triggerScroll: false,
   });
+  const [firstDueIndexState, setFirstDueIndexState] = useState(0);
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
   );
@@ -102,10 +103,19 @@ export const LearningScreenProvider = ({
   const getFormattedData = () => {
     const now = new Date();
     let latestIsDueEl = '';
+    let latestIsDueElIndex;
+    let firstElIndex;
 
-    const formattedTranscript = content.map((item) => {
+    const formattedTranscript = content.map((item, index) => {
       if (item?.reviewData && isDueCheck(item, now)) {
         latestIsDueEl = item.id;
+        latestIsDueElIndex = index;
+        if (!isNumber(firstElIndex)) {
+          firstElIndex = index;
+          if (firstElIndex > 0) {
+            firstElIndex = firstElIndex - 1;
+          }
+        }
       }
 
       const hasBeenReviewed = item?.reviewData?.due;
@@ -126,7 +136,12 @@ export const LearningScreenProvider = ({
       }
       return item;
     });
-    setLatestDueIdState({ id: latestIsDueEl, triggerScroll: false });
+    setLatestDueIdState({
+      id: latestIsDueEl,
+      index: latestIsDueElIndex,
+      triggerScroll: false,
+    });
+    setFirstDueIndexState(firstElIndex);
     setFormattedTranscriptState(adjustedTranscript);
   };
 
@@ -551,6 +566,7 @@ export const LearningScreenProvider = ({
         isBreakingDownSentenceArrState,
         latestDueIdState,
         setLatestDueIdState,
+        firstDueIndexState,
       }}
     >
       {children}
