@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button';
 import useTranscriptItem from './useTranscriptItem';
-import { MenuIcon } from 'lucide-react';
+import { BookMarked, BookOpenCheck, Copy, MenuIcon } from 'lucide-react';
 import TranscriptItemBreakdownSentence from './TranscriptItemBreakdownSentence';
+import { fadeAnimationStyle } from '../AnimationFade';
 
 const TranscriptItemMenuSection = () => {
   const {
@@ -31,16 +32,16 @@ const TranscriptItemMenuSection = () => {
     <>
       {showMenuState ? (
         <div
-          className='flex flex-col gap-0.5'
+          className='flex flex-col gap-1'
           style={{
-            animation: 'fadeIn 0.5s ease-out forwards',
+            animation: fadeAnimationStyle,
           }}
         >
           <>
             <Button
               id='show-menu'
               variant='secondary'
-              className='rounded transparent'
+              className='rounded transparent h-6 w-6'
               onClick={() => setShowMenuState(!showMenuState)}
             >
               <MenuIcon />
@@ -48,18 +49,18 @@ const TranscriptItemMenuSection = () => {
             <Button
               id='copy'
               variant='ghost'
-              className='border rounded-sm p-0.5 transition-transform duration-150 active:scale-75'
+              className='border rounded-sm p-0.5 transition-transform duration-150 active:scale-75 h-6 w-6'
               onClick={handleCopy}
             >
-              📋
+              <Copy />
             </Button>
             <Button
               id='review'
               variant='ghost'
-              className='border rounded-sm p-0.5 transition active:scale-95 cursor-pointer'
+              className='border rounded-sm p-0.5 transition active:scale-95 cursor-pointer h-6 w-6'
               onClick={handleReview}
             >
-              {hasBeenReviewed ? '🗑️' : '⏰'}
+              {hasBeenReviewed ? <BookOpenCheck /> : <BookMarked />}
             </Button>
             <TranscriptItemBreakdownSentence />
           </>
@@ -67,7 +68,7 @@ const TranscriptItemMenuSection = () => {
       ) : (
         <Button
           id='show-menu'
-          className='mt-0 rounded border'
+          className='mt-0 rounded border h-6 w-6'
           variant='ghost'
           size='icon'
           onClick={() => setShowMenuState(!showMenuState)}

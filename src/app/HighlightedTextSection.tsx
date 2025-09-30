@@ -1,5 +1,9 @@
 import { Button } from '@/components/ui/button';
 import LoadingSpinner from '../components/custom/LoadingSpinner';
+import AnimationFade, {
+  fadeAnimationStyle,
+} from '@/components/custom/AnimationFade';
+import { Delete } from 'lucide-react';
 
 const HighlightedTextSection = ({
   isLoadingState,
@@ -9,24 +13,11 @@ const HighlightedTextSection = ({
 }) => {
   return (
     <div
-      style={{
-        margin: 'auto',
-        marginTop: 5,
-        display: 'flex',
-        gap: 10,
-        justifyContent: 'flex-end',
-      }}
+      className='m-auto mt-1.5 flex gap-2.5 justify-end'
+      style={{ animation: fadeAnimationStyle }}
     >
-      <p
-        style={{
-          textAlign: 'right',
-          display: 'flex',
-          gap: 10,
-          alignItems: 'center',
-        }}
-      >
-        <span className='italic text-sm'>Highlighted word:</span>
-        {highlightedTextState}{' '}
+      <p className='my-auto bg-blue-100 rounded px-1 text-sm'>
+        {highlightedTextState}
       </p>
       <div className='flex gap-1.5 relative'>
         {isLoadingState && (
@@ -60,10 +51,11 @@ const HighlightedTextSection = ({
             size='sm'
             onClick={() => setHighlightedTextState('')}
           >
-            Clear
+            <Delete />
           </Button>
         </div>
       </div>
+      <AnimationFade />
     </div>
   );
 };

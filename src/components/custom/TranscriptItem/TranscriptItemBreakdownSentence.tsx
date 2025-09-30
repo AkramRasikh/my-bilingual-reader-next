@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import useTranscriptItem from '@/components/custom/TranscriptItem/useTranscriptItem';
 import { Button } from '@/components/ui/button';
+import { Hammer } from 'lucide-react';
 
 const TranscriptItemBreakdownSentence = () => {
   const {
@@ -16,11 +17,11 @@ const TranscriptItemBreakdownSentence = () => {
           id='breakdown-sentence'
           variant='ghost'
           onDoubleClick={handleBreakdownSentenceTranscriptItem}
-          className={clsx(
-            'border rounded-sm p-0.5 transition active:scale-95 cursor-pointer',
-          )}
+          className={
+            'border rounded-sm transition active:scale-95 cursor-pointer h-6 w-6'
+          }
         >
-          ⚒️
+          <Hammer />
         </Button>
       )}
     </>
