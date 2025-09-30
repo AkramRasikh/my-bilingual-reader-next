@@ -53,7 +53,7 @@ const LearningScreenActionBar = () => {
         <Button variant={'link'} disabled onClick={() => {}}>
           Next review
         </Button>
-        {isLooping && (
+        {isLooping && !isInReviewMode && (
           <Button variant={'outline'} onClick={handleBulkReviews}>
             Loop ➡️ Review (shft + ⤶)
           </Button>
