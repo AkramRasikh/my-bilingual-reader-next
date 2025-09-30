@@ -1,38 +1,47 @@
-import { Button } from '@/components/ui/button';
-import ProgressBarSnippet from '../ProgressBarSnippet';
-import clsx from 'clsx';
-import { Repeat2 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { useEffect } from 'react';
+
 import useLearningScreen from './useLearningScreen';
 
 const LearningScreenLoopUI = () => {
   const {
     ref,
     threeSecondLoopState,
-    setThreeSecondLoopState,
     progress,
     setProgress,
     contractThreeSecondLoopState,
-    isVideoPlaying,
   } = useLearningScreen();
 
+  const startPoint =
+    threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
+
+  useEffect(() => {
+    const audio = ref.current;
+
+    const updateProgress = () => {
+      if (audio) {
+        const currentTime = audio.currentTime;
+        const endRange = startPoint + (contractThreeSecondLoopState ? 1.5 : 3);
+
+        const progressValue =
+          ((currentTime - startPoint) / (endRange - startPoint)) * 100;
+
+        setProgress(progressValue);
+      }
+    };
+
+    if (audio) {
+      audio.addEventListener('timeupdate', updateProgress);
+      // Clean up on unmount
+      return () => {
+        audio.removeEventListener('timeupdate', updateProgress);
+      };
+    }
+  }, [threeSecondLoopState, contractThreeSecondLoopState]);
+
   return (
-    <div className='pt-1.5 m-auto flex justify-center gap-1.5 w-80'>
-      <ProgressBarSnippet
-        snippetRef={ref}
-        threeSecondLoopState={threeSecondLoopState}
-        progress={progress}
-        setProgress={setProgress}
-        contractThreeSecondLoopState={contractThreeSecondLoopState}
-      />
-      <Button
-        id='stop-loop'
-        onClick={() => setThreeSecondLoopState(null)}
-        className={clsx(isVideoPlaying && 'animate-spin')}
-        size='icon'
-        variant={'destructive'}
-      >
-        <Repeat2 />
-      </Button>
+    <div className='flex gap-3 justify-center my-1 animate-pulse'>
+      <Progress value={progress} className='h-1 w-full [&>div]:bg-red-600' />
     </div>
   );
 };

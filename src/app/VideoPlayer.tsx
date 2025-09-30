@@ -1,5 +1,8 @@
 'use client';
 import { useEffect } from 'react';
+import LearningScreenLoopUI from './LearningScreen/LearningScreenLoopUI';
+import clsx from 'clsx';
+import LearningScreenLoopBtn from './LearningScreen/LearningScreenLoopBtn';
 
 const VideoPlayer = ({
   url,
@@ -7,6 +10,7 @@ const VideoPlayer = ({
   handleTimeUpdate,
   setIsVideoPlaying,
   masterPlayComprehensiveState,
+  threeSecondLoopState,
 }) => {
   const videoUrl = url;
 
@@ -38,11 +42,19 @@ const VideoPlayer = ({
       >
         Your browser does not support the video tag.
       </video>
-      {masterPlayComprehensiveState?.targetLang && (
-        <p className='text-center font-bold text-xl text-blue-900  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg'>
-          {masterPlayComprehensiveState.targetLang}
-        </p>
-      )}
+      {threeSecondLoopState && <LearningScreenLoopUI />}
+      <div
+        className={clsx(
+          threeSecondLoopState ? 'flex w-full justify-between' : '',
+        )}
+      >
+        {masterPlayComprehensiveState?.targetLang && (
+          <p className='text-center font-bold text-xl text-blue-900  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg'>
+            {masterPlayComprehensiveState.targetLang}
+          </p>
+        )}
+        {threeSecondLoopState && <LearningScreenLoopBtn />}
+      </div>
     </div>
   );
 };

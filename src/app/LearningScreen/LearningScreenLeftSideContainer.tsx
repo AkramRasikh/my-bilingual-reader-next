@@ -6,7 +6,6 @@ import VideoPlayer from '../VideoPlayer';
 import useData from '../useData';
 import ComprehensiveTranscriptItem from '../ComprehensiveTranscriptItem';
 import useLearningScreen from './useLearningScreen';
-import LearningScreenLoopUI from './LearningScreenLoopUI';
 import LearningScreenActionBar from './LearningScreenActionBar';
 import LearningScreenActionBarVideoControls from './LearningScreenActionBarVideoControls';
 
@@ -40,9 +39,9 @@ const LearningScreenLeftSideContainer = () => {
         masterPlayComprehensiveState={
           showOnVideoTranscriptState && masterPlayComprehensiveState
         }
+        threeSecondLoopState={threeSecondLoopState}
       />
       <LearningScreenActionBar />
-      {threeSecondLoopState && <LearningScreenLoopUI />}
       {masterPlayComprehensiveState && (
         <ComprehensiveTranscriptItem
           contentItem={masterPlayComprehensiveState}
