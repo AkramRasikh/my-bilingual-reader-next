@@ -234,6 +234,18 @@ export const LearningScreenProvider = ({
     }
   };
 
+  const handleScrollToMasterView = () => {
+    const masterPlayIndex = secondsState.findIndex(
+      (item) => item.id === masterPlay,
+    );
+
+    setLatestDueIdState({
+      id: formattedTranscriptState[masterPlayIndex].id,
+      index: masterPlayIndex,
+      triggerScroll: true,
+    });
+  };
+
   const handleBulkReviews = async () => {
     const emptyCard = getEmptyCard();
 
@@ -589,6 +601,7 @@ export const LearningScreenProvider = ({
         setStudyFromHereTimeState,
         studyFromHereTimeState,
         transcriptRef,
+        handleScrollToMasterView,
       }}
     >
       {children}

@@ -18,6 +18,7 @@ const LearningScreenActionBar = () => {
     handleBulkReviews,
     handleStudyFromHere,
     studyFromHereTimeState,
+    handleScrollToMasterView,
   } = useLearningScreen();
 
   const isLooping = loopTranscriptState?.length > 0;
@@ -61,6 +62,9 @@ const LearningScreenActionBar = () => {
           onClick={handleStudyFromHere}
         >
           Study from here {studyFromHereTimeState}
+        </Button>
+        <Button variant={'secondary'} onClick={handleScrollToMasterView}>
+          Scroll to now
         </Button>
         {isLooping && !isInReviewMode && (
           <Button variant={'outline'} onClick={handleBulkReviews}>
