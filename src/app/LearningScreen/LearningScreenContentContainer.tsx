@@ -63,7 +63,7 @@ const LearningScreenContentContainer = () => {
     isInReviewMode && latestDueIdState?.id
       ? formattedTranscriptState.slice(
           firstDueIndexState,
-          latestDueIdState?.index,
+          latestDueIdState?.index + 1,
         )
       : formattedTranscriptState;
 
