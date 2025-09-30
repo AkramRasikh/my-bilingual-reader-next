@@ -25,7 +25,8 @@ const HighlightedTextSection = ({
           alignItems: 'center',
         }}
       >
-        Highlighted word: {highlightedTextState}{' '}
+        <span className='italic text-sm'>Highlighted word:</span>
+        {highlightedTextState}{' '}
       </p>
       <div className='flex gap-1.5 relative'>
         {isLoadingState && (
