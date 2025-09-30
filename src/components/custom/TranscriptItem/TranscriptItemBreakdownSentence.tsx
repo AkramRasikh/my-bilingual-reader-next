@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import useTranscriptItem from '@/components/custom/TranscriptItem/useTranscriptItem';
 import { Button } from '@/components/ui/button';
 import { Hammer } from 'lucide-react';
