@@ -22,7 +22,8 @@ export const LearningScreenContext = createContext(null);
 export const LearningScreenProvider = ({
   children,
 }: PropsWithChildren<object>) => {
-  const ref = useRef<HTMLVideoElement>(null); // Reference to the video element
+  const ref = useRef<HTMLVideoElement>(null);
+  const transcriptRef = useRef(null);
 
   const [currentTime, setCurrentTime] = useState(0);
   const handlePlayFromHere = (time: number) => {
@@ -57,6 +58,7 @@ export const LearningScreenProvider = ({
     triggerScroll: false,
   });
   const [firstDueIndexState, setFirstDueIndexState] = useState(0);
+  const [studyFromHereTimeState, setStudyFromHereTimeState] = useState();
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
   );
@@ -145,9 +147,25 @@ export const LearningScreenProvider = ({
     setFormattedTranscriptState(adjustedTranscript);
   };
 
+  const handleStudyFromHere = () => {
+    const masterPlayIndex = formattedTranscriptState.findIndex(
+      (item) => item.id === masterPlay,
+    );
+    setStudyFromHereTimeState(masterPlayIndex);
+    if (transcriptRef.current) {
+      transcriptRef.current.scrollIntoView();
+    }
+  };
+
   useEffect(() => {
     getFormattedData();
   }, [pureWords, content]);
+
+  useEffect(() => {
+    if (isInReviewMode) {
+      setStudyFromHereTimeState(null);
+    }
+  }, [isInReviewMode, studyFromHereTimeState]);
 
   useManageThreeSecondLoop({
     threeSecondLoopState,
@@ -567,6 +585,10 @@ export const LearningScreenProvider = ({
         latestDueIdState,
         setLatestDueIdState,
         firstDueIndexState,
+        handleStudyFromHere,
+        setStudyFromHereTimeState,
+        studyFromHereTimeState,
+        transcriptRef,
       }}
     >
       {children}

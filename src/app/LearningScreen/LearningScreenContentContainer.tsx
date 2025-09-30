@@ -57,6 +57,8 @@ const LearningScreenContentContainer = () => {
     setBreakdownSentencesArrState,
     latestDueIdState,
     firstDueIndexState,
+    studyFromHereTimeState,
+    transcriptRef,
   } = useLearningScreen();
 
   const learnFormattedTranscript =
@@ -65,6 +67,8 @@ const LearningScreenContentContainer = () => {
           firstDueIndexState,
           latestDueIdState?.index + 1,
         )
+      : studyFromHereTimeState
+      ? formattedTranscriptState.slice(studyFromHereTimeState)
       : formattedTranscriptState;
 
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
@@ -86,6 +90,7 @@ const LearningScreenContentContainer = () => {
               'gap-1',
               isInReviewMode ? 'inline-flex flex-wrap' : 'flex flex-col',
             )}
+            ref={transcriptRef}
           >
             {learnFormattedTranscript.map((contentItem, index) => (
               <TranscriptItemProvider

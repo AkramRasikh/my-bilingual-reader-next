@@ -16,6 +16,8 @@ const LearningScreenActionBar = () => {
     setLatestDueIdState,
     loopTranscriptState,
     handleBulkReviews,
+    handleStudyFromHere,
+    studyFromHereTimeState,
   } = useLearningScreen();
 
   const isLooping = loopTranscriptState?.length > 0;
@@ -52,6 +54,13 @@ const LearningScreenActionBar = () => {
         </Button>
         <Button variant={'link'} disabled onClick={() => {}}>
           Next review
+        </Button>
+        <Button
+          variant={'secondary'}
+          disabled={isInReviewMode}
+          onClick={handleStudyFromHere}
+        >
+          Study from here {studyFromHereTimeState}
         </Button>
         {isLooping && !isInReviewMode && (
           <Button variant={'outline'} onClick={handleBulkReviews}>
