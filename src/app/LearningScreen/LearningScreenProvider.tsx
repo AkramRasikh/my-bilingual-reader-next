@@ -57,6 +57,7 @@ export const LearningScreenProvider = ({
     id: '',
     triggerScroll: false,
   });
+  const [scrollToElState, setScrollToElState] = useState('');
   const [firstDueIndexState, setFirstDueIndexState] = useState(0);
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState();
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
@@ -235,15 +236,8 @@ export const LearningScreenProvider = ({
   };
 
   const handleScrollToMasterView = () => {
-    const masterPlayIndex = secondsState.findIndex(
-      (item) => item.id === masterPlay,
-    );
-
-    setLatestDueIdState({
-      id: formattedTranscriptState[masterPlayIndex].id,
-      index: masterPlayIndex,
-      triggerScroll: true,
-    });
+    setScrollToElState(masterPlay);
+    setTimeout(() => setScrollToElState(''), 300);
   };
 
   const handleBulkReviews = async () => {
@@ -602,6 +596,7 @@ export const LearningScreenProvider = ({
         studyFromHereTimeState,
         transcriptRef,
         handleScrollToMasterView,
+        scrollToElState,
       }}
     >
       {children}

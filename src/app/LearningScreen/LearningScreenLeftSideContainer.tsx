@@ -8,6 +8,7 @@ import ComprehensiveTranscriptItem from '../ComprehensiveTranscriptItem';
 import useLearningScreen from './useLearningScreen';
 import LearningScreenLoopUI from './LearningScreenLoopUI';
 import LearningScreenActionBar from './LearningScreenActionBar';
+import LearningScreenActionBarVideoControls from './LearningScreenActionBarVideoControls';
 
 const LearningScreenLeftSideContainer = () => {
   const {
@@ -30,6 +31,7 @@ const LearningScreenLeftSideContainer = () => {
 
   return (
     <div className='flex-1 max-w-xl mx-auto'>
+      <LearningScreenActionBarVideoControls />
       <VideoPlayer
         ref={ref}
         url={videoUrl}
@@ -40,7 +42,6 @@ const LearningScreenLeftSideContainer = () => {
         }
       />
       <LearningScreenActionBar />
-
       {threeSecondLoopState && <LearningScreenLoopUI />}
       {masterPlayComprehensiveState && (
         <ComprehensiveTranscriptItem

@@ -59,6 +59,7 @@ const LearningScreenContentContainer = () => {
     firstDueIndexState,
     studyFromHereTimeState,
     transcriptRef,
+    scrollToElState,
   } = useLearningScreen();
 
   const learnFormattedTranscript =
@@ -119,6 +120,7 @@ const LearningScreenContentContainer = () => {
                 setBreakdownSentencesArrState={setBreakdownSentencesArrState}
                 isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
                 latestDueIdState={latestDueIdState}
+                scrollToElState={scrollToElState}
               >
                 <TranscriptItem />
               </TranscriptItemProvider>
