@@ -112,12 +112,6 @@ export const TranscriptItemProvider = ({
     }
   }, [isPressDownShiftState, showThisSentenceBreakdownPreviewState]);
 
-  useEffect(() => {
-    if (sentenceHighlightingState !== contentItem.id && highlightedTextState) {
-      setHighlightedTextState('');
-    }
-  }, [sentenceHighlightingState, highlightedTextState]);
-
   const handleMouseEnter = (text) => {
     hoverTimer.current = setTimeout(() => {
       const wordsAmongstHighlightedText = wordsState?.filter((item) => {
