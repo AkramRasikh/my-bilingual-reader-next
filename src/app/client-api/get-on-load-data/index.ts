@@ -1,4 +1,3 @@
-import { getGeneralTopicName } from '@/app/get-general-topic-name';
 import { formatContentData } from './format-content-data';
 
 export const content = 'content';
