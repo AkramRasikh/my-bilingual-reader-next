@@ -1,7 +1,8 @@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import CountdownTimer from '../CountDownTimer';
+import CountdownTimer from '../../components/custom/CountDownTimer';
 import useLearningScreen from './useLearningScreen';
+import CountUpTimer from '@/components/CountUpTimer';
 
 const LearningScreenActionBarVideoControls = () => {
   const {
@@ -38,6 +39,7 @@ const LearningScreenActionBarVideoControls = () => {
       </div>
       <div className='w-px h-5 my-auto bg-gray-300' />
       <CountdownTimer audioTimeRef={ref} />
+      <CountUpTimer />
     </div>
   );
 };
