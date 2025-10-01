@@ -1,6 +1,6 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
-import { content, sentences, words } from './get-on-load-data';
+import { content, sentences, words } from './client-api/get-on-load-data';
 
 const FetchDataContext = createContext(null);
 

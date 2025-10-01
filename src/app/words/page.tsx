@@ -1,4 +1,4 @@
-import { getOnLoadData } from '@/app/get-on-load-data';
+import { getOnLoadData } from '../client-api/get-on-load-data';
 import PageContainer from '../PageContainer';
 import WordsContainer from './WordsContainer';
 import { WordsProvider } from './WordsProvider';
@@ -25,13 +25,6 @@ export default async function WordsRoute() {
 
   const dateNow = new Date();
   const matchedWordsForCards = [];
-
-  const isDueCheck = (sentence, todayDateObj) => {
-    return (
-      (sentence?.nextReview && sentence.nextReview < todayDateObj) ||
-      new Date(sentence?.reviewData?.due) < todayDateObj
-    );
-  };
 
   const getAdditionalContextData = (arr) => {
     if (arr?.length === 0) {

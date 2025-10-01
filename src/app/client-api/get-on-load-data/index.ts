@@ -1,4 +1,5 @@
-import { getGeneralTopicName } from './get-general-topic-name';
+import { getGeneralTopicName } from '@/app/get-general-topic-name';
+import { formatContentData } from './format-content-data';
 
 export const content = 'content';
 export const words = 'words';
@@ -25,30 +26,7 @@ export const getFormattedData = (loadedData) => {
     getNestedObjectData(sentences)?.sentences || [];
 
   const data = {
-    contentData: targetLanguageLoadedContent.map(
-      (contentWidget, contentIndex) => {
-        const generalTopicName = getGeneralTopicName(contentWidget.title);
-        const isFirst =
-          contentWidget.title.endsWith('-1') ||
-          contentWidget.title.endsWith('-01');
-        const isLastInTotalArr =
-          targetLanguageLoadedContent.length === contentIndex + 1;
-        const hasFollowingVideo = isLastInTotalArr
-          ? false
-          : generalTopicName ===
-            getGeneralTopicName(
-              targetLanguageLoadedContent[contentIndex + 1].title,
-            );
-
-        return {
-          ...contentWidget,
-          contentIndex: contentIndex,
-          isFirst,
-          hasFollowingVideo,
-          generalTopicName,
-        };
-      },
-    ),
+    contentData: formatContentData(targetLanguageLoadedContent),
     wordsData: targetLanguageLoadedWords,
     sentencesData: targetLanguageLoadedSentences,
   };

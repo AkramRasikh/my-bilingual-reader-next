@@ -1,4 +1,4 @@
-import { getFormattedData } from '@/app/get-on-load-data';
+import { getFormattedData } from '@/app/client-api/get-on-load-data';
 import { readJsonFromFile, saveJsonToFile } from '@/utils/setup-mock-data';
 import { NextResponse } from 'next/server';
 
