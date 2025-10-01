@@ -17,7 +17,7 @@ import { breakdownSentenceAPI } from './breakdown-sentence';
 import { updateContentMetaDataAPI } from './update-content-meta-data';
 import { updateAdhocSentenceAPI } from './update-adhoc-sentence';
 import { getAudioURL } from './get-firebase-media-url';
-import { contentReducer } from './content-reducer';
+import { contentReducer } from './reducers/content-reducer';
 import { sentenceReviewBulkAPI } from './bulk-sentence-review';
 
 export const DataContext = createContext(null);
