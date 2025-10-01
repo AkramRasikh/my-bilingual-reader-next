@@ -30,12 +30,12 @@ export const isDueCheck = (sentence, todayDateObj) => {
 };
 
 export const DataProvider = ({
-  sortedContent,
-  targetLanguageLoadedSentences,
-  targetLanguageLoadedWords,
+  wordsData,
+  sentencesData,
+  contentData,
   children,
 }: PropsWithChildren<object>) => {
-  const [wordsState, setWordsState] = useState(targetLanguageLoadedWords);
+  const [wordsState, setWordsState] = useState(wordsData);
   const [sentencesState, setSentencesState] = useState([]);
   const [story, setStory] = useState();
   const [pureWordsState, setPureWordsState] = useState([]);
@@ -55,7 +55,7 @@ export const DataProvider = ({
 
   const [contentState, dispatchContent] = useReducer(
     contentReducer,
-    sortedContent,
+    contentData,
   );
 
   const wordsFromSentences = [];
@@ -78,12 +78,12 @@ export const DataProvider = ({
   useEffect(() => {
     if (
       sentencesState.length === 0 &&
-      targetLanguageLoadedSentences.length > 0 &&
+      sentencesData.length > 0 &&
       pureWordsState.length > 0 &&
       !mountedState
     ) {
       const dateNow = new Date();
-      const dueCardsNow = targetLanguageLoadedSentences.filter((sentence) =>
+      const dueCardsNow = sentencesData.filter((sentence) =>
         isDueCheck(sentence, dateNow),
       );
 
@@ -122,7 +122,7 @@ export const DataProvider = ({
       }
     });
 
-    targetLanguageLoadedSentences?.forEach((sentence) => {
+    sentencesData?.forEach((sentence) => {
       if (sentence?.matchedWordsSurface) {
         sentence?.matchedWordsSurface.forEach((item, index) => {
           if (item && !pureWords.includes(item)) {
@@ -681,7 +681,7 @@ export const DataProvider = ({
   return (
     <DataContext.Provider
       value={{
-        targetLanguageLoadedWords,
+        wordsData,
         pureWords: pureWordsState,
         handleSaveWord,
         wordsState,
