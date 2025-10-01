@@ -22,6 +22,8 @@ import { sentenceReviewBulkAPI } from './bulk-sentence-review';
 
 export const DataContext = createContext(null);
 
+const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
+
 export const isDueCheck = (sentence, todayDateObj) => {
   return (
     (sentence?.nextReview && sentence.nextReview < todayDateObj) ||
@@ -76,9 +78,27 @@ export const DataProvider = ({
   }, [wordsState, selectedContentState]);
 
   useEffect(() => {
+    if (!isMockEnv) {
+      localStorage.setItem('wordsState', JSON.stringify(wordsState));
+    }
+  }, [wordsState]);
+
+  useEffect(() => {
+    if (!isMockEnv) {
+      localStorage.setItem('sentencesState', JSON.stringify(sentencesState));
+    }
+  }, [sentencesState]);
+
+  useEffect(() => {
+    if (!isMockEnv) {
+      localStorage.setItem('contentState', JSON.stringify(contentState));
+    }
+  }, [contentState]);
+
+  useEffect(() => {
     if (
       sentencesState.length === 0 &&
-      sentencesData.length > 0 &&
+      sentencesData?.length > 0 &&
       pureWordsState.length > 0 &&
       !mountedState
     ) {
@@ -463,7 +483,11 @@ export const DataProvider = ({
       });
 
       if (isRemoveReview) {
-        dispatchContent({ type: 'removeReview', contentIndex, sentenceId });
+        dispatchContent({
+          type: 'removeReview',
+          contentIndex,
+          sentenceId,
+        });
       } else {
         const { reviewData } = updatedFieldFromDB;
         dispatchContent({

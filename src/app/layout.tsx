@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { FetchDataProvider } from './FetchDataProvider';
-import { readJsonFromFile, saveJsonToFile } from '@/utils/setup-mock-data';
-import { getOnLoadData } from './get-on-load-data';
 
 export const metadata: Metadata = {
   title: 'Yah Dun Kno!',
@@ -14,21 +12,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
-
-  const initialData = isMockEnv
-    ? await readJsonFromFile()
-    : await getOnLoadData();
-
-  if (!isMockEnv) {
-    await saveJsonToFile(initialData);
-  }
   return (
     <html lang='en'>
       <body>
-        <FetchDataProvider initialData={initialData}>
-          {children}
-        </FetchDataProvider>
+        <FetchDataProvider>{children}</FetchDataProvider>
       </body>
     </html>
   );
