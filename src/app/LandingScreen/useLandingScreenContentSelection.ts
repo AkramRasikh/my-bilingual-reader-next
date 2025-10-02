@@ -9,7 +9,10 @@ const useLandingScreenContentSelection = ({
   const [contentSelectionState, setContentSelectionState] = useState([]);
 
   useEffect(() => {
-    if (generalTopicDisplayNameState?.length > 0) {
+    if (
+      generalTopicDisplayNameState?.length > 0 &&
+      contentSelectionState?.length === 0
+    ) {
       const today = new Date();
       const comprehensiveState = generalTopicDisplayNameState.map(
         (youtubeTag) => {
