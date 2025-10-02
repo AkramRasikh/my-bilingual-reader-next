@@ -1,6 +1,6 @@
 import { getOnLoadData } from '../client-api/get-on-load-data';
 import { isDueCheck } from '../DataProvider';
-import PageContainer from '../PageContainer';
+import PageContainer from '../../components/custom/PageContainer';
 import WordsContainer from './WordsContainer';
 import { WordsProvider } from './WordsProvider';
 
