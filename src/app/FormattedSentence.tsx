@@ -7,6 +7,7 @@ const FormattedSentence = ({
   handleMouseEnter,
   wordPopUpState,
   setWordPopUpState,
+  wordsForSelectedTopic,
 }) => {
   return (
     <span ref={ref} className='mt-auto mb-auto'>
@@ -20,6 +21,7 @@ const FormattedSentence = ({
               text={text}
               wordPopUpState={wordPopUpState}
               setWordPopUpState={setWordPopUpState}
+              wordsForSelectedTopic={wordsForSelectedTopic}
             />
           );
         }

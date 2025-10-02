@@ -28,6 +28,7 @@ export const TranscriptItemProvider = ({
   isBreakingDownSentenceArrState,
   latestDueIdState,
   scrollToElState,
+  wordsForSelectedTopic,
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -246,6 +247,7 @@ export const TranscriptItemProvider = ({
         handleBreakdownSentenceTranscriptItem,
         overrideMiniReviewState,
         setOverrideMiniReviewState,
+        wordsForSelectedTopic,
       }}
     >
       {children}

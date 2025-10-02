@@ -16,6 +16,7 @@ const TranscriptItemContent = () => {
     masterPlay,
     handleSaveFunc,
     onlyShowEngState,
+    wordsForSelectedTopic,
   } = useTranscriptItem();
 
   const baseLang = contentItem.baseLang;
@@ -50,6 +51,7 @@ const TranscriptItemContent = () => {
               handleMouseEnter={handleMouseEnter}
               wordPopUpState={wordPopUpState}
               setWordPopUpState={setWordPopUpState}
+              wordsForSelectedTopic={wordsForSelectedTopic}
             />
           </p>
           {!onlyShowEngState && <p>{baseLang}</p>}

@@ -68,14 +68,19 @@ const WordInHoverCard = ({ word }) => {
   );
 };
 
-const HoverWordCard = ({ text, wordPopUpState, setWordPopUpState }) => {
+const HoverWordCard = ({
+  text,
+  wordPopUpState,
+  setWordPopUpState,
+  wordsForSelectedTopic,
+}) => {
   const [isOriginalWordSettingState, setIsOriginalWordSettingState] =
     useState(false);
 
-  const { wordsState, wordsForSelectedTopic } = useData();
+  const { wordsState } = useData();
 
   useEffect(() => {
-    const textIsOriginalToSelectedTopic = wordsForSelectedTopic.some(
+    const textIsOriginalToSelectedTopic = wordsForSelectedTopic?.some(
       (item) => text === item.baseForm || text === item.surfaceForm,
     );
 

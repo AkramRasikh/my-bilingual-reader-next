@@ -5,7 +5,8 @@ import { NewSentenceBreakdown } from './SentenceBreakdown';
 import useLearningScreen from './LearningScreen/useLearningScreen';
 
 const ComprehensiveTranscriptItem = ({ contentItem }) => {
-  const { wordPopUpState, setWordPopUpState } = useLearningScreen();
+  const { wordPopUpState, setWordPopUpState, wordsForSelectedTopic } =
+    useLearningScreen();
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
 
   const hasSentenceBreakdown = contentItem?.sentenceStructure;
@@ -41,6 +42,7 @@ const ComprehensiveTranscriptItem = ({ contentItem }) => {
         handleMouseEnter={handleMouseEnter}
         wordPopUpState={wordPopUpState}
         setWordPopUpState={setWordPopUpState}
+        wordsForSelectedTopic={wordsForSelectedTopic}
       />
       <p>{baseLang}</p>
       {hasSentenceBreakdown && (
