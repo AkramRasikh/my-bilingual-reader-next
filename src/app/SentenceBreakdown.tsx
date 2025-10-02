@@ -22,7 +22,6 @@ function getColorByIndex(index) {
 
 export const NewSentenceBreakdown = ({
   vocab,
-  sentenceStructure,
   thisSentencesSavedWords,
   handleSaveFunc,
   meaning,
@@ -41,7 +40,7 @@ export const NewSentenceBreakdown = ({
 
   return (
     <div>
-      <ul className='flex flex-wrap gap-1'>
+      <ul className='flex flex-wrap'>
         {vocab.map(({ surfaceForm, meaning }, index) => {
           const wordIsSaved = thisSentencesSavedWords?.some(
             (item) => item.text === surfaceForm,
