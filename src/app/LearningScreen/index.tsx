@@ -4,9 +4,10 @@ import LearningScreenLeftSideContainer from './LearningScreenLeftSideContainer';
 import LearningScreenContentChapterNavigation from './LearningScreenContentChapterNavigation';
 
 const LearningScreen = () => {
-  const { formattedTranscriptState, secondsState } = useLearningScreen();
+  const { formattedTranscriptState, secondsState, selectedContentState } =
+    useLearningScreen();
 
-  if (!formattedTranscriptState) {
+  if (!formattedTranscriptState || !selectedContentState) {
     return null;
   }
 
