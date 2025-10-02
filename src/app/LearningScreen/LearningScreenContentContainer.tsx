@@ -21,13 +21,10 @@ const LearningScreenContentContainer = () => {
 
   const isFullReview = selectedContentState?.isFullReview;
 
-  const content = selectedContentState.content;
   const contentIndex = selectedContentState?.contentIndex;
 
   const reviewHistory = selectedContentState?.reviewHistory;
-  const hasContentToReview = content?.some(
-    (sentenceWidget) => sentenceWidget?.reviewData,
-  );
+
   const hasPreviousVideo = !selectedContentState.isFirst;
   const hasFollowingVideo = selectedContentState.hasFollowingVideo;
 
@@ -135,7 +132,6 @@ const LearningScreenContentContainer = () => {
         {topicName && (
           <TabsContent value='meta' className={contentClasses}>
             <TabMetaContentData
-              hasContentToReview={hasContentToReview}
               reviewHistory={reviewHistory}
               updateContentMetaData={updateContentMetaData}
               topicName={topicName}
