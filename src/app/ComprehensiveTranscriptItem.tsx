@@ -1,6 +1,5 @@
 import { useRef } from 'react';
 import FormattedSentence from './FormattedSentence';
-import PopUpWordCard from './PopUpWordCard';
 import { NewSentenceBreakdown } from './SentenceBreakdown';
 import useLearningScreen from './LearningScreen/useLearningScreen';
 
@@ -56,20 +55,6 @@ const ComprehensiveTranscriptItem = ({ contentItem }) => {
           />
         </>
       )}
-
-      {wordPopUpState?.length > 0 ? (
-        <ul>
-          {wordPopUpState?.map((item) => (
-            <li key={item.id}>
-              <PopUpWordCard
-                word={item}
-                onClose={() => setWordPopUpState([])}
-                // handleDelete={handleDeleteFunc}
-              />
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </div>
   );
 };
