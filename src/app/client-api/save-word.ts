@@ -1,4 +1,4 @@
-import { japanese } from './languages';
+import { japanese } from '../languages';
 
 const saveWordAPI = async ({
   highlightedWord,

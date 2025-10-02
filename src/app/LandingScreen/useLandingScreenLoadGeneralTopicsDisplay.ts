@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import useData from '../useData';
 import { getGeneralTopicName } from '../get-general-topic-name';
 import { getFirebaseVideoURL } from '../get-firebase-media-url';
-import checkIfVideoExists from '../check-if-video-exists';
+import checkIfVideoExists from '../client-api/check-if-video-exists';
 import { japanese } from '../languages';
 
 const useLandingScreenLoadGeneralTopicsDisplay = ({ setIsLoadingState }) => {

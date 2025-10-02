@@ -1,6 +1,6 @@
 'use client';
 import { createContext, useEffect, useReducer, useState } from 'react';
-import saveWordAPI from './save-word';
+import saveWordAPI from './client-api/save-word';
 import {
   getEmptyCard,
   getNextScheduledOptions,
@@ -10,15 +10,15 @@ import {
   makeArrayUnique,
   useHighlightWordToWordBank,
 } from './useHighlightWordToWordBank';
-import { deleteWordAPI } from './delete-word';
+import { deleteWordAPI } from './client-api/delete-word';
 import { japanese } from './languages';
-import { updateSentenceDataAPI } from './update-sentence-api';
-import { breakdownSentenceAPI } from './breakdown-sentence';
-import { updateContentMetaDataAPI } from './update-content-meta-data';
-import { updateAdhocSentenceAPI } from './update-adhoc-sentence';
+import { updateSentenceDataAPI } from './client-api/update-sentence-api';
+import { breakdownSentenceAPI } from './client-api/breakdown-sentence';
+import { updateContentMetaDataAPI } from './client-api/update-content-meta-data';
+import { updateAdhocSentenceAPI } from './client-api/update-adhoc-sentence';
 import { getAudioURL } from './get-firebase-media-url';
 import { contentReducer } from './reducers/content-reducer';
-import { sentenceReviewBulkAPI } from './bulk-sentence-review';
+import { sentenceReviewBulkAPI } from './client-api/bulk-sentence-review';
 
 export const DataContext = createContext(null);
 
