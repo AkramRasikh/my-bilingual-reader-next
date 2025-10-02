@@ -2,14 +2,15 @@
 import { useEffect, useState } from 'react';
 import LearningScreen from '../LearningScreen';
 import useData from '../useData';
-import LandingScreenContentSelection from './LandingScreenContentSelection';
+import LandingUIContentSelection from './LandingUIContentSelection';
 import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
 import { toast } from 'sonner';
 import SentenceReviewContainer from '../SentenceReviewContainer';
 import LandingScreenSpinner from './LandingScreenSpinner';
 import MockFlag from '../../components/custom/MockFlag';
-import useLandingScreenLoadGeneralTopicsDisplay from './useLandingScreenLoadGeneralTopicsDisplay';
+import useLandingScreenLoadGeneralTopicsDisplay from './useLandingUILoadGeneralTopicsDisplay';
 import BreadcrumbComponent from '../BreadCrumbHeader';
+import LoadingSpinner from '@/components/custom/LoadingSpinner';
 
 const LandingScreen = () => {
   const [isLoadingState, setIsLoadingState] = useState(false);
@@ -45,8 +46,8 @@ const LandingScreen = () => {
     <LearningScreenProvider>
       <BreadcrumbComponent />
       {isMockEnv && <MockFlag />}
-      {isLoadingState && <LandingScreenSpinner />}
-      <LandingScreenContentSelection
+      {isLoadingState && <LoadingSpinner big />}
+      <LandingUIContentSelection
         generalTopicDisplayNameSelectedState={
           generalTopicDisplayNameSelectedState
         }

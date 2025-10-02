@@ -2,7 +2,7 @@
 
 import { DataProvider } from './DataProvider';
 import { useFetchData } from './FetchDataProvider';
-import LandingScreen from './LandingScreen';
+import LandingUI from './LandingUI';
 
 const PageBaseContent = () => {
   const { data } = useFetchData();
@@ -17,7 +17,7 @@ const PageBaseContent = () => {
         sentencesData={sentencesData}
         contentData={contentData}
       >
-        <LandingScreen />
+        <LandingUI />
       </DataProvider>
     </div>
   );

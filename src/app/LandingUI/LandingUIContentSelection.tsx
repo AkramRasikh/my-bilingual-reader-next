@@ -1,5 +1,5 @@
-import useLandingScreenContentSelection from './useLandingScreenContentSelection';
-import LandingScreenContentSelectionItem from './LandingScreenContentSelectionItem';
+import useLandingScreenContentSelection from './useLandingUIContentSelection';
+import LandingUIContentSelectionItem from './LandingUIContentSelectionItem';
 import useLearningScreen from '../LearningScreen/useLearningScreen';
 
 const LandingScreenContentSelection = ({
@@ -20,7 +20,7 @@ const LandingScreenContentSelection = ({
         contentSelectionState.map((youtubeMetaData, index) => {
           return (
             <li key={index}>
-              <LandingScreenContentSelectionItem
+              <LandingUIContentSelectionItem
                 handleSelectInitialTopic={handleSelectInitialTopic}
                 youtubeMetaData={youtubeMetaData}
               />

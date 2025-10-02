@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Check } from 'lucide-react';
 
-const LandingScreenContentSelectionItemImage = ({ youtubeId }) => (
+const LandingUIContentSelectionItemImage = ({ youtubeId }) => (
   <div className='relative h-20 w-5/6 m-auto'>
     <Image
       src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
@@ -14,7 +14,7 @@ const LandingScreenContentSelectionItemImage = ({ youtubeId }) => (
   </div>
 );
 
-const LandingScreenContentSelectionItemTags = ({
+const LandingUIContentSelectionItemTags = ({
   hasAllBeenReviewed,
   isThisNew,
 }) => {
@@ -49,7 +49,7 @@ const LandingScreenContentSelectionItem = ({
 
   return (
     <div className='rounded-2xl border flex flex-col gap-1 p-2 relative'>
-      <LandingScreenContentSelectionItemImage youtubeId={youtubeId} />
+      <LandingUIContentSelectionItemImage youtubeId={youtubeId} />
       <Button
         variant={'link'}
         onClick={() => handleSelectInitialTopic(youtubeTag)}
@@ -68,7 +68,7 @@ const LandingScreenContentSelectionItem = ({
           {youtubeTag}
         </span>
       </Button>
-      <LandingScreenContentSelectionItemTags
+      <LandingUIContentSelectionItemTags
         hasAllBeenReviewed={hasAllBeenReviewed}
         isThisNew={isThisNew}
       />
