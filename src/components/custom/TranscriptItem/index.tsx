@@ -26,7 +26,7 @@ const TranscriptItem = () => {
       )}
       <div className='flex gap-1'>
         <TranscriptItemActionBar />
-        <div className='flex w-full gap-1'>
+        <div className='flex w-full gap-1 justify-between'>
           <TranscriptItemContent />
           <TranscriptItemMenuSection />
         </div>
