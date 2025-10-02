@@ -21,12 +21,12 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify({
         language: 'japanese',
-        refs: JSON.stringify(body),
+        refs: body,
       }),
     });
 
     if (!response.ok) {
-      return NextResponse.json({ exists: false }, { status: 200 });
+      return NextResponse.json({ exists: false }, { status: 400 });
     }
 
     const jsonData = await response.json();

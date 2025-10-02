@@ -76,7 +76,7 @@ export const DataProvider = ({
 
   useEffect(() => {
     if (!isMockEnv) {
-      console.log('## Triggering save (content');
+      console.log('## Triggering save (content)');
       localStorage.setItem('contentState', JSON.stringify(contentState));
     }
   }, [contentState]);
@@ -158,10 +158,9 @@ export const DataProvider = ({
           body: JSON.stringify({ id: wordId, language }),
         });
         const data = await res.json();
-        console.log('## data', data);
 
         const targetLanguageWordsStateUpdated = wordsState.filter(
-          (item) => item.id !== wordId,
+          (item) => item.id !== data.id,
         );
         setWordsState(targetLanguageWordsStateUpdated);
         return true;
