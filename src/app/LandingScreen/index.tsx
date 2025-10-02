@@ -7,7 +7,7 @@ import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider
 import { toast } from 'sonner';
 import SentenceReviewContainer from '../SentenceReviewContainer';
 import LandingScreenSpinner from './LandingScreenSpinner';
-import LandingScreenMockFlag from './LandingScreenMockFlag';
+import MockFlag from '../../components/custom/MockFlag';
 import useLandingScreenLoadGeneralTopicsDisplay from './useLandingScreenLoadGeneralTopicsDisplay';
 import BreadcrumbComponent from '../BreadCrumbHeader';
 
@@ -44,7 +44,7 @@ const LandingScreen = () => {
   return (
     <LearningScreenProvider>
       <BreadcrumbComponent />
-      {isMockEnv && <LandingScreenMockFlag />}
+      {isMockEnv && <MockFlag />}
       {isLoadingState && <LandingScreenSpinner />}
       <LandingScreenContentSelection
         generalTopicDisplayNameSelectedState={

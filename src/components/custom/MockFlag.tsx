@@ -1,9 +1,9 @@
 import { LucideFlag } from 'lucide-react';
 
-const LandingScreenMockFlag = () => (
+const MockFlag = () => (
   <div className='absolute bottom-1/20'>
     <LucideFlag />
   </div>
 );
 
-export default LandingScreenMockFlag;
+export default MockFlag;
