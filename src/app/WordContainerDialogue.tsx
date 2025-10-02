@@ -12,14 +12,12 @@ import useData from './useData';
 import { isDueCheck } from './DataProvider';
 import clsx from 'clsx';
 import WordTabContent from './WordTabContent';
+import useLearningScreen from './LearningScreen/useLearningScreen';
 
 export const WordDialogueContent = () => {
-  const {
-    wordsForSelectedTopic,
-    wordBasketState,
-    setWordBasketState,
-    updateWordDataProvider,
-  } = useData();
+  const { wordBasketState, setWordBasketState, updateWordDataProvider } =
+    useData();
+  const { wordsForSelectedTopic } = useLearningScreen();
 
   const addWordToBasket = (word) => {
     const wordIsInBasic = wordBasketState.some(
