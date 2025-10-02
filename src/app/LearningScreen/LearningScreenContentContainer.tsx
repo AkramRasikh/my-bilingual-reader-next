@@ -12,12 +12,12 @@ import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/Trans
 const LearningScreenContentContainer = () => {
   const {
     updateContentMetaData,
-    getNextTranscript,
-    selectedContentState,
+
     handleSaveWord,
     handleDeleteWordDataProvider,
     wordsState,
   } = useData();
+  const { getNextTranscript, selectedContentState } = useLearningScreen();
 
   const isFullReview = selectedContentState?.isFullReview;
 

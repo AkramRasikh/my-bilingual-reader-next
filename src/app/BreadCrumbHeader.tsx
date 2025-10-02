@@ -11,20 +11,23 @@ import useData from './useData';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import BasketDialogue from './BasketDialogue';
+import useLearningScreen from './LearningScreen/useLearningScreen';
 
 const BreadcrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
   const {
-    selectedContentState,
     generalTopicDisplayNameSelectedState,
-    setSelectedContentState,
-    setGeneralTopicDisplayNameSelectedState,
-    checkHowManyOfTopicNeedsReview,
     sentencesState,
     setIsSentenceReviewState,
     isSentenceReviewState,
     wordBasketState,
   } = useData();
+  const {
+    selectedContentState,
+    setGeneralTopicDisplayNameSelectedState,
+    checkHowManyOfTopicNeedsReview,
+    setSelectedContentState,
+  } = useLearningScreen();
 
   useEffect(() => {
     if (wordBasketState.length === 0 && showBasketState) {

@@ -1,12 +1,13 @@
-import useData from '../useData';
 import useLandingScreenContentSelection from './useLandingScreenContentSelection';
 import LandingScreenContentSelectionItem from './LandingScreenContentSelectionItem';
+import useLearningScreen from '../LearningScreen/useLearningScreen';
 
 const LandingScreenContentSelection = ({
   generalTopicDisplayNameSelectedState,
   generalTopicDisplayNameState,
 }) => {
-  const { handleSelectInitialTopic } = useData();
+  const { handleSelectInitialTopic, selectedContentState } =
+    useLearningScreen();
   const { contentSelectionState } = useLandingScreenContentSelection({
     generalTopicDisplayNameSelectedState,
     generalTopicDisplayNameState,
@@ -14,7 +15,7 @@ const LandingScreenContentSelection = ({
 
   return (
     <ul className='flex flex-wrap gap-2'>
-      {!generalTopicDisplayNameSelectedState &&
+      {!selectedContentState &&
         contentSelectionState?.length > 0 &&
         contentSelectionState.map((youtubeMetaData, index) => {
           return (

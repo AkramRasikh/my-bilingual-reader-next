@@ -41,17 +41,11 @@ export const DataProvider = ({
   const [sentencesState, setSentencesState] = useState([]);
   const [story, setStory] = useState();
   const [pureWordsState, setPureWordsState] = useState([]);
-  const [selectedContentState, setSelectedContentState] = useState(null);
   const [mountedState, setMountedState] = useState(false);
   const [generalTopicDisplayNameState, setGeneralTopicDisplayNameState] =
     useState([]);
   const [wordBasketState, setWordBasketState] = useState([]);
 
-  const [wordsForSelectedTopic, setWordsForSelectedTopic] = useState([]);
-  const [
-    generalTopicDisplayNameSelectedState,
-    setGeneralTopicDisplayNameSelectedState,
-  ] = useState('');
   const [toastMessageState, setToastMessageState] = useState('');
   const [isSentenceReviewState, setIsSentenceReviewState] = useState(false);
 
@@ -67,30 +61,22 @@ export const DataProvider = ({
   });
 
   useEffect(() => {
-    if (selectedContentState && wordsState?.length > 0) {
-      const dateNow = new Date();
-      const wordsForThisTopic = getSelectedTopicsWords();
-      const sortedWordsForThisTopic = wordsForThisTopic?.sort(
-        (a, b) => isDueCheck(b, dateNow) - isDueCheck(a, dateNow),
-      );
-      setWordsForSelectedTopic(sortedWordsForThisTopic);
-    }
-  }, [wordsState, selectedContentState]);
-
-  useEffect(() => {
     if (!isMockEnv) {
+      console.log('## Triggering save (words)');
       localStorage.setItem('wordsState', JSON.stringify(wordsState));
     }
   }, [wordsState]);
 
   useEffect(() => {
     if (!isMockEnv) {
+      console.log('## Triggering save (sentences)');
       localStorage.setItem('sentencesState', JSON.stringify(sentencesState));
     }
   }, [sentencesState]);
 
   useEffect(() => {
     if (!isMockEnv) {
+      console.log('## Triggering save (content');
       localStorage.setItem('contentState', JSON.stringify(contentState));
     }
   }, [contentState]);
@@ -118,13 +104,6 @@ export const DataProvider = ({
       setSentencesState(formatSentence);
     }
   }, [sentencesState, mountedState, pureWordsState]);
-
-  const handleSelectedContent = (thisYoutubeTitle) => {
-    const thisContent = contentState.find(
-      (item) => item?.title === thisYoutubeTitle,
-    );
-    setSelectedContentState(thisContent);
-  };
 
   const getYoutubeID = (generalName) =>
     contentState
@@ -240,36 +219,6 @@ export const DataProvider = ({
     }
   };
 
-  const getSelectedTopicsWordsFunc = (content, isDueBool) => {
-    const todayDateObj = new Date();
-    const thisTopicsSentenceIds = content.map((i) => i.id);
-
-    const thisTopicsWordsArr = [];
-
-    wordsState.forEach((word) => {
-      const originalContextId = word.contexts[0];
-      if (thisTopicsSentenceIds.includes(originalContextId)) {
-        if (!isDueBool) {
-          thisTopicsWordsArr.push(word);
-          return;
-        }
-        if (isDueCheck(word, todayDateObj)) {
-          thisTopicsWordsArr.push(word);
-        }
-      }
-    });
-
-    return thisTopicsWordsArr;
-  };
-
-  const getSelectedTopicsWords = () => {
-    if (!selectedContentState || wordsState?.length === 0) {
-      return null;
-    }
-
-    return getSelectedTopicsWordsFunc(selectedContentState.content);
-  };
-
   const getTopicStatus = (genTop, todayDateObj) => {
     const allTheseTopics = contentState.filter(
       (el) => el.generalTopicName === genTop,
@@ -309,116 +258,6 @@ export const DataProvider = ({
     }
 
     return { isThisDue, isThisNew, hasAllBeenReviewed };
-  };
-
-  const checkHowManyOfTopicNeedsReview = () => {
-    if (!generalTopicDisplayNameSelectedState) {
-      return null;
-    }
-
-    const todayDateObj = new Date();
-
-    const sentencesNeedReview = [];
-    contentState.forEach((contentEl) => {
-      if (contentEl.generalTopicName !== generalTopicDisplayNameSelectedState) {
-        return;
-      }
-
-      const thisStartTime = contentEl.realStartTime;
-      const contentIndex = contentEl.contentIndex;
-      const transcript = contentEl.content;
-      const generalTopicName = contentEl.generalTopicName;
-      const title = contentEl.title;
-
-      transcript.forEach((transcriptEl) => {
-        if (!transcriptEl?.reviewData?.due) {
-          return;
-        }
-        if (isDueCheck(transcriptEl, todayDateObj)) {
-          sentencesNeedReview.push({
-            ...transcriptEl,
-            time: thisStartTime + transcriptEl.time,
-            contentIndex,
-            title,
-            generalTopicName,
-          });
-        }
-      });
-    });
-
-    return sentencesNeedReview;
-  };
-
-  const getGeneralContentMetaData = () => {
-    if (!generalTopicDisplayNameSelectedState) {
-      return null;
-    }
-
-    const todayDateObj = new Date();
-
-    const contentOfGeneralTopic = contentState.filter(
-      (contentEl) =>
-        contentEl.generalTopicName === generalTopicDisplayNameSelectedState,
-    );
-
-    return contentOfGeneralTopic.map((thisContentEl) => {
-      const title = thisContentEl.title;
-      const reviewHistory = thisContentEl.reviewHistory?.length > 0;
-      const chapter = title.split('-');
-      const chapterNum = chapter[chapter.length - 1];
-
-      let sentencesNeedReview = 0;
-      const transcript = thisContentEl.content;
-
-      sentencesNeedReview = transcript.filter((transcriptEl) => {
-        if (!transcriptEl?.reviewData?.due) {
-          return;
-        }
-        if (isDueCheck(transcriptEl, todayDateObj)) {
-          return true;
-        }
-      }).length;
-      return {
-        chapterNum,
-        hasBeenReviewed: reviewHistory,
-        sentencesNeedReview,
-        title,
-        isSelected: selectedContentState.title === title,
-      };
-    });
-  };
-
-  const getGeneralContentWordData = () => {
-    if (!generalTopicDisplayNameSelectedState) {
-      return null;
-    }
-
-    const contentOfGeneralTopic = contentState.filter(
-      (contentEl) =>
-        contentEl.generalTopicName === generalTopicDisplayNameSelectedState,
-    );
-
-    const allContentDueWords = contentOfGeneralTopic.map((i) =>
-      getSelectedTopicsWordsFunc(i.content, true),
-    );
-
-    return allContentDueWords;
-  };
-
-  useEffect(() => {
-    // figure out conditions here
-    if (selectedContentState && !selectedContentState?.isFullReview) {
-      setSelectedContentState(contentState[selectedContentState.contentIndex]);
-    }
-  }, [selectedContentState, contentState]);
-
-  const getNextTranscript = (isNext) => {
-    const nextIndex = selectedContentState.contentIndex + (isNext ? +1 : -1);
-
-    const thisContent = contentState.find(
-      (item) => item?.title === contentState[nextIndex]?.title,
-    );
-    setSelectedContentState(thisContent);
   };
 
   const updateAdhocSentenceData = async ({
@@ -498,16 +337,16 @@ export const DataProvider = ({
         });
       }
 
-      if (selectedContentState?.isFullReview) {
-        // filter out ASSUMING its date() based
-        const updatedReviewSpecificState = selectedContentState.content.filter(
-          (sentenceData) => sentenceData.id !== sentenceId,
-        );
-        setSelectedContentState({
-          ...selectedContentState,
-          content: updatedReviewSpecificState,
-        });
-      }
+      // if (selectedContentState?.isFullReview) {
+      //   // filter out ASSUMING its date() based
+      //   const updatedReviewSpecificState = selectedContentState.content.filter(
+      //     (sentenceData) => sentenceData.id !== sentenceId,
+      //   );
+      //   // setSelectedContentState({
+      //   //   ...selectedContentState,
+      //   //   content: updatedReviewSpecificState,
+      //   // });
+      // }
 
       return updatedFieldFromDB?.reviewData;
     } catch (error) {
@@ -555,14 +394,6 @@ export const DataProvider = ({
     } catch (error) {
       console.log('## handleDeleteWordDataProvider deleteWord', { error });
     }
-  };
-
-  const handleSelectInitialTopic = (youtubeTag) => {
-    const firstElOfYoutubeTitle = contentState.find(
-      (i) => i.generalTopicName === youtubeTag,
-    );
-    setGeneralTopicDisplayNameSelectedState(youtubeTag);
-    handleSelectedContent(firstElOfYoutubeTitle.title);
   };
 
   const updateContentMetaData = async ({
@@ -618,11 +449,11 @@ export const DataProvider = ({
   };
 
   const handleGetComprehensiveReview = () => {
-    setSelectedContentState({
-      content: checkHowManyOfTopicNeedsReview(),
-      title: generalTopicDisplayNameSelectedState,
-      isFullReview: true,
-    });
+    // setSelectedContentState({
+    //   content: checkHowManyOfTopicNeedsReview(),
+    //   title: generalTopicDisplayNameSelectedState,
+    //   isFullReview: true,
+    // });
   };
 
   const addGeneratedSentence = async ({ targetLang, baseLang, notes }) => {
@@ -675,26 +506,26 @@ export const DataProvider = ({
         sentenceId,
         fields: { ...resObj },
       });
-      if (selectedContentState?.isFullReview) {
-        const updatedReviewSpecificState = selectedContentState.content.map(
-          (sentenceData) => {
-            if (sentenceData.id === sentenceId) {
-              const { sentenceStructure, vocab, meaning } = resObj;
-              return {
-                ...sentenceData,
-                sentenceStructure,
-                vocab,
-                meaning,
-              };
-            }
-            return sentenceData;
-          },
-        );
-        setSelectedContentState({
-          ...selectedContentState,
-          content: updatedReviewSpecificState,
-        });
-      }
+      // if (selectedContentState?.isFullReview) {
+      //   const updatedReviewSpecificState = selectedContentState.content.map(
+      //     (sentenceData) => {
+      //       if (sentenceData.id === sentenceId) {
+      //         const { sentenceStructure, vocab, meaning } = resObj;
+      //         return {
+      //           ...sentenceData,
+      //           sentenceStructure,
+      //           vocab,
+      //           meaning,
+      //         };
+      //       }
+      //       return sentenceData;
+      //     },
+      //   );
+      // setSelectedContentState({
+      //   ...selectedContentState,
+      //   content: updatedReviewSpecificState,
+      // });
+      // }
 
       return true;
     } catch (error) {
@@ -713,21 +544,13 @@ export const DataProvider = ({
         handleDeleteWordDataProvider,
         updateSentenceData,
         contentState,
-        selectedContentState,
-        setSelectedContentState,
         sentenceReviewBulk,
         breakdownSentence,
         updateContentMetaData,
-        getNextTranscript,
         generalTopicDisplayNameState,
         setGeneralTopicDisplayNameState,
-        generalTopicDisplayNameSelectedState,
-        setGeneralTopicDisplayNameSelectedState,
         getYoutubeID,
-        checkHowManyOfTopicNeedsReview,
         handleGetComprehensiveReview,
-        getSelectedTopicsWords,
-        wordsForSelectedTopic,
         updateWordDataProvider,
         sentencesState,
         updateAdhocSentenceData,
@@ -740,11 +563,7 @@ export const DataProvider = ({
         story,
         setStory,
         addGeneratedSentence,
-        handleSelectedContent,
-        getGeneralContentMetaData,
-        handleSelectInitialTopic,
         addImageDataProvider,
-        getGeneralContentWordData,
         getTopicStatus,
       }}
     >

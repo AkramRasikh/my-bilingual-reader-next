@@ -9,6 +9,7 @@ import SentenceReviewContainer from '../SentenceReviewContainer';
 import LandingScreenSpinner from './LandingScreenSpinner';
 import LandingScreenMockFlag from './LandingScreenMockFlag';
 import useLandingScreenLoadGeneralTopicsDisplay from './useLandingScreenLoadGeneralTopicsDisplay';
+import BreadcrumbComponent from '../BreadCrumbHeader';
 
 const LandingScreen = () => {
   const [isLoadingState, setIsLoadingState] = useState(false);
@@ -16,7 +17,6 @@ const LandingScreen = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
 
   const {
-    selectedContentState,
     generalTopicDisplayNameState,
     generalTopicDisplayNameSelectedState,
     sentencesState,
@@ -42,7 +42,8 @@ const LandingScreen = () => {
   }
 
   return (
-    <div className='p-3'>
+    <LearningScreenProvider>
+      <BreadcrumbComponent />
       {isMockEnv && <LandingScreenMockFlag />}
       {isLoadingState && <LandingScreenSpinner />}
       <LandingScreenContentSelection
@@ -54,12 +55,8 @@ const LandingScreen = () => {
         setIsSentenceReviewState={setIsSentenceReviewState}
         numberOfSentences={numberOfSentences}
       />
-      {selectedContentState && (
-        <LearningScreenProvider>
-          <LearningScreen />
-        </LearningScreenProvider>
-      )}
-    </div>
+      <LearningScreen />
+    </LearningScreenProvider>
   );
 };
 

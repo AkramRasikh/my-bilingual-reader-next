@@ -2,19 +2,24 @@ import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import useData from '../useData';
+import useLearningScreen from './useLearningScreen';
 
 const LearningScreenContentChapterNavigation = () => {
   const [contentMetaDataState, setContentMetaDataState] = useState([]);
   const [contentMetaWordDataState, setContentMetaWordDataState] = useState([]);
   const {
-    getGeneralContentMetaData,
     handleGetComprehensiveReview,
+
+    wordsState,
+  } = useData();
+
+  const {
     generalTopicDisplayNameSelectedState,
+    selectedContentState,
+    getGeneralContentMetaData,
     handleSelectedContent,
     getGeneralContentWordData,
-    wordsState,
-    selectedContentState,
-  } = useData();
+  } = useLearningScreen();
 
   useEffect(() => {
     const contentMetaData =
@@ -26,7 +31,7 @@ const LearningScreenContentChapterNavigation = () => {
     setContentMetaWordDataState(wordMetaData);
   }, [wordsState, selectedContentState]);
 
-  const hasUnifiedChapter = contentMetaDataState.length === 1;
+  const hasUnifiedChapter = contentMetaDataState?.length === 1;
 
   if (hasUnifiedChapter) {
     const sentencesNeedReview = contentMetaDataState[0]?.sentencesNeedReview;

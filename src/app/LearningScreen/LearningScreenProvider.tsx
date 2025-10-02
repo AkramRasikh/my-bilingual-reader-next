@@ -57,6 +57,10 @@ export const LearningScreenProvider = ({
     id: '',
     triggerScroll: false,
   });
+  const [
+    generalTopicDisplayNameSelectedState,
+    setGeneralTopicDisplayNameSelectedState,
+  ] = useState('');
   const [scrollToElState, setScrollToElState] = useState('');
   const [firstDueIndexState, setFirstDueIndexState] = useState(0);
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState();
@@ -68,11 +72,13 @@ export const LearningScreenProvider = ({
   const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
     [],
   );
+  const [wordsForSelectedTopic, setWordsForSelectedTopic] = useState([]);
   const [overlappingSnippetDataState, setOverlappingSnippetDataState] =
     useState([]);
   const [wordPopUpState, setWordPopUpState] = useState([]);
 
   const [loopTranscriptState, setLoopTranscriptState] = useState([]);
+  const [selectedContentState, setSelectedContentState] = useState();
   const [threeSecondLoopState, setThreeSecondLoopState] = useState<
     number | null
   >();
@@ -81,11 +87,12 @@ export const LearningScreenProvider = ({
     useState(false);
 
   const {
-    selectedContentState,
+    contentState,
     updateSentenceData,
     sentenceReviewBulk,
     pureWords,
     breakdownSentence,
+    wordsState,
   } = useData();
 
   const realStartTime = selectedContentState?.realStartTime || 0;
@@ -139,6 +146,7 @@ export const LearningScreenProvider = ({
       }
       return item;
     });
+
     setLatestDueIdState({
       id: latestIsDueEl,
       index: latestIsDueElIndex,
@@ -158,8 +166,149 @@ export const LearningScreenProvider = ({
     }
   };
 
+  const getNextTranscript = (isNext) => {
+    const nextIndex = selectedContentState.contentIndex + (isNext ? +1 : -1);
+
+    const thisContent = contentState.find(
+      (item) => item?.title === contentState[nextIndex]?.title,
+    );
+    setSelectedContentState(thisContent);
+  };
+
+  const getGeneralContentMetaData = () => {
+    if (!generalTopicDisplayNameSelectedState) {
+      return null;
+    }
+
+    const todayDateObj = new Date();
+
+    const contentOfGeneralTopic = contentState.filter(
+      (contentEl) =>
+        contentEl.generalTopicName === generalTopicDisplayNameSelectedState,
+    );
+
+    return contentOfGeneralTopic.map((thisContentEl) => {
+      const title = thisContentEl.title;
+      const reviewHistory = thisContentEl.reviewHistory?.length > 0;
+      const chapter = title.split('-');
+      const chapterNum = chapter[chapter.length - 1];
+
+      let sentencesNeedReview = 0;
+      const transcript = thisContentEl.content;
+
+      sentencesNeedReview = transcript.filter((transcriptEl) => {
+        if (!transcriptEl?.reviewData?.due) {
+          return;
+        }
+        if (isDueCheck(transcriptEl, todayDateObj)) {
+          return true;
+        }
+      }).length;
+      return {
+        chapterNum,
+        hasBeenReviewed: reviewHistory,
+        sentencesNeedReview,
+        title,
+        isSelected: selectedContentState.title === title,
+      };
+    });
+  };
+
+  const getSelectedTopicsWordsFunc = (content, isDueBool) => {
+    const todayDateObj = new Date();
+    const thisTopicsSentenceIds = content.map((i) => i.id);
+
+    const thisTopicsWordsArr = [];
+
+    wordsState.forEach((word) => {
+      const originalContextId = word.contexts[0];
+      if (thisTopicsSentenceIds.includes(originalContextId)) {
+        if (!isDueBool) {
+          thisTopicsWordsArr.push(word);
+          return;
+        }
+        if (isDueCheck(word, todayDateObj)) {
+          thisTopicsWordsArr.push(word);
+        }
+      }
+    });
+
+    return thisTopicsWordsArr;
+  };
+
+  const getGeneralContentWordData = () => {
+    if (!generalTopicDisplayNameSelectedState) {
+      return null;
+    }
+
+    const contentOfGeneralTopic = contentState.filter(
+      (contentEl) =>
+        contentEl.generalTopicName === generalTopicDisplayNameSelectedState,
+    );
+
+    const allContentDueWords = contentOfGeneralTopic.map((i) =>
+      getSelectedTopicsWordsFunc(i.content, true),
+    );
+
+    return allContentDueWords;
+  };
+
+  const checkHowManyOfTopicNeedsReview = () => {
+    if (!generalTopicDisplayNameSelectedState) {
+      return null;
+    }
+
+    const todayDateObj = new Date();
+
+    const sentencesNeedReview = [];
+    contentState.forEach((contentEl) => {
+      if (contentEl.generalTopicName !== generalTopicDisplayNameSelectedState) {
+        return;
+      }
+
+      const thisStartTime = contentEl.realStartTime;
+      const contentIndex = contentEl.contentIndex;
+      const transcript = contentEl.content;
+      const generalTopicName = contentEl.generalTopicName;
+      const title = contentEl.title;
+
+      transcript.forEach((transcriptEl) => {
+        if (!transcriptEl?.reviewData?.due) {
+          return;
+        }
+        if (isDueCheck(transcriptEl, todayDateObj)) {
+          sentencesNeedReview.push({
+            ...transcriptEl,
+            time: thisStartTime + transcriptEl.time,
+            contentIndex,
+            title,
+            generalTopicName,
+          });
+        }
+      });
+    });
+
+    return sentencesNeedReview;
+  };
+
   useEffect(() => {
-    getFormattedData();
+    // figure out conditions here
+    if (selectedContentState && !selectedContentState?.isFullReview) {
+      setSelectedContentState(contentState[selectedContentState.contentIndex]);
+    }
+  }, [selectedContentState, contentState]);
+
+  const handleSelectedContent = (thisYoutubeTitle) => {
+    const thisContent = contentState.find(
+      (item) => item?.title === thisYoutubeTitle,
+    );
+    setSelectedContentState(thisContent);
+  };
+
+  useEffect(() => {
+    if (content) {
+      getFormattedData();
+    }
   }, [pureWords, content]);
 
   useEffect(() => {
@@ -239,6 +388,25 @@ export const LearningScreenProvider = ({
     setScrollToElState(masterPlay);
     setTimeout(() => setScrollToElState(''), 300);
   };
+
+  const getSelectedTopicsWords = () => {
+    if (!selectedContentState || wordsState?.length === 0) {
+      return null;
+    }
+
+    return getSelectedTopicsWordsFunc(selectedContentState.content);
+  };
+
+  useEffect(() => {
+    if (selectedContentState && wordsState?.length > 0) {
+      const dateNow = new Date();
+      const wordsForThisTopic = getSelectedTopicsWords();
+      const sortedWordsForThisTopic = wordsForThisTopic?.sort(
+        (a, b) => isDueCheck(b, dateNow) - isDueCheck(a, dateNow),
+      );
+      setWordsForSelectedTopic(sortedWordsForThisTopic);
+    }
+  }, [wordsState, selectedContentState]);
 
   const handleBulkReviews = async () => {
     const emptyCard = getEmptyCard();
@@ -518,6 +686,14 @@ export const LearningScreenProvider = ({
     }
   };
 
+  const handleSelectInitialTopic = (youtubeTag) => {
+    const firstElOfYoutubeTitle = contentState.find(
+      (i) => i.generalTopicName === youtubeTag,
+    );
+    setGeneralTopicDisplayNameSelectedState(youtubeTag);
+    handleSelectedContent(firstElOfYoutubeTitle.title);
+  };
+
   const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {
     const contentIndex = selectedContentState?.contentIndex;
     await breakdownSentence({
@@ -597,6 +773,17 @@ export const LearningScreenProvider = ({
         transcriptRef,
         handleScrollToMasterView,
         scrollToElState,
+        handleSelectedContent,
+        getNextTranscript,
+        handleSelectInitialTopic,
+        generalTopicDisplayNameSelectedState,
+        setGeneralTopicDisplayNameSelectedState,
+        checkHowManyOfTopicNeedsReview,
+        getGeneralContentMetaData,
+        getGeneralContentWordData,
+        wordsForSelectedTopic,
+        selectedContentState,
+        setSelectedContentState,
       }}
     >
       {children}

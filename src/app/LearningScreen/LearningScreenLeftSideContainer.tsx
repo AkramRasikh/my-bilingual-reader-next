@@ -3,7 +3,6 @@ import { getGeneralTopicName } from '../get-general-topic-name';
 import { japanese } from '../languages';
 import KeyListener from './LearningScreenKeyListener';
 import VideoPlayer from '../VideoPlayer';
-import useData from '../useData';
 import ComprehensiveTranscriptItem from '../ComprehensiveTranscriptItem';
 import useLearningScreen from './useLearningScreen';
 import LearningScreenActionBar from './LearningScreenActionBar';
@@ -17,15 +16,14 @@ const LearningScreenLeftSideContainer = () => {
     ref,
     handleTimeUpdate,
     showOnVideoTranscriptState,
+    selectedContentState,
   } = useLearningScreen();
-
-  const { selectedContentState } = useData();
 
   const isFullReview = selectedContentState?.isFullReview;
 
   const generalTopic = isFullReview
-    ? selectedContentState.title
-    : getGeneralTopicName(selectedContentState.title);
+    ? selectedContentState?.title
+    : getGeneralTopicName(selectedContentState?.title);
   const videoUrl = getFirebaseVideoURL(generalTopic, japanese);
 
   return (
