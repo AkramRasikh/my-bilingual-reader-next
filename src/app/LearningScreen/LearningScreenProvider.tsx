@@ -7,7 +7,7 @@ import {
   getNextScheduledOptions,
   srsCalculationAndText,
   srsRetentionKeyTypes,
-} from '../srs-algo';
+} from '../srs-utils/srs-algo';
 import useManageThreeSecondLoop from './hooks/useManageThreeSecondLoop';
 import useManageLoopInit from './hooks/useManageLoopInit';
 import { useHighlightWordToWordBank } from '../useHighlightWordToWordBank';

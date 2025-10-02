@@ -1,4 +1,4 @@
-import { getTimeDiffSRS } from '@/app/getTimeDiffSRS';
+import { getTimeDiffSRS } from '@/app/srs-utils/get-time-diff-srs';
 import ReviewSRSToggles from '@/app/ReviewSRSToggles';
 import useTranscriptItem from './useTranscriptItem';
 

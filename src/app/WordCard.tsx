@@ -8,8 +8,11 @@ import ReviewSRSToggles from './ReviewSRSToggles';
 import { Label } from '@/components/ui/label';
 import { isDueCheck } from './DataProvider';
 import clsx from 'clsx';
-import { getTimeDiffSRS } from './getTimeDiffSRS';
-import { srsCalculationAndText, srsRetentionKeyTypes } from './srs-algo';
+import { getTimeDiffSRS } from './srs-utils/get-time-diff-srs';
+import {
+  srsCalculationAndText,
+  srsRetentionKeyTypes,
+} from './srs-utils/srs-algo';
 import LoadingSpinner from '../components/custom/LoadingSpinner';
 
 export const WordCardContent = ({

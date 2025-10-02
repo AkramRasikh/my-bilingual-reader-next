@@ -1,5 +1,8 @@
 import { Button } from '@/components/ui/button';
-import { srsCalculationAndText, srsRetentionKeyTypes } from './srs-algo';
+import {
+  srsCalculationAndText,
+  srsRetentionKeyTypes,
+} from './srs-utils/srs-algo';
 import { Trash } from 'lucide-react';
 import { useState } from 'react';
 import clsx from 'clsx';

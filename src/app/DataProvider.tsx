@@ -5,7 +5,7 @@ import {
   getEmptyCard,
   getNextScheduledOptions,
   srsRetentionKeyTypes,
-} from './srs-algo';
+} from './srs-utils/srs-algo';
 import {
   makeArrayUnique,
   useHighlightWordToWordBank,

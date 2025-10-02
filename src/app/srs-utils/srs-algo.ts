@@ -1,5 +1,5 @@
 import { createEmptyCard, generatorParameters, fsrs } from 'ts-fsrs';
-import { getTimeDiffSRS } from './getTimeDiffSRS';
+import { getTimeDiffSRS } from './get-time-diff-srs';
 
 const sentenceHelperUpperLimit = 30;
 
