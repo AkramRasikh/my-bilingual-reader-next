@@ -1,4 +1,4 @@
-import { getGeneralTopicName } from '@/app/get-general-topic-name';
+import { getGeneralTopicName } from '@/utils/get-general-topic-name';
 
 export const formatContentData = (targetLanguageLoadedContent) =>
   targetLanguageLoadedContent.map((contentWidget, contentIndex) => {

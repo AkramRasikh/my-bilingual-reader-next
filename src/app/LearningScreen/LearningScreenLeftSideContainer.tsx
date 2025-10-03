@@ -1,5 +1,5 @@
 import { getCloudflareVideoURL } from '../media-utils/get-media-url';
-import { getGeneralTopicName } from '../get-general-topic-name';
+import { getGeneralTopicName } from '../../utils/get-general-topic-name';
 import { japanese } from '../languages';
 import KeyListener from './LearningScreenKeyListener';
 import VideoPlayer from '../VideoPlayer';

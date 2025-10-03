@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import useData from '../useData';
-import { getGeneralTopicName } from '../get-general-topic-name';
+import { getGeneralTopicName } from '../../utils/get-general-topic-name';
 import { getCloudflareVideoURL } from '../media-utils/get-media-url';
 import checkIfVideoExists from '../client-api/check-if-video-exists';
 import { japanese } from '../languages';
