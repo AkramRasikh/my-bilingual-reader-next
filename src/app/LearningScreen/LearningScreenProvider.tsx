@@ -89,7 +89,7 @@ export const LearningScreenProvider = ({
     contentState,
     updateSentenceData,
     sentenceReviewBulk,
-    pureWords,
+    pureWordsState,
     breakdownSentence,
     wordsState,
   } = useData();
@@ -106,7 +106,7 @@ export const LearningScreenProvider = ({
   const content = selectedContentState?.content;
 
   const { underlineWordsInSentence } = useHighlightWordToWordBank({
-    pureWordsUnique: pureWords,
+    pureWordsState,
   });
 
   const getFormattedData = () => {
@@ -308,7 +308,7 @@ export const LearningScreenProvider = ({
     if (content) {
       getFormattedData();
     }
-  }, [pureWords, content]);
+  }, [pureWordsState, content]);
 
   useEffect(() => {
     if (isInReviewMode) {

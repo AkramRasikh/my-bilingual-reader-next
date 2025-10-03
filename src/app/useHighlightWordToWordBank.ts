@@ -1,20 +1,8 @@
-export const makeArrayUnique = (array) => {
-  if (array.length === 0) {
-    return [];
-  }
-  const setArr = [...new Set(array)];
-  if (setArr?.length > 1) {
-    return setArr.sort((a, b) => b.length - a.length);
-  }
-  return setArr;
-};
-
-export const useHighlightWordToWordBank = ({ pureWordsUnique }) => {
+export const useHighlightWordToWordBank = ({ pureWordsState }) => {
   const underlineWordsInSentence = (sentence) => {
-    const masterBank = makeArrayUnique(pureWordsUnique);
-    if (masterBank?.length === 0) return [{ text: sentence, style: {} }];
+    if (pureWordsState?.length === 0) return [{ text: sentence, style: {} }];
 
-    const pattern = new RegExp(`(${masterBank.join('|')})`, 'g');
+    const pattern = new RegExp(`(${pureWordsState.join('|')})`, 'g');
 
     const segments = [] as any;
 

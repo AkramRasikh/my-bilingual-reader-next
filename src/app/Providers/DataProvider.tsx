@@ -6,10 +6,7 @@ import {
   getNextScheduledOptions,
   srsRetentionKeyTypes,
 } from '../srs-utils/srs-algo';
-import {
-  makeArrayUnique,
-  useHighlightWordToWordBank,
-} from '../useHighlightWordToWordBank';
+import { useHighlightWordToWordBank } from '../useHighlightWordToWordBank';
 import { deleteWordAPI } from '../client-api/delete-word';
 import { japanese } from '../languages';
 import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
@@ -20,6 +17,7 @@ import { getAudioURL } from '../media-utils/get-media-url';
 import { contentReducer } from '../reducers/content-reducer';
 import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 import { isDueCheck } from '@/utils/is-due-check';
+import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 
 export const DataContext = createContext(null);
 
@@ -51,7 +49,7 @@ export const DataProvider = ({
   const wordsFromSentences = [];
 
   const { underlineWordsInSentence } = useHighlightWordToWordBank({
-    pureWordsUnique: pureWordsState,
+    pureWordsState,
   });
 
   useEffect(() => {
@@ -90,7 +88,7 @@ export const DataProvider = ({
       const formatSentence = dueCardsNow?.map((item) => {
         return {
           ...item,
-          targetLangformatted: underlineWordsInSentence(item.targetLang),
+          targetLangformatted: underlineWordsInSentence(item.targetLang), // should all be moved eventually to new sentence sphere
         };
       });
 
@@ -124,7 +122,7 @@ export const DataProvider = ({
       }
     });
     const pureWordsUnique =
-      pureWords?.length > 0 ? makeArrayUnique(pureWords) : [];
+      pureWords?.length > 0 ? makeWordArrayUnique(pureWords) : [];
     return pureWordsUnique;
   };
 
@@ -525,7 +523,7 @@ export const DataProvider = ({
     <DataContext.Provider
       value={{
         wordsData,
-        pureWords: pureWordsState,
+        pureWordsState,
         handleSaveWord,
         wordsState,
         setWordsState,

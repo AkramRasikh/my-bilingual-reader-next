@@ -11,6 +11,11 @@ const FormattedSentence = ({
   wordsState,
   handleDeleteWordDataProvider,
 }) => {
+  const allUnderLinedStuff = targetLangformatted.map((item) =>
+    item?.style?.textDecorationLine ? item?.text : '',
+  );
+  console.log('## allUnderLinedStuff', allUnderLinedStuff);
+
   return (
     <span ref={ref} className='mt-auto mb-auto'>
       {targetLangformatted.map((item, indexNested) => {
