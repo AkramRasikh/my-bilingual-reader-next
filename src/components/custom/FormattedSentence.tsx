@@ -1,5 +1,4 @@
 import HoverWordCard from '@/components/custom/HoverWordCard';
-import useData from './Providers/useData';
 
 const FormattedSentence = ({
   ref,
@@ -9,9 +8,9 @@ const FormattedSentence = ({
   wordPopUpState,
   setWordPopUpState,
   wordsForSelectedTopic,
+  wordsState,
+  handleDeleteWordDataProvider,
 }) => {
-  const { wordsState, handleDeleteWordDataProvider } = useData();
-
   return (
     <span ref={ref} className='mt-auto mb-auto'>
       {targetLangformatted.map((item, indexNested) => {

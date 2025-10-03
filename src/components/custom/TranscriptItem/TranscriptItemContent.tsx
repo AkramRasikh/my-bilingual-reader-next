@@ -1,7 +1,8 @@
 import clsx from 'clsx';
 import { NewSentenceBreakdown } from '@/app/SentenceBreakdown';
-import FormattedSentence from '@/app/FormattedSentence';
+import FormattedSentence from '@/components/custom/FormattedSentence';
 import useTranscriptItem from './useTranscriptItem';
+import useData from '@/app/Providers/useData';
 
 const TranscriptItemContent = () => {
   const {
@@ -18,6 +19,8 @@ const TranscriptItemContent = () => {
     onlyShowEngState,
     wordsForSelectedTopic,
   } = useTranscriptItem();
+
+  const { handleDeleteWordDataProvider, wordsState } = useData();
 
   const baseLang = contentItem.baseLang;
   const targetLangformatted = contentItem.targetLangformatted;
@@ -52,6 +55,8 @@ const TranscriptItemContent = () => {
               wordPopUpState={wordPopUpState}
               setWordPopUpState={setWordPopUpState}
               wordsForSelectedTopic={wordsForSelectedTopic}
+              handleDeleteWordDataProvider={handleDeleteWordDataProvider}
+              wordsState={wordsState}
             />
           </p>
           {!onlyShowEngState && <p>{baseLang}</p>}

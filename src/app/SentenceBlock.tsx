@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import FormattedSentence from './FormattedSentence';
+import FormattedSentence from '../components/custom/FormattedSentence';
 import {
   getAudioURL,
   getCloudflareImageURL,
@@ -15,7 +15,8 @@ const SentenceBlock = ({ sentence, sentenceIndex }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const [thisSentencesWordsState, setThisSentencesWordsState] = useState([]);
   const hoverTimerMasterRef = useRef<HTMLVideoElement>(null); // Reference to the video element
-  const { wordsState, updateAdhocSentenceData } = useData();
+  const { wordsState, handleDeleteWordDataProvider, updateAdhocSentenceData } =
+    useData();
 
   useEffect(() => {
     const relevantWordsFromSentence = sentence.targetLangformatted.filter(
@@ -84,6 +85,8 @@ const SentenceBlock = ({ sentence, sentenceIndex }) => {
           targetLangformatted={sentence?.targetLangformatted}
           wordPopUpState={wordPopUpState}
           setWordPopUpState={setWordPopUpState}
+          handleDeleteWordDataProvider={handleDeleteWordDataProvider}
+          wordsState={wordsState}
         />
       </p>
       <p className='text-right opacity-30'>{sentence.baseLang}</p>
