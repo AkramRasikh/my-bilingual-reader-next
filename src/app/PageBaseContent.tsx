@@ -1,5 +1,6 @@
 'use client';
 
+import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import { DataProvider } from './DataProvider';
 import { useFetchData } from './FetchDataProvider';
 import LandingUI from './LandingUI';
@@ -7,7 +8,7 @@ import LandingUI from './LandingUI';
 const PageBaseContent = () => {
   const { data } = useFetchData();
 
-  if (!data) return <p>Loading...</p>;
+  if (!data) return <LoadingSpinner big />;
 
   const { wordsData, sentencesData, contentData } = data;
   return (

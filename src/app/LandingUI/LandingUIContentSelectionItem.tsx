@@ -41,7 +41,7 @@ const LandingScreenContentSelectionItem = ({
   youtubeMetaData,
   handleSelectInitialTopic,
 }) => {
-  const youtubeTag = youtubeMetaData.youtubeTag;
+  const title = youtubeMetaData.title;
   const youtubeId = youtubeMetaData.youtubeId;
   const isThisDue = youtubeMetaData.isThisDue;
   const isThisNew = youtubeMetaData?.isThisNew;
@@ -52,7 +52,7 @@ const LandingScreenContentSelectionItem = ({
       <LandingUIContentSelectionItemImage youtubeId={youtubeId} />
       <Button
         variant={'link'}
-        onClick={() => handleSelectInitialTopic(youtubeTag)}
+        onClick={() => handleSelectInitialTopic(title)}
         className={clsx(
           'pb-1 rounded w-full relative',
           isThisDue ? 'bg-amber-300' : '',
@@ -65,7 +65,7 @@ const LandingScreenContentSelectionItem = ({
             maxWidth: '15ch',
           }}
         >
-          {youtubeTag}
+          {title}
         </span>
       </Button>
       <LandingUIContentSelectionItemTags

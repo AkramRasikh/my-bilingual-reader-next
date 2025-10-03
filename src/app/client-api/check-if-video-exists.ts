@@ -1,4 +1,3 @@
-// utils/checkIfVideoExists.ts
 const checkIfVideoExists = async (url: string): Promise<boolean> => {
   try {
     const res = await fetch('/api/checkVideoExists', {

@@ -15,15 +15,14 @@ const useLandingScreenContentSelection = ({
     ) {
       const today = new Date();
       const comprehensiveState = generalTopicDisplayNameState.map(
-        (youtubeTag) => {
-          const youtubeId = getYoutubeID(youtubeTag);
+        ({ youtubeId, title }) => {
           const { isThisDue, isThisNew, hasAllBeenReviewed } = getTopicStatus(
-            youtubeTag,
+            title,
             today,
           );
 
           return {
-            youtubeTag,
+            title,
             youtubeId,
             isThisDue,
             isThisNew,

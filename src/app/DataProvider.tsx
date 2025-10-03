@@ -105,11 +105,6 @@ export const DataProvider = ({
     }
   }, [sentencesState, mountedState, pureWordsState]);
 
-  const getYoutubeID = (generalName) =>
-    contentState
-      .find((item) => item.generalTopicName === generalName && item?.url)
-      .url.split('=')[1];
-
   const getPureWords = () => {
     const pureWords = [];
     wordsState?.forEach((wordData) => {
@@ -548,7 +543,6 @@ export const DataProvider = ({
         updateContentMetaData,
         generalTopicDisplayNameState,
         setGeneralTopicDisplayNameState,
-        getYoutubeID,
         handleGetComprehensiveReview,
         updateWordDataProvider,
         sentencesState,

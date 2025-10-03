@@ -1,20 +1,16 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import LearningScreen from '../LearningScreen';
 import useData from '../useData';
 import LandingUIContentSelection from './LandingUIContentSelection';
 import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
 import { toast } from 'sonner';
 import SentenceReviewContainer from '../SentenceReviewContainer';
-import LandingScreenSpinner from './LandingScreenSpinner';
 import MockFlag from '../../components/custom/MockFlag';
 import useLandingScreenLoadGeneralTopicsDisplay from './useLandingUILoadGeneralTopicsDisplay';
 import BreadcrumbComponent from '../BreadCrumbHeader';
-import LoadingSpinner from '@/components/custom/LoadingSpinner';
 
 const LandingScreen = () => {
-  const [isLoadingState, setIsLoadingState] = useState(false);
-
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
 
   const {
@@ -34,7 +30,7 @@ const LandingScreen = () => {
     }
   }, [toastMessageState]);
 
-  useLandingScreenLoadGeneralTopicsDisplay({ setIsLoadingState });
+  useLandingScreenLoadGeneralTopicsDisplay();
 
   const numberOfSentences = sentencesState.length;
 
@@ -46,7 +42,6 @@ const LandingScreen = () => {
     <LearningScreenProvider>
       <BreadcrumbComponent />
       {isMockEnv && <MockFlag />}
-      {isLoadingState && <LoadingSpinner big />}
       <LandingUIContentSelection
         generalTopicDisplayNameSelectedState={
           generalTopicDisplayNameSelectedState
