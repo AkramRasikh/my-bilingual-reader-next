@@ -1,5 +1,5 @@
-import PageBaseContent from './PageBaseContent';
+import LandingUIContainer from './LandingUI/LandingUIContainer';
 
 export default async function Home() {
-  return <PageBaseContent />;
+  return <LandingUIContainer />;
 }

@@ -2,11 +2,11 @@
 
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 
-import { useFetchData } from './FetchDataProvider';
-import LandingUI from './LandingUI';
-import { DataProvider } from './Providers/DataProvider';
+import { useFetchData } from '../FetchDataProvider';
+import LandingUI from '.';
+import { DataProvider } from '../Providers/DataProvider';
 
-const PageBaseContent = () => {
+const LandingUIContainer = () => {
   const { data } = useFetchData();
 
   if (!data) return <LoadingSpinner big />;
@@ -25,4 +25,4 @@ const PageBaseContent = () => {
   );
 };
 
-export default PageBaseContent;
+export default LandingUIContainer;
