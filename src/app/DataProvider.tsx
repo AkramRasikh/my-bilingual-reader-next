@@ -377,7 +377,7 @@ export const DataProvider = ({
     return savedWord;
   };
 
-  const handleDeleteWordDataProvider = async ({ wordId, wordBaseForm }) => {
+  const handleDeleteWordDataProvider = async ({ wordId }) => {
     try {
       await deleteWordAPI({ wordId, language: japanese });
       const targetLanguageWordsStateUpdated = wordsState.filter(
