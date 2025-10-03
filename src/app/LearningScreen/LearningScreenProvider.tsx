@@ -27,19 +27,6 @@ export const LearningScreenProvider = ({
   const transcriptRef = useRef(null);
 
   const [currentTime, setCurrentTime] = useState(0);
-  const handlePlayFromHere = (time: number) => {
-    if (ref.current) {
-      ref.current.currentTime = time;
-      ref.current.play();
-    }
-  };
-
-  // Update current time as video plays
-  const handleTimeUpdate = () => {
-    if (ref.current) {
-      setCurrentTime(ref.current.currentTime);
-    }
-  };
   const [formattedTranscriptState, setFormattedTranscriptState] = useState([]);
   const [secondsState, setSecondsState] = useState([]);
   const [loopSecondsState, setLoopSecondsState] = useState([]);
@@ -105,6 +92,20 @@ export const LearningScreenProvider = ({
       : '';
 
   const content = selectedContentState?.content;
+
+  const handlePlayFromHere = (time: number) => {
+    if (ref.current) {
+      ref.current.currentTime = time;
+      ref.current.play();
+    }
+  };
+
+  // Update current time as video plays
+  const handleTimeUpdate = () => {
+    if (ref.current) {
+      setCurrentTime(ref.current.currentTime);
+    }
+  };
 
   const getFormattedData = () => {
     const now = new Date();
