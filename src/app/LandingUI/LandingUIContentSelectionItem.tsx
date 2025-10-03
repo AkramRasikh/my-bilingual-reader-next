@@ -7,7 +7,7 @@ const LandingUIContentSelectionItemImage = ({ youtubeId }) => (
   <div className='relative h-20 w-5/6 m-auto'>
     <Image
       src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
-      alt={youtubeId}
+      alt={youtubeId || 'youtubeId'}
       className='m-auto pb-1 rounded object-contain'
       fill
     />
