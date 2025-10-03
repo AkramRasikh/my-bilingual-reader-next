@@ -75,7 +75,6 @@ export const LearningScreenProvider = ({
   const [wordsForSelectedTopic, setWordsForSelectedTopic] = useState([]);
   const [overlappingSnippetDataState, setOverlappingSnippetDataState] =
     useState([]);
-  const [wordPopUpState, setWordPopUpState] = useState([]);
 
   const [loopTranscriptState, setLoopTranscriptState] = useState([]);
   const [selectedContentState, setSelectedContentState] = useState();
@@ -743,8 +742,6 @@ export const LearningScreenProvider = ({
         setBreakdownSentencesArrState,
         overlappingSnippetDataState,
         setOverlappingSnippetDataState,
-        wordPopUpState,
-        setWordPopUpState,
         loopTranscriptState,
         setLoopTranscriptState,
         threeSecondLoopState,

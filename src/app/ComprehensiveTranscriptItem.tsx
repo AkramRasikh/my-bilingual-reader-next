@@ -1,12 +1,13 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import FormattedSentence from '../components/custom/FormattedSentence';
 import { NewSentenceBreakdown } from './SentenceBreakdown';
 import useLearningScreen from './LearningScreen/useLearningScreen';
 import useData from './Providers/useData';
 
 const ComprehensiveTranscriptItem = ({ contentItem }) => {
-  const { wordPopUpState, setWordPopUpState, wordsForSelectedTopic } =
-    useLearningScreen();
+  const [wordPopUpState, setWordPopUpState] = useState([]);
+
+  const { wordsForSelectedTopic } = useLearningScreen();
   const { wordsState, handleDeleteWordDataProvider } = useData();
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -41,11 +42,11 @@ const ComprehensiveTranscriptItem = ({ contentItem }) => {
         targetLangformatted={targetLangformatted}
         handleMouseLeave={handleMouseLeave}
         handleMouseEnter={handleMouseEnter}
-        wordPopUpState={wordPopUpState}
-        setWordPopUpState={setWordPopUpState}
         wordsForSelectedTopic={wordsForSelectedTopic}
         handleDeleteWordDataProvider={handleDeleteWordDataProvider}
         wordsState={wordsState}
+        wordPopUpState={wordPopUpState}
+        setWordPopUpState={setWordPopUpState}
       />
       <p>{baseLang}</p>
       {hasSentenceBreakdown && (
