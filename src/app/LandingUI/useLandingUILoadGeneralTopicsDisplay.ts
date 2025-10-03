@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import useData from '../useData';
 import { getGeneralTopicName } from '../get-general-topic-name';
-import { getFirebaseVideoURL } from '../get-firebase-media-url';
+import { getCloudflareVideoURL } from '../media-utils/get-media-url';
 import checkIfVideoExists from '../client-api/check-if-video-exists';
 import { japanese } from '../languages';
 
@@ -19,7 +19,7 @@ const useLandingScreenLoadGeneralTopicsDisplay = ({ setIsLoadingState }) => {
         let youtubeTagsWithoutVideoBoolean: string[] = [];
         for (const contentItem of contentState) {
           if (!contentItem?.hasVideo && contentItem?.origin === 'youtube') {
-            const generalTopicName = getFirebaseVideoURL(
+            const generalTopicName = getCloudflareVideoURL(
               getGeneralTopicName(contentItem.title),
               japanese,
             );
@@ -41,7 +41,7 @@ const useLandingScreenLoadGeneralTopicsDisplay = ({ setIsLoadingState }) => {
         }
 
         for (const contentItem of contentState) {
-          const generalTopicName = getFirebaseVideoURL(
+          const generalTopicName = getCloudflareVideoURL(
             getGeneralTopicName(contentItem.title),
             japanese,
           );

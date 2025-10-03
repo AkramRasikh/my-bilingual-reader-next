@@ -1,4 +1,4 @@
-import { getFirebaseVideoURL } from '../get-firebase-media-url';
+import { getCloudflareVideoURL } from '../media-utils/get-media-url';
 import { getGeneralTopicName } from '../get-general-topic-name';
 import { japanese } from '../languages';
 import KeyListener from './LearningScreenKeyListener';
@@ -24,7 +24,7 @@ const LearningScreenLeftSideContainer = () => {
   const generalTopic = isFullReview
     ? selectedContentState?.title
     : getGeneralTopicName(selectedContentState?.title);
-  const videoUrl = getFirebaseVideoURL(generalTopic, japanese);
+  const videoUrl = getCloudflareVideoURL(generalTopic, japanese);
 
   return (
     <div className='flex-1 max-w-xl mx-auto'>

@@ -9,7 +9,7 @@ import LoadingSpinner from '../components/custom/LoadingSpinner';
 import GoogleSearchImage from './GoogleSearchImage';
 import PasteImageCard from './PasteImageCard';
 import useData from './useData';
-import { getCloudflareImageURL } from './get-firebase-media-url';
+import { getCloudflareImageURL } from './media-utils/get-media-url';
 import Image from 'next/image';
 
 function ConditionalWrapper({ condition, wrapper, children }) {
