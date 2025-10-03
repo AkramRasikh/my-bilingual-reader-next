@@ -10,13 +10,11 @@ import {
 } from '../srs-utils/srs-algo';
 import useManageThreeSecondLoop from './hooks/useManageThreeSecondLoop';
 import useManageLoopInit from './hooks/useManageLoopInit';
-import {
-  findAllInstances,
-  useHighlightWordToWordBank,
-} from '../useHighlightWordToWordBank';
+import { findAllInstances } from '../useHighlightWordToWordBank';
 import useMapTranscriptToSeconds from './hooks/useMapTranscriptToSeconds';
 import useTrackMasterTranscript from './hooks/useTrackMasterTranscript';
 import { isDueCheck } from '@/utils/is-due-check';
+import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 
 export const LearningScreenContext = createContext(null);
 
@@ -108,10 +106,6 @@ export const LearningScreenProvider = ({
 
   const content = selectedContentState?.content;
 
-  const underlineWordsInSentence = useHighlightWordToWordBank({
-    pureWordsState,
-  });
-
   const getFormattedData = () => {
     const now = new Date();
     let latestIsDueEl = '';
@@ -135,7 +129,10 @@ export const LearningScreenProvider = ({
 
       const dueStatus = !hasBeenReviewed ? '' : isDueNow ? 'now' : 'pending';
 
-      const targetLangformatted = underlineWordsInSentence(item.targetLang);
+      const targetLangformatted = underlineWordsInSentence(
+        item.targetLang,
+        pureWordsState,
+      );
       const wordsFromSentence = findAllInstances(item.targetLang, wordsState);
       return {
         ...item,

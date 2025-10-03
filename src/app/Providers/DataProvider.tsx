@@ -6,7 +6,6 @@ import {
   getNextScheduledOptions,
   srsRetentionKeyTypes,
 } from '../srs-utils/srs-algo';
-import { useHighlightWordToWordBank } from '../useHighlightWordToWordBank';
 import { deleteWordAPI } from '../client-api/delete-word';
 import { japanese } from '../languages';
 import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
@@ -18,6 +17,7 @@ import { contentReducer } from '../reducers/content-reducer';
 import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 import { isDueCheck } from '@/utils/is-due-check';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
+import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 
 export const DataContext = createContext(null);
 
@@ -47,10 +47,6 @@ export const DataProvider = ({
   );
 
   const wordsFromSentences = [];
-
-  const { underlineWordsInSentence } = useHighlightWordToWordBank({
-    pureWordsState,
-  });
 
   useEffect(() => {
     if (!isMockEnv) {
@@ -88,7 +84,10 @@ export const DataProvider = ({
       const formatSentence = dueCardsNow?.map((item) => {
         return {
           ...item,
-          targetLangformatted: underlineWordsInSentence(item.targetLang), // should all be moved eventually to new sentence sphere
+          targetLangformatted: underlineWordsInSentence(
+            item.targetLang,
+            pureWordsState,
+          ), // should all be moved eventually to new sentence sphere
         };
       });
 
