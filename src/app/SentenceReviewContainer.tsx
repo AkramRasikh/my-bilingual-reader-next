@@ -1,5 +1,5 @@
 import { Toaster } from 'sonner';
-import useData from './useData';
+import useData from './Providers/useData';
 import SentenceBlock from './SentenceBlock';
 import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';

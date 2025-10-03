@@ -5,7 +5,7 @@ import { TabMetaContentData } from '../ContentActionBar';
 import LearningScreenTabs from './LearningScreenTabs';
 import LearningScreenChapterToggleWrapper from './LearningScreenChapterToggleWrapper';
 import useLearningScreen from './useLearningScreen';
-import useData from '../useData';
+import useData from '../Providers/useData';
 import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 

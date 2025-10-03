@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import useData from '../useData';
+import useData from '../Providers/useData';
 
 const useLandingScreenLoadGeneralTopicsDisplay = () => {
   const { contentState, setGeneralTopicDisplayNameState } = useData();

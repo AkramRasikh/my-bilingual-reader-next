@@ -3,7 +3,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import useData from './useData';
+import useData from './Providers/useData';
 import { useEffect, useState } from 'react';
 import LoadingSpinner from '../components/custom/LoadingSpinner';
 import clsx from 'clsx';

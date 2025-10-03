@@ -6,7 +6,7 @@ import {
 } from './media-utils/get-media-url';
 import { japanese } from './languages';
 import ReviewSRSToggles from './ReviewSRSToggles';
-import useData from './useData';
+import useData from './Providers/useData';
 import AudioPlayer from './SentenceAudioPlayer';
 import Image from 'next/image';
 import clsx from 'clsx';

@@ -8,11 +8,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { WordCardContent } from './WordCard';
-import useData from './useData';
-import { isDueCheck } from './DataProvider';
+import useData from './Providers/useData';
 import clsx from 'clsx';
 import WordTabContent from './WordTabContent';
 import useLearningScreen from './LearningScreen/useLearningScreen';
+import { isDueCheck } from './Providers/DataProvider';
 
 export const WordDialogueContent = () => {
   const { wordBasketState, setWordBasketState, updateWordDataProvider } =

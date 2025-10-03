@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
-import useData from '../useData';
+import useData from '../Providers/useData';
 import useLearningScreen from './useLearningScreen';
 
 const LearningScreenContentChapterNavigation = () => {

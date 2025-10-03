@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import useData from '../useData';
+import useData from '../Providers/useData';
 
 const useLandingScreenContentSelection = ({
   generalTopicDisplayNameSelectedState,

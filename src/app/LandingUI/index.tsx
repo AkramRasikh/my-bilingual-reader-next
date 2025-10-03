@@ -1,7 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import LearningScreen from '../LearningScreen';
-import useData from '../useData';
+import useData from '../Providers/useData';
 import LandingUIContentSelection from './LandingUIContentSelection';
 import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
 import { toast } from 'sonner';

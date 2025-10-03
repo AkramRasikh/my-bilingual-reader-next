@@ -1,24 +1,24 @@
 'use client';
 import { createContext, useEffect, useReducer, useState } from 'react';
-import saveWordAPI from './client-api/save-word';
+import saveWordAPI from '../client-api/save-word';
 import {
   getEmptyCard,
   getNextScheduledOptions,
   srsRetentionKeyTypes,
-} from './srs-utils/srs-algo';
+} from '../srs-utils/srs-algo';
 import {
   makeArrayUnique,
   useHighlightWordToWordBank,
-} from './useHighlightWordToWordBank';
-import { deleteWordAPI } from './client-api/delete-word';
-import { japanese } from './languages';
-import { updateSentenceDataAPI } from './client-api/update-sentence-api';
-import { breakdownSentenceAPI } from './client-api/breakdown-sentence';
-import { updateContentMetaDataAPI } from './client-api/update-content-meta-data';
-import { updateAdhocSentenceAPI } from './client-api/update-adhoc-sentence';
-import { getAudioURL } from './media-utils/get-media-url';
-import { contentReducer } from './reducers/content-reducer';
-import { sentenceReviewBulkAPI } from './client-api/bulk-sentence-review';
+} from '../useHighlightWordToWordBank';
+import { deleteWordAPI } from '../client-api/delete-word';
+import { japanese } from '../languages';
+import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
+import { breakdownSentenceAPI } from '../client-api/breakdown-sentence';
+import { updateContentMetaDataAPI } from '../client-api/update-content-meta-data';
+import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
+import { getAudioURL } from '../media-utils/get-media-url';
+import { contentReducer } from '../reducers/content-reducer';
+import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 
 export const DataContext = createContext(null);
 

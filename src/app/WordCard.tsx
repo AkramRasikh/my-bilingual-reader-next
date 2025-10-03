@@ -6,7 +6,6 @@ import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import useWords from './words/useWords';
 import ReviewSRSToggles from './ReviewSRSToggles';
 import { Label } from '@/components/ui/label';
-import { isDueCheck } from './DataProvider';
 import clsx from 'clsx';
 import { getTimeDiffSRS } from './srs-utils/get-time-diff-srs';
 import {
@@ -14,6 +13,7 @@ import {
   srsRetentionKeyTypes,
 } from './srs-utils/srs-algo';
 import LoadingSpinner from '../components/custom/LoadingSpinner';
+import { isDueCheck } from './Providers/DataProvider';
 
 export const WordCardContent = ({
   id,

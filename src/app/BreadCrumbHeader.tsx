@@ -7,7 +7,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import useData from './useData';
+import useData from './Providers/useData';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import BasketDialogue from './BasketDialogue';

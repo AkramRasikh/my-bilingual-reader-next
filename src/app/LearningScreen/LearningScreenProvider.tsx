@@ -1,7 +1,7 @@
 'use client';
 import { isNumber } from '@/utils/is-number';
 import { createContext, useEffect, useRef, useState } from 'react';
-import useData from '../useData';
+import useData from '../Providers/useData';
 import {
   getEmptyCard,
   getNextScheduledOptions,
@@ -13,7 +13,7 @@ import useManageLoopInit from './hooks/useManageLoopInit';
 import { useHighlightWordToWordBank } from '../useHighlightWordToWordBank';
 import useMapTranscriptToSeconds from './hooks/useMapTranscriptToSeconds';
 import useTrackMasterTranscript from './hooks/useTrackMasterTranscript';
-import { isDueCheck } from '../DataProvider';
+import { isDueCheck } from '../Providers/DataProvider';
 
 export const LearningScreenContext = createContext(null);
 

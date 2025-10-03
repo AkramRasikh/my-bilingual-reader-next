@@ -1,9 +1,10 @@
 'use client';
 
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
-import { DataProvider } from './DataProvider';
+
 import { useFetchData } from './FetchDataProvider';
 import LandingUI from './LandingUI';
+import { DataProvider } from './Providers/DataProvider';
 
 const PageBaseContent = () => {
   const { data } = useFetchData();
