@@ -36,7 +36,5 @@ export const useHighlightWordToWordBank = ({ pureWordsState }) => {
     return targetLangformatted;
   };
 
-  return {
-    underlineWordsInSentence,
-  };
+  return underlineWordsInSentence;
 };

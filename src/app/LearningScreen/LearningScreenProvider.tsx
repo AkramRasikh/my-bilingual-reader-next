@@ -108,7 +108,7 @@ export const LearningScreenProvider = ({
 
   const content = selectedContentState?.content;
 
-  const { underlineWordsInSentence } = useHighlightWordToWordBank({
+  const underlineWordsInSentence = useHighlightWordToWordBank({
     pureWordsState,
   });
 
