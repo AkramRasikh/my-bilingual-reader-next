@@ -2,7 +2,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import CountdownTimer from '../../components/custom/CountDownTimer';
 import useLearningScreen from './useLearningScreen';
-import CountUpTimer from '@/components/CountUpTimer';
+import CountUpTimer from '@/components/custom/CountUpTimer';
 
 const LearningScreenActionBarVideoControls = () => {
   const {
