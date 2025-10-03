@@ -35,7 +35,7 @@ const useMapTranscriptToSeconds = ({
     });
 
     setSecondsState(arrOfSeconds);
-  }, [ref.current, secondsState, content, realStartTime]);
+  }, [ref.current?.duration, secondsState, content, realStartTime]);
 };
 
 export default useMapTranscriptToSeconds;

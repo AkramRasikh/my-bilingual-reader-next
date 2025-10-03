@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { FetchDataProvider } from './FetchDataProvider';
+import { FetchDataProvider } from './Providers/FetchDataProvider';
 
 export const metadata: Metadata = {
   title: 'Yah Dun Kno!',

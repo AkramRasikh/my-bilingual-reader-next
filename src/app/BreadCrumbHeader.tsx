@@ -22,12 +22,8 @@ const BreadcrumbComponent = () => {
     isSentenceReviewState,
     wordBasketState,
   } = useData();
-  const {
-    selectedContentState,
-    setGeneralTopicDisplayNameSelectedState,
-    checkHowManyOfTopicNeedsReview,
-    setSelectedContentState,
-  } = useLearningScreen();
+  const { selectedContentState, checkHowManyOfTopicNeedsReview, handleOnHome } =
+    useLearningScreen();
 
   useEffect(() => {
     if (wordBasketState.length === 0 && showBasketState) {
@@ -39,11 +35,6 @@ const BreadcrumbComponent = () => {
 
   const theseSentencesDue =
     generalTopicDisplayNameSelectedState && checkHowManyOfTopicNeedsReview();
-
-  const handleOnHome = () => {
-    setSelectedContentState(null);
-    setGeneralTopicDisplayNameSelectedState('');
-  };
 
   const title = selectedContentState?.title;
   const chapter = title?.split('-');

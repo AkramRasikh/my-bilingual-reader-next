@@ -14,7 +14,7 @@ const LearningScreenChapterToggleWrapper = ({
         variant='ghost'
         onClick={() => {
           getNextTranscript();
-          setSecondsState();
+          setSecondsState([]);
         }}
       >
         ⏫⏫⏫⏫⏫
@@ -27,7 +27,7 @@ const LearningScreenChapterToggleWrapper = ({
         variant='ghost'
         onClick={() => {
           getNextTranscript(true);
-          setSecondsState();
+          setSecondsState([]);
         }}
       >
         ⏬⏬⏬⏬⏬

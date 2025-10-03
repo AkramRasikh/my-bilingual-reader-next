@@ -1,6 +1,6 @@
 'use client';
 
-import { useFetchData } from '../FetchDataProvider';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 export default function SentencesPage() {
   const { data } = useFetchData();

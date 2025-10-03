@@ -2,7 +2,7 @@
 
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 
-import { useFetchData } from '../FetchDataProvider';
+import { useFetchData } from '../Providers/FetchDataProvider';
 import LandingUI from '.';
 import { DataProvider } from '../Providers/DataProvider';
 

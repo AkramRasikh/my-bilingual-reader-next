@@ -39,7 +39,7 @@ export const LearningScreenProvider = ({
       setCurrentTime(ref.current.currentTime);
     }
   };
-  const [formattedTranscriptState, setFormattedTranscriptState] = useState();
+  const [formattedTranscriptState, setFormattedTranscriptState] = useState([]);
   const [secondsState, setSecondsState] = useState([]);
   const [loopSecondsState, setLoopSecondsState] = useState([]);
   const [masterPlayComprehensiveState, setMasterPlayComprehensiveState] =
@@ -63,7 +63,7 @@ export const LearningScreenProvider = ({
   ] = useState('');
   const [scrollToElState, setScrollToElState] = useState('');
   const [firstDueIndexState, setFirstDueIndexState] = useState(0);
-  const [studyFromHereTimeState, setStudyFromHereTimeState] = useState();
+  const [studyFromHereTimeState, setStudyFromHereTimeState] = useState(null);
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
   );
@@ -705,6 +705,17 @@ export const LearningScreenProvider = ({
     });
   };
 
+  const handleOnHome = () => {
+    setGeneralTopicDisplayNameSelectedState('');
+    setSecondsState([]);
+    setSelectedContentState(null);
+    setFormattedTranscriptState([]);
+    setIsInReviewMode(false);
+    setFirstDueIndexState(0);
+    setStudyFromHereTimeState(null);
+    setWordsForSelectedTopic([]);
+  };
+
   return (
     <LearningScreenContext.Provider
       value={{
@@ -784,6 +795,7 @@ export const LearningScreenProvider = ({
         wordsForSelectedTopic,
         selectedContentState,
         setSelectedContentState,
+        handleOnHome,
       }}
     >
       {children}
