@@ -10,11 +10,11 @@ import {
 } from '../srs-utils/srs-algo';
 import useManageThreeSecondLoop from './hooks/useManageThreeSecondLoop';
 import useManageLoopInit from './hooks/useManageLoopInit';
-import { findAllInstances } from '../useHighlightWordToWordBank';
 import useMapTranscriptToSeconds from './hooks/useMapTranscriptToSeconds';
 import useTrackMasterTranscript from './hooks/useTrackMasterTranscript';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
+import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
 
 export const LearningScreenContext = createContext(null);
 
@@ -133,7 +133,10 @@ export const LearningScreenProvider = ({
         item.targetLang,
         pureWordsState,
       );
-      const wordsFromSentence = findAllInstances(item.targetLang, wordsState);
+      const wordsFromSentence = findAllInstancesOfWordsInSentence(
+        item.targetLang,
+        wordsState,
+      );
       return {
         ...item,
         dueStatus,

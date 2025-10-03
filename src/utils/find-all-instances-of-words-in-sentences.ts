@@ -1,4 +1,4 @@
-export const findAllInstances = (sentence, wordState) => {
+export const findAllInstancesOfWordsInSentence = (sentence, wordState) => {
   const results = [];
 
   wordState.forEach((wordData) => {
