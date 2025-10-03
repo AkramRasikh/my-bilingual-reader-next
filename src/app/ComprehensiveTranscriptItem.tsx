@@ -12,6 +12,7 @@ const ComprehensiveTranscriptItem = ({ contentItem }) => {
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
 
   const hasSentenceBreakdown = contentItem?.sentenceStructure;
+  const wordsFromSentence = contentItem?.wordsFromSentence;
   const baseLang = contentItem?.baseLang;
   const targetLangformatted = contentItem.targetLangformatted;
 
@@ -44,9 +45,9 @@ const ComprehensiveTranscriptItem = ({ contentItem }) => {
         handleMouseEnter={handleMouseEnter}
         wordsForSelectedTopic={wordsForSelectedTopic}
         handleDeleteWordDataProvider={handleDeleteWordDataProvider}
-        wordsState={wordsState}
         wordPopUpState={wordPopUpState}
         setWordPopUpState={setWordPopUpState}
+        wordsFromSentence={wordsFromSentence}
       />
       <p>{baseLang}</p>
       {hasSentenceBreakdown && (

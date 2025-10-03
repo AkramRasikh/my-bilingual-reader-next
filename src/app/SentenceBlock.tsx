@@ -86,7 +86,7 @@ const SentenceBlock = ({ sentence, sentenceIndex }) => {
           wordPopUpState={wordPopUpState}
           setWordPopUpState={setWordPopUpState}
           handleDeleteWordDataProvider={handleDeleteWordDataProvider}
-          wordsState={wordsState}
+          wordsFromSentence={wordsState} // should be changed!
         />
       </p>
       <p className='text-right opacity-30'>{sentence.baseLang}</p>

@@ -20,9 +20,10 @@ const TranscriptItemContent = () => {
     wordsForSelectedTopic,
   } = useTranscriptItem();
 
-  const { handleDeleteWordDataProvider, wordsState } = useData();
+  const { handleDeleteWordDataProvider } = useData();
 
   const baseLang = contentItem.baseLang;
+  const wordsFromSentence = contentItem.wordsFromSentence;
   const targetLangformatted = contentItem.targetLangformatted;
 
   const thisSentenceIsPlaying = contentItem.id === masterPlay;
@@ -56,7 +57,7 @@ const TranscriptItemContent = () => {
               setWordPopUpState={setWordPopUpState}
               wordsForSelectedTopic={wordsForSelectedTopic}
               handleDeleteWordDataProvider={handleDeleteWordDataProvider}
-              wordsState={wordsState}
+              wordsFromSentence={wordsFromSentence}
             />
           </p>
           {!onlyShowEngState && <p>{baseLang}</p>}

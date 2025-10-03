@@ -12,8 +12,8 @@ const HoverWordCard = ({
   wordPopUpState,
   setWordPopUpState,
   wordsForSelectedTopic,
-  wordsState,
   handleDeleteWordDataProvider,
+  wordsFromSentence,
 }) => {
   const [isOriginalWordSettingState, setIsOriginalWordSettingState] =
     useState(false);
@@ -29,7 +29,7 @@ const HoverWordCard = ({
   }, [wordsForSelectedTopic]);
 
   const onHoverTrigger = () => {
-    const hoverTings = wordsState.filter((item) => {
+    const hoverTings = wordsFromSentence.filter((item) => {
       const baseForm = item.baseForm;
       const surfaceForm = item.surfaceForm;
       if (text.includes(baseForm) || text.includes(surfaceForm)) {

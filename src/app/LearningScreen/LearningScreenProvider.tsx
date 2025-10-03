@@ -10,7 +10,10 @@ import {
 } from '../srs-utils/srs-algo';
 import useManageThreeSecondLoop from './hooks/useManageThreeSecondLoop';
 import useManageLoopInit from './hooks/useManageLoopInit';
-import { useHighlightWordToWordBank } from '../useHighlightWordToWordBank';
+import {
+  findAllInstances,
+  useHighlightWordToWordBank,
+} from '../useHighlightWordToWordBank';
 import useMapTranscriptToSeconds from './hooks/useMapTranscriptToSeconds';
 import useTrackMasterTranscript from './hooks/useTrackMasterTranscript';
 import { isDueCheck } from '@/utils/is-due-check';
@@ -132,10 +135,13 @@ export const LearningScreenProvider = ({
 
       const dueStatus = !hasBeenReviewed ? '' : isDueNow ? 'now' : 'pending';
 
+      const targetLangformatted = underlineWordsInSentence(item.targetLang);
+      const wordsFromSentence = findAllInstances(item.targetLang, wordsState);
       return {
         ...item,
-        targetLangformatted: underlineWordsInSentence(item.targetLang),
         dueStatus,
+        targetLangformatted,
+        wordsFromSentence,
       };
     });
 

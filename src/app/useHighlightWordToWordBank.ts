@@ -1,24 +1,39 @@
+export const findAllInstances = (sentence, wordState) => {
+  const results = [];
+
+  wordState.forEach((wordData) => {
+    if (
+      sentence.includes(wordData.baseForm) ||
+      sentence.includes(wordData.surfaceForm)
+    ) {
+      results.push(wordData);
+    }
+  });
+
+  return results;
+};
+
 export const useHighlightWordToWordBank = ({ pureWordsState }) => {
   const underlineWordsInSentence = (sentence) => {
     if (pureWordsState?.length === 0) return [{ text: sentence, style: {} }];
 
     const pattern = new RegExp(`(${pureWordsState.join('|')})`, 'g');
 
-    const segments = [] as any;
+    const targetLangformatted = [] as any;
 
     sentence.split(pattern).forEach((segment) => {
       if (segment.match(pattern)) {
-        segments.push({
+        targetLangformatted.push({
           text: segment,
           style: { textDecorationLine: 'underline' },
           id: 'targetWord',
         });
       } else {
-        segments.push({ text: segment, style: {} });
+        targetLangformatted.push({ text: segment, style: {} });
       }
     });
 
-    return segments;
+    return targetLangformatted;
   };
 
   return {
