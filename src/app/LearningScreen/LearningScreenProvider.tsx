@@ -73,6 +73,9 @@ export const LearningScreenProvider = ({
   const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
     useState(false);
 
+  const [contentMetaDataState, setContentMetaDataState] = useState([]);
+  const [contentMetaWordDataState, setContentMetaWordDataState] = useState([]);
+
   const {
     contentState,
     updateSentenceData,
@@ -800,6 +803,10 @@ export const LearningScreenProvider = ({
         selectedContentState,
         setSelectedContentState,
         handleOnHome,
+        contentMetaDataState,
+        setContentMetaDataState,
+        contentMetaWordDataState,
+        setContentMetaWordDataState,
       }}
     >
       {children}

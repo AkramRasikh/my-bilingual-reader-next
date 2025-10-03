@@ -22,8 +22,12 @@ const BreadcrumbComponent = () => {
     isSentenceReviewState,
     wordBasketState,
   } = useData();
-  const { selectedContentState, checkHowManyOfTopicNeedsReview, handleOnHome } =
-    useLearningScreen();
+  const {
+    selectedContentState,
+    checkHowManyOfTopicNeedsReview,
+    handleOnHome,
+    contentMetaDataState,
+  } = useLearningScreen();
 
   useEffect(() => {
     if (wordBasketState.length === 0 && showBasketState) {
@@ -31,12 +35,15 @@ const BreadcrumbComponent = () => {
     }
   }, [wordBasketState, showBasketState]);
 
+  const hasUnifiedChapter = contentMetaDataState?.length === 1;
+
   const numberOfSentences = sentencesState.length;
 
   const theseSentencesDue =
     generalTopicDisplayNameSelectedState && checkHowManyOfTopicNeedsReview();
 
   const title = selectedContentState?.title;
+  const generalTopicName = selectedContentState?.generalTopicName;
   const chapter = title?.split('-');
   const chapterNum = chapter?.[chapter?.length - 1];
 
@@ -46,7 +53,9 @@ const BreadcrumbComponent = () => {
         <Breadcrumb className='my-auto mx-1'>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink onClick={handleOnHome}>Home</BreadcrumbLink>
+              <BreadcrumbLink onClick={handleOnHome} className='cursor-pointer'>
+                Home
+              </BreadcrumbLink>
             </BreadcrumbItem>
             {generalTopicDisplayNameSelectedState && (
               <>
@@ -59,7 +68,15 @@ const BreadcrumbComponent = () => {
                 </BreadcrumbItem>
               </>
             )}
-            {title && (
+            {hasUnifiedChapter && (
+              <>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>{generalTopicName}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </>
+            )}
+            {title && !hasUnifiedChapter && (
               <>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
@@ -72,7 +89,6 @@ const BreadcrumbComponent = () => {
 
         <div>
           <BasketDialogue />
-
           {!isSentenceReviewState ? (
             <Button
               className='m-1.5'

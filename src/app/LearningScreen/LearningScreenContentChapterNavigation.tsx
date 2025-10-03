@@ -1,17 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import useData from '../Providers/useData';
 import useLearningScreen from './useLearningScreen';
 
 const LearningScreenContentChapterNavigation = () => {
-  const [contentMetaDataState, setContentMetaDataState] = useState([]);
-  const [contentMetaWordDataState, setContentMetaWordDataState] = useState([]);
-  const {
-    handleGetComprehensiveReview,
-
-    wordsState,
-  } = useData();
+  const { handleGetComprehensiveReview, wordsState } = useData();
 
   const {
     generalTopicDisplayNameSelectedState,
@@ -19,6 +13,10 @@ const LearningScreenContentChapterNavigation = () => {
     getGeneralContentMetaData,
     handleSelectedContent,
     getGeneralContentWordData,
+    contentMetaDataState,
+    setContentMetaDataState,
+    contentMetaWordDataState,
+    setContentMetaWordDataState,
   } = useLearningScreen();
 
   useEffect(() => {
