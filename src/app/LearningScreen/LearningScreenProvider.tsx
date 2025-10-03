@@ -13,7 +13,7 @@ import useManageLoopInit from './hooks/useManageLoopInit';
 import { useHighlightWordToWordBank } from '../useHighlightWordToWordBank';
 import useMapTranscriptToSeconds from './hooks/useMapTranscriptToSeconds';
 import useTrackMasterTranscript from './hooks/useTrackMasterTranscript';
-import { isDueCheck } from '../Providers/DataProvider';
+import { isDueCheck } from '@/utils/is-due-check';
 
 export const LearningScreenContext = createContext(null);
 

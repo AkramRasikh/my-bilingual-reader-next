@@ -10,7 +10,7 @@ import PasteImageCard from './PasteImageCard';
 import useData from './Providers/useData';
 import { getCloudflareImageURL } from './media-utils/get-media-url';
 import Image from 'next/image';
-import { isDueCheck } from './Providers/DataProvider';
+import { isDueCheck } from '@/utils/is-due-check';
 
 function ConditionalWrapper({ condition, wrapper, children }) {
   return condition ? wrapper(children) : children;

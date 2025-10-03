@@ -12,7 +12,7 @@ import useData from './Providers/useData';
 import clsx from 'clsx';
 import WordTabContent from './WordTabContent';
 import useLearningScreen from './LearningScreen/useLearningScreen';
-import { isDueCheck } from './Providers/DataProvider';
+import { isDueCheck } from '@/utils/is-due-check';
 
 export const WordDialogueContent = () => {
   const { wordBasketState, setWordBasketState, updateWordDataProvider } =

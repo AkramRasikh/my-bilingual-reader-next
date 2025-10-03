@@ -13,7 +13,7 @@ import {
   srsRetentionKeyTypes,
 } from './srs-utils/srs-algo';
 import LoadingSpinner from '../components/custom/LoadingSpinner';
-import { isDueCheck } from './Providers/DataProvider';
+import { isDueCheck } from '@/utils/is-due-check';
 
 export const WordCardContent = ({
   id,

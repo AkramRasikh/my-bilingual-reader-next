@@ -1,8 +1,8 @@
 import { getOnLoadData } from '../client-api/get-on-load-data';
-import { isDueCheck } from '../DataProvider';
 import PageContainer from '../../components/custom/PageContainer';
 import WordsContainer from './WordsContainer';
 import { WordsProvider } from './WordsProvider';
+import { isDueCheck } from '@/utils/is-due-check';
 
 export default async function WordsRoute() {
   const allStudyDataRes = await getOnLoadData();

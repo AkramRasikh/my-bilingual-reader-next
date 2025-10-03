@@ -19,17 +19,11 @@ import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
 import { getAudioURL } from '../media-utils/get-media-url';
 import { contentReducer } from '../reducers/content-reducer';
 import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
+import { isDueCheck } from '@/utils/is-due-check';
 
 export const DataContext = createContext(null);
 
 const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
-
-export const isDueCheck = (sentence, todayDateObj) => {
-  return (
-    (sentence?.nextReview && sentence.nextReview < todayDateObj) ||
-    new Date(sentence?.reviewData?.due) < todayDateObj
-  );
-};
 
 export const DataProvider = ({
   wordsData,
