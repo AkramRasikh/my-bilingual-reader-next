@@ -3,7 +3,7 @@ import { getGeneralTopicName } from '../../utils/get-general-topic-name';
 import { japanese } from '../languages';
 import KeyListener from './LearningScreenKeyListener';
 import VideoPlayer from '../VideoPlayer';
-import ComprehensiveTranscriptItem from '../ComprehensiveTranscriptItem';
+import TranscriptItemSecondary from '../../components/custom/TranscriptItem/TranscriptItemSecondary';
 import useLearningScreen from './useLearningScreen';
 import LearningScreenActionBar from './LearningScreenActionBar';
 import LearningScreenActionBarVideoControls from './LearningScreenActionBarVideoControls';
@@ -41,9 +41,7 @@ const LearningScreenLeftSideContainer = () => {
       />
       <LearningScreenActionBar />
       {masterPlayComprehensiveState && (
-        <ComprehensiveTranscriptItem
-          contentItem={masterPlayComprehensiveState}
-        />
+        <TranscriptItemSecondary contentItem={masterPlayComprehensiveState} />
       )}
       <KeyListener />
     </div>

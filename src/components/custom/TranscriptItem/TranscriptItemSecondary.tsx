@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react';
-import FormattedSentence from '../components/custom/FormattedSentence';
-import useLearningScreen from './LearningScreen/useLearningScreen';
-import useData from './Providers/useData';
+import FormattedSentence from '../FormattedSentence';
+import useLearningScreen from '../../../app/LearningScreen/useLearningScreen';
+import useData from '../../../app/Providers/useData';
 import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
 
-const ComprehensiveTranscriptItem = ({ contentItem }) => {
+const TranscriptItemSecondary = ({ contentItem }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
 
   const { wordsForSelectedTopic } = useLearningScreen();
@@ -39,7 +39,6 @@ const ComprehensiveTranscriptItem = ({ contentItem }) => {
   return (
     <div className='rounded border-2 p-2 mt-2 flex flex-col gap-2'>
       <FormattedSentence
-        // ref={ulRef}
         targetLangformatted={targetLangformatted}
         handleMouseLeave={handleMouseLeave}
         handleMouseEnter={handleMouseEnter}
@@ -57,7 +56,6 @@ const ComprehensiveTranscriptItem = ({ contentItem }) => {
             vocab={contentItem.vocab}
             meaning={contentItem.meaning}
             sentenceStructure={contentItem.sentenceStructure}
-            // handleSaveFunc={handleSaveFunc}
           />
         </>
       )}
@@ -65,4 +63,4 @@ const ComprehensiveTranscriptItem = ({ contentItem }) => {
   );
 };
 
-export default ComprehensiveTranscriptItem;
+export default TranscriptItemSecondary;
