@@ -72,6 +72,17 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {
     }
   };
 
+  const reviewTogglesMap = [
+    { disabled: isLoadingSRSState, text: againText, difficultyNumber: '1' },
+    { disabled: isLoadingSRSState, text: hardText, difficultyNumber: '2' },
+    { disabled: isLoadingSRSState, text: goodText, difficultyNumber: '3' },
+    {
+      disabled: isLoadingSRSState || isScheduledForDeletion,
+      text: easyText,
+      difficultyNumber: '4',
+    },
+  ];
+
   return (
     <div
       className={clsx(
@@ -79,34 +90,16 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {
         isLoadingSRSState && 'opacity-25',
       )}
     >
-      <Button
-        variant='outline'
-        disabled={isLoadingSRSState}
-        onClick={() => handleNextReview('1')}
-      >
-        {againText}
-      </Button>
-      <Button
-        variant='outline'
-        disabled={isLoadingSRSState}
-        onClick={() => handleNextReview('2')}
-      >
-        {hardText}
-      </Button>
-      <Button
-        variant='outline'
-        disabled={isLoadingSRSState}
-        onClick={() => handleNextReview('3')}
-      >
-        {goodText}
-      </Button>
-      <Button
-        variant='outline'
-        disabled={isLoadingSRSState || isScheduledForDeletion}
-        onClick={() => handleNextReview('4')}
-      >
-        {easyText}
-      </Button>
+      {reviewTogglesMap.map((btn, index) => (
+        <Button
+          key={index}
+          variant='outline'
+          disabled={btn.disabled}
+          onClick={() => handleNextReview(btn.difficultyNumber)}
+        >
+          {btn.text}
+        </Button>
+      ))}
       <Button
         variant='destructive'
         className={clsx(
