@@ -34,10 +34,13 @@ const TranscriptItemContent = () => {
 
   const hasSentenceBreakdown = contentItem?.sentenceStructure;
 
+  const showBreakdownBool =
+    (showSentenceBreakdownState && hasSentenceBreakdown) ||
+    showThisSentenceBreakdownPreviewState;
+
   return (
     <div className={clsx(thisSentenceIsPlaying && 'bg-yellow-200 h-fit')}>
-      {(showSentenceBreakdownState && hasSentenceBreakdown) ||
-      showThisSentenceBreakdownPreviewState ? (
+      {showBreakdownBool ? (
         <SentenceBreakdown
           vocab={contentItem.vocab}
           meaning={contentItem.meaning}
