@@ -1,10 +1,10 @@
 import clsx from 'clsx';
 import { useState } from 'react';
 import Xarrow from 'react-xarrows';
-import BreakSentenceHoverCard from './BreakSentenceHoverCard';
 import getColorByIndex from '@/utils/get-color-by-index';
+import SentenceBreakdownHover from './SentenceBreakdownHover';
 
-export const SentenceBreakdown = ({
+const SentenceBreakdown = ({
   vocab,
   thisSentencesSavedWords,
   handleSaveFunc,
@@ -52,7 +52,7 @@ export const SentenceBreakdown = ({
                   </span>
                 </div>
               ) : (
-                <BreakSentenceHoverCard
+                <SentenceBreakdownHover
                   handleSaveFunc={handleSaveFunc}
                   surfaceForm={surfaceForm}
                   meaning={meaning}
@@ -115,3 +115,5 @@ export const SentenceBreakdown = ({
     </div>
   );
 };
+
+export default SentenceBreakdown;

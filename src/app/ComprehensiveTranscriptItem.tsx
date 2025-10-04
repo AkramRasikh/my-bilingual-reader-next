@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import FormattedSentence from '../components/custom/FormattedSentence';
-import { SentenceBreakdown } from './SentenceBreakdown';
 import useLearningScreen from './LearningScreen/useLearningScreen';
 import useData from './Providers/useData';
+import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
 
 const ComprehensiveTranscriptItem = ({ contentItem }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);

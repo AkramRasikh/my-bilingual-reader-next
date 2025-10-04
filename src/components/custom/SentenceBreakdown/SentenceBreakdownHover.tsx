@@ -6,7 +6,7 @@ import {
 
 import { Button } from '@/components/ui/button';
 
-const BreakSentenceHoverCard = ({
+const SentenceBreakdownHover = ({
   handleSaveFunc,
   surfaceForm,
   meaning,
@@ -50,4 +50,4 @@ const BreakSentenceHoverCard = ({
   );
 };
 
-export default BreakSentenceHoverCard;
+export default SentenceBreakdownHover;

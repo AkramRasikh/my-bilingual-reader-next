@@ -1,8 +1,8 @@
 import clsx from 'clsx';
-import { NewSentenceBreakdown } from '@/app/SentenceBreakdown';
 import FormattedSentence from '@/components/custom/FormattedSentence';
 import useTranscriptItem from './useTranscriptItem';
 import useData from '@/app/Providers/useData';
+import SentenceBreakdown from '../SentenceBreakdown';
 
 const TranscriptItemContent = () => {
   const {
@@ -38,7 +38,7 @@ const TranscriptItemContent = () => {
     <div className={clsx(thisSentenceIsPlaying && 'bg-yellow-200 h-fit')}>
       {(showSentenceBreakdownState && hasSentenceBreakdown) ||
       showThisSentenceBreakdownPreviewState ? (
-        <NewSentenceBreakdown
+        <SentenceBreakdown
           vocab={contentItem.vocab}
           meaning={contentItem.meaning}
           thisSentencesSavedWords={thisSentencesSavedWords}
