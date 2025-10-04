@@ -12,7 +12,7 @@ import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
 import { breakdownSentenceAPI } from '../client-api/breakdown-sentence';
 import { updateContentMetaDataAPI } from '../client-api/update-content-meta-data';
 import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
-import { getAudioURL } from '../media-utils/get-media-url';
+import { getAudioURL } from '../../utils/get-media-url';
 import { contentReducer } from '../reducers/content-reducer';
 import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 import { isDueCheck } from '@/utils/is-due-check';

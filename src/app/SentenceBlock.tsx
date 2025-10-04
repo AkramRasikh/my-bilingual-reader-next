@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import FormattedSentence from '../components/custom/FormattedSentence';
-import {
-  getAudioURL,
-  getCloudflareImageURL,
-} from './media-utils/get-media-url';
+import { getAudioURL, getCloudflareImageURL } from '../utils/get-media-url';
 import { japanese } from './languages';
 import ReviewSRSToggles from '../components/custom/ReviewSRSToggles';
 import useData from './Providers/useData';

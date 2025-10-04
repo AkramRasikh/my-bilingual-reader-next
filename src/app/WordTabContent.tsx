@@ -8,7 +8,7 @@ import LoadingSpinner from '../components/custom/LoadingSpinner';
 import GoogleSearchImage from '../components/custom/GoogleSearchImage';
 import PasteImageCard from './PasteImageCard';
 import useData from './Providers/useData';
-import { getCloudflareImageURL } from './media-utils/get-media-url';
+import { getCloudflareImageURL } from '../utils/get-media-url';
 import Image from 'next/image';
 import { isDueCheck } from '@/utils/is-due-check';
 import ConditionalWrapper from '@/components/custom/ConditionalWrapper';
