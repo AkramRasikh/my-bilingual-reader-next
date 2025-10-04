@@ -5,16 +5,13 @@ import ReviewSRSToggles from './ReviewSRSToggles';
 import clsx from 'clsx';
 import { getTimeDiffSRS } from './srs-utils/get-time-diff-srs';
 import LoadingSpinner from '../components/custom/LoadingSpinner';
-import GoogleSearchImage from './GoogleSearchImage';
+import GoogleSearchImage from '../components/custom/GoogleSearchImage';
 import PasteImageCard from './PasteImageCard';
 import useData from './Providers/useData';
 import { getCloudflareImageURL } from './media-utils/get-media-url';
 import Image from 'next/image';
 import { isDueCheck } from '@/utils/is-due-check';
-
-function ConditionalWrapper({ condition, wrapper, children }) {
-  return condition ? wrapper(children) : children;
-}
+import ConditionalWrapper from '@/components/custom/ConditionalWrapper';
 
 const WordTabContent = ({
   id,
