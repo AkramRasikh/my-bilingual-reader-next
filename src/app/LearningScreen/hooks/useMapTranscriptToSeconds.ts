@@ -1,4 +1,4 @@
-import { mapSentenceIdsToSeconds } from '@/app/map-sentence-ids-to-seconds';
+import { mapSentenceIdsToSeconds } from '@/app/LearningScreen/utils/map-sentence-ids-to-seconds';
 import { useEffect } from 'react';
 
 const useMapTranscriptToSeconds = ({
