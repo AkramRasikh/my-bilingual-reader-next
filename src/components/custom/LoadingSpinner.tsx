@@ -1,6 +1,6 @@
 import { LucideLoader2 } from 'lucide-react';
 
-const LoadingSpinner = ({ big }) => {
+const LoadingSpinner = ({ big = false }) => {
   if (big) {
     return (
       <div className='absolute top-1/3 left-1/2 animate-spin text-red-400 '>
