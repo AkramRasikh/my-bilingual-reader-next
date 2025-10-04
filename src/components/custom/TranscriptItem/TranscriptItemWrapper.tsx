@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import useTranscriptItem from './useTranscriptItem';
 import TranscriptItemInReviewMiniActionBar from './TranscriptItemInReviewMiniActionBar';
+import { AnimationFade, fadeAnimationStyle } from '../AnimationWrapper';
 
 const TranscriptItemWrapper = ({ children }) => {
   const {
@@ -40,7 +41,7 @@ const TranscriptItemWrapper = ({ children }) => {
         isInReviewMode ? 'w-full' : '',
       )}
       style={{
-        animation: !isInReviewMode ? 'fadeIn 0.5s ease-out forwards' : '',
+        animation: !isInReviewMode ? fadeAnimationStyle : '',
       }}
       onMouseEnter={handleOnMouseEnterSentence}
       onMouseLeave={() => {
@@ -49,16 +50,7 @@ const TranscriptItemWrapper = ({ children }) => {
       }}
     >
       {children}
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-      `}</style>
+      <AnimationFade />
     </div>
   );
 };
