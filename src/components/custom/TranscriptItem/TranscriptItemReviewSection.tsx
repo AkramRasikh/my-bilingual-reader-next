@@ -1,5 +1,5 @@
 import { getTimeDiffSRS } from '@/app/srs-utils/get-time-diff-srs';
-import ReviewSRSToggles from '@/app/ReviewSRSToggles';
+import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
 import useTranscriptItem from './useTranscriptItem';
 
 const TranscriptItemReviewSection = () => {

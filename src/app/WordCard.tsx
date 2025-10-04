@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import useWords from './words/useWords';
-import ReviewSRSToggles from './ReviewSRSToggles';
+import ReviewSRSToggles from '../components/custom/ReviewSRSToggles';
 import { Label } from '@/components/ui/label';
 import clsx from 'clsx';
 import { getTimeDiffSRS } from './srs-utils/get-time-diff-srs';

@@ -1,10 +1,10 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   srsCalculationAndText,
   srsRetentionKeyTypes,
-} from './srs-utils/srs-algo';
+} from '../../app/srs-utils/srs-algo';
 import { Trash } from 'lucide-react';
-import { useState } from 'react';
 import clsx from 'clsx';
 
 const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {

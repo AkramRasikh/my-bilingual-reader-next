@@ -5,7 +5,7 @@ import {
   getCloudflareImageURL,
 } from './media-utils/get-media-url';
 import { japanese } from './languages';
-import ReviewSRSToggles from './ReviewSRSToggles';
+import ReviewSRSToggles from '../components/custom/ReviewSRSToggles';
 import useData from './Providers/useData';
 import AudioPlayer from './SentenceAudioPlayer';
 import Image from 'next/image';

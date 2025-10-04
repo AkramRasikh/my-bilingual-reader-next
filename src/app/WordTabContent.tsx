@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CardContent, CardTitle } from '@/components/ui/card';
-import ReviewSRSToggles from './ReviewSRSToggles';
+import ReviewSRSToggles from '../components/custom/ReviewSRSToggles';
 import clsx from 'clsx';
 import { getTimeDiffSRS } from './srs-utils/get-time-diff-srs';
 import LoadingSpinner from '../components/custom/LoadingSpinner';
