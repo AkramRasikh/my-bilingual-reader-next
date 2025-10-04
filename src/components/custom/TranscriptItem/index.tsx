@@ -1,4 +1,4 @@
-import HighlightedTextSection from '@/components/custom/HighlightedTextSection';
+import HighlightedText from '@/components/custom/HighlightedText';
 import useTranscriptItem from './useTranscriptItem';
 import TranscriptItemWrapper from './TranscriptItemWrapper';
 import TranscriptItemTimeOverlappingIndicator from './TranscriptItemTimeOverlappingIndicator';
@@ -33,7 +33,7 @@ const TranscriptItem = () => {
       </div>
       <TranscriptItemReviewSection />
       {highlightedTextState && (
-        <HighlightedTextSection
+        <HighlightedText
           isLoadingState={isLoadingState}
           handleSaveFunc={handleSaveFunc}
           setHighlightedTextState={setHighlightedTextState}

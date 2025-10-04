@@ -1,21 +1,15 @@
 import { Button } from '@/components/ui/button';
-import LoadingSpinner from './LoadingSpinner';
-import AnimationFade, {
-  fadeAnimationStyle,
-} from '@/components/custom/AnimationFade';
 import { Delete } from 'lucide-react';
+import AnimationWrapper from '../AnimationWrapper';
 
-const HighlightedTextSection = ({
+const HighlightedText = ({
   isLoadingState,
   handleSaveFunc,
   setHighlightedTextState,
   highlightedTextState,
 }) => {
   return (
-    <div
-      className='m-auto mt-1.5 flex gap-2.5 justify-end'
-      style={{ animation: fadeAnimationStyle }}
-    >
+    <AnimationWrapper className='m-auto mt-1.5 flex gap-2.5 justify-end'>
       <p className='my-auto bg-blue-100 rounded px-1 text-sm'>
         {highlightedTextState}
       </p>
@@ -55,9 +49,8 @@ const HighlightedTextSection = ({
           </Button>
         </div>
       </div>
-      <AnimationFade />
-    </div>
+    </AnimationWrapper>
   );
 };
 
-export default HighlightedTextSection;
+export default HighlightedText;
