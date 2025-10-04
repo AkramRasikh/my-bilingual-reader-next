@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import FormattedSentence from '../components/custom/FormattedSentence';
-import { NewSentenceBreakdown } from './SentenceBreakdown';
+import { SentenceBreakdown } from './SentenceBreakdown';
 import useLearningScreen from './LearningScreen/useLearningScreen';
 import useData from './Providers/useData';
 
@@ -53,7 +53,7 @@ const ComprehensiveTranscriptItem = ({ contentItem }) => {
       {hasSentenceBreakdown && (
         <>
           <hr className='bg-gray-500' />
-          <NewSentenceBreakdown
+          <SentenceBreakdown
             vocab={contentItem.vocab}
             meaning={contentItem.meaning}
             sentenceStructure={contentItem.sentenceStructure}

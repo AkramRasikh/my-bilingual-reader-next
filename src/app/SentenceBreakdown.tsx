@@ -4,7 +4,7 @@ import Xarrow from 'react-xarrows';
 import BreakSentenceHoverCard from './BreakSentenceHoverCard';
 import getColorByIndex from '@/utils/get-color-by-index';
 
-export const NewSentenceBreakdown = ({
+export const SentenceBreakdown = ({
   vocab,
   thisSentencesSavedWords,
   handleSaveFunc,
