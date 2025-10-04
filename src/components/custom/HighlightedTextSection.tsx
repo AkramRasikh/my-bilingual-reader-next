@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import LoadingSpinner from '../components/custom/LoadingSpinner';
+import LoadingSpinner from './LoadingSpinner';
 import AnimationFade, {
   fadeAnimationStyle,
 } from '@/components/custom/AnimationFade';

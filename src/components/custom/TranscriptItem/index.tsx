@@ -1,4 +1,4 @@
-import HighlightedTextSection from '@/app/HighlightedTextSection';
+import HighlightedTextSection from '@/components/custom/HighlightedTextSection';
 import useTranscriptItem from './useTranscriptItem';
 import TranscriptItemWrapper from './TranscriptItemWrapper';
 import TranscriptItemTimeOverlappingIndicator from './TranscriptItemTimeOverlappingIndicator';
