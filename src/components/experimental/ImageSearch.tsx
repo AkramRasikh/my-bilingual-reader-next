@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-export default function ImageSearch() {
+export default function SplashImageSearch() {
   const [query, setQuery] = useState('');
   const [images, setImages] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
