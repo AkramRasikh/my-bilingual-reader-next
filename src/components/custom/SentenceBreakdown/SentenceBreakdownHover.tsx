@@ -10,7 +10,7 @@ const SentenceBreakdownHover = ({
   handleSaveFunc,
   surfaceForm,
   meaning,
-  thisColor,
+  color,
   wordIsSaved,
 }) => {
   return (
@@ -23,7 +23,7 @@ const SentenceBreakdownHover = ({
       >
         <span
           style={{
-            color: thisColor,
+            color,
           }}
         >
           {surfaceForm}
