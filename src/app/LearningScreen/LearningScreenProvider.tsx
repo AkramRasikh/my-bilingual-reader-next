@@ -116,7 +116,7 @@ export const LearningScreenProvider = ({
     let latestIsDueElIndex;
     let firstElIndex;
 
-    const formattedTranscript = [content[0]].map((item, index) => {
+    const formattedTranscript = content.map((item, index) => {
       if (item?.reviewData && isDueCheck(item, now)) {
         latestIsDueEl = item.id;
         latestIsDueElIndex = index;
