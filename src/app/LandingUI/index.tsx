@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import SentenceReviewContainer from '../SentenceReviewContainer';
 import MockFlag from '../../components/custom/MockFlag';
 import useLandingScreenLoadGeneralTopicsDisplay from './useLandingUILoadGeneralTopicsDisplay';
-import BreadcrumbComponent from '../BreadCrumbHeader';
+import BreadcrumbComponent from '../../components/custom/BreadCrumbHeader';
 
 const LandingScreen = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;

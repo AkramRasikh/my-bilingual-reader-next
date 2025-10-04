@@ -7,27 +7,21 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import useData from './Providers/useData';
+import useData from '../../app/Providers/useData';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import BasketDialogue from './BasketDialogue';
-import useLearningScreen from './LearningScreen/useLearningScreen';
+import BasketDialogue from '../../app/BasketDialogue';
+import useLearningScreen from '../../app/LearningScreen/useLearningScreen';
 
 const BreadcrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
   const {
-    generalTopicDisplayNameSelectedState,
     sentencesState,
     setIsSentenceReviewState,
     isSentenceReviewState,
     wordBasketState,
   } = useData();
-  const {
-    selectedContentState,
-    checkHowManyOfTopicNeedsReview,
-    handleOnHome,
-    contentMetaDataState,
-  } = useLearningScreen();
+  const { selectedContentState, handleOnHome } = useLearningScreen();
 
   useEffect(() => {
     if (wordBasketState.length === 0 && showBasketState) {
@@ -35,17 +29,8 @@ const BreadcrumbComponent = () => {
     }
   }, [wordBasketState, showBasketState]);
 
-  const hasUnifiedChapter = contentMetaDataState?.length === 1;
-
   const numberOfSentences = sentencesState.length;
-
-  const theseSentencesDue =
-    generalTopicDisplayNameSelectedState && checkHowManyOfTopicNeedsReview();
-
-  const title = selectedContentState?.title;
   const generalTopicName = selectedContentState?.generalTopicName;
-  const chapter = title?.split('-');
-  const chapterNum = chapter?.[chapter?.length - 1];
 
   return (
     <>
@@ -57,30 +42,11 @@ const BreadcrumbComponent = () => {
                 Home
               </BreadcrumbLink>
             </BreadcrumbItem>
-            {generalTopicDisplayNameSelectedState && (
-              <>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  {generalTopicDisplayNameSelectedState}{' '}
-                  {theseSentencesDue?.length > 0
-                    ? `(${theseSentencesDue?.length})`
-                    : null}
-                </BreadcrumbItem>
-              </>
-            )}
-            {hasUnifiedChapter && (
+            {generalTopicName && (
               <>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbPage>{generalTopicName}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </>
-            )}
-            {title && !hasUnifiedChapter && (
-              <>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Chapter: {chapterNum}</BreadcrumbPage>
                 </BreadcrumbItem>
               </>
             )}
