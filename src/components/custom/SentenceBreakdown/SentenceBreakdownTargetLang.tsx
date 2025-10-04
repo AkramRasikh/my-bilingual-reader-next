@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import getColorByIndex from '@/utils/get-color-by-index';
 import SentenceBreakdownHover from './SentenceBreakdownHover';
 import SentenceBreakdownTargetLangWord from './SentenceBreakdownTargetLangWord';
