@@ -42,9 +42,11 @@ const LearningScreenActionBar = () => {
         <Button variant={'link'} onClick={handleScrollToMasterView}>
           Current
         </Button>
-        <Button variant={'link'} onClick={scrollToLastReviewed}>
-          Checkpoint
-        </Button>
+        {!isInReviewMode && (
+          <Button variant={'link'} onClick={scrollToLastReviewed}>
+            Checkpoint
+          </Button>
+        )}
         {isLooping && !isInReviewMode && (
           <Button variant={'outline'} onClick={handleBulkReviews}>
             Loop ➡️ Review (shft + ⤶)
