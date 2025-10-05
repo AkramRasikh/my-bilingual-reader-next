@@ -12,11 +12,30 @@ const LearningScreenActionBar = () => {
     studyFromHereTimeState,
     handleScrollToMasterView,
     setStudyFromHereTimeState,
+    formattedTranscriptState,
   } = useLearningScreen();
 
   const isLooping = loopTranscriptState?.length > 0;
-  const scrollToLastReviewed = () =>
-    setLatestDueIdState((prev) => ({ ...prev, triggerScroll: true }));
+
+  const scrollToLastLeftOff = () => {
+    const lastStudiedEls = formattedTranscriptState.filter(
+      (el) => el?.reviewData?.due,
+    );
+
+    const lastInArr = lastStudiedEls[lastStudiedEls.length - 1]?.id;
+    if (lastInArr) {
+      setLatestDueIdState({ id: lastInArr, triggerScroll: true });
+    }
+  };
+  const scrollToLastReviewed = () => {
+    const lastStudiedDueNow = formattedTranscriptState.filter(
+      (el) => el?.dueStatus === 'now',
+    );
+    const lastInArr = lastStudiedDueNow[lastStudiedDueNow.length - 1]?.id;
+    if (lastInArr) {
+      setLatestDueIdState({ id: lastInArr, triggerScroll: true });
+    }
+  };
 
   const studyFromHereTimeStateNumber = isNumber(studyFromHereTimeState);
 
@@ -43,7 +62,12 @@ const LearningScreenActionBar = () => {
           Current
         </Button>
         {!isInReviewMode && (
-          <Button variant={'link'} onClick={scrollToLastReviewed}>
+          <Button variant='link' onClick={scrollToLastReviewed}>
+            Latest due
+          </Button>
+        )}
+        {!isInReviewMode && (
+          <Button variant='link' onClick={scrollToLastLeftOff}>
             Checkpoint
           </Button>
         )}
