@@ -34,6 +34,7 @@ const WordCard = ({
   const [openContentState, setOpenContentState] = useState(defaultOpen);
   const [isLoadingState, setIsLoadingState] = useState(false);
   const timeNow = new Date();
+  const textTitle = indexNum + ') ' + definition;
   const isWordDue = isDueCheck({ reviewData }, timeNow);
 
   const cloudflareImageUrl = imageUrl
@@ -77,8 +78,6 @@ const WordCard = ({
       id,
       definition,
     });
-
-  const textTitle = indexNum + ') ' + definition;
 
   return (
     <WordCardWrapper isLoadingState={isLoadingState} isWordDue={isWordDue}>
