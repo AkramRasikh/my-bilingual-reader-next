@@ -3,7 +3,7 @@
 import PageContainer from '@/components/custom/PageContainer';
 import { DataProvider } from '../Providers/DataProvider';
 import { useFetchData } from '../Providers/FetchDataProvider';
-import SentenceReviewContainer from './SentenceReviewContainer';
+import SentenceReviewContainer from './SentencesScreenContainer';
 
 export default function SentencesPage() {
   const { data } = useFetchData();

@@ -3,8 +3,9 @@ import useData from '../Providers/useData';
 import SentenceBlock from '../SentenceBlock';
 import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
+import useSentencesProgress from './useSentencesProgress';
 
-const SentenceReviewContainer = () => {
+const SentencesScreenContainer = () => {
   const [progressState, setProgressState] = useState(0);
   const [initNumState, setInitNumState] = useState();
   const { sentencesState } = useData();
@@ -17,20 +18,16 @@ const SentenceReviewContainer = () => {
     }
   }, [initNumState]);
 
-  useEffect(() => {
-    if (!initNumState || !numberOfSentences) {
-      return;
-    }
-    const progressValue =
-      ((initNumState - numberOfSentences) / initNumState) * 100;
-
-    setProgressState(progressValue);
-  }, [numberOfSentences, initNumState]);
+  useSentencesProgress({
+    setProgressState,
+    initNumState,
+    numberOfSentences,
+  });
 
   const slicedSentences = sentencesState.slice(0, 5);
 
   return (
-    <div style={{ padding: 10 }}>
+    <div>
       <Toaster position='top-center' />
       <Progress value={progressState} className='w-full' />
 
@@ -52,4 +49,4 @@ const SentenceReviewContainer = () => {
   );
 };
 
-export default SentenceReviewContainer;
+export default SentencesScreenContainer;
