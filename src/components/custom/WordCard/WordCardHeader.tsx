@@ -1,8 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { CardTitle } from '@/components/ui/card';
 import clsx from 'clsx';
+import { LucidePlay } from 'lucide-react';
 
-const WordCardHeader = ({ textTitle, isInBasket, onClick }) => (
+const WordCardHeader = ({
+  textTitle,
+  isInBasket,
+  onClickBasket,
+  onClickPlayContext,
+}) => (
   <div className='flex gap-3 flex-wrap justify-between'>
     <CardTitle
       style={{
@@ -14,13 +20,22 @@ const WordCardHeader = ({ textTitle, isInBasket, onClick }) => (
       {textTitle}
     </CardTitle>
 
-    <Button
-      variant={isInBasket ? 'destructive' : 'default'}
-      className={clsx(!isInBasket ? 'bg-transparent' : '')}
-      onClick={onClick}
-    >
-      🧺
-    </Button>
+    <div className='my-auto flex gap-2'>
+      <Button
+        variant={'secondary'}
+        className={'h-3 w-3 p-3 bg-transparent'}
+        onClick={onClickPlayContext}
+      >
+        <LucidePlay />
+      </Button>
+      <Button
+        variant={isInBasket ? 'destructive' : 'default'}
+        className={clsx(!isInBasket ? 'bg-transparent' : '', 'h-3 w-3 p-3')}
+        onClick={onClickBasket}
+      >
+        🧺
+      </Button>
+    </div>
   </div>
 );
 

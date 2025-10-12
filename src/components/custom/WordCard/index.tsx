@@ -27,6 +27,8 @@ const WordCard = ({
   indexNum,
   imageUrl,
   addImageDataProvider,
+  contexts,
+  playFromThisContext,
   ...rest
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
@@ -34,6 +36,8 @@ const WordCard = ({
   const timeNow = new Date();
   const textTitle = indexNum + ') ' + definition;
   const isWordDue = isDueCheck({ reviewData }, timeNow);
+
+  const originalContextId = contexts[0];
 
   const cloudflareImageUrl = imageUrl
     ? getCloudflareImageURL(imageUrl, 'japanese')
@@ -56,6 +60,12 @@ const WordCard = ({
       console.log('## handleReviewFunc', error);
     } finally {
       setIsLoadingState(false);
+    }
+  };
+
+  const handlePlayThisContext = () => {
+    if (originalContextId) {
+      playFromThisContext(originalContextId);
     }
   };
 
@@ -83,7 +93,8 @@ const WordCard = ({
         <WordCardHeader
           textTitle={textTitle}
           isInBasket={isInBasket}
-          onClick={handleAddWordToBasket}
+          onClickBasket={handleAddWordToBasket}
+          onClickPlayContext={handlePlayThisContext}
         />
 
         <WordCardConditionalContentWrapper

@@ -9,7 +9,7 @@ export const WordDialogueContent = () => {
     updateWordDataProvider,
     addImageDataProvider,
   } = useData();
-  const { wordsForSelectedTopic } = useLearningScreen();
+  const { wordsForSelectedTopic, playFromThisContext } = useLearningScreen();
 
   const addWordToBasket = (word) => {
     const wordIsInBasic = wordBasketState.some(
@@ -42,6 +42,7 @@ export const WordDialogueContent = () => {
                 addWordToBasket={addWordToBasket}
                 isInBasket={isInBasket}
                 addImageDataProvider={addImageDataProvider}
+                playFromThisContext={playFromThisContext}
               />
             </li>
           );

@@ -375,6 +375,15 @@ export const LearningScreenProvider = ({
   const handleRewind = () =>
     (ref.current.currentTime = ref.current.currentTime - 3);
 
+  const playFromThisContext = (contextId) => {
+    const contextSentence = formattedTranscriptState.find(
+      (item) => item.id === contextId,
+    );
+    if (contextSentence) {
+      handleFromHere(contextSentence.time);
+    }
+  };
+
   const handleJumpToSentenceViaKeys = (nextIndex: number) => {
     // defo revisit this
 
@@ -815,6 +824,7 @@ export const LearningScreenProvider = ({
         sentenceRepsState,
         elapsed,
         setElapsed,
+        playFromThisContext,
       }}
     >
       {children}
