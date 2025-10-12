@@ -1,22 +1,14 @@
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { WordCardContent } from './WordCard';
 import useData from './Providers/useData';
-import clsx from 'clsx';
-import WordTabContent from './WordTabContent';
 import useLearningScreen from './LearningScreen/useLearningScreen';
-import { isDueCheck } from '@/utils/is-due-check';
+import WordCard from '@/components/custom/WordCard';
 
 export const WordDialogueContent = () => {
-  const { wordBasketState, setWordBasketState, updateWordDataProvider } =
-    useData();
+  const {
+    wordBasketState,
+    setWordBasketState,
+    updateWordDataProvider,
+    addImageDataProvider,
+  } = useData();
   const { wordsForSelectedTopic } = useLearningScreen();
 
   const addWordToBasket = (word) => {
@@ -43,12 +35,13 @@ export const WordDialogueContent = () => {
 
           return (
             <li key={word.id}>
-              <WordTabContent
+              <WordCard
                 {...word}
                 indexNum={index + 1}
                 updateWordData={updateWordDataProvider}
                 addWordToBasket={addWordToBasket}
                 isInBasket={isInBasket}
+                addImageDataProvider={addImageDataProvider}
               />
             </li>
           );
@@ -57,58 +50,3 @@ export const WordDialogueContent = () => {
     </div>
   );
 };
-
-const WordContainerDialogue = ({ wordsForSelectedTopic, addWordToBasket }) => {
-  const { wordBasketState, updateWordDataProvider } = useData();
-  const nowTime = new Date();
-  const howManyDue = wordsForSelectedTopic.filter((i) =>
-    isDueCheck(i, nowTime),
-  ).length;
-
-  const btnText = howManyDue
-    ? `Words (${howManyDue}/${wordsForSelectedTopic.length})`
-    : `Words ${wordsForSelectedTopic.length}`;
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          variant='outline'
-          className={clsx(howManyDue > 0 ? 'bg-amber-500' : '')}
-        >
-          {btnText}
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>Words:</DialogTitle>
-        <div className='text-center m-auto p-1.5'>
-          <ul className='flex flex-wrap gap-2.5'>
-            {wordsForSelectedTopic.map((word) => {
-              const isInBasket = wordBasketState?.some(
-                (i) => i?.id === word.id,
-              );
-
-              return (
-                <li key={word.id}>
-                  <WordCardContent
-                    {...word}
-                    updateWordData={updateWordDataProvider}
-                    addWordToBasket={addWordToBasket}
-                    isInBasket={isInBasket}
-                  />
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant='outline'>Cancel</Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-export default WordContainerDialogue;
