@@ -34,13 +34,11 @@ const LearningScreenContentChapterNavigation = () => {
   }, [sentenceRepsState, elapsed]);
 
   useEffect(() => {
-    const contentMetaData =
-      generalTopicDisplayNameSelectedState && getGeneralContentMetaData();
-    const wordMetaData =
-      generalTopicDisplayNameSelectedState && getGeneralContentWordData();
-
-    setContentMetaDataState(contentMetaData);
-    setContentMetaWordDataState(wordMetaData);
+    if (!generalTopicDisplayNameSelectedState) {
+      return;
+    }
+    setContentMetaDataState(getGeneralContentMetaData());
+    setContentMetaWordDataState(getGeneralContentWordData());
   }, [wordsState, selectedContentState]);
 
   const hasUnifiedChapter = contentMetaDataState?.length === 1;
