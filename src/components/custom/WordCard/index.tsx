@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { CardContent } from '@/components/ui/card';
 import { isDueCheck } from '@/utils/is-due-check';
 import { getCloudflareImageURL } from '@/utils/get-media-url';
-import PasteImageCard from '@/app/PasteImageCard';
-import GoogleSearchImage from '../GoogleSearchImage';
 import { getTimeDiffSRS } from '@/app/srs-utils/get-time-diff-srs';
 import ReviewSRSToggles from '../ReviewSRSToggles';
 import WordCardInformation from './WordCardInformation';
