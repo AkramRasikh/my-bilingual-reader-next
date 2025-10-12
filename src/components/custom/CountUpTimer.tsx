@@ -1,8 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useEffect, useRef, useState } from 'react';
 
-export default function CountUpTimer() {
-  const [elapsed, setElapsed] = useState(0);
+export default function CountUpTimer({ elapsed, setElapsed }) {
   const [isRunning, setIsRunning] = useState(false);
   const startTimeRef = useRef(null); // Stores when the timer was started
   const savedElapsedRef = useRef(0); // Stores elapsed when paused

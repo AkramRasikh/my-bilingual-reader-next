@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import useData from '../Providers/useData';
 import useLearningScreen from './useLearningScreen';
+import LearningScreenUnifiedAnalytics from './LearningScreenUnifiedAnalytics';
 
 const LearningScreenContentChapterNavigation = () => {
   const { handleGetComprehensiveReview, wordsState } = useData();
+  const [repsPerMinState, setRepsPerMinState] = useState<string | null>(null);
 
   const {
     generalTopicDisplayNameSelectedState,
@@ -17,7 +19,19 @@ const LearningScreenContentChapterNavigation = () => {
     setContentMetaDataState,
     contentMetaWordDataState,
     setContentMetaWordDataState,
+    sentenceRepsState,
+    elapsed,
   } = useLearningScreen();
+
+  const prevValueRef = useRef(sentenceRepsState);
+
+  useEffect(() => {
+    if (elapsed > 0 && sentenceRepsState !== prevValueRef.current) {
+      prevValueRef.current = sentenceRepsState;
+      const perMinute = (sentenceRepsState / elapsed) * 60;
+      setRepsPerMinState(perMinute.toFixed(1));
+    }
+  }, [sentenceRepsState, elapsed]);
 
   useEffect(() => {
     const contentMetaData =
@@ -32,18 +46,7 @@ const LearningScreenContentChapterNavigation = () => {
   const hasUnifiedChapter = contentMetaDataState?.length === 1;
 
   if (hasUnifiedChapter) {
-    const sentencesNeedReview = contentMetaDataState[0]?.sentencesNeedReview;
-
-    return (
-      <div>
-        <p className='text-xs font-medium m-auto w-fit'>
-          Sentences: {sentencesNeedReview}
-        </p>
-        <p className='text-xs font-medium m-auto w-fit'>
-          Words: {contentMetaWordDataState[0].length}
-        </p>
-      </div>
-    );
+    return <LearningScreenUnifiedAnalytics repsPerMinState={repsPerMinState} />;
   }
 
   return (

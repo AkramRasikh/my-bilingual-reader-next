@@ -51,6 +51,7 @@ export const LearningScreenProvider = ({
   ] = useState('');
   const [scrollToElState, setScrollToElState] = useState('');
   const [firstDueIndexState, setFirstDueIndexState] = useState(0);
+  const [sentenceRepsState, setSentenceRepsState] = useState(0);
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState(null);
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
@@ -75,7 +76,7 @@ export const LearningScreenProvider = ({
 
   const [contentMetaDataState, setContentMetaDataState] = useState([]);
   const [contentMetaWordDataState, setContentMetaWordDataState] = useState([]);
-
+  const [elapsed, setElapsed] = useState(0);
   const {
     contentState,
     updateSentenceData,
@@ -453,6 +454,7 @@ export const LearningScreenProvider = ({
         removeReview: hasContentToReview,
         sentenceIds,
       });
+      setSentenceRepsState((prev) => prev + sentenceIds.length);
     } catch (error) {
     } finally {
       setIsGenericItemLoadingState((prev) =>
@@ -486,6 +488,7 @@ export const LearningScreenProvider = ({
           : contentIndex,
         isRemoveReview,
       });
+      setSentenceRepsState(sentenceRepsState + 1);
     } catch (error) {
       console.log('## handleReviewFunc error', error);
     }
@@ -653,6 +656,7 @@ export const LearningScreenProvider = ({
         isRemoveReview: Boolean(sentenceHasReview),
         nextDue: null,
       });
+      setSentenceRepsState(sentenceRepsState + 1);
     } catch (error) {
       console.log('## handleAddMasterToReview', error);
     } finally {
@@ -686,6 +690,7 @@ export const LearningScreenProvider = ({
         sentenceId: currentMasterPlay,
         nextDue: nextReviewData,
       });
+      setSentenceRepsState(sentenceRepsState + 1);
     } catch (error) {
       console.log('## handleIsEasyReviewShortCut', error);
     } finally {
@@ -807,6 +812,9 @@ export const LearningScreenProvider = ({
         setContentMetaDataState,
         contentMetaWordDataState,
         setContentMetaWordDataState,
+        sentenceRepsState,
+        elapsed,
+        setElapsed,
       }}
     >
       {children}
