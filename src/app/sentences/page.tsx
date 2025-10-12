@@ -1,11 +1,25 @@
 'use client';
 
+import PageContainer from '@/components/custom/PageContainer';
+import { DataProvider } from '../Providers/DataProvider';
 import { useFetchData } from '../Providers/FetchDataProvider';
+import SentenceReviewContainer from './SentenceReviewContainer';
 
 export default function SentencesPage() {
   const { data } = useFetchData();
 
   if (!data) return <p>Loading...</p>;
+  const { wordsData, sentencesData, contentData } = data;
 
-  return <div>Sentence Page</div>;
+  return (
+    <PageContainer>
+      <DataProvider
+        wordsData={wordsData}
+        sentencesData={sentencesData}
+        contentData={contentData}
+      >
+        <SentenceReviewContainer />
+      </DataProvider>
+    </PageContainer>
+  );
 }

@@ -5,7 +5,7 @@ import useData from '../Providers/useData';
 import LandingUIContentSelection from './LandingUIContentSelection';
 import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
 import { toast } from 'sonner';
-import SentenceReviewContainer from '../SentenceReviewContainer';
+import SentenceReviewContainer from '../sentences/SentenceReviewContainer';
 import MockFlag from '../../components/custom/MockFlag';
 import useLandingScreenLoadGeneralTopicsDisplay from './useLandingUILoadGeneralTopicsDisplay';
 import BreadcrumbComponent from '../../components/custom/BreadCrumbHeader';
