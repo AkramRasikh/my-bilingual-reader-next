@@ -107,17 +107,13 @@ const WordCard = ({
                   definition={definition}
                 />
               )}
-              {openContentState && cloudflareImageUrl ? (
-                <WordCardImage src={cloudflareImageUrl} baseForm={baseForm} />
-              ) : openContentState ? (
-                <div className='flex gap-1.5'>
-                  <PasteImageCard id={id} addImage={addImage} />
-                  <div className='flex flex-row-reverse m-auto'>
-                    <GoogleSearchImage query={baseForm} />
-                  </div>
-                </div>
-              ) : null}
-
+              <WordCardImage
+                id={id}
+                openContentState={openContentState}
+                src={cloudflareImageUrl}
+                baseForm={baseForm}
+                addImage={addImage}
+              />
               {isWordDue ? (
                 <ReviewSRSToggles
                   contentItem={{
