@@ -1,11 +1,11 @@
 import clsx from 'clsx';
 import { TabsContent } from '@/components/ui/tabs';
-import useLearningScreen from './useLearningScreen';
-import useData from '../Providers/useData';
+import useLearningScreen from '../useLearningScreen';
+import useData from '../../Providers/useData';
 import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 
-const LearningScreenTabContent = () => {
+const LearningScreenTabTranscript = () => {
   const { handleSaveWord, handleDeleteWordDataProvider, wordsState } =
     useData();
 
@@ -99,4 +99,4 @@ const LearningScreenTabContent = () => {
   );
 };
 
-export default LearningScreenTabContent;
+export default LearningScreenTabTranscript;

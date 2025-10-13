@@ -1,5 +1,5 @@
 import { TabsList, TabsTrigger } from '@/components/ui/tabs';
-import useLearningScreen from './useLearningScreen';
+import useLearningScreen from '../useLearningScreen';
 
 const LearningScreenTabs = ({ topicName }) => {
   const { wordsForSelectedTopic } = useLearningScreen();

@@ -1,6 +1,6 @@
 import WordCard from '@/components/custom/WordCard';
-import useData from '../Providers/useData';
-import useLearningScreen from './useLearningScreen';
+import useData from '../../Providers/useData';
+import useLearningScreen from '../useLearningScreen';
 import { TabsContent } from '@radix-ui/react-tabs';
 
 const LearningScreenTabWords = () => {

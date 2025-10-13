@@ -1,19 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import LoadingSpinner from '../components/custom/LoadingSpinner';
+import LoadingSpinner from '../../../components/custom/LoadingSpinner';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { TabsContent } from '@/components/ui/tabs';
+import useLearningScreen from '../useLearningScreen';
 
-export const TabMetaContentData = ({
-  reviewHistory,
-  updateContentMetaData,
-  topicName,
-  contentIndex,
-}: {
-  hasContentToReview: boolean;
-  handleBulkReviews: (action: 'add' | 'remove') => Promise<void>;
-}) => {
+const LearningScreenTabMeta = ({ updateContentMetaData }) => {
+  const { selectedContentState } = useLearningScreen();
+
+  const topicName = selectedContentState?.title;
+  const reviewHistory = selectedContentState?.reviewHistory;
+  const contentIndex = selectedContentState?.contentIndex;
+
   const hasBeenReviewed = reviewHistory?.length > 0;
 
   const [isLoading, setIsLoading] = useState(false);
@@ -64,20 +64,24 @@ export const TabMetaContentData = ({
   };
 
   return (
-    <div className='flex flex-col items-start gap-2  my-2'>
-      {isLoading && (
-        <div className='m-auto'>
-          <LoadingSpinner />
+    <TabsContent value='meta' className={'p-1 max-h-150 overflow-y-auto'}>
+      <div className='flex flex-col items-start gap-2  my-2'>
+        {isLoading && (
+          <div className='m-auto'>
+            <LoadingSpinner />
+          </div>
+        )}
+        <div className='flex gap-2 m-auto'>
+          <Label>Reviewed </Label>
+          <Switch
+            checked={hasBeenReviewed}
+            onCheckedChange={setNextReviewDate}
+            disabled={isLoading}
+          />
         </div>
-      )}
-      <div className='flex gap-2 m-auto'>
-        <Label>Reviewed </Label>
-        <Switch
-          checked={hasBeenReviewed}
-          onCheckedChange={setNextReviewDate}
-          disabled={isLoading}
-        />
       </div>
-    </div>
+    </TabsContent>
   );
 };
+
+export default LearningScreenTabMeta;
