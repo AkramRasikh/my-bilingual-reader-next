@@ -1,9 +1,10 @@
 import { Toaster } from 'sonner';
 import useData from '../Providers/useData';
-import SentenceBlock from '../SentenceBlock';
+
 import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
 import useSentencesProgress from './useSentencesProgress';
+import SentenceBlockContainer from './SentenceBlockContainer';
 
 const SentencesUIContainer = () => {
   const [progressState, setProgressState] = useState(0);
@@ -37,7 +38,7 @@ const SentencesUIContainer = () => {
           const sentenceIndex = index + 1 + ') ';
           return (
             <li key={sentence.id} className='mb-2'>
-              <SentenceBlock
+              <SentenceBlockContainer
                 sentence={sentence}
                 sentenceIndex={sentenceIndex}
               />
