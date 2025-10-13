@@ -1,6 +1,6 @@
 import useLearningScreen from './useLearningScreen';
 
-const LearningScreenUnifiedAnalytics = ({ repsPerMinState }) => {
+const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
   const { contentMetaDataState, contentMetaWordDataState, sentenceRepsState } =
     useLearningScreen();
   const sentencesNeedReview = contentMetaDataState[0]?.sentencesNeedReview;
@@ -17,9 +17,9 @@ const LearningScreenUnifiedAnalytics = ({ repsPerMinState }) => {
       <p className='text-xs font-medium m-auto w-fit'>
         Reps: {sentenceRepsState}
       </p>
-      {repsPerMinState && (
+      {sentenceRepsPerMinState && (
         <p className='text-xs font-medium m-auto w-fit'>
-          Reps/Min: {repsPerMinState}
+          Reps/Min: {sentenceRepsPerMinState}
         </p>
       )}
     </div>

@@ -7,7 +7,9 @@ import LearningScreenUnifiedAnalytics from './LearningScreenUnifiedAnalytics';
 
 const LearningScreenContentChapterNavigation = () => {
   const { handleGetComprehensiveReview, wordsState } = useData();
-  const [repsPerMinState, setRepsPerMinState] = useState<string | null>(null);
+  const [sentenceRepsPerMinState, setSentenceRepsPerMinState] = useState<
+    string | null
+  >(null);
 
   const {
     generalTopicDisplayNameSelectedState,
@@ -23,13 +25,13 @@ const LearningScreenContentChapterNavigation = () => {
     elapsed,
   } = useLearningScreen();
 
-  const prevValueRef = useRef(sentenceRepsState);
+  const prevValueSentencesRef = useRef(sentenceRepsState);
 
   useEffect(() => {
-    if (elapsed > 0 && sentenceRepsState !== prevValueRef.current) {
-      prevValueRef.current = sentenceRepsState;
+    if (elapsed > 0 && sentenceRepsState !== prevValueSentencesRef.current) {
+      prevValueSentencesRef.current = sentenceRepsState;
       const perMinute = (sentenceRepsState / elapsed) * 60;
-      setRepsPerMinState(perMinute.toFixed(1));
+      setSentenceRepsPerMinState(perMinute.toFixed(1));
     }
   }, [sentenceRepsState, elapsed]);
 
@@ -44,7 +46,11 @@ const LearningScreenContentChapterNavigation = () => {
   const hasUnifiedChapter = contentMetaDataState?.length === 1;
 
   if (hasUnifiedChapter) {
-    return <LearningScreenUnifiedAnalytics repsPerMinState={repsPerMinState} />;
+    return (
+      <LearningScreenUnifiedAnalytics
+        sentenceRepsPerMinState={sentenceRepsPerMinState}
+      />
+    );
   }
 
   return (
