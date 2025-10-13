@@ -11,7 +11,7 @@ const WordCardConditionalContentWrapper = ({
 }) => {
   return (
     <ConditionalWrapper
-      condition={!openContentState}
+      condition={!openContentState && previewImage}
       wrapper={(children) => {
         return (
           <button onDoubleClick={() => setOpenContentState(true)}>

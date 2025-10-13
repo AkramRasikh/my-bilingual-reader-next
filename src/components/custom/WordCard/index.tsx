@@ -95,6 +95,8 @@ const WordCard = ({
           isInBasket={isInBasket}
           onClickBasket={handleAddWordToBasket}
           onClickPlayContext={handlePlayThisContext}
+          setOpenContentState={setOpenContentState}
+          openContentState={openContentState}
         />
 
         <WordCardConditionalContentWrapper
@@ -106,9 +108,8 @@ const WordCard = ({
         >
           <AnimationWrapper>
             <CardContent className='mt-2 p-0'>
-              {!previewImage && (
+              {!previewImage && openContentState! && (
                 <WordCardInformation
-                  openContentState={openContentState}
                   baseForm={baseForm}
                   surfaceForm={surfaceForm}
                   phonetic={phonetic}
