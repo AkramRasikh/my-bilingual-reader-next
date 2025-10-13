@@ -16,7 +16,7 @@ const WordCardConditionalContentWrapper = ({
         return (
           <button onDoubleClick={() => setOpenContentState(true)}>
             {previewImage && (
-              <div className='relative w-4/5 h-40 m-auto'>
+              <div className='relative w-50 h-33 m-auto'>
                 <Image
                   src={src}
                   alt={baseForm}

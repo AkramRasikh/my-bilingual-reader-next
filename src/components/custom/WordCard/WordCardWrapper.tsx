@@ -4,7 +4,7 @@ import LoadingSpinner from '../LoadingSpinner';
 const WordCardWrapper = ({ isLoadingState, isWordDue, children }) => (
   <div
     className={clsx(
-      isWordDue ? 'bg-amber-200' : '',
+      isWordDue ? 'bg-amber-100' : '',
       isLoadingState ? 'mask-b-from-gray-700' : '',
       'w-fit p-3 relative rounded-2xl',
     )}
