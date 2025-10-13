@@ -11,7 +11,7 @@ const WordCardInformation = ({
   <div
     className={clsx(
       !openContentState ? 'blur-xs' : '',
-      'flex flex-col gap-1 mb-4 flex-wrap',
+      'flex flex-col gap-1 mb-4 flex-wrap items-start',
     )}
   >
     {baseForm && (

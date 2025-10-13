@@ -105,7 +105,7 @@ const WordCard = ({
           baseForm={baseForm}
         >
           <AnimationWrapper>
-            <CardContent className='mt-2 text-left p-0'>
+            <CardContent className='mt-2 p-0'>
               {!previewImage && (
                 <WordCardInformation
                   openContentState={openContentState}
@@ -123,23 +123,23 @@ const WordCard = ({
                 baseForm={baseForm}
                 addImage={addImage}
               />
-              {isWordDue ? (
-                <ReviewSRSToggles
-                  contentItem={{
-                    id,
-                    reviewData,
-                    ...rest,
-                  }}
-                  handleReviewFunc={handleReviewFunc}
-                  isVocab
-                />
-              ) : (
-                <span>{isDueText}</span>
-              )}
             </CardContent>
           </AnimationWrapper>
         </WordCardConditionalContentWrapper>
       </AnimationWrapper>
+      {isWordDue ? (
+        <ReviewSRSToggles
+          contentItem={{
+            id,
+            reviewData,
+            ...rest,
+          }}
+          handleReviewFunc={handleReviewFunc}
+          isVocab
+        />
+      ) : (
+        <span>{isDueText}</span>
+      )}
     </WordCardWrapper>
   );
 };
