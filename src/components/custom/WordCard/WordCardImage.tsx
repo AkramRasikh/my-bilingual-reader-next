@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import GoogleSearchImage from '../GoogleSearchImage';
-import PasteImageCard from '@/app/PasteImageCard';
+import PasteImageCard from '../PasteImageCard';
 
 const WordCardImage = ({ id, openContentState, src, baseForm, addImage }) => {
   return openContentState && src ? (
