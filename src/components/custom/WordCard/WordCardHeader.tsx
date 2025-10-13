@@ -31,18 +31,18 @@ const WordCardHeader = ({
         <LucidePlay />
       </Button>
       <Button
-        variant={'secondary'}
-        className={'h-3 w-3 p-3 bg-transparent'}
-        onClick={() => setOpenContentState(!openContentState)}
-      >
-        <MoreVerticalIcon />
-      </Button>
-      <Button
         variant={isInBasket ? 'destructive' : 'default'}
         className={clsx(!isInBasket ? 'bg-transparent' : '', 'h-3 w-3 p-3')}
         onClick={onClickBasket}
       >
         🧺
+      </Button>
+      <Button
+        variant={'secondary'}
+        className={'h-3 w-3 p-3 bg-transparent'}
+        onClick={() => setOpenContentState(!openContentState)}
+      >
+        <MoreVerticalIcon />
       </Button>
     </div>
   </div>
