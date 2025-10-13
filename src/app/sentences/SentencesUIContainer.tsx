@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
 import useSentencesProgress from './useSentencesProgress';
 
-const SentencesScreenContainer = () => {
+const SentencesUIContainer = () => {
   const [progressState, setProgressState] = useState(0);
   const [initNumState, setInitNumState] = useState();
   const { sentencesState } = useData();
@@ -49,4 +49,4 @@ const SentencesScreenContainer = () => {
   );
 };
 
-export default SentencesScreenContainer;
+export default SentencesUIContainer;
