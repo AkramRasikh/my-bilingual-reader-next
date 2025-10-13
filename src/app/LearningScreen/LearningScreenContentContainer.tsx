@@ -1,22 +1,14 @@
-import clsx from 'clsx';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { WordDialogueContent } from '../WordContainerDialogue';
 import { TabMetaContentData } from '../ContentActionBar';
-import LearningScreenTabs from './LearningScreenTabs';
+import LearningScreenTabSelection from './LearningScreenTabSelection';
 import LearningScreenChapterToggleWrapper from './LearningScreenChapterToggleWrapper';
 import useLearningScreen from './useLearningScreen';
 import useData from '../Providers/useData';
-import TranscriptItem from '@/components/custom/TranscriptItem';
-import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
+import LearningScreenTabContent from './LearningScreenTabContent';
+import LearningScreenTabWords from './LearningScreenTabWords';
 
 const LearningScreenContentContainer = () => {
-  const {
-    updateContentMetaData,
-
-    handleSaveWord,
-    handleDeleteWordDataProvider,
-    wordsState,
-  } = useData();
+  const { updateContentMetaData } = useData();
   const { getNextTranscript, selectedContentState } = useLearningScreen();
 
   const isFullReview = selectedContentState?.isFullReview;
@@ -30,45 +22,7 @@ const LearningScreenContentContainer = () => {
 
   const topicName = !isFullReview && selectedContentState?.title;
 
-  const {
-    formattedTranscriptState,
-    setSecondsState,
-    threeSecondLoopState,
-    overlappingSnippetDataState,
-    setSentenceHighlightingState,
-    sentenceHighlightingState,
-    isPressDownShiftState,
-    breakdownSentencesArrState,
-    masterPlay,
-    isGenericItemLoadingState,
-    isBreakingDownSentenceArrState,
-    isInReviewMode,
-    onlyShowEngState,
-    setLoopTranscriptState,
-    loopTranscriptState,
-    handleReviewFunc,
-    isVideoPlaying,
-    handlePause,
-    handleFromHere,
-    handleBreakdownSentence,
-    setBreakdownSentencesArrState,
-    latestDueIdState,
-    firstDueIndexState,
-    studyFromHereTimeState,
-    transcriptRef,
-    scrollToElState,
-    wordsForSelectedTopic,
-  } = useLearningScreen();
-
-  const learnFormattedTranscript =
-    isInReviewMode && latestDueIdState?.id
-      ? formattedTranscriptState.slice(
-          firstDueIndexState,
-          latestDueIdState?.index + 1,
-        )
-      : studyFromHereTimeState
-      ? formattedTranscriptState.slice(studyFromHereTimeState)
-      : formattedTranscriptState;
+  const { setSecondsState } = useLearningScreen();
 
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
   return (
@@ -79,56 +33,9 @@ const LearningScreenContentContainer = () => {
       setSecondsState={setSecondsState}
     >
       <Tabs defaultValue='transcript'>
-        <LearningScreenTabs topicName={topicName} />
-        <TabsContent
-          value='transcript'
-          className={clsx(contentClasses, 'border rounded-lg')}
-        >
-          <ul
-            className={clsx(
-              'gap-1',
-              isInReviewMode ? 'inline-flex flex-wrap' : 'flex flex-col',
-            )}
-            ref={transcriptRef}
-          >
-            {learnFormattedTranscript.map((contentItem, index) => (
-              <TranscriptItemProvider
-                key={index}
-                threeSecondLoopState={threeSecondLoopState}
-                overlappingSnippetDataState={overlappingSnippetDataState}
-                setSentenceHighlightingState={setSentenceHighlightingState}
-                sentenceHighlightingState={sentenceHighlightingState}
-                contentItem={contentItem}
-                isPressDownShiftState={isPressDownShiftState}
-                breakdownSentencesArrState={breakdownSentencesArrState}
-                masterPlay={masterPlay}
-                isGenericItemLoadingState={isGenericItemLoadingState}
-                handleSaveWord={handleSaveWord}
-                handleDeleteWordDataProvider={handleDeleteWordDataProvider}
-                wordsState={wordsState}
-                isInReviewMode={isInReviewMode}
-                onlyShowEngState={onlyShowEngState}
-                setLoopTranscriptState={setLoopTranscriptState}
-                loopTranscriptState={loopTranscriptState}
-                handleReviewFunc={handleReviewFunc}
-                isVideoPlaying={isVideoPlaying}
-                handlePause={handlePause}
-                handleFromHere={handleFromHere}
-                handleBreakdownSentence={handleBreakdownSentence}
-                setBreakdownSentencesArrState={setBreakdownSentencesArrState}
-                isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
-                latestDueIdState={latestDueIdState}
-                scrollToElState={scrollToElState}
-                wordsForSelectedTopic={wordsForSelectedTopic}
-              >
-                <TranscriptItem />
-              </TranscriptItemProvider>
-            ))}
-          </ul>
-        </TabsContent>
-        <TabsContent value='words' className={contentClasses}>
-          <WordDialogueContent />
-        </TabsContent>
+        <LearningScreenTabSelection topicName={topicName} />
+        <LearningScreenTabContent />
+        <LearningScreenTabWords />
         {topicName && (
           <TabsContent value='meta' className={contentClasses}>
             <TabMetaContentData
