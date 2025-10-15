@@ -11,6 +11,8 @@ import useLandingScreenLoadGeneralTopicsDisplay from './useLandingUILoadGeneralT
 import BreadcrumbComponent from '../../components/custom/BreadCrumbHeader';
 import { Button } from '@/components/ui/button';
 import { CrossIcon } from 'lucide-react';
+import { WordsStudyUIProvider } from '../WordsStudyUI/WordsStudyUIProvider';
+import WordsStudyUI from '../WordsStudyUI';
 
 const LandingScreen = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
@@ -23,6 +25,9 @@ const LandingScreen = () => {
     setToastMessageState,
     isSentenceReviewState,
     setIsSentenceReviewState,
+    isWordStudyState,
+    setIsWordStudyState,
+    wordsState,
   } = useData();
 
   useEffect(() => {
@@ -35,6 +40,19 @@ const LandingScreen = () => {
   useLandingScreenLoadGeneralTopicsDisplay();
 
   const numberOfSentences = sentencesState.length;
+
+  if (isWordStudyState && wordsState.length > 0) {
+    return (
+      <WordsStudyUIProvider>
+        <div>
+          <Button onClick={() => setIsWordStudyState(false)}>
+            <CrossIcon />
+          </Button>
+          <WordsStudyUI />
+        </div>
+      </WordsStudyUIProvider>
+    );
+  }
 
   if (isSentenceReviewState && sentencesState.length > 0) {
     return (

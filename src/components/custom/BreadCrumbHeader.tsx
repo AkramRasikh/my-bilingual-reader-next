@@ -18,8 +18,9 @@ const BreadcrumbComponent = () => {
   const {
     sentencesState,
     setIsSentenceReviewState,
-    isSentenceReviewState,
+    wordsForReviewState,
     wordBasketState,
+    setIsWordStudyState,
   } = useData();
   const { selectedContentState, handleOnHome } = useLearningScreen();
 
@@ -55,24 +56,22 @@ const BreadcrumbComponent = () => {
 
         <div>
           <BasketDialogue />
-          {!isSentenceReviewState ? (
-            <Button
-              className='m-1.5'
-              onClick={() => setIsSentenceReviewState(true)}
-              disabled={!(numberOfSentences > 0)}
-              variant='secondary'
-            >
-              Sentence reviews ({numberOfSentences})
-            </Button>
-          ) : (
-            <Button
-              className='m-1.5'
-              onClick={() => setIsSentenceReviewState(false)}
-              variant='destructive'
-            >
-              Exit Sentence mode
-            </Button>
-          )}
+          <Button
+            className='m-1.5'
+            onClick={() => setIsSentenceReviewState(true)}
+            disabled={!(numberOfSentences > 0)}
+            variant='secondary'
+          >
+            Sentence reviews ({numberOfSentences})
+          </Button>
+          <Button
+            className='m-1.5'
+            onClick={() => setIsWordStudyState(true)}
+            disabled={!(wordsForReviewState.length > 0)}
+            variant='secondary'
+          >
+            Words due ({wordsForReviewState.length})
+          </Button>
         </div>
       </div>
     </>

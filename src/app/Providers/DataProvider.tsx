@@ -34,9 +34,11 @@ export const DataProvider = ({
   const [story, setStory] = useState();
   const [pureWordsState, setPureWordsState] = useState([]);
   const [mountedState, setMountedState] = useState(false);
+  const [isWordStudyState, setIsWordStudyState] = useState(false);
   const [generalTopicDisplayNameState, setGeneralTopicDisplayNameState] =
     useState([]);
   const [wordBasketState, setWordBasketState] = useState([]);
+  const [wordsForReviewState, setWordsForReviewState] = useState([]);
 
   const [toastMessageState, setToastMessageState] = useState('');
   const [isSentenceReviewState, setIsSentenceReviewState] = useState(false);
@@ -95,6 +97,14 @@ export const DataProvider = ({
       setSentencesState(formatSentence);
     }
   }, [sentencesState, mountedState, pureWordsState]);
+
+  useEffect(() => {
+    const dateNow = new Date();
+    const wordsForReview = wordsData.filter((item) =>
+      isDueCheck(item, dateNow),
+    );
+    setWordsForReviewState(wordsForReview);
+  }, [wordsData]);
 
   const getPureWords = () => {
     const pureWords = [];
@@ -549,6 +559,10 @@ export const DataProvider = ({
         addGeneratedSentence,
         addImageDataProvider,
         getTopicStatus,
+        isWordStudyState,
+        setIsWordStudyState,
+        wordsForReviewState,
+        setWordsForReviewState,
       }}
     >
       {children}
