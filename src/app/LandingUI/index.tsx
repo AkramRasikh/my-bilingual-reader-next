@@ -9,6 +9,8 @@ import SentencesUIContainer from '../sentences/SentencesUIContainer';
 import MockFlag from '../../components/custom/MockFlag';
 import useLandingScreenLoadGeneralTopicsDisplay from './useLandingUILoadGeneralTopicsDisplay';
 import BreadcrumbComponent from '../../components/custom/BreadCrumbHeader';
+import { Button } from '@/components/ui/button';
+import { CrossIcon } from 'lucide-react';
 
 const LandingScreen = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
@@ -35,7 +37,14 @@ const LandingScreen = () => {
   const numberOfSentences = sentencesState.length;
 
   if (isSentenceReviewState && sentencesState.length > 0) {
-    return <SentencesUIContainer />;
+    return (
+      <div>
+        <Button onClick={() => setIsSentenceReviewState(false)}>
+          <CrossIcon />
+        </Button>
+        <SentencesUIContainer />
+      </div>
+    );
   }
 
   return (
