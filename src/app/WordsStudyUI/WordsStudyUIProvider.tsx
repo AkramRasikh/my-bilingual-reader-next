@@ -15,6 +15,7 @@ import useTrackMasterTranscript from '../LearningScreen/hooks/useManageThreeSeco
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 const WordsStudyUIContext = createContext(null);
 
@@ -56,6 +57,7 @@ export const WordsStudyUIProvider = ({
   );
   const [isBreakingDownSentenceArrState, setIsBreakingDownSentenceArrState] =
     useState([]);
+  const [formattedWordsStudyState, setFormattedWordsStudyState] = useState([]);
   const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
     [],
   );
@@ -83,6 +85,70 @@ export const WordsStudyUIProvider = ({
     breakdownSentence,
     wordsState,
   } = useData();
+
+  const { data } = useFetchData();
+
+  const sentencesData = data.sentencesData;
+
+  useEffect(() => {
+    const emptyCard = getEmptyCard();
+
+    const nextScheduledOptions = getNextScheduledOptions({
+      card: emptyCard,
+      contentType: srsRetentionKeyTypes.vocab,
+    });
+    const initiateOldCardsNoReviewDate = nextScheduledOptions['1'].card;
+
+    const slicedWords = wordsState.slice(0, 10);
+    const wordsDataWithContextData = slicedWords.map((item) => {
+      const contextIds = item.contexts;
+
+      if (!Array.isArray(contextIds)) {
+        return item;
+      }
+      const contextData = [];
+
+      for (const contextId of contextIds ?? []) {
+        for (const contentItem of contentState) {
+          const thisContent = contentItem.content;
+
+          const contextDataFoundInContent = thisContent.find(
+            (contentSentence) => contentSentence.id === contextId,
+          );
+
+          if (contextDataFoundInContent) {
+            const totalObj = {
+              ...contextDataFoundInContent,
+              title: thisContent.title,
+              generalTopicName: thisContent?.title,
+            };
+
+            contextData.push(totalObj);
+
+            // Break inner loop since we found a match
+            break;
+          } else {
+            const foundContextIdInAdhocSentences = sentencesData.find(
+              (sentenceItem) => sentenceItem.id === contextId,
+            );
+
+            if (foundContextIdInAdhocSentences) {
+              contextData.push(foundContextIdInAdhocSentences);
+              break;
+            }
+          }
+        }
+      }
+
+      return {
+        ...item,
+        reviewData: item?.reviewData || initiateOldCardsNoReviewDate,
+        contextData,
+      };
+    });
+
+    setFormattedWordsStudyState(wordsDataWithContextData);
+  }, []);
 
   const realStartTime = selectedContentState?.realStartTime || 0;
 
@@ -823,6 +889,7 @@ export const WordsStudyUIProvider = ({
         elapsed,
         setElapsed,
         playFromThisContext,
+        formattedWordsStudyState,
       }}
     >
       {children}
