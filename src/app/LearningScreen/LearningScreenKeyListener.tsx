@@ -83,7 +83,7 @@ const LearningScreenKeyListener = () => {
           threeSecondLoopState &&
           (!loopTranscriptState || loopTranscriptState?.length === 0)
         ) {
-          if (shiftKey && e.key.toLowerCase() === 'k') {
+          if (shiftKey && e.key.toLowerCase() === '"') {
             handleLoopThis3Second();
             return;
           }
@@ -142,7 +142,7 @@ const LearningScreenKeyListener = () => {
         return;
       }
 
-      if (e.shiftKey && e.key.toLowerCase() === 'k') {
+      if (e.shiftKey && e.key.toLowerCase() === '"') {
         handleLoopThis3Second();
         return;
       }
