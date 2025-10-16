@@ -135,7 +135,6 @@ export const WordsStudyUIProvider = ({
 
       return {
         ...item,
-        reviewData: item?.reviewData,
         contextData,
       };
     });
