@@ -28,6 +28,7 @@ const LandingScreen = () => {
     setIsSentenceReviewState,
     isWordStudyState,
     setIsWordStudyState,
+    wordsForReviewState,
     wordsState,
   } = useData();
 
@@ -41,23 +42,29 @@ const LandingScreen = () => {
   useLandingScreenLoadGeneralTopicsDisplay();
 
   const numberOfSentences = sentencesState.length;
+  const buttonsArr = [
+    {
+      onClick: () => setIsSentenceReviewState(true),
+      disabled: !(numberOfSentences > 0),
+      variant: 'secondary',
+      text: `Sentence reviews (${numberOfSentences})`,
+    },
+    {
+      onClick: () => setIsWordStudyState(true),
+      disabled: !(wordsForReviewState.length > 0),
+      variant: 'secondary',
+      text: `Words due (${wordsForReviewState.length})`,
+    },
+  ];
 
   if (isWordStudyState && wordsState.length > 0) {
-    const buttonsArr = [
-      {
-        onClick: () => setIsSentenceReviewState(true),
-        disabled: !(numberOfSentences > 0),
-        variant: 'secondary',
-        text: `Sentence reviews (${numberOfSentences})`,
-      },
-    ];
     return (
       <WordsStudyUIProvider>
         <BreadCrumbHeaderBase
           heading={'Home'}
           onClick={() => setIsWordStudyState(false)}
           navigationButtons={() =>
-            buttonsArr.map((item, index) => {
+            [buttonsArr[0]].map((item, index) => {
               return (
                 <Button
                   key={index}
@@ -81,9 +88,25 @@ const LandingScreen = () => {
   if (isSentenceReviewState && sentencesState.length > 0) {
     return (
       <div>
-        <Button onClick={() => setIsSentenceReviewState(false)}>
-          <CrossIcon />
-        </Button>
+        <BreadCrumbHeaderBase
+          heading={'Home'}
+          onClick={() => setIsSentenceReviewState(false)}
+          navigationButtons={() =>
+            [buttonsArr[1]].map((item, index) => {
+              return (
+                <Button
+                  key={index}
+                  className='m-1.5'
+                  onClick={item.onClick}
+                  disabled={item.disabled}
+                  variant={item.variant}
+                >
+                  {item.text}
+                </Button>
+              );
+            })
+          }
+        />
         <SentencesUIContainer />
       </div>
     );
