@@ -44,8 +44,11 @@ const LandingScreen = () => {
   if (isWordStudyState && wordsState.length > 0) {
     return (
       <WordsStudyUIProvider>
-        <div>
-          <Button onClick={() => setIsWordStudyState(false)}>
+        <div className='relative'>
+          <Button
+            onClick={() => setIsWordStudyState(false)}
+            className='absolute right-1/12 '
+          >
             <CrossIcon />
           </Button>
           <WordsStudyUI />

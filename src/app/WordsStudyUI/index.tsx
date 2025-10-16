@@ -18,14 +18,19 @@ const WordsStudyUI = () => {
   return (
     <PageContainer>
       <h1>Word Study</h1>
-      {formattedWordsStudyState.map((wordItem, index) => {
-        return (
-          <div key={wordItem.id}>
-            <WordCard indexNum={index + 1} {...wordItem} />
-            <span>Number of contexts: {wordItem.contextData.length}</span>
-          </div>
-        );
-      })}
+      <div className='flex justify-around'>
+        <div>Audio/Video component</div>
+        <div>
+          {formattedWordsStudyState.map((wordItem, index) => {
+            return (
+              <div key={wordItem.id}>
+                <WordCard indexNum={index + 1} {...wordItem} />
+                <span>Number of contexts: {wordItem.contextData.length}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </PageContainer>
   );
 };
