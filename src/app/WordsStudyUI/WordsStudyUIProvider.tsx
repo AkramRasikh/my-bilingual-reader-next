@@ -84,6 +84,7 @@ export const WordsStudyUIProvider = ({
     pureWordsState,
     breakdownSentence,
     wordsState,
+    wordsForReviewState,
   } = useData();
 
   const { data } = useFetchData();
@@ -91,15 +92,7 @@ export const WordsStudyUIProvider = ({
   const sentencesData = data.sentencesData;
 
   useEffect(() => {
-    const emptyCard = getEmptyCard();
-
-    const nextScheduledOptions = getNextScheduledOptions({
-      card: emptyCard,
-      contentType: srsRetentionKeyTypes.vocab,
-    });
-    const initiateOldCardsNoReviewDate = nextScheduledOptions['1'].card;
-
-    const slicedWords = wordsState.slice(0, 10);
+    const slicedWords = wordsForReviewState.slice(0, 10);
     const wordsDataWithContextData = slicedWords.map((item) => {
       const contextIds = item.contexts;
 
@@ -142,7 +135,7 @@ export const WordsStudyUIProvider = ({
 
       return {
         ...item,
-        reviewData: item?.reviewData || initiateOldCardsNoReviewDate,
+        reviewData: item?.reviewData,
         contextData,
       };
     });
