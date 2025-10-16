@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { CrossIcon } from 'lucide-react';
 import { WordsStudyUIProvider } from '../WordsStudyUI/WordsStudyUIProvider';
 import WordsStudyUI from '../WordsStudyUI';
+import BreadCrumbHeaderBase from '@/components/BreadCrumbHeaderBase';
 
 const LandingScreen = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
@@ -42,17 +43,37 @@ const LandingScreen = () => {
   const numberOfSentences = sentencesState.length;
 
   if (isWordStudyState && wordsState.length > 0) {
+    const buttonsArr = [
+      {
+        onClick: () => setIsSentenceReviewState(true),
+        disabled: !(numberOfSentences > 0),
+        variant: 'secondary',
+        text: `Sentence reviews (${numberOfSentences})`,
+      },
+    ];
     return (
       <WordsStudyUIProvider>
-        <div className='relative'>
-          <Button
-            onClick={() => setIsWordStudyState(false)}
-            className='absolute right-1/12 '
-          >
-            <CrossIcon />
-          </Button>
-          <WordsStudyUI />
-        </div>
+        <BreadCrumbHeaderBase
+          heading={'Home'}
+          onClick={() => setIsWordStudyState(false)}
+          navigationButtons={() =>
+            buttonsArr.map((item, index) => {
+              return (
+                <Button
+                  key={index}
+                  className='m-1.5'
+                  onClick={item.onClick}
+                  disabled={item.disabled}
+                  variant={item.variant}
+                >
+                  {item.text}
+                </Button>
+              );
+            })
+          }
+        />
+
+        <WordsStudyUI />
       </WordsStudyUIProvider>
     );
   }

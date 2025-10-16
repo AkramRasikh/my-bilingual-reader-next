@@ -1,19 +1,12 @@
 'use client';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+
 import useData from '../../app/Providers/useData';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import BasketDialogue from '../../app/BasketDialogue';
 import useLearningScreen from '../../app/LearningScreen/useLearningScreen';
+import BreadCrumbHeaderBase from '../BreadCrumbHeaderBase';
 
-const BreadcrumbComponent = () => {
+const BreadCrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
   const {
     sentencesState,
@@ -33,49 +26,47 @@ const BreadcrumbComponent = () => {
   const numberOfSentences = sentencesState.length;
   const generalTopicName = selectedContentState?.generalTopicName;
 
-  return (
-    <>
-      <div className='flex justify-between'>
-        <Breadcrumb className='my-auto mx-1'>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={handleOnHome} className='cursor-pointer'>
-                Home
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            {generalTopicName && (
-              <>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{generalTopicName}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </>
-            )}
-          </BreadcrumbList>
-        </Breadcrumb>
+  const firstHeader = 'Home';
 
-        <div>
-          <BasketDialogue />
-          <Button
-            className='m-1.5'
-            onClick={() => setIsSentenceReviewState(true)}
-            disabled={!(numberOfSentences > 0)}
-            variant='secondary'
-          >
-            Sentence reviews ({numberOfSentences})
-          </Button>
-          <Button
-            className='m-1.5'
-            onClick={() => setIsWordStudyState(true)}
-            disabled={!(wordsForReviewState.length > 0)}
-            variant='secondary'
-          >
-            Words due ({wordsForReviewState.length})
-          </Button>
-        </div>
-      </div>
-    </>
+  const buttonsArr = [
+    {
+      onClick: () => setIsSentenceReviewState(true),
+      disabled: !(numberOfSentences > 0),
+      variant: 'secondary',
+      text: `Sentence reviews (${numberOfSentences})`,
+    },
+    {
+      onClick: () => setIsWordStudyState(true),
+      disabled: !(wordsForReviewState.length > 0),
+      variant: 'secondary',
+      text: `Words due (${wordsForReviewState.length})`,
+    },
+  ];
+
+  return (
+    <div className='flex justify-between'>
+      <BreadCrumbHeaderBase
+        heading={firstHeader}
+        onClick={handleOnHome}
+        subHeading={generalTopicName}
+        navigationButtons={() =>
+          buttonsArr.map((item, index) => {
+            return (
+              <Button
+                key={index}
+                className='m-1.5'
+                onClick={item.onClick}
+                disabled={item.disabled}
+                variant={item.variant}
+              >
+                {item.text}
+              </Button>
+            );
+          })
+        }
+      />
+    </div>
   );
 };
 
-export default BreadcrumbComponent;
+export default BreadCrumbComponent;
