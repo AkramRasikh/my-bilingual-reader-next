@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import LearningScreenLoopUI from './LearningScreen/LearningScreenLoopUI';
 import clsx from 'clsx';
 import LearningScreenLoopBtn from './LearningScreen/LearningScreenLoopBtn';
+import { Button } from '@/components/ui/button';
 
 const VideoPlayer = ({
   url,
@@ -11,6 +12,8 @@ const VideoPlayer = ({
   setIsVideoPlaying,
   masterPlayComprehensiveState,
   threeSecondLoopState,
+  playFromHereUI,
+  isVideoPlaying,
 }) => {
   const videoUrl = url;
 
@@ -42,16 +45,23 @@ const VideoPlayer = ({
       >
         Your browser does not support the video tag.
       </video>
-      {threeSecondLoopState && <LearningScreenLoopUI />}
+      {threeSecondLoopState && <LearningScreenLoopUI />}{' '}
       <div
         className={clsx(
-          threeSecondLoopState ? 'flex w-full justify-between' : '',
+          threeSecondLoopState || playFromHereUI
+            ? 'flex w-full justify-between'
+            : '',
         )}
       >
         {masterPlayComprehensiveState?.targetLang && (
           <p className='text-center font-bold text-xl text-blue-900  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg'>
             {masterPlayComprehensiveState.targetLang}
           </p>
+        )}
+        {playFromHereUI && (
+          <Button onClick={playFromHereUI} className='w-fit m-auto'>
+            {isVideoPlaying ? 'Pause' : 'Play'}
+          </Button>
         )}
         {threeSecondLoopState && <LearningScreenLoopBtn />}
       </div>

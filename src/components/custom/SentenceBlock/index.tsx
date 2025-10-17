@@ -16,10 +16,16 @@ const SentenceBlock = ({
   handleDeleteWordDataProvider,
   wordsState,
   handleReviewFunc,
+  wide,
   url,
 }) => {
   return (
-    <div className='text-lg w-5/10 border rounded-2xl p-2 m-auto'>
+    <div
+      className={clsx(
+        'text-lg border rounded-2xl p-2 m-auto',
+        wide ? 'w-full' : 'w-1/2',
+      )}
+    >
       <p className='flex gap-2 '>
         {sentenceIndex && <span>{sentenceIndex}</span>}
         <FormattedSentence
@@ -35,10 +41,12 @@ const SentenceBlock = ({
       </p>
       <p className='text-right opacity-30'>{sentence.baseLang}</p>
       <AudioPlayer src={url} />
-      <ReviewSRSToggles
-        contentItem={sentence}
-        handleReviewFunc={handleReviewFunc}
-      />
+      {handleReviewFunc && (
+        <ReviewSRSToggles
+          contentItem={sentence}
+          handleReviewFunc={handleReviewFunc}
+        />
+      )}
       {thisSentencesWordsState.length > 0 && (
         <ul>
           {thisSentencesWordsState?.map((wordItem, index) => {

@@ -105,15 +105,22 @@ export const WordsStudyUIProvider = ({
         for (const contentItem of contentState) {
           const thisContent = contentItem.content;
 
-          const contextDataFoundInContent = thisContent.find(
+          const contextSentenceData = thisContent.find(
             (contentSentence) => contentSentence.id === contextId,
           );
 
-          if (contextDataFoundInContent) {
+          if (contextSentenceData) {
             const totalObj = {
-              ...contextDataFoundInContent,
-              title: thisContent.title,
-              generalTopicName: thisContent?.title,
+              ...contextSentenceData,
+              title: contentItem?.title,
+              generalTopicName: contentItem?.generalTopicName,
+              isMedia: contentItem?.origin === 'youtube',
+              targetLangformatted: underlineWordsInSentence(
+                contextSentenceData.targetLang,
+                pureWordsState,
+              ),
+              contentIndex: contentItem.contentIndex,
+              realStartTime: contentItem?.realStartTime,
             };
 
             contextData.push(totalObj);
@@ -126,7 +133,10 @@ export const WordsStudyUIProvider = ({
             );
 
             if (foundContextIdInAdhocSentences) {
-              contextData.push(foundContextIdInAdhocSentences);
+              contextData.push({
+                ...foundContextIdInAdhocSentences,
+                isAdhoc: true,
+              });
               break;
             }
           }

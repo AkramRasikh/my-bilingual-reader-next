@@ -3,6 +3,7 @@ import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import WordCard from '@/components/custom/WordCard';
 import useData from '../Providers/useData';
+import WordsStudyUIMediaElement from './WordsStudyUIMediaElement';
 
 const WordsStudyUI = () => {
   const { formattedWordsStudyState } = useWordsStudyUIScreen();
@@ -19,10 +20,9 @@ const WordsStudyUI = () => {
   }
   return (
     <PageContainer>
-      <h1>Word Study</h1>
-      <div className='flex justify-around'>
-        <div>Audio/Video component</div>
-        <div>
+      <div className='flex justify-around gap-3'>
+        <WordsStudyUIMediaElement />
+        <div className='flex flex-col gap-2'>
           {formattedWordsStudyState.map((wordItem, index) => {
             return (
               <div key={wordItem.id}>
@@ -31,7 +31,6 @@ const WordsStudyUI = () => {
                   {...wordItem}
                   updateWordData={updateWordDataProvider}
                 />
-                <span>Number of contexts: {wordItem.contextData.length}</span>
               </div>
             );
           })}
