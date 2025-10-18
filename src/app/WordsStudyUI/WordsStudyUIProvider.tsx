@@ -117,9 +117,11 @@ export const WordsStudyUIProvider = ({
         for (const contentItem of contentState) {
           const thisContent = contentItem.content;
 
-          const contextSentenceData = thisContent.find(
+          const contextSentenceDataIndex = thisContent.findIndex(
             (contentSentence) => contentSentence.id === contextId,
           );
+
+          const contextSentenceData = thisContent[contextSentenceDataIndex];
 
           if (contextSentenceData) {
             const totalObj = {
@@ -137,6 +139,14 @@ export const WordsStudyUIProvider = ({
                 contextSentenceData.targetLang,
                 wordsState,
               ),
+              previousSentence:
+                contextSentenceDataIndex > 0
+                  ? thisContent[contextSentenceDataIndex - 1]?.targetLang
+                  : '',
+              nextSentence:
+                contextSentenceDataIndex + 1 < thisContent.length
+                  ? thisContent[contextSentenceDataIndex + 1].targetLang
+                  : '',
             };
 
             contextData.push(totalObj);

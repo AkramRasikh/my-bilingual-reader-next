@@ -14,6 +14,8 @@ const VideoPlayer = ({
   threeSecondLoopState,
   playFromHereUI,
   isVideoPlaying,
+  previousSentence,
+  nextSentence,
 }) => {
   const videoUrl = url;
 
@@ -53,16 +55,28 @@ const VideoPlayer = ({
             : '',
         )}
       >
-        {masterPlayComprehensiveState?.targetLang && (
-          <p className='text-center font-bold text-xl text-blue-900  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg'>
-            {masterPlayComprehensiveState.targetLang}
-          </p>
-        )}
-        {playFromHereUI && (
-          <Button onClick={playFromHereUI} className='w-fit m-auto'>
-            {isVideoPlaying ? 'Pause' : 'Play'}
-          </Button>
-        )}
+        <div>
+          {previousSentence && (
+            <p className='text-center font-bold text-l text-gray-600  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg'>
+              {previousSentence}
+            </p>
+          )}
+          {masterPlayComprehensiveState?.targetLang && (
+            <p className='text-center font-bold text-xl text-blue-900  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg'>
+              {masterPlayComprehensiveState.targetLang}
+            </p>
+          )}
+          {nextSentence && (
+            <p className='text-center font-bold text-l text-gray-600  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg'>
+              {nextSentence}
+            </p>
+          )}
+          {playFromHereUI && (
+            <Button onClick={playFromHereUI} className='w-fit m-auto'>
+              {isVideoPlaying ? 'Pause' : 'Play'}
+            </Button>
+          )}
+        </div>
         {threeSecondLoopState && <LearningScreenLoopBtn />}
       </div>
     </div>

@@ -1,12 +1,35 @@
 import { getAudioURL } from '@/utils/get-media-url';
 import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import { Button } from '@/components/ui/button';
+import { useEffect } from 'react';
 
 const WordsStudyUIAudioElFallback = ({ contextDataEl }) => {
-  const { ref, isVideoPlaying, handlePause, handlePlayFromHere } =
-    useWordsStudyUIScreen();
+  const {
+    ref,
+    isVideoPlaying,
+    handlePause,
+    handlePlayFromHere,
+    setIsVideoPlaying,
+  } = useWordsStudyUIScreen();
 
   const audioUrl = getAudioURL(contextDataEl.title, 'japanese');
+
+  useEffect(() => {
+    const video = ref?.current;
+
+    if (!video) return;
+
+    const handlePlay = () => setIsVideoPlaying(true);
+    const handlePause = () => setIsVideoPlaying(false);
+
+    video.addEventListener('play', handlePlay);
+    video.addEventListener('pause', handlePause);
+
+    return () => {
+      video.removeEventListener('play', handlePlay);
+      video.removeEventListener('pause', handlePause);
+    };
+  }, []);
 
   return (
     <div>
@@ -23,11 +46,26 @@ const WordsStudyUIAudioElFallback = ({ contextDataEl }) => {
           {isVideoPlaying ? 'Pause' : 'Play'}
         </Button>
       </div>
-      {contextDataEl?.targetLang && (
-        <p className='text-center font-bold text-xl text-blue-900  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg'>
-          {contextDataEl.targetLang}
-        </p>
-      )}
+      <div className='backdrop-blur-xs backdrop-brightness-75  p-1 m-1 rounded-lg'>
+        {contextDataEl?.previousSentence && (
+          <p className='text-center font-bold text-lg italic text-gray-700'>
+            {contextDataEl.previousSentence}
+          </p>
+        )}
+        {contextDataEl?.targetLang && (
+          <p className='text-center font-bold text-xl text-blue-900'>
+            {contextDataEl.targetLang}
+          </p>
+        )}
+        {contextDataEl?.nextSentence && (
+          <p className='text-center font-bold text-lg italic text-gray-700'>
+            {contextDataEl.nextSentence}
+          </p>
+        )}
+      </div>
+      <p className='text-sm font-medium italic my-auto text-right'>
+        {contextDataEl.title}
+      </p>
     </div>
   );
 };

@@ -85,6 +85,7 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
         setIsVideoPlaying={setIsVideoPlaying}
         isVideoPlaying={isVideoPlaying}
         masterPlayComprehensiveState={contextDataEl}
+        previousSentence={contextDataEl?.previousSentence}
         playFromHereUI={() =>
           isVideoPlaying
             ? handlePause()
