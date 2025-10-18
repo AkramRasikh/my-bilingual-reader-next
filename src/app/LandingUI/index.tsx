@@ -10,7 +10,6 @@ import MockFlag from '../../components/custom/MockFlag';
 import useLandingScreenLoadGeneralTopicsDisplay from './useLandingUILoadGeneralTopicsDisplay';
 import BreadcrumbComponent from '../../components/custom/BreadCrumbHeader';
 import { Button } from '@/components/ui/button';
-import { CrossIcon } from 'lucide-react';
 import { WordsStudyUIProvider } from '../WordsStudyUI/WordsStudyUIProvider';
 import WordsStudyUI from '../WordsStudyUI';
 import BreadCrumbHeaderBase from '@/components/BreadCrumbHeaderBase';
@@ -79,7 +78,6 @@ const LandingScreen = () => {
             })
           }
         />
-
         <WordsStudyUI />
       </WordsStudyUIProvider>
     );

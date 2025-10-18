@@ -100,11 +100,11 @@ export const DataProvider = ({
 
   useEffect(() => {
     const dateNow = new Date();
-    const wordsForReview = wordsData.filter((item) =>
+    const wordsForReview = wordsState.filter((item) =>
       isDueCheck(item, dateNow),
     );
     setWordsForReviewState(wordsForReview);
-  }, [wordsData]);
+  }, [wordsState]);
 
   const getPureWords = () => {
     const pureWords = [];

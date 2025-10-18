@@ -6,8 +6,12 @@ import useData from '../Providers/useData';
 import WordsStudyUIMediaElement from './WordsStudyUIMediaElement';
 
 const WordsStudyUI = () => {
-  const { formattedWordsStudyState } = useWordsStudyUIScreen();
-  const { updateWordDataProvider } = useData();
+  const {
+    formattedWordsStudyState,
+    setSelectedElState,
+    wordsToReviewOnMountState,
+  } = useWordsStudyUIScreen();
+  const { updateWordDataProvider, wordsForReviewState } = useData();
 
   const hasWords = formattedWordsStudyState?.length > 0;
   if (!hasWords) {
@@ -20,6 +24,10 @@ const WordsStudyUI = () => {
   }
   return (
     <PageContainer>
+      <h2 className='text-center mb-4'>
+        {wordsToReviewOnMountState - wordsForReviewState.length}/
+        {wordsForReviewState.length} Studied
+      </h2>
       <div className='flex justify-around gap-3'>
         <WordsStudyUIMediaElement />
         <div className='flex flex-col gap-2'>
@@ -30,6 +38,7 @@ const WordsStudyUI = () => {
                   indexNum={index + 1}
                   {...wordItem}
                   updateWordData={updateWordDataProvider}
+                  playFromThisContext={() => setSelectedElState(index)}
                 />
               </div>
             );

@@ -33,6 +33,7 @@ export const WordsStudyUIProvider = ({
     useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isPressDownShiftState, setIsPressDownShiftState] = useState(false);
+  const [selectedElState, setSelectedElState] = useState(0);
   const [isInReviewMode, setIsInReviewMode] = useState(false);
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
@@ -77,6 +78,7 @@ export const WordsStudyUIProvider = ({
   const [contentMetaDataState, setContentMetaDataState] = useState([]);
   const [contentMetaWordDataState, setContentMetaWordDataState] = useState([]);
   const [elapsed, setElapsed] = useState(0);
+  const [wordsToReviewOnMountState, setWordsToReviewOnMountState] = useState(0);
   const {
     contentState,
     updateSentenceData,
@@ -92,7 +94,11 @@ export const WordsStudyUIProvider = ({
   const sentencesData = data.sentencesData;
 
   useEffect(() => {
-    const slicedWords = wordsForReviewState.slice(0, 10);
+    setWordsToReviewOnMountState(wordsForReviewState.length);
+  }, []);
+
+  useEffect(() => {
+    const slicedWords = wordsForReviewState.slice(0, 6);
     const wordsDataWithContextData = slicedWords.map((item) => {
       const contextIds = item.contexts;
 
@@ -150,7 +156,7 @@ export const WordsStudyUIProvider = ({
     });
 
     setFormattedWordsStudyState(wordsDataWithContextData);
-  }, []);
+  }, [wordsForReviewState]);
 
   const realStartTime = selectedContentState?.realStartTime || 0;
 
@@ -892,6 +898,9 @@ export const WordsStudyUIProvider = ({
         setElapsed,
         playFromThisContext,
         formattedWordsStudyState,
+        selectedElState,
+        setSelectedElState,
+        wordsToReviewOnMountState,
       }}
     >
       {children}

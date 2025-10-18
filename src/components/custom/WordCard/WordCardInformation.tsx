@@ -18,10 +18,10 @@ const WordCardInformation = ({
   return (
     <AnimationWrapper>
       <div className={'flex flex-col gap-1 mb-2 flex-wrap items-start'}>
-        {wordDataArr.map((wordData) => {
+        {wordDataArr.map((wordData, index) => {
           return (
             wordData.text && (
-              <span className='text-sm text-left font-medium'>
+              <span key={index} className='text-sm text-left font-medium'>
                 {wordData.preText}: {wordData.text}
               </span>
             )
