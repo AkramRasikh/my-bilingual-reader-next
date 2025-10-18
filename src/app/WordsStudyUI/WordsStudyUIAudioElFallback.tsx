@@ -11,9 +11,7 @@ const WordsStudyUIAudioElFallback = ({ contextDataEl }) => {
   return (
     <div>
       <div className='flex gap-3'>
-        <div>
-          <audio ref={ref} src={audioUrl} controls />
-        </div>
+        <audio ref={ref} src={audioUrl} controls className='w-full' />
         <Button
           className='my-auto'
           onClick={() =>

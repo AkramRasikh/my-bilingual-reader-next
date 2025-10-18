@@ -32,7 +32,7 @@ const WordsStudyUI = () => {
       </h2>
       <div className='flex justify-around gap-3'>
         <WordsStudyUIMediaElement />
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-2 w-fit'>
           {formattedWordsStudyState.map((wordItem, index) => {
             const thisIsSelected = selectedElState === index;
             return (

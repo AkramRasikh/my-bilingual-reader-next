@@ -108,7 +108,7 @@ const WordsStudyUIMediaElement = () => {
   }
 
   return (
-    <div>
+    <div className='w-1/2'>
       {contextData.map((contextDataEl, index) => {
         const isMedia = contextDataEl.isMedia;
 
