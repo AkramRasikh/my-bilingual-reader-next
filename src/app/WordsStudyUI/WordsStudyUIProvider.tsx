@@ -14,7 +14,6 @@ import useMapTranscriptToSeconds from '../LearningScreen/hooks/useManageThreeSec
 import useTrackMasterTranscript from '../LearningScreen/hooks/useManageThreeSecondLoop';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
-import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
 import { useFetchData } from '../Providers/FetchDataProvider';
 
 const WordsStudyUIContext = createContext(null);
@@ -183,61 +182,6 @@ export const WordsStudyUIProvider = ({
     }
   };
 
-  const getFormattedData = () => {
-    const now = new Date();
-    let latestIsDueEl = '';
-    let latestIsDueElIndex;
-    let firstElIndex;
-
-    const formattedTranscript = content.map((item, index) => {
-      if (item?.reviewData && isDueCheck(item, now)) {
-        latestIsDueEl = item.id;
-        latestIsDueElIndex = index;
-        if (!isNumber(firstElIndex)) {
-          firstElIndex = index;
-          if (firstElIndex > 0) {
-            firstElIndex = firstElIndex - 1;
-          }
-        }
-      }
-
-      const hasBeenReviewed = item?.reviewData?.due;
-      const isDueNow = new Date(hasBeenReviewed) < now;
-
-      const dueStatus = !hasBeenReviewed ? '' : isDueNow ? 'now' : 'pending';
-
-      const targetLangformatted = underlineWordsInSentence(
-        item.targetLang,
-        pureWordsState,
-      );
-      const wordsFromSentence = findAllInstancesOfWordsInSentence(
-        item.targetLang,
-        wordsState,
-      );
-      return {
-        ...item,
-        dueStatus,
-        targetLangformatted,
-        wordsFromSentence,
-      };
-    });
-
-    const adjustedTranscript = formattedTranscript.map((item, index, arr) => {
-      if (index > 0 && arr[index + 1]?.dueStatus === 'now') {
-        return { ...item, helperReviewSentence: true };
-      }
-      return item;
-    });
-
-    setLatestDueIdState({
-      id: latestIsDueEl,
-      index: latestIsDueElIndex,
-      triggerScroll: false,
-    });
-    setFirstDueIndexState(firstElIndex);
-    setFormattedTranscriptState(adjustedTranscript);
-  };
-
   const handleStudyFromHere = () => {
     const masterPlayIndex = formattedTranscriptState.findIndex(
       (item) => item.id === masterPlay,
@@ -386,12 +330,6 @@ export const WordsStudyUIProvider = ({
     );
     setSelectedContentState(thisContent);
   };
-
-  useEffect(() => {
-    if (content) {
-      getFormattedData();
-    }
-  }, [pureWordsState, content]);
 
   useEffect(() => {
     if (isInReviewMode) {
