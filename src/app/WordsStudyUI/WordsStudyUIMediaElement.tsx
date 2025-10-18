@@ -1,11 +1,36 @@
+import { useRef, useState } from 'react';
 import { getAudioURL, getCloudflareVideoURL } from '@/utils/get-media-url';
 import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import SentenceBlock from '@/components/custom/SentenceBlock';
 import VideoPlayer from '../VideoPlayer';
 import WordsStudyUIAudioElFallback from './WordsStudyUIAudioElFallback';
 import useCheckVideoIsWorking from './useCheckVideoIsWorking';
+import useData from '../Providers/useData';
 
 const IsolatedSentenceAudio = ({ contextData }) => {
+  const [wordPopUpState, setWordPopUpState] = useState([]);
+  const hoverTimerMasterRef = useRef(null);
+  const { wordsState } = useData();
+
+  const handleMouseEnter = (text) => {
+    hoverTimerMasterRef.current = setTimeout(() => {
+      const wordsAmongstHighlightedText = wordsState?.filter((item) => {
+        if (item.baseForm === text || item.surfaceForm === text) {
+          return true;
+        }
+        return false;
+      });
+
+      setWordPopUpState(wordsAmongstHighlightedText);
+    }, 300);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimerMasterRef.current) {
+      clearTimeout(hoverTimerMasterRef.current); // Cancel if left early
+      hoverTimerMasterRef.current = null;
+    }
+  };
   const hasAudio = contextData?.hasAudio;
   const title = contextData.title;
   const hasIndividualAudio = hasAudio;
@@ -16,15 +41,15 @@ const IsolatedSentenceAudio = ({ contextData }) => {
   return (
     <div>
       <SentenceBlock
-        thisSentencesWordsState={[]}
+        thisSentencesWordsState={contextData.wordsFromSentence}
         sentence={contextData}
         // sentenceIndex={1}
-        handleMouseLeave={() => {}}
-        handleMouseEnter={() => {}}
-        wordPopUpState={[]}
-        setWordPopUpState={() => {}}
+        handleMouseLeave={handleMouseLeave}
+        handleMouseEnter={handleMouseEnter}
+        wordPopUpState={wordPopUpState}
+        setWordPopUpState={setWordPopUpState}
         handleDeleteWordDataProvider={() => {}}
-        wordsState={[]}
+        wordsState={wordsState}
         url={source}
         wide
       />

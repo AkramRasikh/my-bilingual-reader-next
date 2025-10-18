@@ -15,6 +15,7 @@ import useTrackMasterTranscript from '../LearningScreen/hooks/useManageThreeSeco
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { useFetchData } from '../Providers/FetchDataProvider';
+import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
 
 const WordsStudyUIContext = createContext(null);
 
@@ -126,6 +127,10 @@ export const WordsStudyUIProvider = ({
               ),
               contentIndex: contentItem.contentIndex,
               realStartTime: contentItem?.realStartTime,
+              wordsFromSentence: findAllInstancesOfWordsInSentence(
+                contextSentenceData.targetLang,
+                wordsState,
+              ),
             };
 
             contextData.push(totalObj);
@@ -141,6 +146,10 @@ export const WordsStudyUIProvider = ({
               contextData.push({
                 ...foundContextIdInAdhocSentences,
                 isAdhoc: true,
+                wordsFromSentence: findAllInstancesOfWordsInSentence(
+                  foundContextIdInAdhocSentences.targetLang,
+                  wordsState,
+                ),
               });
               break;
             }
