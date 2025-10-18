@@ -4,11 +4,13 @@ import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import WordCard from '@/components/custom/WordCard';
 import useData from '../Providers/useData';
 import WordsStudyUIMediaElement from './WordsStudyUIMediaElement';
+import clsx from 'clsx';
 
 const WordsStudyUI = () => {
   const {
     formattedWordsStudyState,
     setSelectedElState,
+    selectedElState,
     wordsToReviewOnMountState,
   } = useWordsStudyUIScreen();
   const { updateWordDataProvider, wordsForReviewState } = useData();
@@ -32,8 +34,14 @@ const WordsStudyUI = () => {
         <WordsStudyUIMediaElement />
         <div className='flex flex-col gap-2'>
           {formattedWordsStudyState.map((wordItem, index) => {
+            const thisIsSelected = selectedElState === index;
             return (
-              <div key={wordItem.id}>
+              <div
+                key={wordItem.id}
+                className={clsx(
+                  thisIsSelected ? 'border border-black rounded-2xl w-fit' : '',
+                )}
+              >
                 <WordCard
                   indexNum={index + 1}
                   {...wordItem}
