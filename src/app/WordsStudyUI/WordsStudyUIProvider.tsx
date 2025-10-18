@@ -100,10 +100,16 @@ export const WordsStudyUIProvider = ({
   useEffect(() => {
     const slicedWords = wordsForReviewState.slice(0, 6);
     const wordsDataWithContextData = slicedWords.map((item) => {
-      const contextIds = item.contexts;
+      let contextIds = item.contexts;
 
-      if (!Array.isArray(contextIds)) {
-        return item;
+      const isNumericKeyObject =
+        typeof contextIds === 'object' &&
+        contextIds !== null &&
+        !Array.isArray(contextIds) &&
+        Object.keys(contextIds).every((key) => !isNaN(Number(key)));
+
+      if (isNumericKeyObject) {
+        contextIds = Object.values(contextIds);
       }
       const contextData = [];
 
