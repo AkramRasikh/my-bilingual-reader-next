@@ -65,8 +65,8 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
         content: transcriptArr,
         duration: ref?.current?.duration,
         isVideoModeState: true,
-        realStartTime: 0,
-        // realStartTime: contextDataEl.realStartTime || 0,
+        // realStartTime: 0,
+        realStartTime: error ? 0 : contextDataEl.realStartTime,
       });
       setSecondsState(secondsToArr);
       transcriptStringRef.current = idsOfTranscript;
