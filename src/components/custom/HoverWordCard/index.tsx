@@ -29,7 +29,7 @@ const HoverWordCard = ({
   }, [wordsForSelectedTopic]);
 
   const onHoverTrigger = () => {
-    const hoverTings = wordsFromSentence.filter((item) => {
+    const hoverTings = wordsFromSentence?.filter((item) => {
       const baseForm = item.baseForm;
       const surfaceForm = item.surfaceForm;
       if (text.includes(baseForm) || text.includes(surfaceForm)) {
