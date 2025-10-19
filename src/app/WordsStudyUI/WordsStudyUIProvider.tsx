@@ -10,7 +10,6 @@ import {
 } from '../srs-utils/srs-algo';
 import useManageThreeSecondLoop from '../LearningScreen/hooks/useManageThreeSecondLoop';
 import useManageLoopInit from '../LearningScreen/hooks/useManageThreeSecondLoop';
-import useMapTranscriptToSeconds from '../LearningScreen/hooks/useManageThreeSecondLoop';
 import useTrackMasterTranscript from '../LearningScreen/hooks/useManageThreeSecondLoop';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
@@ -119,6 +118,27 @@ export const WordsStudyUIProvider = ({
           const contextSentenceData = thisContent[contextSentenceDataIndex];
 
           if (contextSentenceData) {
+            const previousSentence =
+              contextSentenceDataIndex > 0
+                ? {
+                    ...thisContent[contextSentenceDataIndex - 1],
+                    targetLangformatted: underlineWordsInSentence(
+                      thisContent[contextSentenceDataIndex - 1].targetLang,
+                      pureWordsState,
+                    ),
+                  }
+                : '';
+            const nextSentence =
+              contextSentenceDataIndex + 1 < thisContent.length
+                ? {
+                    ...thisContent[contextSentenceDataIndex + 1],
+                    targetLangformatted: underlineWordsInSentence(
+                      thisContent[contextSentenceDataIndex + 1].targetLang,
+                      pureWordsState,
+                    ),
+                  }
+                : '';
+
             const totalObj = {
               ...contextSentenceData,
               title: contentItem?.title,
@@ -134,26 +154,8 @@ export const WordsStudyUIProvider = ({
                 contextSentenceData.targetLang,
                 wordsState,
               ),
-              previousSentence:
-                contextSentenceDataIndex > 0
-                  ? {
-                      ...thisContent[contextSentenceDataIndex - 1],
-                      targetLangformatted: underlineWordsInSentence(
-                        thisContent[contextSentenceDataIndex - 1].targetLang,
-                        pureWordsState,
-                      ),
-                    }
-                  : '',
-              nextSentence:
-                contextSentenceDataIndex + 1 < thisContent.length
-                  ? {
-                      ...thisContent[contextSentenceDataIndex + 1],
-                      targetLangformatted: underlineWordsInSentence(
-                        thisContent[contextSentenceDataIndex + 1].targetLang,
-                        pureWordsState,
-                      ),
-                    }
-                  : '',
+              previousSentence,
+              nextSentence,
             };
 
             contextData.push(totalObj);
@@ -387,15 +389,15 @@ export const WordsStudyUIProvider = ({
     progress,
   });
 
-  useMapTranscriptToSeconds({
-    ref,
-    content,
-    realStartTime,
-    secondsState,
-    setSecondsState,
-    setLoopSecondsState,
-    loopTranscriptState,
-  });
+  // useMapTranscriptToSeconds({
+  //   ref,
+  //   content,
+  //   realStartTime,
+  //   secondsState,
+  //   setSecondsState,
+  //   setLoopSecondsState,
+  //   loopTranscriptState,
+  // });
 
   useTrackMasterTranscript({
     masterPlay,
@@ -870,6 +872,7 @@ export const WordsStudyUIProvider = ({
         formattedWordsStudyState,
         selectedElState,
         setSelectedElState,
+        setLoopSecondsState,
       }}
     >
       {children}
