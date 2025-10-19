@@ -7,13 +7,9 @@ import WordsStudyUIMediaElement from './WordsStudyUIMediaElement';
 import clsx from 'clsx';
 
 const WordsStudyUI = () => {
-  const {
-    formattedWordsStudyState,
-    setSelectedElState,
-    selectedElState,
-    wordsToReviewOnMountState,
-  } = useWordsStudyUIScreen();
-  const { updateWordDataProvider, wordsForReviewState } = useData();
+  const { formattedWordsStudyState, setSelectedElState, selectedElState } =
+    useWordsStudyUIScreen();
+  const { updateWordDataProvider } = useData();
 
   const hasWords = formattedWordsStudyState?.length > 0;
   if (!hasWords) {
@@ -26,10 +22,6 @@ const WordsStudyUI = () => {
   }
   return (
     <PageContainer>
-      <h2 className='text-center mb-4'>
-        {wordsToReviewOnMountState - wordsForReviewState.length}/
-        {wordsForReviewState.length} Studied
-      </h2>
       <div className='flex justify-around gap-3'>
         <WordsStudyUIMediaElement />
         <div className='flex flex-col gap-2 w-fit'>
