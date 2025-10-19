@@ -76,6 +76,10 @@ export const LearningScreenProvider = ({
 
   const [contentMetaDataState, setContentMetaDataState] = useState([]);
   const [contentMetaWordDataState, setContentMetaWordDataState] = useState([]);
+  const [
+    numberOfSentencesPendingOrDueState,
+    setNumberOfSentencesPendingOrDueState,
+  ] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const {
     contentState,
@@ -85,6 +89,12 @@ export const LearningScreenProvider = ({
     breakdownSentence,
     wordsState,
   } = useData();
+
+  useEffect(() => {
+    setNumberOfSentencesPendingOrDueState(
+      formattedTranscriptState.filter((item) => item?.dueStatus).length,
+    );
+  }, [formattedTranscriptState]);
 
   const realStartTime = selectedContentState?.realStartTime || 0;
 
@@ -825,6 +835,7 @@ export const LearningScreenProvider = ({
         elapsed,
         setElapsed,
         playFromThisContext,
+        numberOfSentencesPendingOrDueState,
       }}
     >
       {children}
