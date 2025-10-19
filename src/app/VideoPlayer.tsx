@@ -55,7 +55,7 @@ const VideoPlayer = ({
             : '',
         )}
       >
-        <div>
+        {/* <div>
           {previousSentence && (
             <p className='text-center font-bold text-l text-gray-600  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg'>
               {previousSentence}
@@ -76,7 +76,7 @@ const VideoPlayer = ({
               {isVideoPlaying ? 'Pause' : 'Play'}
             </Button>
           )}
-        </div>
+        </div> */}
         {threeSecondLoopState && <LearningScreenLoopBtn />}
       </div>
     </div>

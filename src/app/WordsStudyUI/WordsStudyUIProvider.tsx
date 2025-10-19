@@ -136,11 +136,23 @@ export const WordsStudyUIProvider = ({
               ),
               previousSentence:
                 contextSentenceDataIndex > 0
-                  ? thisContent[contextSentenceDataIndex - 1]?.targetLang
+                  ? {
+                      ...thisContent[contextSentenceDataIndex - 1],
+                      targetLangformatted: underlineWordsInSentence(
+                        thisContent[contextSentenceDataIndex - 1].targetLang,
+                        pureWordsState,
+                      ),
+                    }
                   : '',
               nextSentence:
                 contextSentenceDataIndex + 1 < thisContent.length
-                  ? thisContent[contextSentenceDataIndex + 1].targetLang
+                  ? {
+                      ...thisContent[contextSentenceDataIndex + 1],
+                      targetLangformatted: underlineWordsInSentence(
+                        thisContent[contextSentenceDataIndex + 1].targetLang,
+                        pureWordsState,
+                      ),
+                    }
                   : '',
             };
 

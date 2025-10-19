@@ -15,6 +15,7 @@ const TranscriptItem = () => {
     isLoadingState,
     contentItem,
     handleSaveFunc,
+    isWordStudyMode,
   } = useTranscriptItem();
 
   return (
@@ -28,10 +29,10 @@ const TranscriptItem = () => {
         <TranscriptItemActionBar />
         <div className='flex w-full gap-1 justify-between'>
           <TranscriptItemContent />
-          <TranscriptItemMenuSection />
+          {!isWordStudyMode && <TranscriptItemMenuSection />}
         </div>
       </div>
-      <TranscriptItemReviewSection />
+      {!isWordStudyMode && <TranscriptItemReviewSection />}
       {highlightedTextState && (
         <HighlightedText
           isLoadingState={isLoadingState}

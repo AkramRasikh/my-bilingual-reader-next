@@ -29,6 +29,7 @@ export const TranscriptItemProvider = ({
   latestDueIdState,
   scrollToElState,
   wordsForSelectedTopic,
+  isWordStudyMode,
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -248,6 +249,7 @@ export const TranscriptItemProvider = ({
         overrideMiniReviewState,
         setOverrideMiniReviewState,
         wordsForSelectedTopic,
+        isWordStudyMode,
       }}
     >
       {children}
