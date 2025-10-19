@@ -90,12 +90,6 @@ export const LearningScreenProvider = ({
     wordsState,
   } = useData();
 
-  useEffect(() => {
-    setNumberOfSentencesPendingOrDueState(
-      formattedTranscriptState.filter((item) => item?.dueStatus).length,
-    );
-  }, [formattedTranscriptState]);
-
   const realStartTime = selectedContentState?.realStartTime || 0;
 
   const masterPlay =
@@ -206,8 +200,9 @@ export const LearningScreenProvider = ({
       (contentEl) =>
         contentEl.generalTopicName === generalTopicDisplayNameSelectedState,
     );
+    let numberOfPendingDue = 0;
 
-    return contentOfGeneralTopic.map((thisContentEl) => {
+    const contentOfGenTopic = contentOfGeneralTopic.map((thisContentEl) => {
       const title = thisContentEl.title;
       const reviewHistory = thisContentEl.reviewHistory?.length > 0;
       const chapter = title.split('-');
@@ -216,6 +211,10 @@ export const LearningScreenProvider = ({
       let sentencesNeedReview = 0;
       const transcript = thisContentEl.content;
 
+      const dueOrPending = transcript.filter(
+        (item) => item.reviewData?.due,
+      ).length;
+      numberOfPendingDue = numberOfPendingDue + dueOrPending;
       sentencesNeedReview = transcript.filter((transcriptEl) => {
         if (!transcriptEl?.reviewData?.due) {
           return;
@@ -230,8 +229,12 @@ export const LearningScreenProvider = ({
         sentencesNeedReview,
         title,
         isSelected: selectedContentState.title === title,
+        dueOrPending,
       };
     });
+
+    setNumberOfSentencesPendingOrDueState(numberOfPendingDue);
+    return contentOfGenTopic;
   };
 
   const getSelectedTopicsWordsFunc = (content, isDueBool) => {

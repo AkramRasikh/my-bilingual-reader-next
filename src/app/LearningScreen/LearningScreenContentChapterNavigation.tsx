@@ -23,6 +23,7 @@ const LearningScreenContentChapterNavigation = () => {
     setContentMetaWordDataState,
     sentenceRepsState,
     elapsed,
+    numberOfSentencesPendingOrDueState,
   } = useLearningScreen();
 
   const prevValueSentencesRef = useRef(sentenceRepsState);
@@ -57,7 +58,10 @@ const LearningScreenContentChapterNavigation = () => {
     <ul className='flex flex-col gap-1 overflow-y-scroll max-h-96 pr-2.5'>
       {!hasUnifiedChapter && (
         <Button variant='outline' onClick={handleGetComprehensiveReview}>
-          All
+          All{' '}
+          <span className='text-xs font-medium italic'>
+            ({numberOfSentencesPendingOrDueState})
+          </span>
         </Button>
       )}
       {contentMetaDataState?.map((thisContentMetaData, index) => {
