@@ -43,11 +43,9 @@ const WordsStudyUIAudioElFallback = ({ secondsState, contextDataEl }) => {
     const currentContextIsMaster = currentContext === masterPlay;
 
     if (currentContextIsMaster) {
-      isVideoPlaying
-        ? handlePause()
-        : handlePlayFromHere((contextDataEl.realStartTime || 0) + contextTime);
+      isVideoPlaying ? handlePause() : handlePlayFromHere(contextTime); // issue of has video vs no video on realStartTime
     } else {
-      handlePlayFromHere((contextDataEl.realStartTime || 0) + contextTime);
+      handlePlayFromHere(contextTime);
     }
   };
 
