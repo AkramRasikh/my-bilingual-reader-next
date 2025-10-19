@@ -7,10 +7,12 @@ import useCheckVideoIsWorking from './useCheckVideoIsWorking';
 import useData from '../Providers/useData';
 import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import { mapSentenceIdsToSeconds } from '../LearningScreen/utils/map-sentence-ids-to-seconds';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const WordsStudyUIVideoEl = ({ contextDataEl }) => {
   const [secondsState, setSecondsState] = useState([]);
+  const transcriptStringRef = useRef('');
+
   const {
     ref,
     setIsVideoPlaying,
@@ -28,6 +30,8 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
     contextDataEl,
     contextDataEl?.nextSentence,
   ].filter((item) => item);
+
+  const idsOfTranscript = transcriptArr.map((item) => item.id).join('');
 
   const currentTime = ref?.current?.currentTime;
 
@@ -47,16 +51,27 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
   };
 
   useEffect(() => {
+    if (!idsOfTranscript || !transcriptStringRef.current) {
+      return;
+    }
+    if (idsOfTranscript && idsOfTranscript !== transcriptStringRef.current) {
+      setSecondsState([]);
+    }
+  }, [idsOfTranscript, transcriptStringRef]);
+
+  useEffect(() => {
     if (ref?.current?.duration && secondsState?.length === 0) {
       const secondsToArr = mapSentenceIdsToSeconds({
         content: transcriptArr,
         duration: ref?.current?.duration,
         isVideoModeState: true,
-        realStartTime: contextDataEl.realStartTime,
+        realStartTime: 0,
+        // realStartTime: contextDataEl.realStartTime || 0,
       });
       setSecondsState(secondsToArr);
+      transcriptStringRef.current = idsOfTranscript;
     }
-  }, [ref?.current?.duration]);
+  }, [ref?.current?.duration, secondsState]);
 
   if (error) {
     return (
