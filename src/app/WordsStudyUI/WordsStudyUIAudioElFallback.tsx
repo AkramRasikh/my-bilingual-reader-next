@@ -55,7 +55,7 @@ const WordsStudyUIAudioElFallback = ({ secondsState, contextDataEl }) => {
     contextDataEl?.previousSentence,
     contextDataEl,
     contextDataEl?.nextSentence,
-  ];
+  ].filter((item) => item);
 
   return (
     <div>

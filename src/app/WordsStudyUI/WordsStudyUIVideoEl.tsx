@@ -27,7 +27,7 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
     contextDataEl?.previousSentence,
     contextDataEl,
     contextDataEl?.nextSentence,
-  ];
+  ].filter((item) => item);
 
   const currentTime = ref?.current?.currentTime;
 

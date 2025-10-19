@@ -127,7 +127,8 @@ export const WordsStudyUIProvider = ({
                       pureWordsState,
                     ),
                   }
-                : '';
+                : null;
+
             const nextSentence =
               contextSentenceDataIndex + 1 < thisContent.length
                 ? {
@@ -137,7 +138,7 @@ export const WordsStudyUIProvider = ({
                       pureWordsState,
                     ),
                   }
-                : '';
+                : null;
 
             const totalObj = {
               ...contextSentenceData,
@@ -154,8 +155,8 @@ export const WordsStudyUIProvider = ({
                 contextSentenceData.targetLang,
                 wordsState,
               ),
-              previousSentence,
-              nextSentence,
+              ...(previousSentence && { previousSentence }),
+              ...(nextSentence && { nextSentence }),
             };
 
             contextData.push(totalObj);
