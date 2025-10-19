@@ -98,12 +98,8 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
           ref={ref}
           url={videoUrl}
           setIsVideoPlaying={setIsVideoPlaying}
-          isVideoPlaying={isVideoPlaying}
           masterPlayComprehensiveState={contextDataEl}
-          previousSentence={contextDataEl?.previousSentence}
-          playFromHereUI={handleAudio}
         />
-
         <div className='flex flex-col gap-2 mt-2'>
           {transcriptArr?.map((transcriptItem, index) => {
             return (
