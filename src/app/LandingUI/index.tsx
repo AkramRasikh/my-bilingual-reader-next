@@ -29,6 +29,7 @@ const LandingScreen = () => {
     setIsWordStudyState,
     wordsForReviewState,
     wordsState,
+    wordsToReviewOnMountState,
   } = useData();
 
   useEffect(() => {
@@ -57,10 +58,14 @@ const LandingScreen = () => {
   ];
 
   if (isWordStudyState && wordsState.length > 0) {
+    const wordStudySubHeading = `${
+      wordsToReviewOnMountState - wordsForReviewState.length
+    }/${wordsForReviewState.length} Studied`;
     return (
       <WordsStudyUIProvider>
         <BreadCrumbHeaderBase
           heading={'Home'}
+          subHeading={wordStudySubHeading}
           onClick={() => setIsWordStudyState(false)}
           navigationButtons={() =>
             [buttonsArr[0]].map((item, index) => {

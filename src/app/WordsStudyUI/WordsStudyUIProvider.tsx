@@ -78,7 +78,6 @@ export const WordsStudyUIProvider = ({
   const [contentMetaDataState, setContentMetaDataState] = useState([]);
   const [contentMetaWordDataState, setContentMetaWordDataState] = useState([]);
   const [elapsed, setElapsed] = useState(0);
-  const [wordsToReviewOnMountState, setWordsToReviewOnMountState] = useState(0);
   const {
     contentState,
     updateSentenceData,
@@ -92,10 +91,6 @@ export const WordsStudyUIProvider = ({
   const { data } = useFetchData();
 
   const sentencesData = data.sentencesData;
-
-  useEffect(() => {
-    setWordsToReviewOnMountState(wordsForReviewState.length);
-  }, []);
 
   useEffect(() => {
     const slicedWords = wordsForReviewState.slice(0, 6);
@@ -863,7 +858,6 @@ export const WordsStudyUIProvider = ({
         formattedWordsStudyState,
         selectedElState,
         setSelectedElState,
-        wordsToReviewOnMountState,
       }}
     >
       {children}

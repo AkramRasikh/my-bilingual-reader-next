@@ -18,6 +18,7 @@ import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 import { isDueCheck } from '@/utils/is-due-check';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
+import { isNumber } from '@/utils/is-number';
 
 export const DataContext = createContext(null);
 
@@ -42,6 +43,8 @@ export const DataProvider = ({
 
   const [toastMessageState, setToastMessageState] = useState('');
   const [isSentenceReviewState, setIsSentenceReviewState] = useState(false);
+  const [wordsToReviewOnMountState, setWordsToReviewOnMountState] =
+    useState(null);
 
   const [contentState, dispatchContent] = useReducer(
     contentReducer,
@@ -104,7 +107,10 @@ export const DataProvider = ({
       isDueCheck(item, dateNow),
     );
     setWordsForReviewState(wordsForReview);
-  }, [wordsState]);
+    if (!isNumber(wordsToReviewOnMountState)) {
+      setWordsToReviewOnMountState(wordsForReview.length);
+    }
+  }, [wordsState, wordsToReviewOnMountState]);
 
   const getPureWords = () => {
     const pureWords = [];
@@ -563,6 +569,7 @@ export const DataProvider = ({
         setIsWordStudyState,
         wordsForReviewState,
         setWordsForReviewState,
+        wordsToReviewOnMountState,
       }}
     >
       {children}
