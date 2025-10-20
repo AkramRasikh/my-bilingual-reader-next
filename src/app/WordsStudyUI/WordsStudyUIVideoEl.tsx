@@ -104,9 +104,14 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
       return;
     }
     if (thisSentenceIndex === 0 && nextIndex === -1) {
-      handlePlayFromHere(transcriptArr[thisSentenceIndex]?.time);
+      handlePlayFromHere(
+        realStartTimeAudioVideo + transcriptArr[thisSentenceIndex]?.time,
+      );
     } else {
-      handlePlayFromHere(transcriptArr[thisSentenceIndex + nextIndex]?.time);
+      handlePlayFromHere(
+        realStartTimeAudioVideo +
+          transcriptArr[thisSentenceIndex + nextIndex]?.time,
+      );
     }
   };
 

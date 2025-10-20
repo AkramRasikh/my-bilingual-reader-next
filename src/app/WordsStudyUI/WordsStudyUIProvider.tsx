@@ -68,7 +68,7 @@ export const WordsStudyUIProvider = ({
   const sentencesData = data.sentencesData;
 
   useEffect(() => {
-    const slicedWords = [...wordsForReviewState].reverse().slice(0, 6);
+    const slicedWords = wordsForReviewState.slice(0, 6);
     const wordsDataWithContextData = slicedWords.map((item) => {
       let contextIds = item.contexts;
 
