@@ -19,7 +19,6 @@ const WordsStudyUIKeyListener = ({ handleJumpToSentenceViaKeys }) => {
     setThreeSecondLoopState,
     handleLoopThisSentence,
     setContractThreeSecondLoopState,
-    handleIsEasyReviewShortCut,
   } = useWordsStudyUIScreen();
 
   const handleSlowDownAudio = (isSlow) => {
@@ -64,11 +63,6 @@ const WordsStudyUIKeyListener = ({ handleJumpToSentenceViaKeys }) => {
       //   return;
       // }
 
-      if (shiftKey && e.key.toLowerCase() === ')') {
-        // 0 shifted
-        handleIsEasyReviewShortCut();
-        return;
-      }
       if (threeSecondLoopState) {
         // think of properties and array things
         if (threeSecondLoopState) {
@@ -172,7 +166,6 @@ const WordsStudyUIKeyListener = ({ handleJumpToSentenceViaKeys }) => {
     handleShiftSnippet,
     handleSlowDownAudio,
     handleShiftLoopSentence,
-    handleIsEasyReviewShortCut,
     setContractThreeSecondLoopState,
   ]);
 

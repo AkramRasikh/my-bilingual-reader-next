@@ -5,11 +5,8 @@ import useData from '../Providers/useData';
 import {
   getEmptyCard,
   getNextScheduledOptions,
-  srsCalculationAndText,
   srsRetentionKeyTypes,
 } from '../srs-utils/srs-algo';
-import useManageThreeSecondLoop from '../LearningScreen/hooks/useManageThreeSecondLoop';
-import useManageLoopInit from '../LearningScreen/hooks/useManageThreeSecondLoop';
 import useTrackMasterTranscript from '../LearningScreen/hooks/useManageThreeSecondLoop';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
@@ -720,40 +717,6 @@ export const WordsStudyUIProvider = ({
     }
   };
 
-  const handleIsEasyReviewShortCut = async () => {
-    const currentSecond = Math.floor(ref.current.currentTime);
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[currentSecond]; // need to make sure its part of the content
-
-    const sentenceHasReview =
-      getThisSentenceInfo(currentMasterPlay)?.reviewData;
-
-    const { nextScheduledOptions } = srsCalculationAndText({
-      reviewData: sentenceHasReview,
-      contentType: srsRetentionKeyTypes.sentences,
-      timeNow: new Date(),
-    });
-
-    const nextReviewData = nextScheduledOptions['4'].card;
-
-    try {
-      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
-      await handleReviewFunc({
-        sentenceId: currentMasterPlay,
-        nextDue: nextReviewData,
-      });
-      setSentenceRepsState(sentenceRepsState + 1);
-    } catch (error) {
-      console.log('## handleIsEasyReviewShortCut', error);
-    } finally {
-      setIsGenericItemLoadingState((prev) =>
-        prev.filter((item) => item !== currentMasterPlay),
-      );
-    }
-  };
-
   const handleSelectInitialTopic = (youtubeTag) => {
     const firstElOfYoutubeTitle = contentState.find(
       (i) => i.generalTopicName === youtubeTag,
@@ -836,7 +799,6 @@ export const WordsStudyUIProvider = ({
         handleUpdateLoopedSentence,
         handleBreakdownMasterSentence,
         handleAddMasterToReview,
-        handleIsEasyReviewShortCut,
         handleBulkReviews,
         handleReviewFunc,
         handleBreakdownSentence,

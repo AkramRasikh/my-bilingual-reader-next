@@ -1,5 +1,5 @@
 import { isNumber } from '@/utils/is-number';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 const useManageThreeSecondLoop = ({
   threeSecondLoopState,
@@ -9,6 +9,8 @@ const useManageThreeSecondLoop = ({
   setOverlappingSnippetDataState,
   overlappingSnippetDataState,
 }) => {
+  const refSeconds = useRef<number | null>(null);
+
   useEffect(() => {
     if (!formattedTranscriptState || formattedTranscriptState?.length === 0) {
       return;
@@ -16,7 +18,10 @@ const useManageThreeSecondLoop = ({
     if (!threeSecondLoopState && overlappingSnippetDataState?.length > 0) {
       setOverlappingSnippetDataState([]);
     }
-    if (isNumber(threeSecondLoopState)) {
+    if (
+      isNumber(threeSecondLoopState) &&
+      refSeconds?.current !== threeSecondLoopState
+    ) {
       const startTime =
         threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
       const endTime =
@@ -41,7 +46,7 @@ const useManageThreeSecondLoop = ({
           const startPoint = ((overlapStart - start) / duration) * 100;
 
           results.push({
-            ...item,
+            id: item.id,
             start,
             end,
             percentageOverlap: Number(percentageOverlap.toFixed(2)),
@@ -50,7 +55,8 @@ const useManageThreeSecondLoop = ({
         }
       });
 
-      if (overlappingSnippetDataState?.length === 0 && results?.length > 0) {
+      refSeconds.current = threeSecondLoopState;
+      if (results?.length > 0) {
         setOverlappingSnippetDataState(results);
       }
     }
@@ -59,7 +65,6 @@ const useManageThreeSecondLoop = ({
     contractThreeSecondLoopState,
     realStartTime,
     formattedTranscriptState,
-    overlappingSnippetDataState,
   ]);
 };
 
