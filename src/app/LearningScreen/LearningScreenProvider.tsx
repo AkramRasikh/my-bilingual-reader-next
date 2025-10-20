@@ -346,6 +346,7 @@ export const LearningScreenProvider = ({
     formattedTranscriptState,
     realStartTime,
     setOverlappingSnippetDataState,
+    overlappingSnippetDataState,
   });
 
   useManageLoopInit({

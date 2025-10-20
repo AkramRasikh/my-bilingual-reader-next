@@ -372,23 +372,23 @@ export const WordsStudyUIProvider = ({
     }
   }, [isInReviewMode, studyFromHereTimeState]);
 
-  useManageThreeSecondLoop({
-    threeSecondLoopState,
-    contractThreeSecondLoopState,
-    formattedTranscriptState,
-    realStartTime,
-    setOverlappingSnippetDataState,
-  });
+  // useManageThreeSecondLoop({
+  //   threeSecondLoopState,
+  //   contractThreeSecondLoopState,
+  //   formattedTranscriptState,
+  //   realStartTime,
+  //   setOverlappingSnippetDataState,
+  // });
 
-  useManageLoopInit({
-    ref,
-    threeSecondLoopState,
-    contractThreeSecondLoopState,
-    loopTranscriptState,
-    setContractThreeSecondLoopState,
-    masterPlay,
-    progress,
-  });
+  // useManageLoopInit({
+  //   ref,
+  //   threeSecondLoopState,
+  //   contractThreeSecondLoopState,
+  //   loopTranscriptState,
+  //   setContractThreeSecondLoopState,
+  //   masterPlay,
+  //   progress,
+  // });
 
   // useMapTranscriptToSeconds({
   //   ref,
@@ -549,14 +549,15 @@ export const WordsStudyUIProvider = ({
   };
 
   const handleLoopThis3Second = () => {
-    if (loopTranscriptState) {
-      setLoopTranscriptState(null);
-    }
+    // if (loopTranscriptState) {
+    //   setLoopTranscriptState(null);
+    // }
     if (isNumber(threeSecondLoopState)) {
       setThreeSecondLoopState(null);
       return;
     }
 
+    console.log('## handleLoopThis3Second', ref.current.currentTime);
     setThreeSecondLoopState(ref.current.currentTime);
     // account for the three seconds on both extremes
   };

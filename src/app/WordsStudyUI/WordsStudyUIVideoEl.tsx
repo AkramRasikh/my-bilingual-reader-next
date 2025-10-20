@@ -8,6 +8,9 @@ import useData from '../Providers/useData';
 import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import { mapSentenceIdsToSeconds } from '../LearningScreen/utils/map-sentence-ids-to-seconds';
 import { useEffect, useRef, useState } from 'react';
+import WordsStudyUIKeyListener from './WordsStudyUIKeyListener';
+import useManageThreeSecondLoop from '../LearningScreen/hooks/useManageThreeSecondLoop';
+import useManageLoopInit from '../LearningScreen/hooks/useManageLoopInit';
 
 const WordsStudyUIVideoEl = ({ contextDataEl }) => {
   const [secondsState, setSecondsState] = useState([]);
@@ -20,6 +23,11 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
     handlePlayFromHere,
     handlePause,
     handleTimeUpdate,
+    contractThreeSecondLoopState,
+    threeSecondLoopState,
+    setOverlappingSnippetDataState,
+    overlappingSnippetDataState,
+    setContractThreeSecondLoopState,
   } = useWordsStudyUIScreen();
   const { wordsState } = useData();
   const isMedia = contextDataEl.isMedia;
@@ -37,6 +45,27 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
 
   const masterPlay =
     secondsState?.length > 0 ? secondsState[Math.floor(currentTime)] : '';
+
+  const realStartTimeAudioVideo = error ? 0 : contextDataEl.realStartTime;
+
+  useManageThreeSecondLoop({
+    threeSecondLoopState,
+    contractThreeSecondLoopState,
+    formattedTranscriptState: transcriptArr,
+    realStartTime: realStartTimeAudioVideo,
+    setOverlappingSnippetDataState,
+    overlappingSnippetDataState,
+  });
+
+  useManageLoopInit({
+    ref,
+    threeSecondLoopState,
+    contractThreeSecondLoopState,
+    loopTranscriptState: [],
+    setContractThreeSecondLoopState,
+    masterPlay,
+    progress: null,
+  });
 
   const handleAudio = (currentContext, contextTime) => {
     const currentContextIsMaster = currentContext === masterPlay;
@@ -59,6 +88,23 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
     }
   }, [idsOfTranscript, transcriptStringRef]);
 
+  const handleJumpToSentenceViaKeys = (nextIndex: number) => {
+    // defo revisit this
+
+    const thisSentenceIndex = transcriptArr.findIndex(
+      (item) => item.id === masterPlay,
+    );
+
+    if (thisSentenceIndex === -1) {
+      return;
+    }
+    if (thisSentenceIndex === 0 && nextIndex === -1) {
+      handlePlayFromHere(transcriptArr[thisSentenceIndex]?.time);
+    } else {
+      handlePlayFromHere(transcriptArr[thisSentenceIndex + nextIndex]?.time);
+    }
+  };
+
   useEffect(() => {
     if (ref?.current?.duration && secondsState?.length === 0) {
       const secondsToArr = mapSentenceIdsToSeconds({
@@ -75,10 +121,15 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
 
   if (error) {
     return (
-      <WordsStudyUIAudioElFallback
-        contextDataEl={contextDataEl}
-        secondsState={secondsState}
-      />
+      <>
+        <WordsStudyUIAudioElFallback
+          contextDataEl={contextDataEl}
+          secondsState={secondsState}
+        />
+        <WordsStudyUIKeyListener
+          handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}
+        />
+      </>
     );
   }
 
@@ -103,7 +154,7 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
               <TranscriptItemProvider
                 key={index}
                 threeSecondLoopState={[]}
-                overlappingSnippetDataState={[]}
+                overlappingSnippetDataState={overlappingSnippetDataState}
                 setSentenceHighlightingState={() => {}}
                 sentenceHighlightingState={''}
                 contentItem={transcriptItem}
@@ -136,6 +187,9 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
               </TranscriptItemProvider>
             );
           })}
+          <WordsStudyUIKeyListener
+            handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}
+          />
         </div>
       </div>
     );

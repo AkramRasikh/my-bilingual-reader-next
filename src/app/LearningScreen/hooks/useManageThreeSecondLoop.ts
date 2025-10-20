@@ -7,8 +7,15 @@ const useManageThreeSecondLoop = ({
   formattedTranscriptState,
   realStartTime,
   setOverlappingSnippetDataState,
+  overlappingSnippetDataState,
 }) => {
   useEffect(() => {
+    if (!formattedTranscriptState || formattedTranscriptState?.length === 0) {
+      return;
+    }
+    if (!threeSecondLoopState && overlappingSnippetDataState?.length > 0) {
+      setOverlappingSnippetDataState([]);
+    }
     if (isNumber(threeSecondLoopState)) {
       const startTime =
         threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
@@ -43,7 +50,7 @@ const useManageThreeSecondLoop = ({
         }
       });
 
-      if (results?.length > 0) {
+      if (overlappingSnippetDataState?.length === 0 && results?.length > 0) {
         setOverlappingSnippetDataState(results);
       }
     }
@@ -52,6 +59,7 @@ const useManageThreeSecondLoop = ({
     contractThreeSecondLoopState,
     realStartTime,
     formattedTranscriptState,
+    overlappingSnippetDataState,
   ]);
 };
 
