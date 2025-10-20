@@ -1,7 +1,5 @@
-import { Progress } from '@/components/ui/progress';
-import { useEffect } from 'react';
-
 import useLearningScreen from './useLearningScreen';
+import LoopIndicatorWithProgress from '@/components/custom/LoopIndicatorWithProgress';
 
 const LearningScreenLoopUI = () => {
   const {
@@ -12,37 +10,14 @@ const LearningScreenLoopUI = () => {
     contractThreeSecondLoopState,
   } = useLearningScreen();
 
-  const startPoint =
-    threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
-
-  useEffect(() => {
-    const audio = ref.current;
-
-    const updateProgress = () => {
-      if (audio) {
-        const currentTime = audio.currentTime;
-        const endRange = startPoint + (contractThreeSecondLoopState ? 1.5 : 3);
-
-        const progressValue =
-          ((currentTime - startPoint) / (endRange - startPoint)) * 100;
-
-        setProgress(progressValue);
-      }
-    };
-
-    if (audio) {
-      audio.addEventListener('timeupdate', updateProgress);
-      // Clean up on unmount
-      return () => {
-        audio.removeEventListener('timeupdate', updateProgress);
-      };
-    }
-  }, [threeSecondLoopState, contractThreeSecondLoopState]);
-
   return (
-    <div className='flex gap-3 justify-center my-1 animate-pulse'>
-      <Progress value={progress} className='h-1 w-full [&>div]:bg-red-600' />
-    </div>
+    <LoopIndicatorWithProgress
+      ref={ref}
+      threeSecondLoopState={threeSecondLoopState}
+      progress={progress}
+      setProgress={setProgress}
+      contractThreeSecondLoopState={contractThreeSecondLoopState}
+    />
   );
 };
 

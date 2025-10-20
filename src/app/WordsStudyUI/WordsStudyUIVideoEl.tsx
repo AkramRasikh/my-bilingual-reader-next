@@ -11,6 +11,8 @@ import { useEffect, useRef, useState } from 'react';
 import WordsStudyUIKeyListener from './WordsStudyUIKeyListener';
 import useManageThreeSecondLoop from '../LearningScreen/hooks/useManageThreeSecondLoop';
 import useManageLoopInit from '../LearningScreen/hooks/useManageLoopInit';
+import LoopIndicatorWithProgress from '@/components/custom/LoopIndicatorWithProgress';
+import LoopBtn from '@/components/custom/LoopBtn';
 
 const WordsStudyUIVideoEl = ({ contextDataEl }) => {
   const [secondsState, setSecondsState] = useState([]);
@@ -25,9 +27,12 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
     handleTimeUpdate,
     contractThreeSecondLoopState,
     threeSecondLoopState,
+    setThreeSecondLoopState,
     setOverlappingSnippetDataState,
     overlappingSnippetDataState,
     setContractThreeSecondLoopState,
+    progress,
+    setProgress,
   } = useWordsStudyUIScreen();
   const { wordsState } = useData();
   const isMedia = contextDataEl.isMedia;
@@ -122,6 +127,25 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
   if (error) {
     return (
       <>
+        {threeSecondLoopState && (
+          <div className='flex m-auto'>
+            <div className='w-9/12 m-auto'>
+              <LoopIndicatorWithProgress
+                ref={ref}
+                threeSecondLoopState={threeSecondLoopState}
+                progress={progress}
+                setProgress={setProgress}
+                contractThreeSecondLoopState={contractThreeSecondLoopState}
+              />
+            </div>
+            <LoopBtn
+              threeSecondLoopState={threeSecondLoopState}
+              setThreeSecondLoopState={setThreeSecondLoopState}
+              contractThreeSecondLoopState={contractThreeSecondLoopState}
+              isVideoPlaying={isVideoPlaying}
+            />
+          </div>
+        )}
         <WordsStudyUIAudioElFallback
           contextDataEl={contextDataEl}
           secondsState={secondsState}
