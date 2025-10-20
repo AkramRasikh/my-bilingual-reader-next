@@ -5,6 +5,7 @@ import WordCard from '@/components/custom/WordCard';
 import useData from '../Providers/useData';
 import WordsStudyUIMediaElement from './WordsStudyUIMediaElement';
 import clsx from 'clsx';
+import { Toaster } from 'sonner';
 
 const WordsStudyUI = () => {
   const { formattedWordsStudyState, setSelectedElState, selectedElState } =
@@ -22,6 +23,7 @@ const WordsStudyUI = () => {
   }
   return (
     <PageContainer>
+      <Toaster position='top-center' className='w-fit' />
       <div className='flex justify-around gap-3'>
         <WordsStudyUIMediaElement />
         <div className='flex flex-col gap-2 w-fit'>

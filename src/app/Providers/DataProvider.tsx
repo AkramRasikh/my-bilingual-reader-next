@@ -165,6 +165,7 @@ export const DataProvider = ({
           (item) => item.id !== data.id,
         );
         setWordsState(targetLanguageWordsStateUpdated);
+        setToastMessageState('Successful learned word ✅');
         return true;
       } else {
         const res = await fetch('/api/updateWord', {
@@ -190,6 +191,7 @@ export const DataProvider = ({
         });
         setWordsState(targetLanguageWordsStateUpdated);
       }
+      setToastMessageState('Word reviewed ✅');
     } catch (error) {
       console.log('## updateWordDataProvider DataProvider', { error });
     }
