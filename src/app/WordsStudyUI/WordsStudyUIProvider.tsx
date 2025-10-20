@@ -557,7 +557,6 @@ export const WordsStudyUIProvider = ({
       return;
     }
 
-    console.log('## handleLoopThis3Second', ref.current.currentTime);
     setThreeSecondLoopState(ref.current.currentTime);
     // account for the three seconds on both extremes
   };

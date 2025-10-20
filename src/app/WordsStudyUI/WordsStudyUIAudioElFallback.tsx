@@ -13,6 +13,7 @@ const WordsStudyUIAudioElFallback = ({ secondsState, contextDataEl }) => {
     handlePlayFromHere,
     setIsVideoPlaying,
     handleTimeUpdate,
+    overlappingSnippetDataState,
   } = useWordsStudyUIScreen();
 
   const { wordsState } = useData();
@@ -73,7 +74,7 @@ const WordsStudyUIAudioElFallback = ({ secondsState, contextDataEl }) => {
             <div key={index}>
               <TranscriptItemProvider
                 threeSecondLoopState={[]}
-                overlappingSnippetDataState={[]}
+                overlappingSnippetDataState={overlappingSnippetDataState}
                 setSentenceHighlightingState={() => {}}
                 sentenceHighlightingState={''}
                 contentItem={transcriptItem}
