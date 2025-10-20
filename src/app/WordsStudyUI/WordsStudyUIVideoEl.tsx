@@ -164,14 +164,35 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
     );
 
     return (
-      <div>
-        <VideoPlayer
-          ref={ref}
-          url={videoUrl}
-          setIsVideoPlaying={setIsVideoPlaying}
-          masterPlayComprehensiveState={contextDataEl}
-          handleTimeUpdate={handleTimeUpdate}
-        />
+      <div className='max-w-2xl'>
+        <div>
+          <VideoPlayer
+            ref={ref}
+            url={videoUrl}
+            setIsVideoPlaying={setIsVideoPlaying}
+            masterPlayComprehensiveState={contextDataEl}
+            handleTimeUpdate={handleTimeUpdate}
+          />
+          {threeSecondLoopState && (
+            <div className='flex m-auto'>
+              <div className='w-9/12 m-auto'>
+                <LoopIndicatorWithProgress
+                  ref={ref}
+                  threeSecondLoopState={threeSecondLoopState}
+                  progress={progress}
+                  setProgress={setProgress}
+                  contractThreeSecondLoopState={contractThreeSecondLoopState}
+                />
+              </div>
+              <LoopBtn
+                threeSecondLoopState={threeSecondLoopState}
+                setThreeSecondLoopState={setThreeSecondLoopState}
+                contractThreeSecondLoopState={contractThreeSecondLoopState}
+                isVideoPlaying={isVideoPlaying}
+              />
+            </div>
+          )}
+        </div>
         <div className='flex flex-col gap-2 mt-2'>
           {transcriptArr?.map((transcriptItem, index) => {
             return (

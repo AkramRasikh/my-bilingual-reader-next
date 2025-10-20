@@ -2,13 +2,7 @@
 import { isNumber } from '@/utils/is-number';
 import { createContext, useEffect, useRef, useState, useContext } from 'react';
 import useData from '../Providers/useData';
-import {
-  getEmptyCard,
-  getNextScheduledOptions,
-  srsRetentionKeyTypes,
-} from '../srs-utils/srs-algo';
 import useTrackMasterTranscript from '../LearningScreen/hooks/useManageThreeSecondLoop';
-import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
@@ -37,16 +31,6 @@ export const WordsStudyUIProvider = ({
     useState(true);
   const [sentenceHighlightingState, setSentenceHighlightingState] =
     useState('');
-  const [latestDueIdState, setLatestDueIdState] = useState({
-    id: '',
-    triggerScroll: false,
-  });
-  const [
-    generalTopicDisplayNameSelectedState,
-    setGeneralTopicDisplayNameSelectedState,
-  ] = useState('');
-  const [scrollToElState, setScrollToElState] = useState('');
-  const [firstDueIndexState, setFirstDueIndexState] = useState(0);
   const [sentenceRepsState, setSentenceRepsState] = useState(0);
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState(null);
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
@@ -58,7 +42,6 @@ export const WordsStudyUIProvider = ({
   const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
     [],
   );
-  const [wordsForSelectedTopic, setWordsForSelectedTopic] = useState([]);
   const [overlappingSnippetDataState, setOverlappingSnippetDataState] =
     useState([]);
 
@@ -71,13 +54,9 @@ export const WordsStudyUIProvider = ({
   const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
     useState(false);
 
-  const [contentMetaDataState, setContentMetaDataState] = useState([]);
-  const [contentMetaWordDataState, setContentMetaWordDataState] = useState([]);
   const [elapsed, setElapsed] = useState(0);
   const {
     contentState,
-    updateSentenceData,
-    sentenceReviewBulk,
     pureWordsState,
     breakdownSentence,
     wordsState,
@@ -89,7 +68,7 @@ export const WordsStudyUIProvider = ({
   const sentencesData = data.sentencesData;
 
   useEffect(() => {
-    const slicedWords = wordsForReviewState.slice(0, 6);
+    const slicedWords = [...wordsForReviewState].reverse().slice(0, 6);
     const wordsDataWithContextData = slicedWords.map((item) => {
       let contextIds = item.contexts;
 
@@ -198,8 +177,6 @@ export const WordsStudyUIProvider = ({
       ? secondsState[Math.floor(currentTime)]
       : '';
 
-  const content = selectedContentState?.content;
-
   const handlePlayFromHere = (time: number) => {
     if (ref.current) {
       ref.current.currentTime = time;
@@ -213,189 +190,6 @@ export const WordsStudyUIProvider = ({
       setCurrentTime(ref.current.currentTime);
     }
   };
-
-  const handleStudyFromHere = () => {
-    const masterPlayIndex = formattedTranscriptState.findIndex(
-      (item) => item.id === masterPlay,
-    );
-    setStudyFromHereTimeState(masterPlayIndex);
-    if (transcriptRef.current) {
-      transcriptRef.current.scrollIntoView();
-    }
-  };
-
-  const getNextTranscript = (isNext) => {
-    const nextIndex = selectedContentState.contentIndex + (isNext ? +1 : -1);
-
-    const thisContent = contentState.find(
-      (item) => item?.title === contentState[nextIndex]?.title,
-    );
-    setSelectedContentState(thisContent);
-  };
-
-  const getGeneralContentMetaData = () => {
-    if (!generalTopicDisplayNameSelectedState) {
-      return null;
-    }
-
-    const todayDateObj = new Date();
-
-    const contentOfGeneralTopic = contentState.filter(
-      (contentEl) =>
-        contentEl.generalTopicName === generalTopicDisplayNameSelectedState,
-    );
-
-    return contentOfGeneralTopic.map((thisContentEl) => {
-      const title = thisContentEl.title;
-      const reviewHistory = thisContentEl.reviewHistory?.length > 0;
-      const chapter = title.split('-');
-      const chapterNum = chapter[chapter.length - 1];
-
-      let sentencesNeedReview = 0;
-      const transcript = thisContentEl.content;
-
-      sentencesNeedReview = transcript.filter((transcriptEl) => {
-        if (!transcriptEl?.reviewData?.due) {
-          return;
-        }
-        if (isDueCheck(transcriptEl, todayDateObj)) {
-          return true;
-        }
-      }).length;
-      return {
-        chapterNum,
-        hasBeenReviewed: reviewHistory,
-        sentencesNeedReview,
-        title,
-        isSelected: selectedContentState.title === title,
-      };
-    });
-  };
-
-  const getSelectedTopicsWordsFunc = (content, isDueBool) => {
-    const todayDateObj = new Date();
-    const thisTopicsSentenceIds = content.map((i) => i.id);
-
-    const thisTopicsWordsArr = [];
-
-    wordsState.forEach((word) => {
-      const originalContextId = word.contexts[0];
-      if (thisTopicsSentenceIds.includes(originalContextId)) {
-        if (!isDueBool) {
-          thisTopicsWordsArr.push(word);
-          return;
-        }
-        if (isDueCheck(word, todayDateObj)) {
-          thisTopicsWordsArr.push(word);
-        }
-      }
-    });
-
-    return thisTopicsWordsArr;
-  };
-
-  const getGeneralContentWordData = () => {
-    if (!generalTopicDisplayNameSelectedState) {
-      return null;
-    }
-
-    const contentOfGeneralTopic = contentState.filter(
-      (contentEl) =>
-        contentEl.generalTopicName === generalTopicDisplayNameSelectedState,
-    );
-
-    const allContentDueWords = contentOfGeneralTopic.map((i) =>
-      getSelectedTopicsWordsFunc(i.content, true),
-    );
-
-    return allContentDueWords;
-  };
-
-  const checkHowManyOfTopicNeedsReview = () => {
-    if (!generalTopicDisplayNameSelectedState) {
-      return null;
-    }
-
-    const todayDateObj = new Date();
-
-    const sentencesNeedReview = [];
-    contentState.forEach((contentEl) => {
-      if (contentEl.generalTopicName !== generalTopicDisplayNameSelectedState) {
-        return;
-      }
-
-      const thisStartTime = contentEl.realStartTime;
-      const contentIndex = contentEl.contentIndex;
-      const transcript = contentEl.content;
-      const generalTopicName = contentEl.generalTopicName;
-      const title = contentEl.title;
-
-      transcript.forEach((transcriptEl) => {
-        if (!transcriptEl?.reviewData?.due) {
-          return;
-        }
-        if (isDueCheck(transcriptEl, todayDateObj)) {
-          sentencesNeedReview.push({
-            ...transcriptEl,
-            time: thisStartTime + transcriptEl.time,
-            contentIndex,
-            title,
-            generalTopicName,
-          });
-        }
-      });
-    });
-
-    return sentencesNeedReview;
-  };
-
-  useEffect(() => {
-    // figure out conditions here
-    if (selectedContentState && !selectedContentState?.isFullReview) {
-      setSelectedContentState(contentState[selectedContentState.contentIndex]);
-    }
-  }, [selectedContentState, contentState]);
-
-  const handleSelectedContent = (thisYoutubeTitle) => {
-    const thisContent = contentState.find(
-      (item) => item?.title === thisYoutubeTitle,
-    );
-    setSelectedContentState(thisContent);
-  };
-
-  useEffect(() => {
-    if (isInReviewMode) {
-      setStudyFromHereTimeState(null);
-    }
-  }, [isInReviewMode, studyFromHereTimeState]);
-
-  // useManageThreeSecondLoop({
-  //   threeSecondLoopState,
-  //   contractThreeSecondLoopState,
-  //   formattedTranscriptState,
-  //   realStartTime,
-  //   setOverlappingSnippetDataState,
-  // });
-
-  // useManageLoopInit({
-  //   ref,
-  //   threeSecondLoopState,
-  //   contractThreeSecondLoopState,
-  //   loopTranscriptState,
-  //   setContractThreeSecondLoopState,
-  //   masterPlay,
-  //   progress,
-  // });
-
-  // useMapTranscriptToSeconds({
-  //   ref,
-  //   content,
-  //   realStartTime,
-  //   secondsState,
-  //   setSecondsState,
-  //   setLoopSecondsState,
-  //   loopTranscriptState,
-  // });
 
   useTrackMasterTranscript({
     masterPlay,
@@ -442,106 +236,6 @@ export const WordsStudyUIProvider = ({
       handleFromHere(
         formattedTranscriptState[thisSentenceIndex + nextIndex]?.time,
       );
-    }
-  };
-
-  const handleScrollToMasterView = () => {
-    setScrollToElState(masterPlay);
-    setTimeout(() => setScrollToElState(''), 300);
-  };
-
-  const getSelectedTopicsWords = () => {
-    if (!selectedContentState || wordsState?.length === 0) {
-      return null;
-    }
-
-    return getSelectedTopicsWordsFunc(selectedContentState.content);
-  };
-
-  useEffect(() => {
-    if (selectedContentState && wordsState?.length > 0) {
-      const dateNow = new Date();
-      const wordsForThisTopic = getSelectedTopicsWords();
-      const sortedWordsForThisTopic = wordsForThisTopic?.sort(
-        (a, b) => isDueCheck(b, dateNow) - isDueCheck(a, dateNow),
-      );
-      setWordsForSelectedTopic(sortedWordsForThisTopic);
-    }
-  }, [wordsState, selectedContentState]);
-
-  const handleBulkReviews = async () => {
-    const emptyCard = getEmptyCard();
-
-    const sentenceIdData =
-      loopTranscriptState.filter((item) => !item?.reviewData) || [];
-
-    const nextScheduledOptions = getNextScheduledOptions({
-      card: emptyCard,
-      contentType: srsRetentionKeyTypes.sentences,
-    });
-
-    const contentIndex = selectedContentState?.contentIndex;
-    const hasContentToReview = content?.some(
-      (sentenceWidget) => sentenceWidget?.reviewData,
-    );
-
-    const nextDueCard = nextScheduledOptions['2'].card;
-
-    if (sentenceIdData.length === 0) {
-      console.log('## no sentenceIds');
-      return;
-    }
-
-    const sentenceIds = sentenceIdData.map((item) => item.id);
-
-    try {
-      setIsGenericItemLoadingState((prev) => [...prev, ...sentenceIds]);
-      await sentenceReviewBulk({
-        topicName: selectedContentState.title,
-        fieldToUpdate: {
-          reviewData: nextDueCard,
-        },
-        contentIndex: contentIndex,
-        removeReview: hasContentToReview,
-        sentenceIds,
-      });
-      setSentenceRepsState((prev) => prev + sentenceIds.length);
-    } catch (error) {
-    } finally {
-      setIsGenericItemLoadingState((prev) =>
-        prev.filter((item) => !sentenceIds.includes(item)),
-      );
-    }
-  };
-
-  const handleReviewFunc = async ({ sentenceId, isRemoveReview, nextDue }) => {
-    const cardDataRelativeToNow = getEmptyCard();
-    const nextScheduledOptions = getNextScheduledOptions({
-      card: cardDataRelativeToNow,
-      contentType: srsRetentionKeyTypes.sentences,
-    });
-    const isFullReview = selectedContentState?.isFullReview;
-    const contentIndex = selectedContentState?.contentIndex;
-
-    try {
-      await updateSentenceData({
-        topicName: isFullReview
-          ? getThisSentenceInfo(sentenceId).title
-          : selectedContentState.title,
-        sentenceId,
-        fieldToUpdate: {
-          reviewData: isRemoveReview
-            ? null
-            : nextDue || nextScheduledOptions['1'].card,
-        },
-        contentIndex: isFullReview
-          ? getThisSentenceInfo(sentenceId).contentIndex
-          : contentIndex,
-        isRemoveReview,
-      });
-      setSentenceRepsState(sentenceRepsState + 1);
-    } catch (error) {
-      console.log('## handleReviewFunc error', error);
     }
   };
 
@@ -595,30 +289,6 @@ export const WordsStudyUIProvider = ({
             : formattedTranscriptState[thisIndex - 1].time),
       },
     ]);
-  };
-
-  const handleUpdateLoopedSentence = (extendSentenceLoop) => {
-    if (extendSentenceLoop) {
-      const lastSentenceId =
-        loopTranscriptState[loopTranscriptState.length - 1]?.id;
-      if (!lastSentenceId) {
-        return;
-      }
-      const lastSentenceIdIndex = formattedTranscriptState.findIndex(
-        (i) => i.id === lastSentenceId,
-      );
-
-      const thisItemData = formattedTranscriptState[lastSentenceIdIndex + 1];
-
-      const nextElToAddToLoop = {
-        ...thisItemData,
-        time: realStartTime + thisItemData.time,
-      };
-
-      setLoopTranscriptState((prev) => [...prev, nextElToAddToLoop]);
-    } else {
-      setLoopTranscriptState((prev) => prev.slice(0, -1));
-    }
   };
 
   const handleOpenBreakdownSentence = () => {
@@ -687,44 +357,6 @@ export const WordsStudyUIProvider = ({
     }
   };
 
-  const getThisSentenceInfo = (sentenceId) =>
-    formattedTranscriptState.find((item) => item.id === sentenceId);
-
-  const handleAddMasterToReview = async () => {
-    const currentSecond = Math.floor(ref.current.currentTime);
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[currentSecond]; // need to make sure its part of the content
-
-    const sentenceHasReview =
-      getThisSentenceInfo(currentMasterPlay)?.reviewData;
-
-    try {
-      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
-      await handleReviewFunc({
-        sentenceId: currentMasterPlay,
-        isRemoveReview: Boolean(sentenceHasReview),
-        nextDue: null,
-      });
-      setSentenceRepsState(sentenceRepsState + 1);
-    } catch (error) {
-      console.log('## handleAddMasterToReview', error);
-    } finally {
-      setIsGenericItemLoadingState((prev) =>
-        prev.filter((item) => item !== currentMasterPlay),
-      );
-    }
-  };
-
-  const handleSelectInitialTopic = (youtubeTag) => {
-    const firstElOfYoutubeTitle = contentState.find(
-      (i) => i.generalTopicName === youtubeTag,
-    );
-    setGeneralTopicDisplayNameSelectedState(youtubeTag);
-    handleSelectedContent(firstElOfYoutubeTitle.title);
-  };
-
   const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {
     const contentIndex = selectedContentState?.contentIndex;
     await breakdownSentence({
@@ -734,17 +366,6 @@ export const WordsStudyUIProvider = ({
       targetLang,
       contentIndex,
     });
-  };
-
-  const handleOnHome = () => {
-    setGeneralTopicDisplayNameSelectedState('');
-    setSecondsState([]);
-    setSelectedContentState(null);
-    setFormattedTranscriptState([]);
-    setIsInReviewMode(false);
-    setFirstDueIndexState(0);
-    setStudyFromHereTimeState(null);
-    setWordsForSelectedTopic([]);
   };
 
   return (
@@ -796,38 +417,12 @@ export const WordsStudyUIProvider = ({
         handleLoopThis3Second,
         handleShiftLoopSentence,
         handleLoopThisSentence,
-        handleUpdateLoopedSentence,
         handleBreakdownMasterSentence,
-        handleAddMasterToReview,
-        handleBulkReviews,
-        handleReviewFunc,
         handleBreakdownSentence,
         isBreakingDownSentenceArrState,
-        latestDueIdState,
-        setLatestDueIdState,
-        firstDueIndexState,
-        handleStudyFromHere,
         setStudyFromHereTimeState,
         studyFromHereTimeState,
         transcriptRef,
-        handleScrollToMasterView,
-        scrollToElState,
-        handleSelectedContent,
-        getNextTranscript,
-        handleSelectInitialTopic,
-        generalTopicDisplayNameSelectedState,
-        setGeneralTopicDisplayNameSelectedState,
-        checkHowManyOfTopicNeedsReview,
-        getGeneralContentMetaData,
-        getGeneralContentWordData,
-        wordsForSelectedTopic,
-        selectedContentState,
-        setSelectedContentState,
-        handleOnHome,
-        contentMetaDataState,
-        setContentMetaDataState,
-        contentMetaWordDataState,
-        setContentMetaWordDataState,
         sentenceRepsState,
         elapsed,
         setElapsed,
