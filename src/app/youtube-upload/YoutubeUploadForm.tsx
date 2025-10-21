@@ -15,9 +15,10 @@ import {
   LanguageOption,
   useYoutubeUpload,
 } from './YoutubeUploadProvider';
+import clsx from 'clsx';
 
 const YouTubeUploadForm = () => {
-  const { form, setForm, loading, setLoading, message, setMessage } =
+  const { form, setForm, loading, setLoading, message, setMessage, youtubeId } =
     useYoutubeUpload();
 
   const handleChange = (field: keyof FormData, value: string) => {
@@ -54,70 +55,72 @@ const YouTubeUploadForm = () => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className='space-y-4 max-w-lg mx-auto p-4 border rounded-md'
-    >
-      <div>
-        <Label htmlFor='url' className='mb-2'>
-          YouTube URL
-        </Label>
-        <Input
-          id='url'
-          type='text'
-          value={form.url}
-          onChange={(e) => handleChange('url', e.target.value)}
-          placeholder='https://www.youtube.com/watch?v=...'
-          required
-        />
-      </div>
-
-      <div>
-        <Label htmlFor='language' className='mb-2'>
-          Language
-        </Label>
-        <Select
-          value={form.language}
-          onValueChange={(value) =>
-            handleChange('language', value as LanguageOption)
-          }
-        >
-          <SelectTrigger id='language'>
-            <SelectValue placeholder='Select a language' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='japanese'>Japanese</SelectItem>
-            <SelectItem value='chinese'>Chinese</SelectItem>
-            <SelectItem value='arabic'>Arabic</SelectItem>
-            <SelectItem value='french'>French</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label htmlFor='title' className='mb-2'>
-          Title
-        </Label>
-        <Input
-          id='title'
-          type='text'
-          value={form.title}
-          onChange={(e) => handleChange('title', e.target.value)}
-          placeholder='Enter a title for the audio file'
-          required
-        />
-      </div>
-
-      <Button type='submit' disabled={loading}>
-        {loading ? 'Processing...' : 'Download Audio'}
-      </Button>
-
-      {message && (
-        <div className='mt-2 p-2 border rounded bg-gray-50 text-sm'>
-          {message}
+    <div className='min-w-xl my-auto'>
+      <form
+        onSubmit={handleSubmit}
+        className={clsx('space-y-4 max-w-lg mx-auto p-4 border rounded-md')}
+      >
+        <div>
+          <Label htmlFor='url' className='mb-2'>
+            YouTube URL
+          </Label>
+          <Input
+            id='url'
+            type='text'
+            value={form.url}
+            onChange={(e) => handleChange('url', e.target.value)}
+            placeholder='https://www.youtube.com/watch?v=...'
+            required
+          />
         </div>
-      )}
-    </form>
+
+        <div>
+          <Label htmlFor='language' className='mb-2'>
+            Language
+          </Label>
+          <Select
+            value={form.language}
+            onValueChange={(value) =>
+              handleChange('language', value as LanguageOption)
+            }
+          >
+            <SelectTrigger id='language'>
+              <SelectValue placeholder='Select a language' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='japanese'>Japanese</SelectItem>
+              <SelectItem value='chinese'>Chinese</SelectItem>
+              <SelectItem value='arabic'>Arabic</SelectItem>
+              <SelectItem value='french'>French</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label htmlFor='title' className='mb-2'>
+            Title
+          </Label>
+          <Input
+            id='title'
+            type='text'
+            value={form.title}
+            onChange={(e) => handleChange('title', e.target.value)}
+            placeholder='Enter a title for the audio file'
+            required
+          />
+        </div>
+
+        <Button type='submit' disabled={loading}>
+          {loading ? 'Processing...' : 'Download Audio'}
+        </Button>
+
+        {message && (
+          <div className='mt-2 p-2 border rounded bg-gray-50 text-sm'>
+            {message}
+          </div>
+        )}
+      </form>
+    </div>
   );
 };
 
