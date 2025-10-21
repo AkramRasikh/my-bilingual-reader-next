@@ -194,6 +194,7 @@ export const DataProvider = ({
       setToastMessageState('Word reviewed ✅');
     } catch (error) {
       console.log('## updateWordDataProvider DataProvider', { error });
+      setToastMessageState('Erro reviewing word ❌');
     }
   };
 
