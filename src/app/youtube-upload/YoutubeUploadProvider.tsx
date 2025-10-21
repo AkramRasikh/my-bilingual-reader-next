@@ -8,7 +8,7 @@ export function useYoutubeUpload() {
   return useContext(YoutubeUploadContext);
 }
 
-export type LanguageOption = 'japanese' | 'chinese' | 'arabic' | 'french';
+export type LanguageOption = 'japanese' | 'chinese' | 'arabic' | 'french' | '';
 
 export interface FormData {
   url: string;
@@ -19,7 +19,7 @@ export interface FormData {
 export function YoutubeUploadProvider({ children }) {
   const [form, setForm] = useState<FormData>({
     url: '',
-    language: 'japanese',
+    language: '',
     title: '',
   });
 
