@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -11,24 +10,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-
-type LanguageOption = 'japanese' | 'chinese' | 'arabic' | 'french';
-
-interface FormData {
-  url: string;
-  language: LanguageOption;
-  title: string;
-}
+import {
+  FormData,
+  LanguageOption,
+  useYoutubeUpload,
+} from './YoutubeUploadProvider';
 
 const YouTubeUploadForm = () => {
-  const [form, setForm] = useState<FormData>({
-    url: '',
-    language: 'japanese',
-    title: '',
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const { form, setForm, loading, setLoading, message, setMessage } =
+    useYoutubeUpload();
 
   const handleChange = (field: keyof FormData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
