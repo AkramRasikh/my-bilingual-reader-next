@@ -4,7 +4,7 @@ import LearningScreen from '../LearningScreen';
 import useData from '../Providers/useData';
 import LandingUIContentSelection from './LandingUIContentSelection';
 import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
-import { toast } from 'sonner';
+import { toast, Toaster } from 'sonner';
 import SentencesUIContainer from '../sentences/SentencesUIContainer';
 import MockFlag from '../../components/custom/MockFlag';
 import useLandingScreenLoadGeneralTopicsDisplay from './useLandingUILoadGeneralTopicsDisplay';
@@ -63,6 +63,7 @@ const LandingScreen = () => {
     }/${wordsForReviewState.length} Studied`;
     return (
       <WordsStudyUIProvider>
+        <Toaster position='top-center' />
         <BreadCrumbHeaderBase
           heading={'Home'}
           subHeading={wordStudySubHeading}

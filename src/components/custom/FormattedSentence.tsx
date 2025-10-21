@@ -13,7 +13,7 @@ const FormattedSentence = ({
 }) => {
   return (
     <span ref={ref} className='mt-auto mb-auto'>
-      {targetLangformatted.map((item, indexNested) => {
+      {targetLangformatted?.map((item, indexNested) => {
         const isUnderlined = item?.style?.textDecorationLine;
         const text = item?.text;
         if (isUnderlined) {
