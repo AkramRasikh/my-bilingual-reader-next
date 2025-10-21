@@ -1,10 +1,12 @@
-import { execa } from 'execa';
 import fs from 'fs';
 import fsPromise from 'fs/promises';
 import path from 'path';
 import os from 'os';
 import { japanese, chinese, arabic } from '@/app/languages';
 import squashSubtitles from './squashSubtitles';
+import { downloadTargetLangSubs } from './downloadTargetLangSubs';
+import { downloadBaseLangMachineSubs } from './downloadBaseLangMachineSubs';
+import { downloadYoutubeAudio } from './downloadYoutubeAudio';
 
 export const googleLanguagesKey = {
   [japanese]: 'ja',
@@ -43,24 +45,32 @@ export async function POST(req) {
       );
     }
 
+    // Step 1: Try downloading human-generated English subs
+    const tmpDir = await fsPromise.mkdtemp(path.join(os.tmpdir(), 'yt-'));
+    const outputTemplate = path.join(tmpDir, 'video');
+
+    try {
+      await downloadTargetLangSubs({ outputTemplate, url });
+    } catch (error) {
+      console.log('## Failed to get Japaneses subs');
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500,
+      });
+    }
+    const japaneseFiles = await fsPromise.readdir(tmpDir);
+    const japaneseSrtFiles = japaneseFiles.find((f) => f.endsWith('.ja.srt'));
+
+    if (!japaneseSrtFiles) {
+      return new Response(
+        JSON.stringify({ error: 'No Japanese subtitles found' }),
+        { status: 404 },
+      );
+    }
+
     const baseName = sanitizeFilename(String(title));
-
-    console.log('## baseName', baseName);
-
     const outTemplate = path.join(audioPath, `${baseName}.%(ext)s`);
 
-    await execa(
-      'yt-dlp',
-      [
-        '-x', // extract audio
-        '--audio-format',
-        'mp3', // convert to mp3
-        '-o',
-        outTemplate,
-        url,
-      ],
-      { stdout: 'pipe', stderr: 'pipe' },
-    );
+    await downloadYoutubeAudio({ outTemplate, url });
 
     const filesFromAudio = fs.readdirSync(audioPath);
     const file = filesFromAudio.find((f) => f.startsWith(baseName + '.'));
@@ -73,60 +83,18 @@ export async function POST(req) {
 
     const publicUrl = `/audio/${encodeURIComponent(file)}`; // served from /public
 
-    // Temporary file path
-    const tmpDir = await fsPromise.mkdtemp(path.join(os.tmpdir(), 'yt-'));
-    const outputTemplate = path.join(tmpDir, 'video');
-
-    // Step 1: Try downloading human-generated English subs
     try {
-      await execa('yt-dlp', [
-        '--write-subs',
-        '--sub-langs',
-        'ja',
-        '--skip-download',
-        '--convert-subs',
-        'srt',
-        '-o',
-        outputTemplate,
-        url,
-      ]);
-    } catch (error) {
-      // Step 2: Fallback to auto-generated subs
-      console.log('## Failed to get Japaneses subs');
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
-      });
-    }
-    try {
-      await execa('yt-dlp', [
-        '--write-auto-subs',
-        '--sub-langs',
-        'en',
-        '--skip-download',
-        '--convert-subs',
-        'srt',
-        '-o',
-        outputTemplate,
-        url,
-      ]);
+      await downloadBaseLangMachineSubs({ outputTemplate, url });
     } catch (error) {
       console.log('## Failed to get English subs', error);
     }
 
     // Find the downloaded subtitle file
-    const files = await fsPromise.readdir(tmpDir);
-    console.log('## files', files);
+    const engFiles = await fsPromise.readdir(tmpDir);
+    console.log('## engFiles', engFiles);
 
-    const japaneseSrtFiles = files.find((f) => f.endsWith('.ja.srt'));
-    const engSrtFile = files.find((f) => f.endsWith('.en.srt'));
+    const engSrtFile = engFiles.find((f) => f.endsWith('.en.srt'));
     console.log('## engSrtFile', engSrtFile);
-
-    if (!japaneseSrtFiles) {
-      return new Response(
-        JSON.stringify({ error: 'No Japanese subtitles found' }),
-        { status: 404 },
-      );
-    }
 
     // Read and process subtitles
     const srtContent = await fsPromise.readFile(
@@ -150,10 +118,6 @@ export async function POST(req) {
         });
       }
     }
-
-    // return new Response(JSON.stringify({ url, subtitles }), {
-    //   headers: { 'Content-Type': 'application/json' },
-    // });
 
     return new Response(
       JSON.stringify({
