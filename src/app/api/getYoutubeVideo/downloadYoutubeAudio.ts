@@ -7,6 +7,8 @@ export const downloadYoutubeAudio = async ({ outTemplate, url }) => {
       '-x', // extract audio
       '--audio-format',
       'mp3', // convert to mp3
+      '--extractor-args',
+      'youtube:player_client=android',
       '-o',
       outTemplate,
       url,

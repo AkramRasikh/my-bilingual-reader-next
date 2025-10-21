@@ -60,7 +60,11 @@ export async function POST(req) {
     const baseName = sanitizeFilename(String(title));
     const outTemplate = path.join(audioPath, `${baseName}.%(ext)s`);
 
-    await downloadYoutubeAudio({ outTemplate, url });
+    try {
+      await downloadYoutubeAudio({ outTemplate, url });
+    } catch (error) {
+      console.log('## failed to get audio ', error);
+    }
 
     const filesFromAudio = fs.readdirSync(audioPath);
     const file = filesFromAudio.find((f) => f.startsWith(baseName + '.'));
