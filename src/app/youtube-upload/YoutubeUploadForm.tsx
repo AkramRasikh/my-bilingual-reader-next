@@ -26,6 +26,7 @@ const YouTubeUploadForm = () => {
     message,
     setMessage,
     videoIsLoadedState,
+    getYoutubeData,
   } = useYoutubeUpload();
 
   const handleChange = (field: keyof FormData, value: string) => {
@@ -37,28 +38,7 @@ const YouTubeUploadForm = () => {
     setLoading(true);
     setMessage(null);
 
-    try {
-      const res = await fetch('/api/download-audio', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          url: form.url,
-          filename: form.title,
-          language: form.language,
-        }),
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        setMessage(`Success! File URL: ${data.url}`);
-      } else {
-        setMessage(`Error: ${data.error}`);
-      }
-    } catch (err: any) {
-      setMessage(`Error: ${err.message}`);
-    } finally {
-      setLoading(false);
-    }
+    await getYoutubeData();
   };
 
   const disableSubmit = loading || !form.url || !form.title || !form.language;

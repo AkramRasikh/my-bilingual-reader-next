@@ -3,12 +3,11 @@ import YouTubeUploadForm from './YoutubeUploadForm';
 import YoutubeUploadIframe from './YoutubeUploadIframe';
 import { useYoutubeUpload } from './YoutubeUploadProvider';
 import YoutubeUploadTranscript from './YoutubeUploadTranscript';
+import YoutubeUploadAudioEl from './YoutubeUploadAudioEl';
 
 const YoutubeUploadContainer = () => {
   const { videoIsLoadedState, transcriptState, publicAudioUrlState } =
     useYoutubeUpload();
-
-  console.log('## transcriptState', transcriptState);
 
   return (
     <div className={clsx(transcriptState ? 'flex flex-row' : '')}>
@@ -24,15 +23,7 @@ const YoutubeUploadContainer = () => {
       </div>
       {transcriptState && (
         <div className='mx-auto w-lg'>
-          {publicAudioUrlState && (
-            <div className='mx-auto my-2'>
-              <audio
-                src={publicAudioUrlState}
-                controls
-                className='w-full m-auto'
-              />
-            </div>
-          )}
+          {publicAudioUrlState && <YoutubeUploadAudioEl />}
           <YoutubeUploadTranscript />
         </div>
       )}

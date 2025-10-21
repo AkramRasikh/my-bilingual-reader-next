@@ -1,9 +1,6 @@
 'use client';
-import { createContext, useContext, useEffect, useState } from 'react';
-import {
-  mockPublicUrl,
-  squashedMockResponseJapaneseOnly,
-} from '../api/getYoutubeVideo/mockResponseTargetOnly';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import useMapTranscriptToSeconds from '../LearningScreen/hooks/useMapTranscriptToSeconds';
 
 const YoutubeUploadContext = createContext(null);
 
@@ -26,11 +23,34 @@ export function YoutubeUploadProvider({ children }) {
     title: '',
   });
 
+  const youtubeMediaRef = useRef<HTMLAudioElement | HTMLVideoElement | null>(
+    null,
+  );
+  const [currentTime, setCurrentTime] = useState(0);
   const [loading, setLoading] = useState(false);
   const [videoIsLoadedState, setVideoIsLoadedState] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [transcriptState, setTranscriptState] = useState();
   const [publicAudioUrlState, setPublicAudioUrlState] = useState('');
+  const [secondsState, setSecondsState] = useState([]);
+
+  useMapTranscriptToSeconds({
+    ref: youtubeMediaRef,
+    content: transcriptState,
+    realStartTime: 0,
+    secondsState,
+    setSecondsState,
+    setLoopSecondsState: () => {},
+    loopTranscriptState: [],
+  });
+
+  const handleTimeUpdate = () => {
+    if (youtubeMediaRef.current) {
+      setCurrentTime(youtubeMediaRef.current.currentTime);
+    }
+  };
+  const masterPlay =
+    secondsState?.length > 0 ? secondsState[Math.floor(currentTime)] : '';
 
   useEffect(() => {
     const checkYoutubeVideoLoads = async () => {
@@ -49,8 +69,7 @@ export function YoutubeUploadProvider({ children }) {
           }
 
           const data = await res.json();
-          console.log('## Video exists! Title:', data.title);
-          console.log('## Video exists! DATA:', data);
+          console.log('## Video exists!');
           setVideoIsLoadedState(data.title);
         } catch (err) {
           console.error('Fetch failed:', err);
@@ -66,7 +85,7 @@ export function YoutubeUploadProvider({ children }) {
 
   const getYoutubeData = async () => {
     try {
-      const res = await fetch('/api/download-audio', {
+      const res = await fetch('/api/getYoutubeVideo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -105,6 +124,9 @@ export function YoutubeUploadProvider({ children }) {
         transcriptState,
         setTranscriptState,
         publicAudioUrlState,
+        youtubeMediaRef,
+        handleTimeUpdate,
+        masterPlay,
       }}
     >
       {children}

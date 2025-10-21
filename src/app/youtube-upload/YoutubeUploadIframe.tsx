@@ -4,7 +4,6 @@ import { useYoutubeUpload } from './YoutubeUploadProvider';
 const YoutubeUploadIframe = () => {
   const { form, videoIsLoadedState } = useYoutubeUpload();
   const youtubeId = form?.url?.split('=')[1];
-  console.log('## youtubeId', youtubeId);
 
   return (
     <div className='mx-auto'>
