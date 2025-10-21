@@ -7,23 +7,13 @@ import squashSubtitles from './squashSubtitles';
 import { downloadTargetLangSubs } from './downloadTargetLangSubs';
 import { downloadBaseLangMachineSubs } from './downloadBaseLangMachineSubs';
 import { downloadYoutubeAudio } from './downloadYoutubeAudio';
+import { sanitizeFilename } from './santizeFilename';
 
 export const googleLanguagesKey = {
   [japanese]: 'ja',
   [chinese]: 'zh-CN',
   [arabic]: 'ar',
 };
-
-function sanitizeFilename(name: string) {
-  // Remove path separators and unsafe chars; keep letters, numbers, dash, underscore, and spaces
-  const cleaned = name
-    .replace(/\s+/g, ' ') // collapse whitespace
-    .trim()
-    .replace(/[<>:"/\\|?*\u0000-\u001F]+/g, '') // remove reserved chars
-    .replace(/[:]/g, '-'); // avoid colon in filenames
-  // further strip any remaining problematic characters
-  return cleaned.replace(/[^\w\- .()]/g, '');
-}
 
 const audioPath = path.join(process.cwd(), 'public', 'audio');
 
