@@ -27,6 +27,9 @@ const YouTubeUploadForm = () => {
     setMessage,
     videoIsLoadedState,
     getYoutubeData,
+    publicAudioUrlState,
+    transcriptState,
+    uploadContentToDb,
   } = useYoutubeUpload();
 
   const handleChange = (field: keyof FormData, value: string) => {
@@ -41,7 +44,22 @@ const YouTubeUploadForm = () => {
     await getYoutubeData();
   };
 
+  const handleUploadToDb = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
+
+    await uploadContentToDb();
+  };
+
   const disableSubmit = loading || !form.url || !form.title || !form.language;
+  const disableUploadToDb =
+    loading ||
+    !form.url ||
+    !form.title ||
+    !form.language ||
+    !publicAudioUrlState ||
+    !transcriptState;
 
   return (
     <div className={clsx('min-w-xl my-3', videoIsLoadedState ? '' : '')}>
@@ -102,7 +120,15 @@ const YouTubeUploadForm = () => {
         <Button type='submit' disabled={disableSubmit}>
           {loading ? 'Processing...' : 'Download Audio'}
         </Button>
-
+        {transcriptState && publicAudioUrlState && (
+          <Button
+            onClick={handleUploadToDb}
+            disabled={disableUploadToDb}
+            className='ml-2'
+          >
+            {loading ? 'Uploading...' : 'Upload to DB'}
+          </Button>
+        )}
         {message && (
           <div className='mt-2 p-2 border rounded bg-gray-50 text-sm'>
             {message}

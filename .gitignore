@@ -26,6 +26,7 @@
 
 /public/audio/combined-*
 /public/audio/voicevox-*
+/public/audio/koten-radio-*
 
 # debug
 npm-debug.log*

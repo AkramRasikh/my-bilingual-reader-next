@@ -34,6 +34,9 @@ export function YoutubeUploadProvider({ children }) {
   const [publicAudioUrlState, setPublicAudioUrlState] = useState('');
   const [secondsState, setSecondsState] = useState([]);
 
+  const masterPlay =
+    secondsState?.length > 0 ? secondsState[Math.floor(currentTime)] : '';
+
   useMapTranscriptToSeconds({
     ref: youtubeMediaRef,
     content: transcriptState,
@@ -49,8 +52,37 @@ export function YoutubeUploadProvider({ children }) {
       setCurrentTime(youtubeMediaRef.current.currentTime);
     }
   };
-  const masterPlay =
-    secondsState?.length > 0 ? secondsState[Math.floor(currentTime)] : '';
+
+  const uploadContentToDb = async () => {
+    try {
+      const res = await fetch('/api/uploadYoutubeContent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: form.url,
+          title: form.title,
+          language: form.language,
+          publicAudioUrl: publicAudioUrlState,
+          transcript: transcriptState,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setMessage(
+          `Success! ${data.contentUploaded ? 'Content uploaded ' : ''} ${
+            data.audioUploaded ? 'Audio uploaded' : ''
+          }`,
+        );
+      } else {
+        setMessage(`Error: ${data.error}`);
+      }
+    } catch (err: any) {
+      setMessage(`Error: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const checkYoutubeVideoLoads = async () => {
@@ -127,6 +159,7 @@ export function YoutubeUploadProvider({ children }) {
         youtubeMediaRef,
         handleTimeUpdate,
         masterPlay,
+        uploadContentToDb,
       }}
     >
       {children}

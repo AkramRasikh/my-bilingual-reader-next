@@ -7,6 +7,7 @@ export const getAudioFolderViaLang = (languageStr: string): string =>
 export const uploadAudioCloudflare = async ({
   localAudioPath,
   cloudFlareAudioName,
+  language = 'japanese',
 }) => {
   const audioResponse = await fetch(localAudioPath);
   console.log('## audioResponse', audioResponse);
@@ -19,14 +20,14 @@ export const uploadAudioCloudflare = async ({
   const buffer = Buffer.from(arrayBuffer);
   const command = new PutObjectCommand({
     Bucket: process.env.NEXT_PUBLIC_CLOUD_FLARE_R2_BUCKET_NAME,
-    Key: getAudioFolderViaLang('japanese') + '/' + cloudFlareAudioName + '.mp3',
+    Key: getAudioFolderViaLang(language) + '/' + cloudFlareAudioName + '.mp3',
     Body: buffer,
     ContentType: 'audio/mpeg',
   });
   const uploadResponse = await s3.send(command);
   if (uploadResponse) {
     console.log('## uploadResponse', uploadResponse);
-    return;
+    return true;
   } else {
     return false;
   }
