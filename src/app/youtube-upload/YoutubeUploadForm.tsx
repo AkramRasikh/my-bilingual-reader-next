@@ -61,10 +61,10 @@ const YouTubeUploadForm = () => {
     }
   };
 
+  const disableSubmit = loading || !form.url || !form.title || !form.language;
+
   return (
-    <div
-      className={clsx('min-w-xl my-auto', videoIsLoadedState ? 'm-auto' : '')}
-    >
+    <div className={clsx('min-w-xl my-3', videoIsLoadedState ? '' : '')}>
       <form
         onSubmit={handleSubmit}
         className={clsx('space-y-4 max-w-lg mx-auto p-4 border rounded-md')}
@@ -119,7 +119,7 @@ const YouTubeUploadForm = () => {
           />
         </div>
 
-        <Button type='submit' disabled={loading}>
+        <Button type='submit' disabled={disableSubmit}>
           {loading ? 'Processing...' : 'Download Audio'}
         </Button>
 

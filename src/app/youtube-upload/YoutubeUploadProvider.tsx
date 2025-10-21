@@ -1,5 +1,9 @@
 'use client';
 import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  mockPublicUrl,
+  squashedMockResponseJapaneseOnly,
+} from '../api/getYoutubeVideo/mockResponseTargetOnly';
 
 const YoutubeUploadContext = createContext(null);
 
@@ -25,6 +29,8 @@ export function YoutubeUploadProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [videoIsLoadedState, setVideoIsLoadedState] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+  const [transcriptState, setTranscriptState] = useState();
+  const [publicAudioUrlState, setPublicAudioUrlState] = useState('');
 
   useEffect(() => {
     const checkYoutubeVideoLoads = async () => {
@@ -44,6 +50,7 @@ export function YoutubeUploadProvider({ children }) {
 
           const data = await res.json();
           console.log('## Video exists! Title:', data.title);
+          console.log('## Video exists! DATA:', data);
           setVideoIsLoadedState(data.title);
         } catch (err) {
           console.error('Fetch failed:', err);
@@ -57,6 +64,33 @@ export function YoutubeUploadProvider({ children }) {
     checkYoutubeVideoLoads();
   }, [form, videoIsLoadedState]);
 
+  const getYoutubeData = async () => {
+    try {
+      const res = await fetch('/api/download-audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: form.url,
+          title: form.title,
+          language: form.language,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setMessage(`Success! File URL: ${data.publicUrl}`);
+        setPublicAudioUrlState(data.publicUrl);
+        setTranscriptState(data.transcript);
+      } else {
+        setMessage(`Error: ${data.error}`);
+      }
+    } catch (err: any) {
+      setMessage(`Error: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <YoutubeUploadContext.Provider
       value={{
@@ -67,6 +101,10 @@ export function YoutubeUploadProvider({ children }) {
         message,
         setMessage,
         videoIsLoadedState,
+        getYoutubeData,
+        transcriptState,
+        setTranscriptState,
+        publicAudioUrlState,
       }}
     >
       {children}

@@ -7,7 +7,7 @@ const YoutubeUploadIframe = () => {
   console.log('## youtubeId', youtubeId);
 
   return (
-    <div className='m-auto'>
+    <div className='mx-auto'>
       <p className='mb-1 text-center'>{videoIsLoadedState}</p>
       <AnimationWrapper>
         <iframe
