@@ -7,7 +7,7 @@ const YoutubeUploadContainer = () => {
   const { videoIsLoadedState } = useYoutubeUpload();
 
   return (
-    <div className={clsx(videoIsLoadedState ? 'flex gap-2' : '', 'm-auto')}>
+    <div className={clsx(videoIsLoadedState ? 'flex gap-2 ' : '', 'm-auto')}>
       {videoIsLoadedState && <YoutubeUploadIframe />}
       <YouTubeUploadForm />
     </div>

@@ -18,8 +18,15 @@ import {
 import clsx from 'clsx';
 
 const YouTubeUploadForm = () => {
-  const { form, setForm, loading, setLoading, message, setMessage, youtubeId } =
-    useYoutubeUpload();
+  const {
+    form,
+    setForm,
+    loading,
+    setLoading,
+    message,
+    setMessage,
+    videoIsLoadedState,
+  } = useYoutubeUpload();
 
   const handleChange = (field: keyof FormData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -55,7 +62,9 @@ const YouTubeUploadForm = () => {
   };
 
   return (
-    <div className='min-w-xl my-auto'>
+    <div
+      className={clsx('min-w-xl my-auto', videoIsLoadedState ? 'm-auto' : '')}
+    >
       <form
         onSubmit={handleSubmit}
         className={clsx('space-y-4 max-w-lg mx-auto p-4 border rounded-md')}
