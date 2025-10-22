@@ -11,7 +11,7 @@ import { sanitizeFilename } from './santizeFilename';
 
 export const googleLanguagesKey = {
   [japanese]: 'ja',
-  [chinese]: 'zh-CN',
+  [chinese]: 'zh',
   [arabic]: 'ar',
 };
 
@@ -48,15 +48,15 @@ export async function POST(req) {
         status: 500,
       });
     }
-    const japaneseFiles = await fsPromise.readdir(tmpDir);
+    const targetLangFiles = await fsPromise.readdir(tmpDir);
     const japaneseSrtFiles =
       language === chinese
-        ? japaneseFiles.find((f) => f.includes('zh') && f.includes('srt'))
-        : japaneseFiles.find((f) => f.endsWith('.ja.srt'));
+        ? targetLangFiles.find((f) => f.includes('zh') && f.includes('srt'))
+        : targetLangFiles.find((f) => f.endsWith('.ja.srt'));
 
     if (!japaneseSrtFiles) {
       return new Response(
-        JSON.stringify({ error: 'No Japanese subtitles found' }),
+        JSON.stringify({ error: `No ${language} subtitles found` }),
         { status: 404 },
       );
     }
