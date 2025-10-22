@@ -2,124 +2,36 @@ import clsx from 'clsx';
 import YouTubeUploadForm from './YoutubeUploadForm';
 import YoutubeUploadIframe from './YoutubeUploadIframe';
 import { useYoutubeUpload } from './YoutubeUploadProvider';
+import YoutubeUploadTranscriptActions from './YoutubeUploadTranscriptActions';
 import YoutubeUploadTranscript from './YoutubeUploadTranscript';
 import YoutubeUploadAudioEl from './YoutubeUploadAudioEl';
-import { Button } from '@/components/ui/button';
-import { useMemo, useState } from 'react';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { ClipboardCopyIcon } from 'lucide-react';
 
 const YoutubeUploadContainer = () => {
-  const [inputText, setInputText] = useState('');
-  const [onlyShowNonBaseLangState, setOnlyShowNonBaseLangState] =
-    useState(false);
+  const { videoTitleState, transcriptState, publicAudioUrlState } =
+    useYoutubeUpload();
 
-  const {
-    videoTitleState,
-    setTranscriptState,
-    transcriptState,
-    publicAudioUrlState,
-  } = useYoutubeUpload();
+  const hasTranscript = transcriptState?.length > 0;
 
-  const transcriptItemsNoBaseLang = useMemo(
-    () => transcriptState?.filter((item) => !item?.baseLang),
-    [transcriptState],
-  );
-
-  const handleCopy = async () => {
-    try {
-      const filterForNoTranscript = transcriptState.filter(
-        (item) => !item?.baseLang,
-      );
-      const formattedSubs = [...filterForNoTranscript]
-        .slice(0, 200)
-        .map((item) => `@@${item.originalIndex}@@ ${item.targetLang}`)
-        .join('\n');
-      await navigator.clipboard.writeText(formattedSubs);
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
-  };
-
-  const parseTranslations = (text: string) => {
-    const regex = /@@(\d+)@@\s*([^@]+)/g;
-    const results: { index: number; translation: string }[] = [];
-    let match;
-    while ((match = regex.exec(text)) !== null) {
-      results.push({
-        index: Number(match[1]),
-        translation: match[2].trim(),
-      });
-    }
-    return results;
-  };
-
-  const handleApply = () => {
-    const parsed = parseTranslations(inputText);
-    setTranscriptState((prev) =>
-      prev.map((item) => {
-        const found = parsed.find((p) => p.index === item.originalIndex);
-        return found ? { ...item, baseLang: found.translation } : item;
-      }),
-    );
-    setInputText('');
-  };
   return (
-    <div className={clsx(transcriptState ? 'flex flex-row' : '')}>
+    <div
+      className={clsx(
+        videoTitleState || hasTranscript ? 'flex flex-row justify-center' : '',
+      )}
+    >
       <div
         className={clsx(
           videoTitleState ? 'flex gap-2 ' : '',
-          transcriptState ? 'flex-col' : '',
-          'mx-auto',
+          hasTranscript ? 'flex-col' : 'mx-auto',
         )}
       >
         <YouTubeUploadForm />
         {videoTitleState && <YoutubeUploadIframe />}
       </div>
-      {transcriptState && (
-        <div className='mx-auto w-lg'>
-          <div className='flex gap-5'>
-            <Button
-              onClick={handleCopy}
-              className='active:scale-90 transition-transform duration-150 ease-out'
-            >
-              <ClipboardCopyIcon />
-            </Button>
-            <Textarea
-              placeholder='Paste translated text here (with @@ markers)...'
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              className='h-10 w-full'
-            />
-            <Button
-              onClick={handleApply}
-              className={clsx(inputText ? 'animate-pulse bg-amber-700' : '')}
-              disabled={!inputText.trim()}
-            >
-              Apply
-            </Button>
-          </div>
-
-          <div className='m-2'>
-            <div className='m-auto'>
-              <div className='flex gap-2 justify-center'>
-                <Label>
-                  Show non-translated {transcriptItemsNoBaseLang?.length}/
-                  {transcriptState?.length}
-                </Label>
-                <Switch
-                  checked={onlyShowNonBaseLangState}
-                  onCheckedChange={setOnlyShowNonBaseLangState}
-                />
-              </div>
-            </div>
-          </div>
+      {hasTranscript && (
+        <div className={clsx('w-lg', hasTranscript ? '' : 'mx-auto')}>
+          <YoutubeUploadTranscriptActions />
           {publicAudioUrlState && <YoutubeUploadAudioEl />}
-          <YoutubeUploadTranscript
-            onlyShowNonBaseLangState={onlyShowNonBaseLangState}
-          />
+          <YoutubeUploadTranscript />
         </div>
       )}
     </div>

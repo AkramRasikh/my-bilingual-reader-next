@@ -18,13 +18,14 @@ interface TranscriptEditorProps {
   setTranscriptState: (state: TranscriptItem[]) => void;
 }
 
-const YoutubeUploadTranscript = ({ onlyShowNonBaseLangState }) => {
+const YoutubeUploadTranscript = () => {
   const {
     transcriptState,
     setTranscriptState,
     masterPlay,
     handlePause,
     playFromHere,
+    onlyShowNonBaseLangState,
   } = useYoutubeUpload();
 
   const handleChange = useCallback(

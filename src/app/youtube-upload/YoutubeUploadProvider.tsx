@@ -31,10 +31,11 @@ export function YoutubeUploadProvider({ children }) {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [videoTitleState, setVideoTitleState] = useState('');
   const [message, setMessage] = useState<string | null>(null);
-  const [transcriptState, setTranscriptState] = useState();
+  const [transcriptState, setTranscriptState] = useState([]);
   const [publicAudioUrlState, setPublicAudioUrlState] = useState('');
   const [secondsState, setSecondsState] = useState([]);
-
+  const [onlyShowNonBaseLangState, setOnlyShowNonBaseLangState] =
+    useState(false);
   const masterPlay =
     secondsState?.length > 0 ? secondsState[Math.floor(currentTime)] : '';
 
@@ -182,6 +183,8 @@ export function YoutubeUploadProvider({ children }) {
         playFromHere,
         isVideoPlaying,
         setIsVideoPlaying,
+        onlyShowNonBaseLangState,
+        setOnlyShowNonBaseLangState,
       }}
     >
       {children}
