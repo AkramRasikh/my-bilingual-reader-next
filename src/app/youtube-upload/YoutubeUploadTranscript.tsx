@@ -1,10 +1,11 @@
 'use client';
 
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useCallback } from 'react';
 import { useYoutubeUpload } from './YoutubeUploadProvider';
 import clsx from 'clsx';
+import { Button } from '@/components/ui/button';
+import { PauseCircleIcon, PlayIcon } from 'lucide-react';
 
 interface TranscriptItem {
   time: number;
@@ -17,9 +18,15 @@ interface TranscriptEditorProps {
   setTranscriptState: (state: TranscriptItem[]) => void;
 }
 
-const YoutubeUploadTranscript = () => {
-  const { transcriptState, setTranscriptState, masterPlay } =
-    useYoutubeUpload();
+const YoutubeUploadTranscript = ({ onlyShowNonBaseLangState }) => {
+  const {
+    transcriptState,
+    setTranscriptState,
+    masterPlay,
+    handlePause,
+    playFromHere,
+  } = useYoutubeUpload();
+
   const handleChange = useCallback(
     (index: number, field: keyof TranscriptItem, value: string) => {
       setTranscriptState((prev) =>
@@ -35,6 +42,9 @@ const YoutubeUploadTranscript = () => {
     <div className='flex flex-col space-y-2 max-w-lg m-auto max-h-200 overflow-y-scroll pr-2.5'>
       {transcriptState.map((item, index) => {
         const thisIsPlaying = item.id === masterPlay;
+        if (item?.baseLang && onlyShowNonBaseLangState) {
+          return null;
+        }
         return (
           <div
             key={index}
@@ -43,19 +53,22 @@ const YoutubeUploadTranscript = () => {
               thisIsPlaying ? 'bg-yellow-200' : '',
             )}
           >
+            <Button
+              size='sm'
+              onClick={() =>
+                thisIsPlaying ? handlePause() : playFromHere(item.time)
+              }
+            >
+              {thisIsPlaying ? <PauseCircleIcon /> : <PlayIcon />}
+            </Button>
+
             <div className='flex-1 flex flex-col space-y-1'>
               <div>
-                <Label className='text-sm'>Target Language</Label>
-                <Input
-                  value={item.targetLang}
-                  placeholder='Target language text'
-                  onChange={(e) =>
-                    handleChange(index, 'targetLang', e.target.value)
-                  }
-                />
+                <span>
+                  {item.originalIndex}) {item.targetLang}
+                </span>
               </div>
               <div>
-                <Label className='text-sm'>Base Language</Label>
                 <Input
                   value={item.baseLang ?? ''}
                   placeholder='Base language text'

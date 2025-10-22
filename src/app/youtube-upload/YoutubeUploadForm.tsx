@@ -25,7 +25,7 @@ const YouTubeUploadForm = () => {
     setLoading,
     message,
     setMessage,
-    videoIsLoadedState,
+    videoTitleState,
     getYoutubeData,
     publicAudioUrlState,
     transcriptState,
@@ -62,7 +62,7 @@ const YouTubeUploadForm = () => {
     !transcriptState;
 
   return (
-    <div className={clsx('min-w-xl my-3', videoIsLoadedState ? '' : '')}>
+    <div className={clsx('min-w-xl my-3', videoTitleState ? '' : '')}>
       <form
         onSubmit={handleSubmit}
         className={clsx('space-y-4 max-w-lg mx-auto p-4 border rounded-md')}
