@@ -1,10 +1,14 @@
 import { execa } from 'execa';
 
-export const downloadTargetLangSubs = async ({ outputTemplate, url }) =>
+export const downloadTargetLangSubs = async ({
+  outputTemplate,
+  url,
+  googleLangCode,
+}) =>
   await execa('yt-dlp', [
     '--write-subs',
     '--sub-langs',
-    'ja',
+    googleLangCode,
     '--skip-download',
     '--convert-subs',
     'srt',

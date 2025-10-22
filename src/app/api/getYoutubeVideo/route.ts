@@ -39,8 +39,9 @@ export async function POST(req) {
     const tmpDir = await fsPromise.mkdtemp(path.join(os.tmpdir(), 'yt-'));
     const outputTemplate = path.join(tmpDir, 'video');
 
+    const googleLangCode = googleLanguagesKey[language] as string;
     try {
-      await downloadTargetLangSubs({ outputTemplate, url });
+      await downloadTargetLangSubs({ outputTemplate, url, googleLangCode });
     } catch (error) {
       console.log('## Failed to get Japaneses subs');
       return new Response(JSON.stringify({ error: error.message }), {
@@ -48,7 +49,10 @@ export async function POST(req) {
       });
     }
     const japaneseFiles = await fsPromise.readdir(tmpDir);
-    const japaneseSrtFiles = japaneseFiles.find((f) => f.endsWith('.ja.srt'));
+    const japaneseSrtFiles =
+      language === chinese
+        ? japaneseFiles.find((f) => f.includes('zh') && f.includes('srt'))
+        : japaneseFiles.find((f) => f.endsWith('.ja.srt'));
 
     if (!japaneseSrtFiles) {
       return new Response(
