@@ -27,6 +27,7 @@
 /public/audio/combined-*
 /public/audio/voicevox-*
 /public/audio/koten-radio-*
+/public/audio/thomas-piketty-*
 
 # debug
 npm-debug.log*
