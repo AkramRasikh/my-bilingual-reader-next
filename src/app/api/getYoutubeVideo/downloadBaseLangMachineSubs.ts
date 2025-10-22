@@ -12,3 +12,16 @@ export const downloadBaseLangMachineSubs = async ({ outputTemplate, url }) =>
     outputTemplate,
     url,
   ]);
+
+export const downloadBaseLangHumanSubs = async ({ outputTemplate, url }) =>
+  await execa('yt-dlp', [
+    '--write-subs',
+    '--sub-langs',
+    'en',
+    '--skip-download',
+    '--convert-subs',
+    'srt',
+    '-o',
+    outputTemplate,
+    url,
+  ]);

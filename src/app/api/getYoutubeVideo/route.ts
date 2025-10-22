@@ -15,7 +15,7 @@ export const googleLanguagesKey = {
   [arabic]: 'ar',
 };
 
-const audioPath = path.join(process.cwd(), 'public', 'audio');
+const youtubeAudioPath = path.join(process.cwd(), 'public', 'youtube');
 
 export async function POST(req) {
   try {
@@ -65,7 +65,7 @@ export async function POST(req) {
     }
 
     const baseName = sanitizeFilename(String(title));
-    const outTemplate = path.join(audioPath, `${baseName}.%(ext)s`);
+    const outTemplate = path.join(youtubeAudioPath, `${baseName}.%(ext)s`);
 
     try {
       await downloadYoutubeAudio({ outTemplate, url });
@@ -73,7 +73,7 @@ export async function POST(req) {
       console.log('## failed to get audio ', error);
     }
 
-    const filesFromAudio = fs.readdirSync(audioPath);
+    const filesFromAudio = fs.readdirSync(youtubeAudioPath);
     const file = filesFromAudio.find((f) => f.startsWith(baseName + '.'));
     if (!file) {
       return new Response(
@@ -82,9 +82,10 @@ export async function POST(req) {
       );
     }
 
-    const publicUrl = `/audio/${encodeURIComponent(file)}`; // served from /public
+    const publicUrl = `/youtube/${encodeURIComponent(file)}`; // served from /public
 
     try {
+      // await downloadBaseLangHumanSubs({ outputTemplate, url });
       await downloadBaseLangMachineSubs({ outputTemplate, url });
     } catch (error) {
       console.log('## Failed to get English subs', error);

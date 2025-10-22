@@ -28,6 +28,7 @@
 /public/audio/voicevox-*
 /public/audio/koten-radio-*
 /public/audio/thomas-piketty-*
+/public/youtube
 
 # debug
 npm-debug.log*
