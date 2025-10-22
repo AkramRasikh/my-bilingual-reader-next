@@ -10,16 +10,21 @@ const squashSubtitles = (subs, squash) => {
     );
 
     if (!result[seconds]) {
-      result[seconds] = sub.text;
+      result[seconds] = {
+        targetLang: sub.targetLang,
+        baseLang: sub.baseLang || '',
+      };
     } else {
-      result[seconds] += ' ' + sub.text;
+      result[seconds].targetLang += ' ' + sub.targetLang;
+      result[seconds].baseLang += ' ' + (sub.baseLang || '');
     }
   }
 
-  return Object.entries(result).map(([time, text]) => ({
+  return Object.entries(result).map(([time, { targetLang, baseLang }]) => ({
     id: uuidv4(),
     time: Number(time),
-    targetLang: squash ? text.replace(/\s+/g, '') : text,
+    targetLang: squash ? targetLang.replace(/\s+/g, '') : targetLang,
+    baseLang,
   }));
 };
 

@@ -16,8 +16,8 @@ export const downloadBaseLangMachineSubs = async ({ outputTemplate, url }) =>
 export const downloadBaseLangHumanSubs = async ({ outputTemplate, url }) =>
   await execa('yt-dlp', [
     '--write-subs',
-    '--sub-langs',
-    'en',
+    '--sub-langs', // ✅ no leading space!
+    'en.*,en',
     '--skip-download',
     '--convert-subs',
     'srt',

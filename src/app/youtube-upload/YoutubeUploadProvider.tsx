@@ -1,5 +1,12 @@
 'use client';
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import useMapTranscriptToSeconds from '../LearningScreen/hooks/useMapTranscriptToSeconds';
 
 const YoutubeUploadContext = createContext(null);
@@ -38,6 +45,13 @@ export function YoutubeUploadProvider({ children }) {
     useState(false);
   const masterPlay =
     secondsState?.length > 0 ? secondsState[Math.floor(currentTime)] : '';
+
+  const transcriptItemsNoBaseLang = useMemo(
+    () => transcriptState?.filter((item) => !item?.baseLang),
+    [transcriptState],
+  );
+
+  const numberOfBaseLangLessItems = transcriptItemsNoBaseLang?.length;
 
   useMapTranscriptToSeconds({
     ref: youtubeMediaRef,
@@ -185,6 +199,7 @@ export function YoutubeUploadProvider({ children }) {
         setIsVideoPlaying,
         onlyShowNonBaseLangState,
         setOnlyShowNonBaseLangState,
+        numberOfBaseLangLessItems,
       }}
     >
       {children}

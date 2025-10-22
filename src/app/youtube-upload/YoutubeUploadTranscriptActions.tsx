@@ -1,7 +1,7 @@
 import clsx from 'clsx';
+import { useState } from 'react';
 import { useYoutubeUpload } from './YoutubeUploadProvider';
 import { Button } from '@/components/ui/button';
-import { useMemo, useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -15,12 +15,8 @@ const YoutubeUploadTranscriptActions = () => {
     transcriptState,
     onlyShowNonBaseLangState,
     setOnlyShowNonBaseLangState,
+    numberOfBaseLangLessItems,
   } = useYoutubeUpload();
-
-  const transcriptItemsNoBaseLang = useMemo(
-    () => transcriptState?.filter((item) => !item?.baseLang),
-    [transcriptState],
-  );
 
   const handleCopy = async () => {
     try {
@@ -88,7 +84,7 @@ const YoutubeUploadTranscriptActions = () => {
         <div className='m-auto'>
           <div className='flex gap-2 justify-center'>
             <Label>
-              Show non-translated {transcriptItemsNoBaseLang?.length}/
+              Show non-translated {numberOfBaseLangLessItems}/
               {transcriptState?.length}
             </Label>
             <Switch

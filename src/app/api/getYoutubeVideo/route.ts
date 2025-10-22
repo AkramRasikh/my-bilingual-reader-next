@@ -5,7 +5,7 @@ import os from 'os';
 import { japanese, chinese, arabic } from '@/app/languages';
 import squashSubtitles from './squashSubtitles';
 import { downloadTargetLangSubs } from './downloadTargetLangSubs';
-import { downloadBaseLangMachineSubs } from './downloadBaseLangMachineSubs';
+import { downloadBaseLangHumanSubs } from './downloadBaseLangMachineSubs';
 import { downloadYoutubeAudio } from './downloadYoutubeAudio';
 import { sanitizeFilename } from './santizeFilename';
 
@@ -50,6 +50,9 @@ export async function POST(req) {
     }
 
     const targetLangFiles = await fsPromise.readdir(tmpDir);
+
+    console.log('## targetLangFiles', targetLangFiles);
+
     const targetLangFilesFiltered =
       language === chinese
         ? targetLangFiles.find((f) => f.includes('zh') && f.includes('srt'))
@@ -65,10 +68,10 @@ export async function POST(req) {
     }
 
     const baseName = sanitizeFilename(String(title));
-    const outTemplate = path.join(youtubeAudioPath, `${baseName}.%(ext)s`);
+    const audioOutputPath = path.join(youtubeAudioPath, `${baseName}.%(ext)s`);
 
     try {
-      await downloadYoutubeAudio({ outTemplate, url });
+      await downloadYoutubeAudio({ outTemplate: audioOutputPath, url });
     } catch (error) {
       console.log('## failed to get audio ', error);
     }
@@ -85,41 +88,58 @@ export async function POST(req) {
     const publicUrl = `/youtube/${encodeURIComponent(file)}`; // served from /public
 
     try {
-      // await downloadBaseLangHumanSubs({ outputTemplate, url });
-      await downloadBaseLangMachineSubs({ outputTemplate, url });
+      await downloadBaseLangHumanSubs({ outputTemplate, url });
     } catch (error) {
       console.log('## Failed to get English subs', error);
     }
 
     // Find the downloaded subtitle file
     const engFiles = await fsPromise.readdir(tmpDir);
-    console.log('## engFiles', engFiles);
 
-    const engSrtFile = engFiles.find((f) => f.endsWith('.en.srt'));
-    console.log('## engSrtFile', engSrtFile);
+    const engSrtFile = engFiles.find((f) => f.includes('en'));
 
     // Read and process subtitles
-    const srtContent = await fsPromise.readFile(
+    let englishBlocks: string[] = [];
+    if (engSrtFile) {
+      const engRaw = await fsPromise.readFile(
+        path.join(tmpDir, engSrtFile),
+        'utf-8',
+      );
+      englishBlocks = engRaw.split(/\n\s*\n/); // split by blank lines
+    }
+
+    const targetRaw = await fsPromise.readFile(
       path.join(tmpDir, targetLangFilesFiltered),
       'utf-8',
     );
 
-    // Convert SRT → simple bilingual-friendly JSON
-    // Format: [{ start, end, text }]
     const subtitles = [];
-    const blocks = srtContent.split(/\n\s*\n/);
-    for (const block of blocks) {
+    const targetBlocks = targetRaw.split(/\n\s*\n/);
+    targetBlocks.forEach((block, index) => {
       const lines = block.trim().split('\n');
       if (lines.length >= 3) {
         const time = lines[1].split(' --> ');
         const text = lines.slice(2).join(' ').replace(/\r/g, '');
+
+        // Try to find matching English block
+        const engBlock = englishBlocks[index];
+        let baseLang = '';
+        if (engBlock) {
+          const engLines = engBlock.trim().split('\n');
+          if (engLines.length >= 3) {
+            baseLang = engLines.slice(2).join(' ').replace(/\r/g, '');
+          }
+        }
+
         subtitles.push({
+          index,
           start: time[0],
           end: time[1],
-          text,
+          targetLang: text,
+          baseLang, // ✅ aligned English text if exists
         });
       }
-    }
+    });
 
     return new Response(
       JSON.stringify({

@@ -7,8 +7,12 @@ import YoutubeUploadTranscript from './YoutubeUploadTranscript';
 import YoutubeUploadAudioEl from './YoutubeUploadAudioEl';
 
 const YoutubeUploadContainer = () => {
-  const { videoTitleState, transcriptState, publicAudioUrlState } =
-    useYoutubeUpload();
+  const {
+    videoTitleState,
+    transcriptState,
+    publicAudioUrlState,
+    numberOfBaseLangLessItems,
+  } = useYoutubeUpload();
 
   const hasTranscript = transcriptState?.length > 0;
 
@@ -31,7 +35,7 @@ const YoutubeUploadContainer = () => {
       </div>
       {hasTranscript && (
         <div className={clsx('w-lg', hasTranscript ? '' : 'mx-auto')}>
-          <YoutubeUploadTranscriptActions />
+          {numberOfBaseLangLessItems > 0 && <YoutubeUploadTranscriptActions />}
           {publicAudioUrlState && <YoutubeUploadAudioEl />}
           <YoutubeUploadTranscript />
         </div>

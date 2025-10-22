@@ -6,6 +6,7 @@ import { useYoutubeUpload } from './YoutubeUploadProvider';
 import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import { PauseCircleIcon, PlayIcon } from 'lucide-react';
+import { arabic } from '../languages';
 
 interface TranscriptItem {
   time: number;
@@ -26,7 +27,11 @@ const YoutubeUploadTranscript = () => {
     handlePause,
     playFromHere,
     onlyShowNonBaseLangState,
+    numberOfBaseLangLessItems,
+    isVideoPlaying,
+    form,
   } = useYoutubeUpload();
+  const isArabic = form.language === arabic;
 
   const handleChange = useCallback(
     (index: number, field: keyof TranscriptItem, value: string) => {
@@ -57,26 +62,40 @@ const YoutubeUploadTranscript = () => {
             <Button
               size='sm'
               onClick={() =>
-                thisIsPlaying ? handlePause() : playFromHere(item.time)
+                isVideoPlaying && thisIsPlaying
+                  ? handlePause()
+                  : playFromHere(item.time)
               }
             >
-              {thisIsPlaying ? <PauseCircleIcon /> : <PlayIcon />}
+              {isVideoPlaying && thisIsPlaying ? (
+                <PauseCircleIcon />
+              ) : (
+                <PlayIcon />
+              )}
             </Button>
 
             <div className='flex-1 flex flex-col space-y-1'>
-              <div>
+              <div
+                className={clsx('w-full', isArabic ? 'text-right' : '')}
+                dir={isArabic ? 'rtl' : 'ltr'}
+              >
                 <span>
                   {item.originalIndex}) {item.targetLang}
                 </span>
               </div>
+
               <div>
-                <Input
-                  value={item.baseLang ?? ''}
-                  placeholder='Base language text'
-                  onChange={(e) =>
-                    handleChange(index, 'baseLang', e.target.value)
-                  }
-                />
+                {numberOfBaseLangLessItems === 0 ? (
+                  <span>{item.baseLang}</span>
+                ) : (
+                  <Input
+                    value={item.baseLang ?? ''}
+                    placeholder='Base language text'
+                    onChange={(e) =>
+                      handleChange(index, 'baseLang', e.target.value)
+                    }
+                  />
+                )}
               </div>
             </div>
             <div className='flex-shrink-0 text-sm font-mono text-gray-600'>
