@@ -15,7 +15,9 @@ const YoutubeUploadContainer = () => {
   return (
     <div
       className={clsx(
-        videoTitleState || hasTranscript ? 'flex flex-row justify-center' : '',
+        videoTitleState || hasTranscript
+          ? 'flex flex-row justify-center gap-5'
+          : '',
       )}
     >
       <div

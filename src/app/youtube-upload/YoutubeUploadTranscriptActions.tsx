@@ -65,7 +65,7 @@ const YoutubeUploadTranscriptActions = () => {
       <div className='flex gap-5'>
         <Button
           onClick={handleCopy}
-          className='active:scale-90 transition-transform duration-150 ease-out'
+          className='active:scale-90 active:bg-amber-600 transition-transform transition-colors duration-150 ease-out text-white'
         >
           <ClipboardCopyIcon />
         </Button>
