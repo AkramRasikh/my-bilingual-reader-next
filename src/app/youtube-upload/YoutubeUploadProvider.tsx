@@ -28,7 +28,8 @@ export function YoutubeUploadProvider({ children }) {
   );
   const [currentTime, setCurrentTime] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [videoIsLoadedState, setVideoIsLoadedState] = useState('');
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [videoTitleState, setVideoTitleState] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [transcriptState, setTranscriptState] = useState();
   const [publicAudioUrlState, setPublicAudioUrlState] = useState('');
@@ -53,6 +54,15 @@ export function YoutubeUploadProvider({ children }) {
     }
   };
 
+  const handlePause = () => {
+    youtubeMediaRef.current.pause();
+  };
+
+  const playFromHere = (time) => {
+    youtubeMediaRef.current.currentTime = time;
+    youtubeMediaRef.current.play();
+  };
+
   const uploadContentToDb = async () => {
     try {
       const res = await fetch('/api/uploadYoutubeContent', {
@@ -61,7 +71,7 @@ export function YoutubeUploadProvider({ children }) {
         body: JSON.stringify({
           url: form.url,
           title: form.title,
-          language: form.language,
+          language: form.language.toLowerCase(),
           publicAudioUrl: publicAudioUrlState,
           transcript: transcriptState,
         }),
@@ -86,7 +96,7 @@ export function YoutubeUploadProvider({ children }) {
 
   useEffect(() => {
     const checkYoutubeVideoLoads = async () => {
-      if (form.url && !videoIsLoadedState) {
+      if (form.url && !videoTitleState) {
         try {
           const res = await fetch(
             `https://www.youtube.com/oembed?url=${encodeURIComponent(
@@ -102,18 +112,21 @@ export function YoutubeUploadProvider({ children }) {
 
           const data = await res.json();
           console.log('## Video exists!');
-          setVideoIsLoadedState(data.title);
+          setVideoTitleState(data.title);
         } catch (err) {
           console.error('Fetch failed:', err);
         }
       }
     };
 
-    if (form?.url === '' && videoIsLoadedState) {
-      setVideoIsLoadedState('');
+    if (form?.url === '' && videoTitleState) {
+      setVideoTitleState('');
+    }
+    if (form?.url === '' && title) {
+      setVideoTitleState('');
     }
     checkYoutubeVideoLoads();
-  }, [form, videoIsLoadedState]);
+  }, [form, videoTitleState]);
 
   const getYoutubeData = async () => {
     try {
@@ -131,7 +144,12 @@ export function YoutubeUploadProvider({ children }) {
       if (res.ok) {
         setMessage(`Success! File URL: ${data.publicUrl}`);
         setPublicAudioUrlState(data.publicUrl);
-        setTranscriptState(data.transcript);
+        setTranscriptState(
+          data.transcript.map((item, index) => ({
+            ...item,
+            originalIndex: index,
+          })),
+        );
       } else {
         setMessage(`Error: ${data.error}`);
       }
@@ -151,7 +169,7 @@ export function YoutubeUploadProvider({ children }) {
         setLoading,
         message,
         setMessage,
-        videoIsLoadedState,
+        videoTitleState,
         getYoutubeData,
         transcriptState,
         setTranscriptState,
@@ -160,6 +178,10 @@ export function YoutubeUploadProvider({ children }) {
         handleTimeUpdate,
         masterPlay,
         uploadContentToDb,
+        handlePause,
+        playFromHere,
+        isVideoPlaying,
+        setIsVideoPlaying,
       }}
     >
       {children}

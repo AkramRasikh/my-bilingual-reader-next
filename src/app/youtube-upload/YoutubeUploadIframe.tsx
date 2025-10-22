@@ -2,12 +2,12 @@ import AnimationWrapper from '@/components/custom/AnimationWrapper';
 import { useYoutubeUpload } from './YoutubeUploadProvider';
 
 const YoutubeUploadIframe = () => {
-  const { form, videoIsLoadedState } = useYoutubeUpload();
+  const { form, videoTitleState } = useYoutubeUpload();
   const youtubeId = form?.url?.split('=')[1];
 
   return (
     <div className='mx-auto max-w-xl'>
-      <p className='mb-1 text-center'>{videoIsLoadedState}</p>
+      <p className='mb-1 text-center'>{videoTitleState}</p>
       <AnimationWrapper>
         <iframe
           width='560'
