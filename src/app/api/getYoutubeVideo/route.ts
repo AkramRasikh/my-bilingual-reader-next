@@ -48,13 +48,16 @@ export async function POST(req) {
         status: 500,
       });
     }
+
     const targetLangFiles = await fsPromise.readdir(tmpDir);
-    const japaneseSrtFiles =
+    const targetLangFilesFiltered =
       language === chinese
         ? targetLangFiles.find((f) => f.includes('zh') && f.includes('srt'))
+        : language === arabic
+        ? targetLangFiles.find((f) => f.endsWith('.ar.srt'))
         : targetLangFiles.find((f) => f.endsWith('.ja.srt'));
 
-    if (!japaneseSrtFiles) {
+    if (!targetLangFilesFiltered) {
       return new Response(
         JSON.stringify({ error: `No ${language} subtitles found` }),
         { status: 404 },
@@ -96,7 +99,7 @@ export async function POST(req) {
 
     // Read and process subtitles
     const srtContent = await fsPromise.readFile(
-      path.join(tmpDir, japaneseSrtFiles),
+      path.join(tmpDir, targetLangFilesFiltered),
       'utf-8',
     );
 
@@ -119,7 +122,10 @@ export async function POST(req) {
 
     return new Response(
       JSON.stringify({
-        transcript: squashSubtitles(subtitles),
+        transcript: squashSubtitles(
+          subtitles,
+          language === chinese || language === japanese,
+        ),
         publicUrl,
       }),
       {

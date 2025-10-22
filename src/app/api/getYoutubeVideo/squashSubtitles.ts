@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-const squashSubtitles = (subs) => {
+const squashSubtitles = (subs, squash) => {
   const result = {};
 
   for (const sub of subs) {
@@ -19,7 +19,7 @@ const squashSubtitles = (subs) => {
   return Object.entries(result).map(([time, text]) => ({
     id: uuidv4(),
     time: Number(time),
-    targetLang: text.replace(/\s+/g, ''),
+    targetLang: squash ? text.replace(/\s+/g, '') : text,
   }));
 };
 
