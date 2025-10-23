@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import useLearningScreen from '../../app/LearningScreen/useLearningScreen';
 import BreadCrumbHeaderBase from '../BreadCrumbHeaderBase';
+import { useRouter } from 'next/navigation';
 
 const BreadCrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
@@ -16,6 +17,7 @@ const BreadCrumbComponent = () => {
     setIsWordStudyState,
   } = useData();
   const { selectedContentState, handleOnHome } = useLearningScreen();
+  const router = useRouter();
 
   useEffect(() => {
     if (wordBasketState.length === 0 && showBasketState) {
@@ -40,6 +42,11 @@ const BreadCrumbComponent = () => {
       disabled: !(wordsForReviewState.length > 0),
       variant: 'secondary',
       text: `Words due (${wordsForReviewState.length})`,
+    },
+    {
+      onClick: () => router.push('/youtube-upload'),
+      variant: 'secondary',
+      text: `Add content`,
     },
   ];
 

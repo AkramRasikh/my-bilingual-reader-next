@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { WordsStudyUIProvider } from '../WordsStudyUI/WordsStudyUIProvider';
 import WordsStudyUI from '../WordsStudyUI';
 import BreadCrumbHeaderBase from '@/components/BreadCrumbHeaderBase';
+import { useRouter } from 'next/navigation';
 
 const LandingScreen = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
@@ -32,6 +33,8 @@ const LandingScreen = () => {
     wordsToReviewOnMountState,
   } = useData();
 
+  const router = useRouter();
+
   useEffect(() => {
     if (toastMessageState) {
       toast(toastMessageState);
@@ -42,20 +45,23 @@ const LandingScreen = () => {
   useLandingScreenLoadGeneralTopicsDisplay();
 
   const numberOfSentences = sentencesState.length;
-  const buttonsArr = [
-    {
-      onClick: () => setIsSentenceReviewState(true),
-      disabled: !(numberOfSentences > 0),
-      variant: 'secondary',
-      text: `Sentence reviews (${numberOfSentences})`,
-    },
-    {
-      onClick: () => setIsWordStudyState(true),
-      disabled: !(wordsForReviewState.length > 0),
-      variant: 'secondary',
-      text: `Words due (${wordsForReviewState.length})`,
-    },
-  ];
+  const sentenceReview = {
+    onClick: () => setIsSentenceReviewState(true),
+    disabled: !(numberOfSentences > 0),
+    variant: 'secondary',
+    text: `Sentence reviews (${numberOfSentences})`,
+  };
+  const wordReview = {
+    onClick: () => setIsWordStudyState(true),
+    disabled: !(wordsForReviewState.length > 0),
+    variant: 'secondary',
+    text: `Words due (${wordsForReviewState.length})`,
+  };
+  const addContent = {
+    onClick: () => router.push('/youtube-upload'),
+    variant: 'secondary',
+    text: `Add content`,
+  };
 
   if (isWordStudyState && wordsState.length > 0) {
     const wordStudySubHeading = `${
@@ -69,7 +75,7 @@ const LandingScreen = () => {
           subHeading={wordStudySubHeading}
           onClick={() => setIsWordStudyState(false)}
           navigationButtons={() =>
-            [buttonsArr[0]].map((item, index) => {
+            [sentenceReview, addContent].map((item, index) => {
               return (
                 <Button
                   key={index}
@@ -96,7 +102,7 @@ const LandingScreen = () => {
           heading={'Home'}
           onClick={() => setIsSentenceReviewState(false)}
           navigationButtons={() =>
-            [buttonsArr[1]].map((item, index) => {
+            [wordReview, addContent].map((item, index) => {
               return (
                 <Button
                   key={index}
