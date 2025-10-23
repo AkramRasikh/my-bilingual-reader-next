@@ -33,7 +33,7 @@ export const getFormattedData = (loadedData) => {
   return data;
 };
 
-export const getOnLoadData = async () => {
+export const getOnLoadData = async (language) => {
   const url = process.env.NEXT_PUBLIC_GET_ON_ALL_LOAD_URL as string;
 
   const res = await fetch(url, {
@@ -43,7 +43,7 @@ export const getOnLoadData = async () => {
       'Content-Type': 'application/json', //<---
     },
     body: JSON.stringify({
-      language: 'japanese',
+      language,
       refs: [content, words, sentences],
     }),
   });
