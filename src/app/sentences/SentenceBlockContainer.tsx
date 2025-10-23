@@ -4,7 +4,11 @@ import useData from '../Providers/useData';
 import { japanese } from '../languages';
 import { getAudioURL } from '@/utils/get-media-url';
 
-const SentenceBlockContainer = ({ sentence, sentenceIndex }) => {
+const SentenceBlockContainer = ({
+  sentence,
+  sentenceIndex,
+  languageSelectedState,
+}) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const [thisSentencesWordsState, setThisSentencesWordsState] = useState([]);
   const hoverTimerMasterRef = useRef<HTMLVideoElement>(null); // Reference to the video element
@@ -80,6 +84,7 @@ const SentenceBlockContainer = ({ sentence, sentenceIndex }) => {
       wordsState={wordsState}
       handleReviewFunc={handleReviewFunc}
       url={url}
+      languageSelectedState={languageSelectedState}
     />
   );
 };

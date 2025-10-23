@@ -17,6 +17,7 @@ const SentenceBlock = ({
   wordsState,
   handleReviewFunc,
   wide,
+  languageSelectedState,
   url,
 }) => {
   return (
@@ -66,7 +67,10 @@ const SentenceBlock = ({
                 {imageUrl && (
                   <div className='relative w-4/5 h-30'>
                     <Image
-                      src={getCloudflareImageURL(imageUrl, 'japanese')}
+                      src={getCloudflareImageURL(
+                        imageUrl,
+                        languageSelectedState,
+                      )}
                       alt={wordItem.baseForm}
                       fill
                       className='object-contain'

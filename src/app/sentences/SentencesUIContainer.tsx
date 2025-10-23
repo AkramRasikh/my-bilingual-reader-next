@@ -5,11 +5,13 @@ import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
 import useSentencesProgress from './useSentencesProgress';
 import SentenceBlockContainer from './SentenceBlockContainer';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 const SentencesUIContainer = () => {
   const [progressState, setProgressState] = useState(0);
   const [initNumState, setInitNumState] = useState();
   const { sentencesState } = useData();
+  const { languageSelectedState } = useFetchData();
 
   const numberOfSentences = sentencesState.length;
 
@@ -41,6 +43,7 @@ const SentencesUIContainer = () => {
               <SentenceBlockContainer
                 sentence={sentence}
                 sentenceIndex={sentenceIndex}
+                languageSelectedState={languageSelectedState}
               />
             </li>
           );

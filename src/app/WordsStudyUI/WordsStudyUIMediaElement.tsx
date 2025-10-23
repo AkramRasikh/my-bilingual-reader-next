@@ -4,11 +4,13 @@ import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import SentenceBlock from '@/components/custom/SentenceBlock';
 import useData from '../Providers/useData';
 import WordsStudyUIVideoEl from './WordsStudyUIVideoEl';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 const IsolatedSentenceAudio = ({ contextData }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const hoverTimerMasterRef = useRef(null);
   const { wordsState } = useData();
+  const { languageSelectedState } = useFetchData();
 
   const handleMouseEnter = (text) => {
     hoverTimerMasterRef.current = setTimeout(() => {
@@ -49,6 +51,7 @@ const IsolatedSentenceAudio = ({ contextData }) => {
         handleDeleteWordDataProvider={() => {}}
         wordsState={wordsState}
         url={source}
+        languageSelectedState={languageSelectedState}
         wide
       />
     </div>

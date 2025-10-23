@@ -13,6 +13,7 @@ import useManageThreeSecondLoop from '../LearningScreen/hooks/useManageThreeSeco
 import useManageLoopInit from '../LearningScreen/hooks/useManageLoopInit';
 import LoopIndicatorWithProgress from '@/components/custom/LoopIndicatorWithProgress';
 import LoopBtn from '@/components/custom/LoopBtn';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 const WordsStudyUIVideoEl = ({ contextDataEl }) => {
   const [secondsState, setSecondsState] = useState([]);
@@ -34,6 +35,8 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
     progress,
     setProgress,
   } = useWordsStudyUIScreen();
+  const { languageSelectedState } = useFetchData();
+
   const { wordsState } = useData();
   const isMedia = contextDataEl.isMedia;
   const error = useCheckVideoIsWorking(ref);
@@ -165,7 +168,7 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
   if (isMedia) {
     const videoUrl = getCloudflareVideoURL(
       contextDataEl.generalTopicName,
-      'japanese',
+      languageSelectedState,
     );
 
     return (
