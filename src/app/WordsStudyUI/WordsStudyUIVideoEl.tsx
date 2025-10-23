@@ -157,6 +157,7 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
         <WordsStudyUIAudioElFallback
           contextDataEl={contextDataEl}
           secondsState={secondsState}
+          languageSelectedState={languageSelectedState}
         />
         <WordsStudyUIKeyListener
           handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}

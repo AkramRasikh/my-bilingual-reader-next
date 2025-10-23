@@ -5,7 +5,11 @@ import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/Trans
 import useData from '../Providers/useData';
 import TranscriptItem from '@/components/custom/TranscriptItem';
 
-const WordsStudyUIAudioElFallback = ({ secondsState, contextDataEl }) => {
+const WordsStudyUIAudioElFallback = ({
+  secondsState,
+  contextDataEl,
+  languageSelectedState,
+}) => {
   const {
     ref,
     isVideoPlaying,
@@ -18,7 +22,7 @@ const WordsStudyUIAudioElFallback = ({ secondsState, contextDataEl }) => {
 
   const { wordsState } = useData();
 
-  const audioUrl = getAudioURL(contextDataEl.title, 'japanese');
+  const audioUrl = getAudioURL(contextDataEl.title, languageSelectedState);
   const currentTime = ref?.current?.currentTime;
   const masterPlay =
     secondsState?.length > 0 ? secondsState[Math.floor(currentTime)] : '';

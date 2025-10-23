@@ -73,7 +73,7 @@ const WordCard = ({
   const handleReviewFunc = async (arg) => {
     try {
       setIsLoadingState(true);
-      await updateWordData(arg);
+      await updateWordData({ ...arg, language: languageSelectedState });
     } catch (error) {
       console.log('## handleReviewFunc', error);
     } finally {

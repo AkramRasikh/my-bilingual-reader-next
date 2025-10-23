@@ -41,11 +41,13 @@ const SentenceBlockContainer = ({
     if (arg?.isRemoveReview) {
       await updateAdhocSentenceData({
         ...arg,
+        language: languageSelectedState,
         fieldToUpdate: { reviewData: {} },
       });
     } else {
       await updateAdhocSentenceData({
         ...arg,
+        language: languageSelectedState,
         fieldToUpdate: { reviewData: arg.nextDue },
       });
     }

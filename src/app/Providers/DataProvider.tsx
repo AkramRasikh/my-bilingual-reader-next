@@ -158,7 +158,6 @@ export const DataProvider = ({
   const updateWordDataProvider = async ({
     wordId,
     fieldToUpdate,
-    language,
     isRemoveReview,
   }) => {
     try {
@@ -166,7 +165,7 @@ export const DataProvider = ({
         const res = await fetch('/api/deleteWord', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: wordId, language }),
+          body: JSON.stringify({ id: wordId, language: languageSelectedState }),
         });
         const data = await res.json();
 
@@ -180,7 +179,11 @@ export const DataProvider = ({
         const res = await fetch('/api/updateWord', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: wordId, fieldToUpdate, language }),
+          body: JSON.stringify({
+            id: wordId,
+            fieldToUpdate,
+            language: languageSelectedState,
+          }),
         });
 
         const data = await res.json();
@@ -503,7 +506,6 @@ export const DataProvider = ({
   const breakdownSentence = async ({
     topicName,
     sentenceId,
-    language,
     targetLang,
     contentIndex,
   }) => {
@@ -512,7 +514,7 @@ export const DataProvider = ({
         topicName,
         sentenceId,
         targetLang,
-        language,
+        language: languageSelectedState,
       });
 
       dispatchContent({

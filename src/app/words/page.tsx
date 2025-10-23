@@ -3,9 +3,11 @@ import PageContainer from '../../components/custom/PageContainer';
 import WordsContainer from './WordsContainer';
 import { WordsProvider } from './WordsProvider';
 import { isDueCheck } from '@/utils/is-due-check';
+import { japanese } from '../languages';
 
 export default async function WordsRoute() {
-  const allStudyDataRes = await getOnLoadData();
+  const languageDefault = japanese;
+  const allStudyDataRes = await getOnLoadData(languageDefault);
 
   const targetLanguageLoadedSentences = allStudyDataRes.sentences;
   // const targetLanguageLoadedContent = allStudyDataRes.content;

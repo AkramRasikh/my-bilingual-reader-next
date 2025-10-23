@@ -646,7 +646,6 @@ export const LearningScreenProvider = ({
       await breakdownSentence({
         topicName: selectedContentState.title,
         sentenceId: currentMasterPlay,
-        language: 'japanese',
         targetLang: thisSentenceTargetLang,
         contentIndex,
       });
@@ -736,7 +735,6 @@ export const LearningScreenProvider = ({
     await breakdownSentence({
       topicName: selectedContentState.title,
       sentenceId,
-      language: 'japanese',
       targetLang,
       contentIndex,
     });

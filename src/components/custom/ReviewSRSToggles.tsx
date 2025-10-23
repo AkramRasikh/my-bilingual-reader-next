@@ -36,7 +36,6 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {
         await handleReviewFunc({
           wordId: contentItem.id,
           fieldToUpdate: { reviewData: nextReviewData },
-          language: 'japanese',
         });
       } else {
         await handleReviewFunc({
@@ -56,7 +55,6 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {
       if (isVocab) {
         await handleReviewFunc({
           wordId: contentItem.id,
-          language: 'japanese',
           isRemoveReview: true,
         });
       } else {

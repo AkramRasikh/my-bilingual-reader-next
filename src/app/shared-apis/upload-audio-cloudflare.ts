@@ -7,7 +7,7 @@ export const getAudioFolderViaLang = (languageStr: string): string =>
 export const uploadAudioCloudflare = async ({
   localAudioPath,
   cloudFlareAudioName,
-  language = 'japanese',
+  language,
 }) => {
   const audioResponse = await fetch(localAudioPath);
   console.log('## audioResponse', audioResponse);

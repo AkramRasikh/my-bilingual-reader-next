@@ -35,8 +35,8 @@ const IsolatedSentenceAudio = ({ contextData }) => {
   const title = contextData.title;
   const hasIndividualAudio = hasAudio;
   const source = hasIndividualAudio
-    ? getAudioURL(hasIndividualAudio, 'japanese')
-    : getAudioURL(title, 'japanese');
+    ? getAudioURL(hasIndividualAudio, languageSelectedState)
+    : getAudioURL(title, languageSelectedState);
 
   return (
     <div>
