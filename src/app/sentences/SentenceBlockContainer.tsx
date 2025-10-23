@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import SentenceBlock from '@/components/custom/SentenceBlock';
 import useData from '../Providers/useData';
-import { japanese } from '../languages';
 import { getAudioURL } from '@/utils/get-media-url';
 
 const SentenceBlockContainer = ({
@@ -35,7 +34,7 @@ const SentenceBlockContainer = ({
     }
   }, [sentence, wordsState]);
 
-  const url = getAudioURL(sentence.id, japanese);
+  const url = getAudioURL(sentence.id, languageSelectedState);
 
   const handleReviewFunc = async (arg) => {
     if (arg?.isRemoveReview) {

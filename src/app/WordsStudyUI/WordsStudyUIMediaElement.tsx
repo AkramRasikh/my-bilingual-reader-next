@@ -11,6 +11,7 @@ const IsolatedSentenceAudio = ({ contextData }) => {
   const hoverTimerMasterRef = useRef(null);
   const { wordsState } = useData();
   const { languageSelectedState } = useFetchData();
+  console.log('## languageSelectedState', languageSelectedState);
 
   const handleMouseEnter = (text) => {
     hoverTimerMasterRef.current = setTimeout(() => {

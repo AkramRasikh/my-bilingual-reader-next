@@ -391,6 +391,7 @@ export const DataProvider = ({
       reviewData: nextScheduledOptions['1'].card,
       meaning,
       isGoogle,
+      language: languageSelectedState,
     });
 
     if (savedWord) {

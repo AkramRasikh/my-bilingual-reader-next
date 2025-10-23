@@ -1,5 +1,3 @@
-import { japanese } from '../languages';
-
 const saveWordAPI = async ({
   highlightedWord,
   highlightedWordSentenceId,
@@ -7,7 +5,7 @@ const saveWordAPI = async ({
   reviewData,
   meaning,
   isGoogle,
-  // language,
+  language,
 }) => {
   try {
     const response = await fetch('/api/addWord', {
@@ -16,7 +14,7 @@ const saveWordAPI = async ({
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        language: japanese,
+        language,
         word: highlightedWord,
         context: highlightedWordSentenceId,
         contextSentence,
