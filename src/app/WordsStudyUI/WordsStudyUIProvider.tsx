@@ -63,7 +63,7 @@ export const WordsStudyUIProvider = ({
     wordsForReviewState,
   } = useData();
 
-  const { data } = useFetchData();
+  const { data, languageSelectedState } = useFetchData();
 
   const sentencesData = data.sentencesData;
 
@@ -344,7 +344,7 @@ export const WordsStudyUIProvider = ({
       await breakdownSentence({
         topicName: selectedContentState.title,
         sentenceId: currentMasterPlay,
-        language: 'japanese',
+        language: languageSelectedState,
         targetLang: thisSentenceTargetLang,
         contentIndex,
       });
@@ -362,7 +362,7 @@ export const WordsStudyUIProvider = ({
     await breakdownSentence({
       topicName: selectedContentState.title,
       sentenceId,
-      language: 'japanese',
+      language: languageSelectedState,
       targetLang,
       contentIndex,
     });

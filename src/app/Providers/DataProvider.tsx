@@ -283,7 +283,7 @@ export const DataProvider = ({
       const updatedFieldFromDB = await updateAdhocSentenceAPI({
         sentenceId,
         fieldToUpdate,
-        language: japanese,
+        language: languageSelectedState,
       });
 
       if (updatedFieldFromDB) {
@@ -332,7 +332,7 @@ export const DataProvider = ({
         topicName,
         sentenceId,
         fieldToUpdate,
-        language: japanese,
+        language: languageSelectedState,
       });
 
       if (isRemoveReview) {
@@ -419,7 +419,7 @@ export const DataProvider = ({
       const resObj = await updateContentMetaDataAPI({
         title: topicName,
         fieldToUpdate,
-        language: japanese,
+        language: languageSelectedState,
       });
 
       if (resObj) {
@@ -446,7 +446,7 @@ export const DataProvider = ({
       const updatedSentenceIds = await sentenceReviewBulkAPI({
         title: topicName,
         fieldToUpdate,
-        language: japanese,
+        language: languageSelectedState,
         removeReview,
         sentenceIds,
       });
