@@ -36,11 +36,11 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   return (
     <Select value={selected} onValueChange={handleChange}>
       <SelectTrigger className='w-fit my-auto'>
-        <SelectValue className=''>
+        <SelectValue>
           {languageOptions.find((lang) => lang.value === selected)?.flag}
         </SelectValue>
       </SelectTrigger>
-      <SelectContent className='w-fit'>
+      <SelectContent>
         {languageOptions.map((lang) => (
           <SelectItem key={lang.value} value={lang.value}>
             <span className='mr-2'>{lang.flag}</span>
