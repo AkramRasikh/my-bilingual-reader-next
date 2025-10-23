@@ -29,6 +29,7 @@ const WordCard = ({
   addImageDataProvider,
   contexts,
   playFromThisContext,
+  languageSelectedState,
   ...rest
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
@@ -40,7 +41,7 @@ const WordCard = ({
   const originalContextId = contexts[0];
 
   const cloudflareImageUrl = imageUrl
-    ? getCloudflareImageURL(imageUrl, 'japanese')
+    ? getCloudflareImageURL(imageUrl, languageSelectedState)
     : '';
 
   const previewImage = !openContentState && cloudflareImageUrl;

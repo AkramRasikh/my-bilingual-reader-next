@@ -5,12 +5,13 @@ import WordCard from '@/components/custom/WordCard';
 import useData from '../Providers/useData';
 import WordsStudyUIMediaElement from './WordsStudyUIMediaElement';
 import clsx from 'clsx';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 const WordsStudyUI = () => {
   const { formattedWordsStudyState, setSelectedElState, selectedElState } =
     useWordsStudyUIScreen();
   const { updateWordDataProvider } = useData();
-
+  const { languageSelectedState } = useFetchData();
   const hasWords = formattedWordsStudyState?.length > 0;
   if (!hasWords) {
     return (
@@ -39,6 +40,7 @@ const WordsStudyUI = () => {
                   {...wordItem}
                   updateWordData={updateWordDataProvider}
                   playFromThisContext={() => setSelectedElState(index)}
+                  languageSelectedState={languageSelectedState}
                 />
               </div>
             );

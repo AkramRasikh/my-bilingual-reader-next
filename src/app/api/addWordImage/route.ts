@@ -14,6 +14,7 @@ const s3 = new S3Client({
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get('image') as File | null;
+  const language = formData.get('language') as File | null;
   const updateWordUrl = process.env.NEXT_PUBLIC_UPDATE_WORD_URL as string;
 
   if (!file) {
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
   const filename = `${file.name}`;
   const wordId = filename.split('.')[0];
   // Upload directly to S3
-  const formattedFirebaseName = 'japanese-words/' + filename;
+  const formattedFirebaseName = `${language}-words/` + filename;
 
   const uploadRes = await s3.send(
     new PutObjectCommand({
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         id: wordId,
         fieldToUpdate: { imageUrl: filename },
-        language: 'japanese',
+        language: language,
       }),
     });
     const data = await response.json();

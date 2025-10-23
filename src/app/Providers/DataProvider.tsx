@@ -7,7 +7,6 @@ import {
   srsRetentionKeyTypes,
 } from '../srs-utils/srs-algo';
 import { deleteWordAPI } from '../client-api/delete-word';
-import { japanese } from '../languages';
 import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
 import { breakdownSentenceAPI } from '../client-api/breakdown-sentence';
 import { updateContentMetaDataAPI } from '../client-api/update-content-meta-data';
@@ -210,6 +209,7 @@ export const DataProvider = ({
 
   const addImageDataProvider = async ({ wordId, formData }) => {
     try {
+      formData.append('language', languageSelectedState);
       const res = await fetch('/api/addWordImage', {
         method: 'POST',
         body: formData,
@@ -399,7 +399,7 @@ export const DataProvider = ({
 
   const handleDeleteWordDataProvider = async ({ wordId }) => {
     try {
-      await deleteWordAPI({ wordId, language: japanese });
+      await deleteWordAPI({ wordId, language: languageSelectedState });
       const targetLanguageWordsStateUpdated = wordsState.filter(
         (item) => item.id !== wordId,
       );
@@ -493,7 +493,7 @@ export const DataProvider = ({
       setStory({
         ...story,
         isSaved: true,
-        audioUrl: getAudioURL(data[0].id, 'japanese'),
+        audioUrl: getAudioURL(data[0].id, languageSelectedState),
       });
     }
 
