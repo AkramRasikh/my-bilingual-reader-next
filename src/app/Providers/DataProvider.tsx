@@ -478,7 +478,7 @@ export const DataProvider = ({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        language: 'japanese',
+        language: languageSelectedState,
         targetLang,
         baseLang,
         localAudioPath: story.audioUrl,

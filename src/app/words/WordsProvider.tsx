@@ -1,5 +1,6 @@
 'use client';
 import { createContext, useEffect, useState } from 'react';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 export const WordsContext = createContext(null);
 
@@ -11,6 +12,7 @@ export const WordsProvider = ({
   const [wordBasketState, setWordBasketState] = useState([]);
   const [story, setStory] = useState();
 
+  const { languageSelectedState } = useFetchData(); // breaking change but quick fix
   useEffect(() => {
     setWordsState(words);
   }, []);
@@ -90,7 +92,7 @@ export const WordsProvider = ({
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        language: 'japanese',
+        language: languageSelectedState,
         targetLang,
         baseLang,
         localAudioPath: story.audioUrl,

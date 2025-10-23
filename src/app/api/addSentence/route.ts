@@ -15,10 +15,8 @@ const s3 = new S3Client({
 
 export async function POST(req: Request) {
   const body = await req.json();
-
-  const localAudioPath = 'http://localhost:3000' + body.localAudioPath;
-
-  console.log('## localAudioPath', localAudioPath);
+  const { localAudioPath, language } = body;
+  const localAudioPathUrl = 'http://localhost:3000' + localAudioPath;
 
   // Fetch the audio file from public/audio/{id}
   // const audioUrl = `${process.env.NEXT_PUBLIC_BASE_URL || ''}/audio/${id}`;
@@ -40,7 +38,7 @@ export async function POST(req: Request) {
   console.log('## data', data[0].id);
 
   if (data) {
-    const audioResponse = await fetch(localAudioPath);
+    const audioResponse = await fetch(localAudioPathUrl);
     if (!audioResponse.ok) {
       console.log('## FAIL audio response');
     }
@@ -49,7 +47,7 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(arrayBuffer);
     const command = new PutObjectCommand({
       Bucket: process.env.NEXT_PUBLIC_CLOUD_FLARE_R2_BUCKET_NAME,
-      Key: getAudioFolderViaLang('japanese') + '/' + thisId + '.mp3',
+      Key: getAudioFolderViaLang(language) + '/' + thisId + '.mp3',
       Body: buffer,
       ContentType: 'audio/mpeg',
     });
