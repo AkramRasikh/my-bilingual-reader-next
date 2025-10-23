@@ -6,9 +6,9 @@ import { useFetchData } from '../Providers/FetchDataProvider';
 import SentenceReviewContainer from './SentencesUIContainer';
 
 export default function SentencesPage() {
-  const { data } = useFetchData();
+  const { data, languageSelectedState } = useFetchData();
 
-  if (!data) return <p>Loading...</p>;
+  if (!data || !languageSelectedState) return <p>Loading...</p>;
   const { wordsData, sentencesData, contentData } = data;
 
   return (

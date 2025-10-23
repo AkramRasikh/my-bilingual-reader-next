@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import useLearningScreen from '../../app/LearningScreen/useLearningScreen';
 import BreadCrumbHeaderBase from '../BreadCrumbHeaderBase';
 import { useRouter } from 'next/navigation';
+import LanguageSelector from './LanguageSelector';
+import { useFetchData } from '@/app/Providers/FetchDataProvider';
 
 const BreadCrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
@@ -18,6 +20,8 @@ const BreadCrumbComponent = () => {
   } = useData();
   const { selectedContentState, handleOnHome } = useLearningScreen();
   const router = useRouter();
+
+  const { languageSelectedState, setLanguageSelectedState } = useFetchData();
 
   useEffect(() => {
     if (wordBasketState.length === 0 && showBasketState) {
@@ -71,6 +75,10 @@ const BreadCrumbComponent = () => {
             );
           })
         }
+      />
+      <LanguageSelector
+        defaultValue={languageSelectedState}
+        onChange={setLanguageSelectedState}
       />
     </div>
   );

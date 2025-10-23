@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   const body = await req.json();
+  const { refs, language } = body;
 
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
 
@@ -20,8 +21,8 @@ export async function POST(req: Request) {
         'Content-Type': 'application/json', //<---
       },
       body: JSON.stringify({
-        language: 'japanese',
-        refs: body,
+        language,
+        refs,
       }),
     });
 

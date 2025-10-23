@@ -28,6 +28,7 @@ export const DataProvider = ({
   wordsData,
   sentencesData,
   contentData,
+  languageSelectedState,
   children,
 }: PropsWithChildren<object>) => {
   const [wordsState, setWordsState] = useState(wordsData);
@@ -55,22 +56,31 @@ export const DataProvider = ({
 
   useEffect(() => {
     if (!isMockEnv) {
-      console.log('## Triggering save (words)');
-      localStorage.setItem('wordsState', JSON.stringify(wordsState));
+      console.log('## Triggering save (words)', languageSelectedState);
+      localStorage.setItem(
+        `${languageSelectedState}-wordsState`,
+        JSON.stringify(wordsState),
+      );
     }
   }, [wordsState]);
 
   useEffect(() => {
     if (!isMockEnv) {
-      console.log('## Triggering save (sentences)');
-      localStorage.setItem('sentencesState', JSON.stringify(sentencesState));
+      console.log('## Triggering save (sentences)', languageSelectedState);
+      localStorage.setItem(
+        `${languageSelectedState}-sentencesState`,
+        JSON.stringify(sentencesState),
+      );
     }
   }, [sentencesState]);
 
   useEffect(() => {
     if (!isMockEnv) {
-      console.log('## Triggering save (content)');
-      localStorage.setItem('contentState', JSON.stringify(contentState));
+      console.log('## Triggering save (content)', languageSelectedState);
+      localStorage.setItem(
+        `${languageSelectedState}-contentState`,
+        JSON.stringify(contentState),
+      );
     }
   }, [contentState]);
 
