@@ -22,7 +22,6 @@ export function FetchDataProvider({ children }) {
 
   useEffect(() => {
     if (!data && languageSelectedState) {
-      //
       const wordsState = JSON.parse(
         localStorage.getItem(`${languageSelectedState}-wordsState`) as string,
       );
@@ -34,8 +33,6 @@ export function FetchDataProvider({ children }) {
       const contentState = JSON.parse(
         localStorage.getItem(`${languageSelectedState}-contentState`) as string,
       );
-
-      console.log('## wordsState', wordsState);
 
       const wordsExist = wordsState?.length >= 0;
       const sentencesExist = sentencesState?.length >= 0;
