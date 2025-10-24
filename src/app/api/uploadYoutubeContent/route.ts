@@ -35,6 +35,7 @@ export async function POST(req) {
         origin: 'youtube',
         content: transcript,
         url,
+        createdAt: new Date().toISOString(),
       },
     });
 
