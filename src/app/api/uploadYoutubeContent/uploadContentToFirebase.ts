@@ -1,21 +1,10 @@
-import admin from 'firebase-admin';
-
-const firebaseDBUrl = process.env.NEXT_PUBLIC_FIREBASE_DB_URL;
-const googleServiceAccount = process.env
-  .NEXT_PUBLIC_GOOGLE_SERVICE_ACCOUNT as string;
-
-admin.initializeApp({
-  credential: admin.credential.cert(JSON.parse(googleServiceAccount)),
-  databaseURL: firebaseDBUrl,
-});
-
-const db = admin.database();
+import { db } from './firebase-admin-init';
 
 const contentRef = 'content';
 
 const getRefPath = ({ language, ref }) => `${language}/${ref}`;
 
-const getContentTypeSnapshot = async ({ language, ref, db }) => {
+const getContentTypeSnapshot = async ({ language, ref }) => {
   try {
     const refPath = getRefPath({ language, ref });
     const refObj = db.ref(refPath);
@@ -34,7 +23,6 @@ const addContentLogic = async ({ language, content }) => {
       (await getContentTypeSnapshot({
         language,
         ref: contentRef,
-        db: db,
       })) || [];
 
     const entryTitle = content.title;

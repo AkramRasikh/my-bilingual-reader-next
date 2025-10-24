@@ -20,8 +20,6 @@ const SentenceBlock = ({
   languageSelectedState,
   url,
 }) => {
-  console.log('## SentenceBlock', languageSelectedState);
-
   return (
     <div
       className={clsx(

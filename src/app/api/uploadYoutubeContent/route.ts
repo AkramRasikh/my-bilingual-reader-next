@@ -24,6 +24,7 @@ export async function POST(req) {
     audioUploaded = await uploadAudioCloudflare({
       localAudioPath: 'http://localhost:3000' + publicAudioUrl,
       cloudFlareAudioName: title,
+      language,
     });
 
     const resUploadContent = await addContentLogic({
