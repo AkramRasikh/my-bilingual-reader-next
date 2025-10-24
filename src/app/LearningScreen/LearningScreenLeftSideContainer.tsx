@@ -35,7 +35,7 @@ const LearningScreenLeftSideContainer = () => {
   const errorInVideo = useCheckVideoIsWorking(ref);
 
   return (
-    <div className='flex-1 max-w-xl mx-auto'>
+    <div className='flex-1 w-xl mx-auto'>
       <LearningScreenActionBarVideoControls />
       {!errorInVideo ? (
         <VideoPlayer

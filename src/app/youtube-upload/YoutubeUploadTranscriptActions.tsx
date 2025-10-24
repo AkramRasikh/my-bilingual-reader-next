@@ -68,6 +68,7 @@ const YoutubeUploadTranscriptActions = () => {
         <Textarea
           placeholder='Paste translated text here (with @@ markers)...'
           value={inputText}
+          disabled={numberOfBaseLangLessItems === 0}
           onChange={(e) => setInputText(e.target.value)}
           className='h-10 w-full'
         />
