@@ -161,6 +161,7 @@ export const WordsStudyUIProvider = ({
 
       return {
         ...item,
+        generalTopicName: contextData?.[0]?.generalTopicName,
         contextData,
       };
     });

@@ -88,7 +88,7 @@ export function YoutubeUploadProvider({ children }) {
           title: form.title,
           language: form.language.toLowerCase(),
           publicAudioUrl: publicAudioUrlState,
-          transcript: transcriptState,
+          transcript: transcriptState.map(({ originalIndex, ...rest }) => rest),
         }),
       });
 

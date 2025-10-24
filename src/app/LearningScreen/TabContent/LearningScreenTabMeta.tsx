@@ -11,6 +11,7 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
   const { selectedContentState } = useLearningScreen();
 
   const topicName = selectedContentState?.title;
+  const url = selectedContentState?.url;
   const reviewHistory = selectedContentState?.reviewHistory;
   const contentIndex = selectedContentState?.contentIndex;
 
@@ -78,6 +79,17 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
             onCheckedChange={setNextReviewDate}
             disabled={isLoading}
           />
+        </div>
+        <div>
+          <span className='mr-2'>Youtube:</span>
+          <a
+            href={url}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-blue-600 hover:underline'
+          >
+            {url}
+          </a>
         </div>
       </div>
     </TabsContent>
