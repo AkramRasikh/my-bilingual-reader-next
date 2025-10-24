@@ -20,7 +20,8 @@ const WordsStudyUIAudioElFallback = ({
     overlappingSnippetDataState,
   } = useWordsStudyUIScreen();
 
-  const { wordsState } = useData();
+  const { wordsState, handleSaveWord, handleDeleteWordDataProvider } =
+    useData();
 
   const audioUrl = getAudioURL(contextDataEl.title, languageSelectedState);
   const currentTime = ref?.current?.currentTime;
@@ -86,8 +87,8 @@ const WordsStudyUIAudioElFallback = ({
                 breakdownSentencesArrState={[]}
                 masterPlay={masterPlay}
                 isGenericItemLoadingState={[]}
-                handleSaveWord={() => {}}
-                handleDeleteWordDataProvider={() => {}}
+                handleSaveWord={handleSaveWord}
+                handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                 wordsState={wordsState}
                 isInReviewMode={false}
                 onlyShowEngState={false}

@@ -37,7 +37,8 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
   } = useWordsStudyUIScreen();
   const { languageSelectedState } = useFetchData();
 
-  const { wordsState } = useData();
+  const { wordsState, handleSaveWord, handleDeleteWordDataProvider } =
+    useData();
   const isMedia = contextDataEl.isMedia;
   const error = useCheckVideoIsWorking(ref);
 
@@ -216,8 +217,8 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
                 breakdownSentencesArrState={[]}
                 masterPlay={masterPlay}
                 isGenericItemLoadingState={[]}
-                handleSaveWord={() => {}}
-                handleDeleteWordDataProvider={() => {}}
+                handleSaveWord={handleSaveWord}
+                handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                 wordsState={wordsState}
                 isInReviewMode={false}
                 onlyShowEngState={false}
