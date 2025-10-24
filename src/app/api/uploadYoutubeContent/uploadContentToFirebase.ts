@@ -41,7 +41,7 @@ const addContentLogic = async ({ language, content }) => {
     const isDuplicate = snapshotArr.some((item) => item.title === entryTitle);
 
     if (!isDuplicate) {
-      snapshotArr.push(content);
+      snapshotArr.push({ ...content, createdAt: new Date() });
       await db.ref(refPath).set(snapshotArr);
       return entryTitle;
     } else {
