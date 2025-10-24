@@ -152,6 +152,10 @@ export const WordsStudyUIProvider = ({
                   foundContextIdInAdhocSentences.targetLang,
                   wordsState,
                 ),
+                targetLangformatted: underlineWordsInSentence(
+                  foundContextIdInAdhocSentences.targetLang,
+                  pureWordsState,
+                ),
               });
               break;
             }
