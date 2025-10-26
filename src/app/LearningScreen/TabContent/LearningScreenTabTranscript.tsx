@@ -4,6 +4,7 @@ import useLearningScreen from '../useLearningScreen';
 import useData from '../../Providers/useData';
 import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
+import { useFetchData } from '@/app/Providers/FetchDataProvider';
 
 const LearningScreenTabTranscript = () => {
   const { handleSaveWord, handleDeleteWordDataProvider, wordsState } =
@@ -37,6 +38,7 @@ const LearningScreenTabTranscript = () => {
     scrollToElState,
     wordsForSelectedTopic,
   } = useLearningScreen();
+  const { languageSelectedState } = useFetchData();
 
   const learnFormattedTranscript =
     isInReviewMode && latestDueIdState?.id
@@ -90,6 +92,7 @@ const LearningScreenTabTranscript = () => {
             latestDueIdState={latestDueIdState}
             scrollToElState={scrollToElState}
             wordsForSelectedTopic={wordsForSelectedTopic}
+            languageSelectedState={languageSelectedState}
           >
             <TranscriptItem />
           </TranscriptItemProvider>

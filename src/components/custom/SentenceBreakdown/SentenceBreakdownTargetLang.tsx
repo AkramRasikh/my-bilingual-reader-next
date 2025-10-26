@@ -1,6 +1,8 @@
 import getColorByIndex from '@/utils/get-color-by-index';
 import SentenceBreakdownHover from './SentenceBreakdownHover';
 import SentenceBreakdownTargetLangWord from './SentenceBreakdownTargetLangWord';
+import { arabic, isTrimmedLang } from '@/app/languages';
+import clsx from 'clsx';
 
 const SentenceBreakdownTargetLang = ({
   vocab,
@@ -8,9 +10,16 @@ const SentenceBreakdownTargetLang = ({
   handleSaveFunc,
   handleAddIndexToArr,
   handleOnMouseExit,
+  languageSelectedState,
 }) => {
+  const isArabic = languageSelectedState === arabic;
+  const addSpace = !isTrimmedLang(languageSelectedState);
+
   return (
-    <ul className='flex flex-wrap'>
+    <ul
+      className={clsx('flex flex-wrap', isArabic ? 'text-right' : '')}
+      dir={isArabic ? 'rtl' : 'ltr'}
+    >
       {vocab.map(({ surfaceForm, meaning }, index) => {
         const wordIsSaved = thisSentencesSavedWords?.some(
           (item) => item.text === surfaceForm,
@@ -41,6 +50,7 @@ const SentenceBreakdownTargetLang = ({
                 wordIsSaved={wordIsSaved}
               />
             )}
+            {addSpace && '\u00A0'}
           </li>
         );
       })}

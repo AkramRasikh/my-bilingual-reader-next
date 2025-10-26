@@ -1,3 +1,4 @@
+import { arabic } from '@/app/languages';
 import HoverWordCard from '@/components/custom/HoverWordCard';
 
 const FormattedSentence = ({
@@ -10,9 +11,12 @@ const FormattedSentence = ({
   wordsForSelectedTopic,
   handleDeleteWordDataProvider,
   wordsFromSentence,
+  languageSelectedState,
 }) => {
+  const isArabic = languageSelectedState === arabic;
+
   return (
-    <span ref={ref} className='mt-auto mb-auto'>
+    <span ref={ref} className='mt-auto mb-auto' dir={isArabic ? 'rtl' : 'ltr'}>
       {targetLangformatted?.map((item, indexNested) => {
         const isUnderlined = item?.style?.textDecorationLine;
         const text = item?.text;

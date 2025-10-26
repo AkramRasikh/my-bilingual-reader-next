@@ -18,6 +18,7 @@ const TranscriptItemContent = () => {
     handleSaveFunc,
     onlyShowEngState,
     wordsForSelectedTopic,
+    languageSelectedState,
   } = useTranscriptItem();
 
   const { handleDeleteWordDataProvider } = useData();
@@ -47,6 +48,7 @@ const TranscriptItemContent = () => {
           thisSentencesSavedWords={thisSentencesSavedWords}
           handleSaveFunc={handleSaveFunc}
           sentenceStructure={contentItem.sentenceStructure}
+          languageSelectedState={languageSelectedState}
         />
       ) : (
         <>
@@ -61,6 +63,7 @@ const TranscriptItemContent = () => {
               wordsForSelectedTopic={wordsForSelectedTopic}
               handleDeleteWordDataProvider={handleDeleteWordDataProvider}
               wordsFromSentence={wordsFromSentence}
+              languageSelectedState={languageSelectedState}
             />
           </p>
           {!onlyShowEngState && <p>{baseLang}</p>}

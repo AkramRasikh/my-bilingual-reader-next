@@ -30,6 +30,7 @@ export const TranscriptItemProvider = ({
   scrollToElState,
   wordsForSelectedTopic,
   isWordStudyMode,
+  languageSelectedState,
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -250,6 +251,7 @@ export const TranscriptItemProvider = ({
         setOverrideMiniReviewState,
         wordsForSelectedTopic,
         isWordStudyMode,
+        languageSelectedState,
       }}
     >
       {children}
