@@ -23,9 +23,9 @@ const WordsStudyUI = () => {
   }
   return (
     <PageContainer>
-      <div className='flex justify-around gap-3'>
+      <div className='flex justify-around gap-3 max-w-6xl mx-auto'>
         <WordsStudyUIMediaElement />
-        <div className='flex flex-col gap-2 w-fit'>
+        <div className='flex flex-col gap-2 w-1/2'>
           {formattedWordsStudyState.map((wordItem, index) => {
             const thisIsSelected = selectedElState === index;
             return (
@@ -33,6 +33,7 @@ const WordsStudyUI = () => {
                 key={wordItem.id}
                 className={clsx(
                   thisIsSelected ? 'border border-black rounded-2xl w-fit' : '',
+                  'mx-auto',
                 )}
               >
                 <WordCard
