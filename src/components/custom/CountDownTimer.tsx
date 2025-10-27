@@ -25,6 +25,11 @@ export default function CountdownTimer({ audioTimeRef }) {
     }
   };
 
+  const resetAndStopAudio = () => {
+    setTargetTime(null);
+    setRemaining(60);
+  };
+
   const formatTime = (seconds) => {
     const m = Math.floor(seconds / 60);
     const s = Math.floor(seconds % 60);
@@ -37,6 +42,7 @@ export default function CountdownTimer({ audioTimeRef }) {
   return (
     <Button
       onClick={startTimer}
+      onDoubleClick={resetAndStopAudio}
       className={`rounded-2xl text-xl font-mono shadow-md transition
         ${
           targetTime
