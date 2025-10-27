@@ -1,9 +1,8 @@
 import { getAudioURL } from '@/utils/get-media-url';
 import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import { useEffect } from 'react';
-import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 import useData from '../Providers/useData';
-import TranscriptItem from '@/components/custom/TranscriptItem';
+import WordStudyUITranscriptItem from './WordStudyUITranscriptItem';
 
 const WordsStudyUIAudioElFallback = ({
   secondsState,
@@ -77,39 +76,17 @@ const WordsStudyUIAudioElFallback = ({
         {transcriptArr?.map((transcriptItem, index) => {
           return (
             <div key={index}>
-              <TranscriptItemProvider
-                threeSecondLoopState={[]}
-                overlappingSnippetDataState={overlappingSnippetDataState}
-                setSentenceHighlightingState={() => {}}
-                sentenceHighlightingState={''}
-                contentItem={transcriptItem}
-                isPressDownShiftState={false}
-                breakdownSentencesArrState={[]}
+              <WordStudyUITranscriptItem
                 masterPlay={masterPlay}
-                isGenericItemLoadingState={[]}
+                transcriptItem={transcriptItem}
+                overlappingSnippetDataState={overlappingSnippetDataState}
                 handleSaveWord={handleSaveWord}
                 handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                 wordsState={wordsState}
-                isInReviewMode={false}
-                onlyShowEngState={false}
-                setLoopTranscriptState={() => {}}
-                loopTranscriptState={[]}
-                handleReviewFunc={() => {}}
                 isVideoPlaying={isVideoPlaying}
                 handlePause={handlePause}
-                handleFromHere={() =>
-                  handleAudio(transcriptItem.id, transcriptItem.time)
-                }
-                handleBreakdownSentence={() => {}}
-                setBreakdownSentencesArrState={() => {}}
-                isBreakingDownSentenceArrState={[]}
-                latestDueIdState={false}
-                scrollToElState={''}
-                wordsForSelectedTopic={[]}
-                isWordStudyMode={true}
-              >
-                <TranscriptItem />
-              </TranscriptItemProvider>
+                handleAudio={handleAudio}
+              />
             </div>
           );
         })}
