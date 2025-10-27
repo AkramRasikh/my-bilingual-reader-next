@@ -1,6 +1,6 @@
 'use client';
 import { isNumber } from '@/utils/is-number';
-import { createContext, useEffect, useRef, useState } from 'react';
+import { createContext, useEffect, useMemo, useRef, useState } from 'react';
 import useData from '../Providers/useData';
 import {
   getEmptyCard,
@@ -74,8 +74,6 @@ export const LearningScreenProvider = ({
   const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
     useState(false);
 
-  const [contentMetaDataState, setContentMetaDataState] = useState([]);
-  const [contentMetaWordDataState, setContentMetaWordDataState] = useState([]);
   const [
     numberOfSentencesPendingOrDueState,
     setNumberOfSentencesPendingOrDueState,
@@ -751,6 +749,16 @@ export const LearningScreenProvider = ({
     setWordsForSelectedTopic([]);
   };
 
+  const contentMetaMemoized = useMemo(() => {
+    if (!generalTopicDisplayNameSelectedState) return null;
+    return getGeneralContentMetaData();
+  }, [generalTopicDisplayNameSelectedState, wordsState, selectedContentState]);
+
+  const contentMetaWordMemoized = useMemo(() => {
+    if (!generalTopicDisplayNameSelectedState) return null;
+    return getGeneralContentWordData();
+  }, [generalTopicDisplayNameSelectedState, wordsState, selectedContentState]);
+
   return (
     <LearningScreenContext.Provider
       value={{
@@ -829,16 +837,14 @@ export const LearningScreenProvider = ({
         selectedContentState,
         setSelectedContentState,
         handleOnHome,
-        contentMetaDataState,
-        setContentMetaDataState,
-        contentMetaWordDataState,
-        setContentMetaWordDataState,
         sentenceRepsState,
         elapsed,
         setElapsed,
         playFromThisContext,
         numberOfSentencesPendingOrDueState,
         setSentenceRepsState,
+        contentMetaMemoized,
+        contentMetaWordMemoized,
       }}
     >
       {children}

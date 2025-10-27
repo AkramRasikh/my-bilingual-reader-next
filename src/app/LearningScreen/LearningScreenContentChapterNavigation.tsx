@@ -6,21 +6,15 @@ import useLearningScreen from './useLearningScreen';
 import LearningScreenUnifiedAnalytics from './LearningScreenUnifiedAnalytics';
 
 const LearningScreenContentChapterNavigation = () => {
-  const { handleGetComprehensiveReview, wordsState } = useData();
+  const { handleGetComprehensiveReview } = useData();
   const [sentenceRepsPerMinState, setSentenceRepsPerMinState] = useState<
     string | null
   >(null);
 
   const {
-    generalTopicDisplayNameSelectedState,
-    selectedContentState,
-    getGeneralContentMetaData,
     handleSelectedContent,
-    getGeneralContentWordData,
-    contentMetaDataState,
-    setContentMetaDataState,
-    contentMetaWordDataState,
-    setContentMetaWordDataState,
+    contentMetaMemoized,
+    contentMetaWordMemoized,
     sentenceRepsState,
     elapsed,
     numberOfSentencesPendingOrDueState,
@@ -36,15 +30,7 @@ const LearningScreenContentChapterNavigation = () => {
     }
   }, [sentenceRepsState, elapsed]);
 
-  useEffect(() => {
-    if (!generalTopicDisplayNameSelectedState) {
-      return;
-    }
-    setContentMetaDataState(getGeneralContentMetaData());
-    setContentMetaWordDataState(getGeneralContentWordData());
-  }, [wordsState, selectedContentState]);
-
-  const hasUnifiedChapter = contentMetaDataState?.length === 1;
+  const hasUnifiedChapter = contentMetaMemoized?.length === 1;
 
   if (hasUnifiedChapter) {
     return (
@@ -64,14 +50,14 @@ const LearningScreenContentChapterNavigation = () => {
           </span>
         </Button>
       )}
-      {contentMetaDataState?.map((thisContentMetaData, index) => {
+      {contentMetaMemoized?.map((thisContentMetaData, index) => {
         const chapterNum = thisContentMetaData.chapterNum;
         const title = thisContentMetaData.title;
         const isSelected = thisContentMetaData.isSelected;
         const sentencesNeedReview = thisContentMetaData.sentencesNeedReview;
         const hasBeenReviewed = thisContentMetaData.hasBeenReviewed;
 
-        const wordsIndex = contentMetaWordDataState[index]?.length;
+        const wordsIndex = contentMetaWordMemoized[index]?.length;
 
         return (
           <Button
