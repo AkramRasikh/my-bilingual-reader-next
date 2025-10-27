@@ -123,7 +123,7 @@ export const DataProvider = ({
     if (!isNumber(wordsToReviewOnMountState)) {
       setWordsToReviewOnMountState(wordsForReviewMemoized.length);
     }
-  }, [wordsForReviewMemoized, wordsState]);
+  }, [wordsForReviewMemoized]);
 
   const updateWordDataProvider = async ({
     wordId,
