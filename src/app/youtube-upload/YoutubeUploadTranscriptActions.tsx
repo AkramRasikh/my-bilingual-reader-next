@@ -61,10 +61,23 @@ const YoutubeUploadTranscriptActions = () => {
     );
     setInputText('');
   };
+
+  const timeToTransliterateArabicText =
+    numberOfBaseLangLessItems === 0 && isArabic;
   return (
     <div className='mx-auto w-lg'>
-      <div>
-        <div className='flex gap-5'>
+      <div className='relative'>
+        {timeToTransliterateArabicText && (
+          <span className='absolute right-1/3 top-1/4 font-medium text-shadow-2xs'>
+            Start Transliteration!
+          </span>
+        )}
+        <div
+          className={clsx(
+            'flex gap-5',
+            timeToTransliterateArabicText ? 'opacity-45' : 'opacity-100',
+          )}
+        >
           <Button
             onClick={handleCopy}
             className='active:scale-90 active:bg-amber-600 transition-transform transition-colors duration-150 ease-out text-white'
