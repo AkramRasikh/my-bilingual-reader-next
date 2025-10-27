@@ -28,7 +28,7 @@ const LandingScreen = () => {
     setIsSentenceReviewState,
     isWordStudyState,
     setIsWordStudyState,
-    wordsForReviewState,
+    wordsForReviewMemoized,
     wordsState,
     wordsToReviewOnMountState,
   } = useData();
@@ -53,9 +53,9 @@ const LandingScreen = () => {
   };
   const wordReview = {
     onClick: () => setIsWordStudyState(true),
-    disabled: !(wordsForReviewState.length > 0),
+    disabled: !(wordsForReviewMemoized.length > 0),
     variant: 'secondary',
-    text: `Words due (${wordsForReviewState.length})`,
+    text: `Words due (${wordsForReviewMemoized.length})`,
   };
   const addContent = {
     onClick: () => router.push('/youtube-upload'),
@@ -65,8 +65,8 @@ const LandingScreen = () => {
 
   if (isWordStudyState && wordsState.length > 0) {
     const wordStudySubHeading = `${
-      wordsToReviewOnMountState - wordsForReviewState.length
-    }/${wordsForReviewState.length} Studied`;
+      wordsToReviewOnMountState - wordsForReviewMemoized.length
+    }/${wordsForReviewMemoized.length} Studied`;
     return (
       <WordsStudyUIProvider>
         <Toaster position='top-center' />

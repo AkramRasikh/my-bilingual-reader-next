@@ -14,7 +14,7 @@ const BreadCrumbComponent = () => {
   const {
     sentencesState,
     setIsSentenceReviewState,
-    wordsForReviewState,
+    wordsForReviewMemoized,
     wordBasketState,
     setIsWordStudyState,
   } = useData();
@@ -43,9 +43,9 @@ const BreadCrumbComponent = () => {
     },
     {
       onClick: () => setIsWordStudyState(true),
-      disabled: !(wordsForReviewState.length > 0),
+      disabled: !(wordsForReviewMemoized.length > 0),
       variant: 'secondary',
-      text: `Words due (${wordsForReviewState.length})`,
+      text: `Words due (${wordsForReviewMemoized.length})`,
     },
     {
       onClick: () => router.push('/youtube-upload'),

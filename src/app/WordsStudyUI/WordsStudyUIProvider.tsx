@@ -60,7 +60,7 @@ export const WordsStudyUIProvider = ({
     pureWordsState,
     breakdownSentence,
     wordsState,
-    wordsForReviewState,
+    wordsForReviewMemoized,
     updateWordDataProvider,
   } = useData();
 
@@ -69,7 +69,7 @@ export const WordsStudyUIProvider = ({
   const sentencesData = data.sentencesData;
 
   useEffect(() => {
-    const slicedWords = wordsForReviewState.slice(0, 6);
+    const slicedWords = wordsForReviewMemoized.slice(0, 6);
     const wordsDataWithContextData = slicedWords.map((item) => {
       let contextIds = item.contexts;
 
@@ -172,7 +172,7 @@ export const WordsStudyUIProvider = ({
     });
 
     setFormattedWordsStudyState(wordsDataWithContextData);
-  }, [wordsForReviewState]);
+  }, [wordsForReviewMemoized]);
 
   const realStartTime = selectedContentState?.realStartTime || 0;
 

@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useEffect, useReducer, useState } from 'react';
+import { createContext, useEffect, useMemo, useReducer, useState } from 'react';
 import saveWordAPI from '../client-api/save-word';
 import {
   getEmptyCard,
@@ -39,7 +39,6 @@ export const DataProvider = ({
   const [generalTopicDisplayNameState, setGeneralTopicDisplayNameState] =
     useState([]);
   const [wordBasketState, setWordBasketState] = useState([]);
-  const [wordsForReviewState, setWordsForReviewState] = useState([]);
 
   const [toastMessageState, setToastMessageState] = useState('');
   const [isSentenceReviewState, setIsSentenceReviewState] = useState(false);
@@ -110,17 +109,19 @@ export const DataProvider = ({
     }
   }, [sentencesState, mountedState, pureWordsState]);
 
-  useEffect(() => {
+  const wordsForReviewMemoized = useMemo(() => {
     const dateNow = new Date();
     const wordsForReview = wordsState.filter((item) =>
       isDueCheck(item, dateNow),
     );
-    setWordsForReviewState(wordsForReview);
-    if (!isNumber(wordsToReviewOnMountState)) {
-      setWordsToReviewOnMountState(wordsForReview.length);
-    }
-  }, [wordsState, wordsToReviewOnMountState]);
+    return wordsForReview;
+  }, [wordsState]);
 
+  useEffect(() => {
+    if (!isNumber(wordsToReviewOnMountState)) {
+      setWordsToReviewOnMountState(wordsForReviewMemoized.length);
+    }
+  }, [wordsForReviewMemoized, wordsState]);
   const getPureWords = () => {
     const pureWords = [];
     wordsState?.forEach((wordData) => {
@@ -585,8 +586,7 @@ export const DataProvider = ({
         getTopicStatus,
         isWordStudyState,
         setIsWordStudyState,
-        wordsForReviewState,
-        setWordsForReviewState,
+        wordsForReviewMemoized,
         wordsToReviewOnMountState,
       }}
     >
