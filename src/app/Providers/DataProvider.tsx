@@ -55,8 +55,6 @@ export const DataProvider = ({
     contentState,
   });
 
-  const wordsFromSentences = [];
-
   const getPureWords = () => {
     const pureWords = [];
     wordsState?.forEach((wordData) => {
@@ -70,13 +68,9 @@ export const DataProvider = ({
 
     sentencesData?.forEach((sentence) => {
       if (sentence?.matchedWordsSurface) {
-        sentence?.matchedWordsSurface.forEach((item, index) => {
+        sentence?.matchedWordsSurface.forEach((item) => {
           if (item && !pureWords.includes(item)) {
             pureWords.push(item);
-            wordsFromSentences.push({
-              wordId: sentence?.matchedWordsId[index],
-              word: item,
-            });
           }
         });
       }
