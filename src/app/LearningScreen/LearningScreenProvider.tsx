@@ -838,6 +838,7 @@ export const LearningScreenProvider = ({
         setElapsed,
         playFromThisContext,
         numberOfSentencesPendingOrDueState,
+        setSentenceRepsState,
       }}
     >
       {children}
