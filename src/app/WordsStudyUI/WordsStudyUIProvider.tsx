@@ -31,7 +31,7 @@ export const WordsStudyUIProvider = ({
     useState(true);
   const [sentenceHighlightingState, setSentenceHighlightingState] =
     useState('');
-  const [sentenceRepsState, setSentenceRepsState] = useState(0);
+  const [wordsRepsState, setWordsRepsState] = useState(0);
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState(null);
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
@@ -61,6 +61,7 @@ export const WordsStudyUIProvider = ({
     breakdownSentence,
     wordsState,
     wordsForReviewState,
+    updateWordDataProvider,
   } = useData();
 
   const { data } = useFetchData();
@@ -186,6 +187,17 @@ export const WordsStudyUIProvider = ({
     if (ref.current) {
       ref.current.currentTime = time;
       ref.current.play();
+    }
+  };
+
+  const updateWordDataWordsStudyUI = async (args) => {
+    try {
+      const updateWordSuccess = await updateWordDataProvider(args);
+      if (updateWordSuccess) {
+        setWordsRepsState(wordsRepsState + 1);
+      }
+    } catch (error) {
+      console.log('## error updateWordDataWordsStudyUI', error);
     }
   };
 
@@ -426,7 +438,6 @@ export const WordsStudyUIProvider = ({
         setStudyFromHereTimeState,
         studyFromHereTimeState,
         transcriptRef,
-        sentenceRepsState,
         elapsed,
         setElapsed,
         playFromThisContext,
@@ -434,6 +445,9 @@ export const WordsStudyUIProvider = ({
         selectedElState,
         setSelectedElState,
         setLoopSecondsState,
+        updateWordDataWordsStudyUI,
+        wordsRepsState,
+        setWordsRepsState,
       }}
     >
       {children}

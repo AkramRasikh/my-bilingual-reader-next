@@ -13,7 +13,7 @@ const WordsStudyUIMediaElement = () => {
   }
 
   return (
-    <div className='w-1/2 flex flex-col gap-5'>
+    <div className='flex flex-col gap-5'>
       {contextData.map((contextDataEl, index) => {
         const isMedia = contextDataEl.isMedia;
 

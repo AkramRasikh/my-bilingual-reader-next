@@ -202,8 +202,9 @@ export const DataProvider = ({
           return item;
         });
         setWordsState(targetLanguageWordsStateUpdated);
+        setToastMessageState('Word reviewed ✅');
+        return true;
       }
-      setToastMessageState('Word reviewed ✅');
     } catch (error) {
       console.log('## updateWordDataProvider DataProvider', { error });
       setToastMessageState('Error reviewing word ❌');
