@@ -66,19 +66,24 @@ const YoutubeUploadTranscriptItem = ({
             />
           )}
         </div>
-        <div>
-          {isArabic && item?.transliteration && !openToEditState ? (
-            <span>{item.transliteration}</span>
-          ) : isArabic ? (
-            <Textarea
-              value={item.transliteration ?? ''}
-              placeholder='Transliteration language text'
-              onChange={(e) =>
-                handleChange(indexNum, 'transliteration', e.target.value)
-              }
-            />
-          ) : null}
-        </div>
+        {isArabic && (
+          <>
+            <hr />
+            <div>
+              {isArabic && item?.transliteration && !openToEditState ? (
+                <span>{item.transliteration}</span>
+              ) : isArabic ? (
+                <Textarea
+                  value={item.transliteration ?? ''}
+                  placeholder='Transliteration language text'
+                  onChange={(e) =>
+                    handleChange(indexNum, 'transliteration', e.target.value)
+                  }
+                />
+              ) : null}
+            </div>
+          </>
+        )}
       </div>
       <div className='flex-shrink-0 text-sm font-mono text-gray-600'>
         {item.time}s
