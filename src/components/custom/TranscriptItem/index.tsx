@@ -22,7 +22,7 @@ const TranscriptItem = () => {
   return (
     <TranscriptItemWrapper>
       {highlightedTextsArabicTransliteration && (
-        <p className='-top-6 p-1 z-10 absolute left-1/2 -translate-x-1/2 bg-amber-300 rounded-xl whitespace-nowrap'>
+        <p className='-top-6 p-1 absolute left-1/2 -translate-x-1/2 bg-amber-300 rounded whitespace-nowrap'>
           {highlightedTextsArabicTransliteration}
         </p>
       )}
