@@ -1,4 +1,6 @@
-import { createContext, useEffect, useRef, useState } from 'react';
+import { arabic } from '@/app/languages';
+import { transliterationMatcher } from '@/utils/transliteration-matcher';
+import { createContext, useEffect, useMemo, useRef, useState } from 'react';
 
 export const TranscriptItemContext = createContext(null);
 
@@ -60,6 +62,43 @@ export const TranscriptItemProvider = ({
   const breakdownMasterState =
     isBreakdownSentenceLoadingState ||
     isBreakingDownSentenceArrState.includes(contentItem.id);
+
+  const isArabic = languageSelectedState === arabic;
+
+  const targetLang = contentItem.targetLang;
+  const transliteration = contentItem?.transliteration;
+
+  const highlightedTextsArabicTransliteration = useMemo(() => {
+    if (!isArabic) {
+      return '';
+    }
+    if (!highlightedTextState) {
+      return '';
+    }
+
+    const transliterationLength = transliteration.split(' ').length;
+    const targetLangLength = targetLang.split(' ').length;
+    const translitEqualsTarget = transliterationLength === targetLangLength;
+
+    if (!translitEqualsTarget) {
+      return;
+    }
+
+    const firstHighlightedEl = highlightedTextState.split(' ')[0];
+
+    const highlightStart = targetLang.indexOf(firstHighlightedEl);
+    const highlightEnd = highlightStart + highlightedTextState.length;
+
+    const correspondingSegment = transliterationMatcher(
+      targetLang,
+      transliteration,
+      highlightStart,
+      highlightEnd,
+    );
+
+    return correspondingSegment;
+    // Output: "udaaharan vaakya"
+  }, [highlightedTextState, isArabic, targetLang, transliteration]);
 
   useEffect(() => {
     if (
@@ -252,6 +291,7 @@ export const TranscriptItemProvider = ({
         wordsForSelectedTopic,
         isWordStudyMode,
         languageSelectedState,
+        highlightedTextsArabicTransliteration,
       }}
     >
       {children}

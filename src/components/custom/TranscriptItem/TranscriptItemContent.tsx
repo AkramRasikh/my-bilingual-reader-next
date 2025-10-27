@@ -1,11 +1,9 @@
 import clsx from 'clsx';
-import { romanizeArabic } from 'romanize-string';
 import FormattedSentence from '@/components/custom/FormattedSentence';
 import useTranscriptItem from './useTranscriptItem';
 import useData from '@/app/Providers/useData';
 import SentenceBreakdown from '../SentenceBreakdown';
 import { arabic } from '@/app/languages';
-import { useMemo } from 'react';
 
 const TranscriptItemContent = () => {
   const {
@@ -37,6 +35,7 @@ const TranscriptItemContent = () => {
     (item) => item?.id === 'targetWord',
   );
 
+  const isArabic = languageSelectedState === arabic;
   const hasSentenceBreakdown = contentItem?.sentenceStructure;
 
   const showBreakdownBool =
@@ -56,7 +55,7 @@ const TranscriptItemContent = () => {
         />
       ) : (
         <>
-          <p className='flex gap-2 justify-end'>
+          <p className={clsx('flex gap-2', isArabic ? 'justify-end' : '')}>
             <FormattedSentence
               ref={ulRef}
               targetLangformatted={targetLangformatted}

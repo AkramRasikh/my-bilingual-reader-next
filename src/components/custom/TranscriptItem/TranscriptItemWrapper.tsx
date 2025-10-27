@@ -31,7 +31,7 @@ const TranscriptItemWrapper = ({ children }) => {
   return (
     <div
       className={clsx(
-        'rounded-lg px-2 py-1 shadow h-fit border-2 gap-1.5',
+        'rounded-lg px-2 py-1 shadow h-fit border-2 gap-1.5 relative',
         dueStatus === 'now'
           ? 'border-red-500'
           : hasBeenReviewed

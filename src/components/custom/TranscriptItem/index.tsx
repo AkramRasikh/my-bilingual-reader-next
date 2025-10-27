@@ -16,10 +16,16 @@ const TranscriptItem = () => {
     contentItem,
     handleSaveFunc,
     isWordStudyMode,
+    highlightedTextsArabicTransliteration,
   } = useTranscriptItem();
 
   return (
     <TranscriptItemWrapper>
+      {highlightedTextsArabicTransliteration && (
+        <span className='absolute -top-6 right-1/2 bg-amber-300 p-1 rounded'>
+          {highlightedTextsArabicTransliteration}
+        </span>
+      )}
       {thisSnippetOverlapState && (
         <TranscriptItemTimeOverlappingIndicator
           thisSnippetOverlapState={thisSnippetOverlapState}
