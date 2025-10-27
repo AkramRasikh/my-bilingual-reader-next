@@ -33,6 +33,7 @@ export const TranscriptItemProvider = ({
   wordsForSelectedTopic,
   isWordStudyMode,
   languageSelectedState,
+  indexNum,
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -292,6 +293,7 @@ export const TranscriptItemProvider = ({
         isWordStudyMode,
         languageSelectedState,
         highlightedTextsArabicTransliteration,
+        indexNum,
       }}
     >
       {children}

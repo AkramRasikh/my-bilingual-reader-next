@@ -11,6 +11,8 @@ const TranscriptItemWrapper = ({ children }) => {
     handleOnMouseEnterSentence,
     isInReviewMode,
     overrideMiniReviewState,
+    highlightedTextsArabicTransliteration,
+    indexNum,
   } = useTranscriptItem();
 
   const hasBeenReviewed = contentItem?.reviewData?.due;
@@ -28,6 +30,9 @@ const TranscriptItemWrapper = ({ children }) => {
     return <TranscriptItemInReviewMiniActionBar />;
   }
 
+  const isFirstInIndex =
+    indexNum === 0 && highlightedTextsArabicTransliteration;
+
   return (
     <div
       className={clsx(
@@ -39,6 +44,7 @@ const TranscriptItemWrapper = ({ children }) => {
           : 'border-blue-200',
         dueStatus !== 'now' ? 'opacity-50' : 'opacity-100',
         isInReviewMode ? 'w-full' : '',
+        isFirstInIndex ? 'mt-5' : '',
       )}
       style={{
         animation: !isInReviewMode ? fadeAnimationStyle : '',

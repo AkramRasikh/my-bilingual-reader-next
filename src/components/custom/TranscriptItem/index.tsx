@@ -22,9 +22,9 @@ const TranscriptItem = () => {
   return (
     <TranscriptItemWrapper>
       {highlightedTextsArabicTransliteration && (
-        <span className='absolute -top-6 right-1/2 bg-amber-300 p-1 rounded'>
+        <p className='-top-6 p-1 z-10 absolute left-1/2 -translate-x-1/2 bg-amber-300 rounded-xl whitespace-nowrap'>
           {highlightedTextsArabicTransliteration}
-        </span>
+        </p>
       )}
       {thisSnippetOverlapState && (
         <TranscriptItemTimeOverlappingIndicator

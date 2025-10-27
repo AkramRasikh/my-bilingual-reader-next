@@ -66,6 +66,7 @@ const LearningScreenTabTranscript = () => {
         {learnFormattedTranscript.map((contentItem, index) => (
           <TranscriptItemProvider
             key={index}
+            indexNum={index}
             threeSecondLoopState={threeSecondLoopState}
             overlappingSnippetDataState={overlappingSnippetDataState}
             setSentenceHighlightingState={setSentenceHighlightingState}
