@@ -1,8 +1,11 @@
 import clsx from 'clsx';
+import { romanizeArabic } from 'romanize-string';
 import FormattedSentence from '@/components/custom/FormattedSentence';
 import useTranscriptItem from './useTranscriptItem';
 import useData from '@/app/Providers/useData';
 import SentenceBreakdown from '../SentenceBreakdown';
+import { arabic } from '@/app/languages';
+import { useMemo } from 'react';
 
 const TranscriptItemContent = () => {
   const {
@@ -24,6 +27,7 @@ const TranscriptItemContent = () => {
   const { handleDeleteWordDataProvider } = useData();
 
   const baseLang = contentItem.baseLang;
+  const transliteration = contentItem?.transliteration;
   const wordsFromSentence = contentItem.wordsFromSentence;
   const targetLangformatted = contentItem.targetLangformatted;
 
@@ -52,7 +56,7 @@ const TranscriptItemContent = () => {
         />
       ) : (
         <>
-          <p className='flex gap-2'>
+          <p className='flex gap-2 justify-end'>
             <FormattedSentence
               ref={ulRef}
               targetLangformatted={targetLangformatted}
@@ -69,6 +73,7 @@ const TranscriptItemContent = () => {
           {!onlyShowEngState && <p>{baseLang}</p>}
         </>
       )}
+      {transliteration && <p className='mt-1 border-t-2'>{transliteration}</p>}
     </div>
   );
 };
