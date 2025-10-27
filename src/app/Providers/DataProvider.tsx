@@ -18,10 +18,9 @@ import { isDueCheck } from '@/utils/is-due-check';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { isNumber } from '@/utils/is-number';
+import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 
 export const DataContext = createContext(null);
-
-const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
 
 export const DataProvider = ({
   wordsData,
@@ -49,37 +48,14 @@ export const DataProvider = ({
     contentData,
   );
 
+  useDataSaveToLocalStorage({
+    languageSelectedState,
+    wordsState,
+    sentencesState,
+    contentState,
+  });
+
   const wordsFromSentences = [];
-
-  useEffect(() => {
-    if (!isMockEnv) {
-      console.log('## Triggering save (words)', languageSelectedState);
-      localStorage.setItem(
-        `${languageSelectedState}-wordsState`,
-        JSON.stringify(wordsState),
-      );
-    }
-  }, [wordsState]);
-
-  useEffect(() => {
-    if (!isMockEnv) {
-      console.log('## Triggering save (sentences)', languageSelectedState);
-      localStorage.setItem(
-        `${languageSelectedState}-sentencesState`,
-        JSON.stringify(sentencesState),
-      );
-    }
-  }, [sentencesState]);
-
-  useEffect(() => {
-    if (!isMockEnv) {
-      console.log('## Triggering save (content)', languageSelectedState);
-      localStorage.setItem(
-        `${languageSelectedState}-contentState`,
-        JSON.stringify(contentState),
-      );
-    }
-  }, [contentState]);
 
   const getPureWords = () => {
     const pureWords = [];
