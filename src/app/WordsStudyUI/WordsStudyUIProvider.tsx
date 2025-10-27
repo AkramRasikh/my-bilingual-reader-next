@@ -57,7 +57,7 @@ export const WordsStudyUIProvider = ({
   const [elapsed, setElapsed] = useState(0);
   const {
     contentState,
-    pureWordsState,
+    pureWordsMemoized,
     breakdownSentence,
     wordsState,
     wordsForReviewMemoized,
@@ -101,7 +101,7 @@ export const WordsStudyUIProvider = ({
                     ...thisContent[contextSentenceDataIndex - 1],
                     targetLangformatted: underlineWordsInSentence(
                       thisContent[contextSentenceDataIndex - 1].targetLang,
-                      pureWordsState,
+                      pureWordsMemoized,
                     ),
                   }
                 : null;
@@ -112,7 +112,7 @@ export const WordsStudyUIProvider = ({
                     ...thisContent[contextSentenceDataIndex + 1],
                     targetLangformatted: underlineWordsInSentence(
                       thisContent[contextSentenceDataIndex + 1].targetLang,
-                      pureWordsState,
+                      pureWordsMemoized,
                     ),
                   }
                 : null;
@@ -124,7 +124,7 @@ export const WordsStudyUIProvider = ({
               isMedia: contentItem?.origin === 'youtube',
               targetLangformatted: underlineWordsInSentence(
                 contextSentenceData.targetLang,
-                pureWordsState,
+                pureWordsMemoized,
               ),
               contentIndex: contentItem.contentIndex,
               realStartTime: contentItem?.realStartTime,
@@ -155,7 +155,7 @@ export const WordsStudyUIProvider = ({
                 ),
                 targetLangformatted: underlineWordsInSentence(
                   foundContextIdInAdhocSentences.targetLang,
-                  pureWordsState,
+                  pureWordsMemoized,
                 ),
               });
               break;

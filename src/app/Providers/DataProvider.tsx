@@ -33,7 +33,6 @@ export const DataProvider = ({
   const [wordsState, setWordsState] = useState(wordsData);
   const [sentencesState, setSentencesState] = useState([]);
   const [story, setStory] = useState();
-  const [pureWordsState, setPureWordsState] = useState([]);
   const [mountedState, setMountedState] = useState(false);
   const [isWordStudyState, setIsWordStudyState] = useState(false);
   const [generalTopicDisplayNameState, setGeneralTopicDisplayNameState] =
@@ -82,46 +81,6 @@ export const DataProvider = ({
     }
   }, [contentState]);
 
-  useEffect(() => {
-    if (
-      sentencesState.length === 0 &&
-      sentencesData?.length > 0 &&
-      pureWordsState.length > 0 &&
-      !mountedState
-    ) {
-      const dateNow = new Date();
-      const dueCardsNow = sentencesData.filter((sentence) =>
-        isDueCheck(sentence, dateNow),
-      );
-
-      const formatSentence = dueCardsNow?.map((item) => {
-        return {
-          ...item,
-          targetLangformatted: underlineWordsInSentence(
-            item.targetLang,
-            pureWordsState,
-          ), // should all be moved eventually to new sentence sphere
-        };
-      });
-
-      setMountedState(true);
-      setSentencesState(formatSentence);
-    }
-  }, [sentencesState, mountedState, pureWordsState]);
-
-  const wordsForReviewMemoized = useMemo(() => {
-    const dateNow = new Date();
-    const wordsForReview = wordsState.filter((item) =>
-      isDueCheck(item, dateNow),
-    );
-    return wordsForReview;
-  }, [wordsState]);
-
-  useEffect(() => {
-    if (!isNumber(wordsToReviewOnMountState)) {
-      setWordsToReviewOnMountState(wordsForReviewMemoized.length);
-    }
-  }, [wordsForReviewMemoized, wordsState]);
   const getPureWords = () => {
     const pureWords = [];
     wordsState?.forEach((wordData) => {
@@ -151,10 +110,50 @@ export const DataProvider = ({
     return pureWordsUnique;
   };
 
+  const pureWordsMemoized = useMemo(
+    () => getPureWords(),
+    [getPureWords, wordsState],
+  );
   useEffect(() => {
-    const pureWords = getPureWords();
-    setPureWordsState(pureWords);
+    if (
+      sentencesState.length === 0 &&
+      sentencesData?.length > 0 &&
+      pureWordsMemoized.length > 0 &&
+      !mountedState
+    ) {
+      const dateNow = new Date();
+      const dueCardsNow = sentencesData.filter((sentence) =>
+        isDueCheck(sentence, dateNow),
+      );
+
+      const formatSentence = dueCardsNow?.map((item) => {
+        return {
+          ...item,
+          targetLangformatted: underlineWordsInSentence(
+            item.targetLang,
+            pureWordsMemoized,
+          ), // should all be moved eventually to new sentence sphere
+        };
+      });
+
+      setMountedState(true);
+      setSentencesState(formatSentence);
+    }
+  }, [sentencesState, mountedState, pureWordsMemoized]);
+
+  const wordsForReviewMemoized = useMemo(() => {
+    const dateNow = new Date();
+    const wordsForReview = wordsState.filter((item) =>
+      isDueCheck(item, dateNow),
+    );
+    return wordsForReview;
   }, [wordsState]);
+
+  useEffect(() => {
+    if (!isNumber(wordsToReviewOnMountState)) {
+      setWordsToReviewOnMountState(wordsForReviewMemoized.length);
+    }
+  }, [wordsForReviewMemoized, wordsState]);
 
   const updateWordDataProvider = async ({
     wordId,
@@ -557,7 +556,7 @@ export const DataProvider = ({
     <DataContext.Provider
       value={{
         wordsData,
-        pureWordsState,
+        pureWordsMemoized,
         handleSaveWord,
         wordsState,
         setWordsState,

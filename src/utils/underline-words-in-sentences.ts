@@ -1,7 +1,7 @@
-export const underlineWordsInSentence = (sentence, pureWordsState) => {
-  if (pureWordsState?.length === 0) return [{ text: sentence, style: {} }];
+export const underlineWordsInSentence = (sentence, pureWordsMemoized) => {
+  if (pureWordsMemoized?.length === 0) return [{ text: sentence, style: {} }];
 
-  const pattern = new RegExp(`(${pureWordsState.join('|')})`, 'g');
+  const pattern = new RegExp(`(${pureWordsMemoized.join('|')})`, 'g');
 
   const targetLangformatted = [] as any;
 

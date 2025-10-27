@@ -83,7 +83,7 @@ export const LearningScreenProvider = ({
     contentState,
     updateSentenceData,
     sentenceReviewBulk,
-    pureWordsState,
+    pureWordsMemoized,
     breakdownSentence,
     wordsState,
   } = useData();
@@ -138,7 +138,7 @@ export const LearningScreenProvider = ({
 
       const targetLangformatted = underlineWordsInSentence(
         item.targetLang,
-        pureWordsState,
+        pureWordsMemoized,
       );
       const wordsFromSentence = findAllInstancesOfWordsInSentence(
         item.targetLang,
@@ -330,7 +330,7 @@ export const LearningScreenProvider = ({
     if (content) {
       getFormattedData();
     }
-  }, [pureWordsState, content]);
+  }, [pureWordsMemoized, content]);
 
   useEffect(() => {
     if (isInReviewMode) {
