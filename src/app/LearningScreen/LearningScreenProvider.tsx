@@ -61,7 +61,6 @@ export const LearningScreenProvider = ({
   const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
     [],
   );
-  const [wordsForSelectedTopic, setWordsForSelectedTopic] = useState([]);
   const [overlappingSnippetDataState, setOverlappingSnippetDataState] =
     useState([]);
 
@@ -285,7 +284,7 @@ export const LearningScreenProvider = ({
     return contentOfGenTopic;
   };
 
-  const getSelectedTopicsWordsFunc = (content, isDueBool) => {
+  const getSelectedTopicsWordsFunc = (content, isDueBool = false) => {
     const todayDateObj = new Date();
     const thisTopicsSentenceIds = content.map((i) => i.id);
 
@@ -460,24 +459,20 @@ export const LearningScreenProvider = ({
     setTimeout(() => setScrollToElState(''), 300);
   };
 
-  const getSelectedTopicsWords = () => {
-    if (!selectedContentStateMemoized || wordsState?.length === 0) {
-      return null;
-    }
-
-    return getSelectedTopicsWordsFunc(selectedContentStateMemoized.content);
-  };
-
-  useEffect(() => {
+  const wordsForSelectedTopicMemoized = useMemo(() => {
     if (selectedContentStateMemoized && wordsState?.length > 0) {
       const dateNow = new Date();
-      const wordsForThisTopic = getSelectedTopicsWords();
+      const wordsForThisTopic = getSelectedTopicsWordsFunc(
+        selectedContentStateMemoized.content,
+      );
       const sortedWordsForThisTopic = wordsForThisTopic?.sort(
         (a, b) => isDueCheck(b, dateNow) - isDueCheck(a, dateNow),
       );
-      setWordsForSelectedTopic(sortedWordsForThisTopic);
+      return sortedWordsForThisTopic;
     }
-  }, [wordsState, selectedContentStateMemoized]);
+
+    return [];
+  }, [getSelectedTopicsWordsFunc, wordsState, selectedContentStateMemoized]);
 
   const handleBulkReviews = async () => {
     const emptyCard = getEmptyCard();
@@ -783,7 +778,6 @@ export const LearningScreenProvider = ({
     setSecondsState([]);
     setIsInReviewMode(false);
     setStudyFromHereTimeState(null);
-    setWordsForSelectedTopic([]);
     setSelectedContentTitleState('');
   };
 
@@ -878,7 +872,7 @@ export const LearningScreenProvider = ({
         checkHowManyOfTopicNeedsReview,
         getGeneralContentMetaData,
         getGeneralContentWordData,
-        wordsForSelectedTopic,
+        wordsForSelectedTopic: wordsForSelectedTopicMemoized,
         selectedContentState: selectedContentStateMemoized,
         handleOnHome,
         sentenceRepsState,
