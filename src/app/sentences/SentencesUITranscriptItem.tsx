@@ -2,10 +2,12 @@ import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 import useData from '../Providers/useData';
 import { useFetchData } from '../Providers/FetchDataProvider';
+import { useSentencesUIScreen } from './SentencesUIProvider';
 
 const SentencesUITranscriptItem = ({ sentence, sentenceIndex }) => {
   const { wordsState } = useData();
   const { languageSelectedState } = useFetchData();
+  const { handleReviewFunc } = useSentencesUIScreen();
   return (
     <TranscriptItemProvider
       contentItem={sentence}
@@ -26,7 +28,7 @@ const SentencesUITranscriptItem = ({ sentence, sentenceIndex }) => {
       onlyShowEngState={false}
       setLoopTranscriptState={() => {}}
       loopTranscriptState={[]}
-      handleReviewFunc={() => {}}
+      handleReviewFunc={handleReviewFunc}
       isVideoPlaying={false} //isVideoPlaying
       handlePause={() => {}} //handlePause
       handleBreakdownSentence={() => {}}

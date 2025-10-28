@@ -10,6 +10,7 @@ import {
 import useData from '../Providers/useData';
 import useSentencesProgress from './useSentencesProgress';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 const SentencesUIContext = createContext(null);
 
@@ -21,10 +22,9 @@ export const SentencesUIProvider = ({
   const [selectedElState, setSelectedElState] = useState(2);
   const [progressState, setProgressState] = useState(0);
   const [initNumState, setInitNumState] = useState();
-  const { sentencesState } = useData();
 
-  const { wordsState } = useData();
-
+  const { sentencesState, wordsState, updateAdhocSentenceData } = useData();
+  const { languageSelectedState } = useFetchData();
   const numberOfSentences = sentencesState.length;
 
   useEffect(() => {
@@ -39,11 +39,26 @@ export const SentencesUIProvider = ({
     numberOfSentences,
   });
 
+  const handleReviewFunc = async (arg) => {
+    if (arg?.isRemoveReview) {
+      await updateAdhocSentenceData({
+        ...arg,
+        language: languageSelectedState,
+        fieldToUpdate: { reviewData: {} },
+      });
+    } else {
+      await updateAdhocSentenceData({
+        ...arg,
+        language: languageSelectedState,
+        fieldToUpdate: { reviewData: arg.nextDue },
+      });
+    }
+  };
+
   const sentencesInQueue = sentencesState.slice(0, 5);
 
   const selectedSentenceDataMemoized = useMemo(() => {
     const selectedEl = sentencesInQueue[selectedElState];
-    console.log('## selectedEl', selectedEl);
     const matchedWordsId = selectedEl.matchedWordsId;
     const matchedWordsViaState = [];
 
@@ -80,6 +95,8 @@ export const SentencesUIProvider = ({
         selectedElState,
         setSelectedElState,
         selectedSentenceDataMemoized,
+        initNumState,
+        handleReviewFunc,
       }}
     >
       {children}

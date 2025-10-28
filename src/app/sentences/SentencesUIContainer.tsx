@@ -1,10 +1,10 @@
 import { Toaster } from 'sonner';
-import { Progress } from '@/components/ui/progress';
 import SentencesUITranscriptItem from './SentencesUITranscriptItem';
 import { useSentencesUIScreen } from './SentencesUIProvider';
 import WordCard from '@/components/custom/WordCard';
 import useData from '../Providers/useData';
 import { useFetchData } from '../Providers/FetchDataProvider';
+import ProgressHeader from '@/components/custom/ProgressHeader';
 
 const SentencesUIContainer = () => {
   const {
@@ -12,6 +12,7 @@ const SentencesUIContainer = () => {
     progressState,
     numberOfSentences,
     selectedSentenceDataMemoized,
+    initNumState,
   } = useSentencesUIScreen();
 
   const { updateWordDataProvider } = useData();
@@ -20,12 +21,19 @@ const SentencesUIContainer = () => {
   const thisItemsWords = selectedSentenceDataMemoized?.words;
   const thisItemsNotes = selectedSentenceDataMemoized?.notes;
 
+  const numberOfStudiedSentences = initNumState - numberOfSentences;
+
+  const progressText = `${numberOfStudiedSentences}/${initNumState}`;
+
   return (
     <div>
       <Toaster position='top-center' />
-      <Progress value={progressState} className='w-full' />
-
-      <p className='text-center my-2'>{numberOfSentences} Sentences</p>
+      <div className='max-w-md m-auto'>
+        <ProgressHeader
+          progressState={progressState}
+          progressText={progressText}
+        />
+      </div>
       <div className='grid grid-cols-2 gap-2 max-w-6xl mx-auto'>
         <div>
           <ul className='flex flex-col gap-2 mb-2'>
