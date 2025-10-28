@@ -48,7 +48,7 @@ const WordCard = ({
 
   const isDueText = !isWordDue
     ? getTimeDiffSRS({
-        dueTimeStamp: new Date(reviewData.due),
+        dueTimeStamp: new Date(reviewData?.due),
         timeNow: timeNow,
       })
     : '';
