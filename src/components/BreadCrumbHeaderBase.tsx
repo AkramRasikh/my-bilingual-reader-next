@@ -14,6 +14,7 @@ const BreadCrumbHeaderBase = ({
   heading,
   subHeading,
   navigationButtons,
+  progressHeaderComponent,
   withBasket = true,
 }) => (
   <div className='flex justify-between w-full'>
@@ -36,6 +37,9 @@ const BreadCrumbHeaderBase = ({
         )}
       </BreadcrumbList>
     </Breadcrumb>
+    {progressHeaderComponent && (
+      <div className='w-md my-auto'>{progressHeaderComponent()}</div>
+    )}
     <div>
       {withBasket && <BasketDialogue />}
       {navigationButtons?.()}
