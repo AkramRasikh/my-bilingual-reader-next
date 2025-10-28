@@ -36,7 +36,7 @@ const SentencesUITranscriptItem = ({ sentence, sentenceIndex }) => {
       latestDueIdState={false}
       scrollToElState={''}
       wordsForSelectedTopic={[]}
-      isWordStudyMode={true}
+      isWordStudyMode
     >
       <TranscriptItem />
     </TranscriptItemProvider>
