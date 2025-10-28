@@ -34,8 +34,7 @@ export const DataProvider = ({
   const [story, setStory] = useState();
   const [mountedState, setMountedState] = useState(false);
   const [isWordStudyState, setIsWordStudyState] = useState(false);
-  const [generalTopicDisplayNameState, setGeneralTopicDisplayNameState] =
-    useState([]);
+
   const [wordBasketState, setWordBasketState] = useState([]);
 
   const [toastMessageState, setToastMessageState] = useState('');
@@ -47,6 +46,26 @@ export const DataProvider = ({
     contentReducer,
     contentData,
   );
+
+  const generalTopicDisplayNameMemoized = useMemo(() => {
+    const generalNamesArr = [];
+
+    for (const contentItem of contentState) {
+      const itemGenName = contentItem.generalTopicName;
+      const isMedia = contentItem?.origin === 'youtube';
+      if (
+        isMedia &&
+        !generalNamesArr.some((item) => item.title === itemGenName)
+      ) {
+        const youtubeId = contentItem?.url?.split('=')[1];
+        generalNamesArr.push({
+          title: itemGenName,
+          youtubeId,
+        });
+      }
+    }
+    return generalNamesArr;
+  }, [contentState]);
 
   useDataSaveToLocalStorage({
     languageSelectedState,
@@ -536,8 +555,7 @@ export const DataProvider = ({
         sentenceReviewBulk,
         breakdownSentence,
         updateContentMetaData,
-        generalTopicDisplayNameState,
-        setGeneralTopicDisplayNameState,
+        generalTopicDisplayNameMemoized,
         handleGetComprehensiveReview,
         updateWordDataProvider,
         sentencesState,

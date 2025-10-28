@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import LearningScreen from '../LearningScreen';
 import useData from '../Providers/useData';
 import LandingUIContentSelection from './LandingUIContentSelection';
@@ -7,7 +7,6 @@ import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider
 import { toast, Toaster } from 'sonner';
 import SentencesUIContainer from '../sentences/SentencesUIContainer';
 import MockFlag from '../../components/custom/MockFlag';
-import useLandingScreenLoadGeneralTopicsDisplay from './useLandingUILoadGeneralTopicsDisplay';
 import BreadcrumbComponent from '../../components/custom/BreadCrumbHeader';
 import { Button } from '@/components/ui/button';
 import { WordsStudyUIProvider } from '../WordsStudyUI/WordsStudyUIProvider';
@@ -19,7 +18,7 @@ const LandingScreen = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
 
   const {
-    generalTopicDisplayNameState,
+    generalTopicDisplayNameMemoized,
     generalTopicDisplayNameSelectedState,
     sentencesState,
     toastMessageState,
@@ -41,8 +40,6 @@ const LandingScreen = () => {
       setTimeout(() => setToastMessageState(''), 1000);
     }
   }, [toastMessageState]);
-
-  useLandingScreenLoadGeneralTopicsDisplay();
 
   const numberOfSentences = sentencesState.length;
   const sentenceReview = {
@@ -130,7 +127,7 @@ const LandingScreen = () => {
         generalTopicDisplayNameSelectedState={
           generalTopicDisplayNameSelectedState
         }
-        generalTopicDisplayNameState={generalTopicDisplayNameState}
+        generalTopicDisplayNameMemoized={generalTopicDisplayNameMemoized}
         isSentenceReviewState={isSentenceReviewState}
         setIsSentenceReviewState={setIsSentenceReviewState}
         numberOfSentences={numberOfSentences}

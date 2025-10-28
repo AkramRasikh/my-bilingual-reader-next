@@ -4,13 +4,13 @@ import useLearningScreen from '../LearningScreen/useLearningScreen';
 
 const LandingScreenContentSelection = ({
   generalTopicDisplayNameSelectedState,
-  generalTopicDisplayNameState,
+  generalTopicDisplayNameMemoized,
 }) => {
   const { handleSelectInitialTopic, selectedContentState } =
     useLearningScreen();
   const { contentSelectionState } = useLandingScreenContentSelection({
     generalTopicDisplayNameSelectedState,
-    generalTopicDisplayNameState,
+    generalTopicDisplayNameMemoized,
   });
 
   return (

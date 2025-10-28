@@ -3,18 +3,18 @@ import useData from '../Providers/useData';
 
 const useLandingScreenContentSelection = ({
   generalTopicDisplayNameSelectedState,
-  generalTopicDisplayNameState,
+  generalTopicDisplayNameMemoized,
 }) => {
   const { getYoutubeID, checkTopicNeedsReviewBool, getTopicStatus } = useData();
   const [contentSelectionState, setContentSelectionState] = useState([]);
 
   useEffect(() => {
     if (
-      generalTopicDisplayNameState?.length > 0 &&
+      generalTopicDisplayNameMemoized?.length > 0 &&
       contentSelectionState?.length === 0
     ) {
       const today = new Date();
-      const comprehensiveState = generalTopicDisplayNameState.map(
+      const comprehensiveState = generalTopicDisplayNameMemoized.map(
         ({ youtubeId, title }) => {
           const { isThisDue, isThisNew, hasAllBeenReviewed } = getTopicStatus(
             title,
@@ -49,7 +49,7 @@ const useLandingScreenContentSelection = ({
     generalTopicDisplayNameSelectedState,
     checkTopicNeedsReviewBool,
     getYoutubeID,
-    generalTopicDisplayNameState,
+    generalTopicDisplayNameMemoized,
   ]);
 
   return { contentSelectionState };
