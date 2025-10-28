@@ -4,14 +4,13 @@ import useData from '../Providers/useData';
 import { Progress } from '@/components/ui/progress';
 import { useEffect, useState } from 'react';
 import useSentencesProgress from './useSentencesProgress';
-import SentenceBlockContainer from './SentenceBlockContainer';
-import { useFetchData } from '../Providers/FetchDataProvider';
+import TranscriptItem from '@/components/custom/TranscriptItem';
+import SentencesUITranscriptItem from './SentencesUITranscriptItem';
 
 const SentencesUIContainer = () => {
   const [progressState, setProgressState] = useState(0);
   const [initNumState, setInitNumState] = useState();
   const { sentencesState } = useData();
-  const { languageSelectedState } = useFetchData();
 
   const numberOfSentences = sentencesState.length;
 
@@ -40,11 +39,15 @@ const SentencesUIContainer = () => {
           const sentenceIndex = index + 1 + ') ';
           return (
             <li key={sentence.id} className='mb-2'>
-              <SentenceBlockContainer
+              <SentencesUITranscriptItem
+                sentence={sentence}
+                sentenceIndex={sentenceIndex}
+              />
+              {/* <SentenceBlockContainer
                 sentence={sentence}
                 sentenceIndex={sentenceIndex}
                 languageSelectedState={languageSelectedState}
-              />
+              /> */}
             </li>
           );
         })}
