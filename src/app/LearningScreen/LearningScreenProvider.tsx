@@ -53,6 +53,8 @@ export const LearningScreenProvider = ({
   const [firstDueIndexState, setFirstDueIndexState] = useState(0);
   const [sentenceRepsState, setSentenceRepsState] = useState(0);
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState(null);
+  const [selectedContentTitleState, setSelectedContentTitleState] =
+    useState('');
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
   );
@@ -66,7 +68,6 @@ export const LearningScreenProvider = ({
     useState([]);
 
   const [loopTranscriptState, setLoopTranscriptState] = useState([]);
-  const [selectedContentState, setSelectedContentState] = useState();
   const [threeSecondLoopState, setThreeSecondLoopState] = useState<
     number | null
   >();
@@ -88,7 +89,21 @@ export const LearningScreenProvider = ({
     wordsState,
   } = useData();
 
-  const realStartTime = selectedContentState?.realStartTime || 0;
+  const selectedContentStateMemoized = useMemo(() => {
+    if (!selectedContentTitleState) {
+      return null;
+    }
+
+    const thisContent = contentState.find(
+      (item) => item?.title === selectedContentTitleState,
+    );
+    if (thisContent) {
+      return thisContent;
+    }
+    return null;
+  }, [contentState, selectedContentTitleState]);
+
+  const realStartTime = selectedContentStateMemoized?.realStartTime || 0;
 
   const masterPlay =
     currentTime && loopSecondsState.length > 0
@@ -97,7 +112,7 @@ export const LearningScreenProvider = ({
       ? secondsState[Math.floor(currentTime)]
       : '';
 
-  const content = selectedContentState?.content;
+  const content = selectedContentStateMemoized?.content;
 
   const handlePlayFromHere = (time: number) => {
     if (ref.current) {
@@ -179,12 +194,13 @@ export const LearningScreenProvider = ({
   };
 
   const getNextTranscript = (isNext) => {
-    const nextIndex = selectedContentState.contentIndex + (isNext ? +1 : -1);
+    const nextIndex =
+      selectedContentStateMemoized.contentIndex + (isNext ? +1 : -1);
 
-    const thisContent = contentState.find(
+    const thisContentTitle = contentState.find(
       (item) => item?.title === contentState[nextIndex]?.title,
-    );
-    setSelectedContentState(thisContent);
+    )?.title;
+    setSelectedContentTitleState(thisContentTitle);
   };
 
   const getGeneralContentMetaData = () => {
@@ -226,7 +242,7 @@ export const LearningScreenProvider = ({
         hasBeenReviewed: reviewHistory,
         sentencesNeedReview,
         title,
-        isSelected: selectedContentState.title === title,
+        isSelected: selectedContentStateMemoized.title === title,
         dueOrPending,
       };
     });
@@ -312,18 +328,8 @@ export const LearningScreenProvider = ({
     return sentencesNeedReview;
   };
 
-  useEffect(() => {
-    // figure out conditions here
-    if (selectedContentState && !selectedContentState?.isFullReview) {
-      setSelectedContentState(contentState[selectedContentState.contentIndex]);
-    }
-  }, [selectedContentState, contentState]);
-
   const handleSelectedContent = (thisYoutubeTitle) => {
-    const thisContent = contentState.find(
-      (item) => item?.title === thisYoutubeTitle,
-    );
-    setSelectedContentState(thisContent);
+    setSelectedContentTitleState(thisYoutubeTitle);
   };
 
   useEffect(() => {
@@ -421,15 +427,15 @@ export const LearningScreenProvider = ({
   };
 
   const getSelectedTopicsWords = () => {
-    if (!selectedContentState || wordsState?.length === 0) {
+    if (!selectedContentStateMemoized || wordsState?.length === 0) {
       return null;
     }
 
-    return getSelectedTopicsWordsFunc(selectedContentState.content);
+    return getSelectedTopicsWordsFunc(selectedContentStateMemoized.content);
   };
 
   useEffect(() => {
-    if (selectedContentState && wordsState?.length > 0) {
+    if (selectedContentStateMemoized && wordsState?.length > 0) {
       const dateNow = new Date();
       const wordsForThisTopic = getSelectedTopicsWords();
       const sortedWordsForThisTopic = wordsForThisTopic?.sort(
@@ -437,7 +443,7 @@ export const LearningScreenProvider = ({
       );
       setWordsForSelectedTopic(sortedWordsForThisTopic);
     }
-  }, [wordsState, selectedContentState]);
+  }, [wordsState, selectedContentStateMemoized]);
 
   const handleBulkReviews = async () => {
     const emptyCard = getEmptyCard();
@@ -450,7 +456,7 @@ export const LearningScreenProvider = ({
       contentType: srsRetentionKeyTypes.sentences,
     });
 
-    const contentIndex = selectedContentState?.contentIndex;
+    const contentIndex = selectedContentStateMemoized?.contentIndex;
     const hasContentToReview = content?.some(
       (sentenceWidget) => sentenceWidget?.reviewData,
     );
@@ -467,7 +473,7 @@ export const LearningScreenProvider = ({
     try {
       setIsGenericItemLoadingState((prev) => [...prev, ...sentenceIds]);
       await sentenceReviewBulk({
-        topicName: selectedContentState.title,
+        topicName: selectedContentStateMemoized.title,
         fieldToUpdate: {
           reviewData: nextDueCard,
         },
@@ -490,14 +496,14 @@ export const LearningScreenProvider = ({
       card: cardDataRelativeToNow,
       contentType: srsRetentionKeyTypes.sentences,
     });
-    const isFullReview = selectedContentState?.isFullReview;
-    const contentIndex = selectedContentState?.contentIndex;
+    const isFullReview = selectedContentStateMemoized?.isFullReview;
+    const contentIndex = selectedContentStateMemoized?.contentIndex;
 
     try {
       await updateSentenceData({
         topicName: isFullReview
           ? getThisSentenceInfo(sentenceId).title
-          : selectedContentState.title,
+          : selectedContentStateMemoized.title,
         sentenceId,
         fieldToUpdate: {
           reviewData: isRemoveReview
@@ -637,12 +643,12 @@ export const LearningScreenProvider = ({
     }
 
     const thisSentenceTargetLang = thisSentence.targetLang;
-    const contentIndex = selectedContentState?.contentIndex;
+    const contentIndex = selectedContentStateMemoized?.contentIndex;
 
     try {
       setIsBreakingDownSentenceArrState((prev) => [...prev, currentMasterPlay]);
       await breakdownSentence({
-        topicName: selectedContentState.title,
+        topicName: selectedContentStateMemoized.title,
         sentenceId: currentMasterPlay,
         targetLang: thisSentenceTargetLang,
         contentIndex,
@@ -741,23 +747,31 @@ export const LearningScreenProvider = ({
   const handleOnHome = () => {
     setGeneralTopicDisplayNameSelectedState('');
     setSecondsState([]);
-    setSelectedContentState(null);
     setFormattedTranscriptState([]);
     setIsInReviewMode(false);
     setFirstDueIndexState(0);
     setStudyFromHereTimeState(null);
     setWordsForSelectedTopic([]);
+    setSelectedContentTitleState('');
   };
 
   const contentMetaMemoized = useMemo(() => {
     if (!generalTopicDisplayNameSelectedState) return null;
     return getGeneralContentMetaData();
-  }, [generalTopicDisplayNameSelectedState, wordsState, selectedContentState]);
+  }, [
+    generalTopicDisplayNameSelectedState,
+    wordsState,
+    selectedContentStateMemoized,
+  ]);
 
   const contentMetaWordMemoized = useMemo(() => {
     if (!generalTopicDisplayNameSelectedState) return null;
     return getGeneralContentWordData();
-  }, [generalTopicDisplayNameSelectedState, wordsState, selectedContentState]);
+  }, [
+    generalTopicDisplayNameSelectedState,
+    wordsState,
+    selectedContentStateMemoized,
+  ]);
 
   return (
     <LearningScreenContext.Provider
@@ -834,8 +848,7 @@ export const LearningScreenProvider = ({
         getGeneralContentMetaData,
         getGeneralContentWordData,
         wordsForSelectedTopic,
-        selectedContentState,
-        setSelectedContentState,
+        selectedContentState: selectedContentStateMemoized,
         handleOnHome,
         sentenceRepsState,
         elapsed,
