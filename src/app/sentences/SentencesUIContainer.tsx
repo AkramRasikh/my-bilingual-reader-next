@@ -5,7 +5,6 @@ import { useSentencesUIScreen } from './SentencesUIProvider';
 import WordCard from '@/components/custom/WordCard';
 import useData from '../Providers/useData';
 import { useFetchData } from '../Providers/FetchDataProvider';
-import { Button } from '@/components/ui/button';
 
 const SentencesUIContainer = () => {
   const {
@@ -13,7 +12,6 @@ const SentencesUIContainer = () => {
     progressState,
     numberOfSentences,
     selectedSentenceDataMemoized,
-    setSelectedElState,
   } = useSentencesUIScreen();
 
   const { updateWordDataProvider } = useData();
@@ -46,7 +44,7 @@ const SentencesUIContainer = () => {
             })}
           </ul>
           {thisItemsNotes && (
-            <p className='text-xs font-medium italic max-w-lg m-auto'>
+            <p className='text-sm font-medium italic max-w-lg m-auto'>
               Sentence notes: {thisItemsNotes}
             </p>
           )}
@@ -61,9 +59,6 @@ const SentencesUIContainer = () => {
                     sentence={sentence}
                     sentenceIndex={sentenceIndex}
                   />
-                  {/* <Button onClick={() => setSelectedElState(index)}>
-                    this
-                  </Button> */}
                 </li>
               );
             })}

@@ -3,7 +3,12 @@ import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
 import useTranscriptItem from './useTranscriptItem';
 
 const TranscriptItemReviewSection = () => {
-  const { contentItem, isInReviewMode, handleReviewFunc } = useTranscriptItem();
+  const {
+    contentItem,
+    isInReviewMode,
+    isSentenceReviewMode,
+    handleReviewFunc,
+  } = useTranscriptItem();
 
   const hasBeenReviewed = contentItem?.reviewData?.due;
   const timeNow = new Date();
@@ -11,7 +16,7 @@ const TranscriptItemReviewSection = () => {
 
   return (
     <>
-      {isInReviewMode && isDueNow ? (
+      {(isSentenceReviewMode || isInReviewMode) && isDueNow ? (
         <ReviewSRSToggles
           contentItem={contentItem}
           handleReviewFunc={handleReviewFunc}

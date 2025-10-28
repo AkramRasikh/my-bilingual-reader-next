@@ -23,7 +23,6 @@ const SentencesUITranscriptItem = ({ sentence, sentenceIndex }) => {
       handleSaveWord={() => {}} //handleSaveWord
       handleDeleteWordDataProvider={() => {}} //handleDeleteWordDataProvider
       wordsState={wordsState}
-      isInReviewMode={false}
       onlyShowEngState={false}
       setLoopTranscriptState={() => {}}
       loopTranscriptState={[]}
@@ -33,10 +32,8 @@ const SentencesUITranscriptItem = ({ sentence, sentenceIndex }) => {
       handleBreakdownSentence={() => {}}
       handleFromHere={() => {}} //handleAudio(transcriptItem.id, transcriptItem.time)
       setBreakdownSentencesArrState={() => {}}
-      latestDueIdState={false}
-      scrollToElState={''}
       wordsForSelectedTopic={[]}
-      isWordStudyMode
+      isSentenceReviewMode
     >
       <TranscriptItem />
     </TranscriptItemProvider>

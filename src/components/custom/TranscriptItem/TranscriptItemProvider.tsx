@@ -34,6 +34,7 @@ export const TranscriptItemProvider = ({
   isWordStudyMode,
   languageSelectedState,
   indexNum,
+  isSentenceReviewMode,
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -310,6 +311,7 @@ export const TranscriptItemProvider = ({
         isWordStudyMode,
         languageSelectedState,
         highlightedTextsArabicTransliteration,
+        isSentenceReviewMode,
         indexNum,
       }}
     >

@@ -17,6 +17,7 @@ const TranscriptItem = () => {
     handleSaveFunc,
     isWordStudyMode,
     highlightedTextsArabicTransliteration,
+    isSentenceReviewMode,
   } = useTranscriptItem();
 
   return (
@@ -35,7 +36,9 @@ const TranscriptItem = () => {
         <TranscriptItemActionBar />
         <div className='flex w-full gap-1 justify-between'>
           <TranscriptItemContent />
-          {!isWordStudyMode && <TranscriptItemMenuSection />}
+          {!isWordStudyMode && !isSentenceReviewMode && (
+            <TranscriptItemMenuSection />
+          )}
         </div>
       </div>
       {!isWordStudyMode && <TranscriptItemReviewSection />}
