@@ -2,13 +2,24 @@
 
 import PageContainer from '@/components/custom/PageContainer';
 import { DataProvider } from '../Providers/DataProvider';
-import { useFetchData } from '../Providers/FetchDataProvider';
-import SentenceReviewContainer from './SentencesUIContainer';
+import {
+  FetchDataProvider,
+  useFetchData,
+} from '../Providers/FetchDataProvider';
+import SentencesUIContainer from './SentencesUIContainer';
+import { SentencesUIProvider } from './SentencesUIProvider';
+import SentencesUIBreadCrumbHeader from './SentencesUIBreadCrumbHeader';
+import LoadingSpinner from '@/components/custom/LoadingSpinner';
 
-export default function SentencesPage() {
+const SentencePageContent = () => {
   const { data, languageSelectedState } = useFetchData();
 
-  if (!data || !languageSelectedState) return <p>Loading...</p>;
+  if (!data || !languageSelectedState)
+    return (
+      <PageContainer>
+        <LoadingSpinner big />
+      </PageContainer>
+    );
   const { wordsData, sentencesData, contentData } = data;
 
   return (
@@ -17,9 +28,21 @@ export default function SentencesPage() {
         wordsData={wordsData}
         sentencesData={sentencesData}
         contentData={contentData}
+        languageSelectedState={languageSelectedState}
       >
-        <SentenceReviewContainer />
+        <SentencesUIProvider>
+          <SentencesUIBreadCrumbHeader />
+          <SentencesUIContainer />
+        </SentencesUIProvider>
       </DataProvider>
     </PageContainer>
+  );
+};
+
+export default function SentencesPage() {
+  return (
+    <FetchDataProvider>
+      <SentencePageContent />
+    </FetchDataProvider>
   );
 }

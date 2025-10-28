@@ -58,8 +58,12 @@ export const SentencesUIProvider = ({
   const sentencesInQueue = sentencesState.slice(0, 5);
 
   const selectedSentenceDataMemoized = useMemo(() => {
+    if (sentencesInQueue.length === 0) {
+      return [];
+    }
     const selectedEl = sentencesInQueue[selectedElState];
-    const matchedWordsId = selectedEl.matchedWordsId;
+
+    const matchedWordsId = selectedEl?.matchedWordsId;
     const matchedWordsViaState = [];
 
     const allInstancesOfthisWord = findAllInstancesOfWordsInSentence(
@@ -68,7 +72,7 @@ export const SentencesUIProvider = ({
     );
 
     wordsState.forEach((wordItem) => {
-      if (matchedWordsId.includes(wordItem.id)) {
+      if (matchedWordsId?.includes(wordItem.id)) {
         matchedWordsViaState.push(wordItem);
       }
     });

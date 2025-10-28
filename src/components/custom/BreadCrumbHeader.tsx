@@ -36,7 +36,7 @@ const BreadCrumbComponent = () => {
 
   const buttonsArr = [
     {
-      onClick: () => setIsSentenceReviewState(true),
+      onClick: () => router.push('/sentences'),
       disabled: !(numberOfSentences > 0),
       variant: 'secondary',
       text: `Sentence reviews (${numberOfSentences})`,

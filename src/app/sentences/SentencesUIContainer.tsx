@@ -4,36 +4,19 @@ import { useSentencesUIScreen } from './SentencesUIProvider';
 import WordCard from '@/components/custom/WordCard';
 import useData from '../Providers/useData';
 import { useFetchData } from '../Providers/FetchDataProvider';
-import ProgressHeader from '@/components/custom/ProgressHeader';
 
 const SentencesUIContainer = () => {
-  const {
-    sentencesInQueue,
-    progressState,
-    numberOfSentences,
-    selectedSentenceDataMemoized,
-    initNumState,
-  } = useSentencesUIScreen();
+  const { sentencesInQueue, selectedSentenceDataMemoized } =
+    useSentencesUIScreen();
 
   const { updateWordDataProvider } = useData();
-
   const { languageSelectedState } = useFetchData();
   const thisItemsWords = selectedSentenceDataMemoized?.words;
   const thisItemsNotes = selectedSentenceDataMemoized?.notes;
 
-  const numberOfStudiedSentences = initNumState - numberOfSentences;
-
-  const progressText = `${numberOfStudiedSentences}/${initNumState}`;
-
   return (
     <div>
       <Toaster position='top-center' />
-      <div className='max-w-md m-auto'>
-        <ProgressHeader
-          progressState={progressState}
-          progressText={progressText}
-        />
-      </div>
       <div className='grid grid-cols-2 gap-2 max-w-6xl mx-auto'>
         <div>
           <ul className='flex flex-col gap-2 mb-2'>

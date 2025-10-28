@@ -1,11 +1,10 @@
 'use client';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import LearningScreen from '../LearningScreen';
 import useData from '../Providers/useData';
 import LandingUIContentSelection from './LandingUIContentSelection';
 import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
 import { toast, Toaster } from 'sonner';
-import SentencesUIContainer from '../sentences/SentencesUIContainer';
 import MockFlag from '../../components/custom/MockFlag';
 import BreadcrumbComponent from '../../components/custom/BreadCrumbHeader';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,6 @@ import { WordsStudyUIProvider } from '../WordsStudyUI/WordsStudyUIProvider';
 import WordsStudyUI from '../WordsStudyUI';
 import BreadCrumbHeaderBase from '@/components/BreadCrumbHeaderBase';
 import { useRouter } from 'next/navigation';
-import { SentencesUIProvider } from '../sentences/SentencesUIProvider';
 
 const LandingScreen = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
@@ -44,7 +42,7 @@ const LandingScreen = () => {
 
   const numberOfSentences = sentencesState.length;
   const sentenceReview = {
-    onClick: () => setIsSentenceReviewState(true),
+    onClick: () => router.push('/sentences'),
     disabled: !(numberOfSentences > 0),
     variant: 'secondary',
     text: `Sentence reviews (${numberOfSentences})`,
@@ -90,35 +88,6 @@ const LandingScreen = () => {
         />
         <WordsStudyUI />
       </WordsStudyUIProvider>
-    );
-  }
-
-  if (isSentenceReviewState && sentencesState.length > 0) {
-    return (
-      <div>
-        <SentencesUIProvider>
-          <BreadCrumbHeaderBase
-            heading={'Home'}
-            onClick={() => setIsSentenceReviewState(false)}
-            navigationButtons={() =>
-              [wordReview, addContent].map((item, index) => {
-                return (
-                  <Button
-                    key={index}
-                    className='m-1.5'
-                    onClick={item.onClick}
-                    disabled={item.disabled}
-                    variant={item.variant}
-                  >
-                    {item.text}
-                  </Button>
-                );
-              })
-            }
-          />
-          <SentencesUIContainer />
-        </SentencesUIProvider>
-      </div>
     );
   }
 
