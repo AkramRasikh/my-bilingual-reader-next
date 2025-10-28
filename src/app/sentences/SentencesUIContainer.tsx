@@ -1,33 +1,11 @@
 import { Toaster } from 'sonner';
-import useData from '../Providers/useData';
-
 import { Progress } from '@/components/ui/progress';
-import { useEffect, useState } from 'react';
-import useSentencesProgress from './useSentencesProgress';
-import TranscriptItem from '@/components/custom/TranscriptItem';
 import SentencesUITranscriptItem from './SentencesUITranscriptItem';
+import { useSentencesUIScreen } from './SentencesUIProvider';
 
 const SentencesUIContainer = () => {
-  const [progressState, setProgressState] = useState(0);
-  const [initNumState, setInitNumState] = useState();
-  const { sentencesState } = useData();
-
-  const numberOfSentences = sentencesState.length;
-
-  useEffect(() => {
-    if (!initNumState) {
-      setInitNumState(numberOfSentences);
-    }
-  }, [initNumState]);
-
-  useSentencesProgress({
-    setProgressState,
-    initNumState,
-    numberOfSentences,
-  });
-
-  const slicedSentences = sentencesState.slice(0, 5);
-
+  const { sentencesInQueue, progressState, numberOfSentences } =
+    useSentencesUIScreen();
   return (
     <div>
       <Toaster position='top-center' />
@@ -35,7 +13,7 @@ const SentencesUIContainer = () => {
 
       <p className='text-center my-2'>{numberOfSentences} Sentences</p>
       <ul className='mt-1.5 mb-1.5'>
-        {slicedSentences?.map((sentence, index) => {
+        {sentencesInQueue.map((sentence, index) => {
           const sentenceIndex = index + 1 + ') ';
           return (
             <li key={sentence.id} className='mb-2'>

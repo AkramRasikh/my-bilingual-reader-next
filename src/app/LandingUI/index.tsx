@@ -13,6 +13,7 @@ import { WordsStudyUIProvider } from '../WordsStudyUI/WordsStudyUIProvider';
 import WordsStudyUI from '../WordsStudyUI';
 import BreadCrumbHeaderBase from '@/components/BreadCrumbHeaderBase';
 import { useRouter } from 'next/navigation';
+import { SentencesUIProvider } from '../sentences/SentencesUIProvider';
 
 const LandingScreen = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
@@ -95,26 +96,28 @@ const LandingScreen = () => {
   if (isSentenceReviewState && sentencesState.length > 0) {
     return (
       <div>
-        <BreadCrumbHeaderBase
-          heading={'Home'}
-          onClick={() => setIsSentenceReviewState(false)}
-          navigationButtons={() =>
-            [wordReview, addContent].map((item, index) => {
-              return (
-                <Button
-                  key={index}
-                  className='m-1.5'
-                  onClick={item.onClick}
-                  disabled={item.disabled}
-                  variant={item.variant}
-                >
-                  {item.text}
-                </Button>
-              );
-            })
-          }
-        />
-        <SentencesUIContainer />
+        <SentencesUIProvider>
+          <BreadCrumbHeaderBase
+            heading={'Home'}
+            onClick={() => setIsSentenceReviewState(false)}
+            navigationButtons={() =>
+              [wordReview, addContent].map((item, index) => {
+                return (
+                  <Button
+                    key={index}
+                    className='m-1.5'
+                    onClick={item.onClick}
+                    disabled={item.disabled}
+                    variant={item.variant}
+                  >
+                    {item.text}
+                  </Button>
+                );
+              })
+            }
+          />
+          <SentencesUIContainer />
+        </SentencesUIProvider>
       </div>
     );
   }
