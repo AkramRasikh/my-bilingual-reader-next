@@ -128,6 +128,23 @@ export const TranscriptItemProvider = ({
   }, [threeSecondLoopState, overlappingSnippetDataState, contentItem]);
 
   useEffect(() => {
+    function handleClickOutside(event) {
+      // Only act if highlight mode is on
+      if (
+        highlightedTextState &&
+        ulRef.current &&
+        !ulRef.current.contains(event.target)
+      ) {
+        console.log('## Clicked outside while highlight is active!');
+        setHighlightedTextState(''); // or whatever action you need
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [ulRef, highlightedTextState]);
+
+  useEffect(() => {
     const handleMouseUp = () => {
       const selection = window.getSelection();
       const selectedText = selection?.toString().trim();
@@ -140,16 +157,11 @@ export const TranscriptItemProvider = ({
     };
 
     document.addEventListener('mouseup', handleMouseUp);
+
     return () => {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, []);
-
-  useEffect(() => {
-    if (highlightedTextState && sentenceHighlightingState !== contentItem.id) {
-      setHighlightedTextState('');
-    }
-  }, [sentenceHighlightingState, highlightedTextState]);
 
   useEffect(() => {
     setShowSentenceBreakdownState(isInSentenceBreakdown);
