@@ -146,6 +146,12 @@ export const TranscriptItemProvider = ({
   }, []);
 
   useEffect(() => {
+    if (highlightedTextState && sentenceHighlightingState !== contentItem.id) {
+      setHighlightedTextState('');
+    }
+  }, [sentenceHighlightingState, highlightedTextState]);
+
+  useEffect(() => {
     setShowSentenceBreakdownState(isInSentenceBreakdown);
   }, [isInSentenceBreakdown]);
 
