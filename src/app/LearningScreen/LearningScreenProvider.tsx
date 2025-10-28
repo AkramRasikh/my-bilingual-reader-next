@@ -27,7 +27,6 @@ export const LearningScreenProvider = ({
   const transcriptRef = useRef(null);
 
   const [currentTime, setCurrentTime] = useState(0);
-  const [formattedTranscriptState, setFormattedTranscriptState] = useState([]);
   const [secondsState, setSecondsState] = useState([]);
   const [loopSecondsState, setLoopSecondsState] = useState([]);
   const [masterPlayComprehensiveState, setMasterPlayComprehensiveState] =
@@ -50,7 +49,6 @@ export const LearningScreenProvider = ({
     setGeneralTopicDisplayNameSelectedState,
   ] = useState('');
   const [scrollToElState, setScrollToElState] = useState('');
-  const [firstDueIndexState, setFirstDueIndexState] = useState(0);
   const [sentenceRepsState, setSentenceRepsState] = useState(0);
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState(null);
   const [selectedContentTitleState, setSelectedContentTitleState] =
@@ -114,34 +112,31 @@ export const LearningScreenProvider = ({
 
   const content = selectedContentStateMemoized?.content;
 
-  const handlePlayFromHere = (time: number) => {
-    if (ref.current) {
-      ref.current.currentTime = time;
-      ref.current.play();
+  const {
+    latestDueIdMemoized,
+    firstDueIndexMemoized,
+    formattedTranscriptMemoized,
+  } = useMemo(() => {
+    if (!content) {
+      return {
+        firstDueIndexMemoized: 0,
+        latestDueIdMemoized: { id: '', triggerScroll: false },
+        formattedTranscriptMemoized: [],
+      };
     }
-  };
-
-  // Update current time as video plays
-  const handleTimeUpdate = () => {
-    if (ref.current) {
-      setCurrentTime(ref.current.currentTime);
-    }
-  };
-
-  const getFormattedData = () => {
     const now = new Date();
     let latestIsDueEl = '';
     let latestIsDueElIndex;
-    let firstElIndex;
+    let firstDueIndexMemoized;
 
     const formattedTranscript = content.map((item, index) => {
       if (item?.reviewData && isDueCheck(item, now)) {
         latestIsDueEl = item.id;
         latestIsDueElIndex = index;
-        if (!isNumber(firstElIndex)) {
-          firstElIndex = index;
-          if (firstElIndex > 0) {
-            firstElIndex = firstElIndex - 1;
+        if (!isNumber(firstDueIndexMemoized)) {
+          firstDueIndexMemoized = index;
+          if (firstDueIndexMemoized > 0) {
+            firstDueIndexMemoized = firstDueIndexMemoized - 1;
           }
         }
       }
@@ -167,11 +162,52 @@ export const LearningScreenProvider = ({
       };
     });
 
-    const adjustedTranscript = formattedTranscript.map((item, index, arr) => {
-      if (index > 0 && arr[index + 1]?.dueStatus === 'now') {
-        return { ...item, helperReviewSentence: true };
+    const formattedTranscriptMemoized = formattedTranscript.map(
+      (item, index, arr) => {
+        if (index > 0 && arr[index + 1]?.dueStatus === 'now') {
+          return { ...item, helperReviewSentence: true };
+        }
+        return item;
+      },
+    );
+
+    const latestDueIdMemoized = {
+      id: latestIsDueEl || '',
+      index: latestIsDueElIndex,
+      triggerScroll: false,
+    };
+
+    return {
+      latestDueIdMemoized,
+      firstDueIndexMemoized,
+      formattedTranscriptMemoized,
+    };
+  }, [pureWordsMemoized, content]);
+
+  const handlePlayFromHere = (time: number) => {
+    if (ref.current) {
+      ref.current.currentTime = time;
+      ref.current.play();
+    }
+  };
+
+  // Update current time as video plays
+  const handleTimeUpdate = () => {
+    if (ref.current) {
+      setCurrentTime(ref.current.currentTime);
+    }
+  };
+
+  const getFormattedData = () => {
+    const now = new Date();
+    let latestIsDueEl = '';
+    let latestIsDueElIndex;
+
+    content.forEach((item, index) => {
+      if (item?.reviewData && isDueCheck(item, now)) {
+        latestIsDueEl = item.id;
+        latestIsDueElIndex = index;
       }
-      return item;
     });
 
     setLatestDueIdState({
@@ -179,12 +215,10 @@ export const LearningScreenProvider = ({
       index: latestIsDueElIndex,
       triggerScroll: false,
     });
-    setFirstDueIndexState(firstElIndex);
-    setFormattedTranscriptState(adjustedTranscript);
   };
 
   const handleStudyFromHere = () => {
-    const masterPlayIndex = formattedTranscriptState.findIndex(
+    const masterPlayIndex = formattedTranscriptMemoized.findIndex(
       (item) => item.id === masterPlay,
     );
     setStudyFromHereTimeState(masterPlayIndex);
@@ -347,7 +381,7 @@ export const LearningScreenProvider = ({
   useManageThreeSecondLoop({
     threeSecondLoopState,
     contractThreeSecondLoopState,
-    formattedTranscriptState,
+    formattedTranscriptState: formattedTranscriptMemoized,
     realStartTime,
     setOverlappingSnippetDataState,
     overlappingSnippetDataState,
@@ -375,7 +409,7 @@ export const LearningScreenProvider = ({
 
   useTrackMasterTranscript({
     masterPlay,
-    formattedTranscriptState,
+    formattedTranscriptState: formattedTranscriptMemoized,
     setMasterPlayComprehensiveState,
   });
 
@@ -394,7 +428,7 @@ export const LearningScreenProvider = ({
     (ref.current.currentTime = ref.current.currentTime - 3);
 
   const playFromThisContext = (contextId) => {
-    const contextSentence = formattedTranscriptState.find(
+    const contextSentence = formattedTranscriptMemoized.find(
       (item) => item.id === contextId,
     );
     if (contextSentence) {
@@ -405,7 +439,7 @@ export const LearningScreenProvider = ({
   const handleJumpToSentenceViaKeys = (nextIndex: number) => {
     // defo revisit this
 
-    const thisSentenceIndex = formattedTranscriptState.findIndex(
+    const thisSentenceIndex = formattedTranscriptMemoized.findIndex(
       (item) => item.id === masterPlay,
     );
 
@@ -413,10 +447,10 @@ export const LearningScreenProvider = ({
       return;
     }
     if (thisSentenceIndex === 0 && nextIndex === -1) {
-      handleFromHere(formattedTranscriptState[thisSentenceIndex]?.time);
+      handleFromHere(formattedTranscriptMemoized[thisSentenceIndex]?.time);
     } else {
       handleFromHere(
-        formattedTranscriptState[thisSentenceIndex + nextIndex]?.time,
+        formattedTranscriptMemoized[thisSentenceIndex + nextIndex]?.time,
       );
     }
   };
@@ -545,10 +579,10 @@ export const LearningScreenProvider = ({
       isNumber(currentTime) &&
       secondsState?.length > 0 &&
       secondsState[Math.floor(ref.current.currentTime)];
-    const thisIndex = formattedTranscriptState.findIndex(
+    const thisIndex = formattedTranscriptMemoized.findIndex(
       (item) => item.id === currentMasterPlay,
     );
-    const masterItem = formattedTranscriptState[thisIndex];
+    const masterItem = formattedTranscriptMemoized[thisIndex];
 
     if (
       loopTranscriptState?.length === 1 &&
@@ -564,11 +598,11 @@ export const LearningScreenProvider = ({
         time: realStartTime + masterItem.time,
         nextTime:
           realStartTime +
-          (thisIndex === formattedTranscriptState.length - 1
+          (thisIndex === formattedTranscriptMemoized.length - 1
             ? ref.current.duration - 0.05
             : thisIndex === 0
             ? realStartTime
-            : formattedTranscriptState[thisIndex - 1].time),
+            : formattedTranscriptMemoized[thisIndex - 1].time),
       },
     ]);
   };
@@ -580,11 +614,11 @@ export const LearningScreenProvider = ({
       if (!lastSentenceId) {
         return;
       }
-      const lastSentenceIdIndex = formattedTranscriptState.findIndex(
+      const lastSentenceIdIndex = formattedTranscriptMemoized.findIndex(
         (i) => i.id === lastSentenceId,
       );
 
-      const thisItemData = formattedTranscriptState[lastSentenceIdIndex + 1];
+      const thisItemData = formattedTranscriptMemoized[lastSentenceIdIndex + 1];
 
       const nextElToAddToLoop = {
         ...thisItemData,
@@ -605,7 +639,7 @@ export const LearningScreenProvider = ({
       secondsState[currentSecond];
 
     if (!currentMasterPlay) return null;
-    const thisSentence = formattedTranscriptState.find(
+    const thisSentence = formattedTranscriptMemoized.find(
       (item) => item.id === currentMasterPlay,
     );
 
@@ -632,7 +666,7 @@ export const LearningScreenProvider = ({
       secondsState[Math.floor(ref.current.currentTime)];
 
     if (!currentMasterPlay) return null;
-    const thisSentence = formattedTranscriptState.find(
+    const thisSentence = formattedTranscriptMemoized.find(
       (item) => item.id === currentMasterPlay,
     );
 
@@ -663,7 +697,7 @@ export const LearningScreenProvider = ({
   };
 
   const getThisSentenceInfo = (sentenceId) =>
-    formattedTranscriptState.find((item) => item.id === sentenceId);
+    formattedTranscriptMemoized.find((item) => item.id === sentenceId);
 
   const handleAddMasterToReview = async () => {
     const currentSecond = Math.floor(ref.current.currentTime);
@@ -747,9 +781,7 @@ export const LearningScreenProvider = ({
   const handleOnHome = () => {
     setGeneralTopicDisplayNameSelectedState('');
     setSecondsState([]);
-    setFormattedTranscriptState([]);
     setIsInReviewMode(false);
-    setFirstDueIndexState(0);
     setStudyFromHereTimeState(null);
     setWordsForSelectedTopic([]);
     setSelectedContentTitleState('');
@@ -780,8 +812,7 @@ export const LearningScreenProvider = ({
         handleTimeUpdate,
         ref,
         currentTime,
-        formattedTranscriptState,
-        setFormattedTranscriptState,
+        formattedTranscriptState: formattedTranscriptMemoized,
         secondsState,
         setSecondsState,
         masterPlayComprehensiveState,
@@ -832,7 +863,7 @@ export const LearningScreenProvider = ({
         isBreakingDownSentenceArrState,
         latestDueIdState,
         setLatestDueIdState,
-        firstDueIndexState,
+        firstDueIndexMemoized,
         handleStudyFromHere,
         setStudyFromHereTimeState,
         studyFromHereTimeState,

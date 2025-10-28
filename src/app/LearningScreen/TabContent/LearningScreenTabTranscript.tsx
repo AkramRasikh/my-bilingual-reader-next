@@ -32,7 +32,7 @@ const LearningScreenTabTranscript = () => {
     handleBreakdownSentence,
     setBreakdownSentencesArrState,
     latestDueIdState,
-    firstDueIndexState,
+    firstDueIndexMemoized,
     studyFromHereTimeState,
     transcriptRef,
     scrollToElState,
@@ -43,7 +43,7 @@ const LearningScreenTabTranscript = () => {
   const learnFormattedTranscript =
     isInReviewMode && latestDueIdState?.id
       ? formattedTranscriptState.slice(
-          firstDueIndexState,
+          firstDueIndexMemoized,
           latestDueIdState?.index + 1,
         )
       : studyFromHereTimeState
