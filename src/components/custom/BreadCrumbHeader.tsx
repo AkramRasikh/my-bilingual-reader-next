@@ -49,8 +49,8 @@ const BreadCrumbComponent = () => {
     },
     {
       onClick: () => router.push('/youtube-upload'),
-      variant: 'secondary',
-      text: `Add content`,
+      variant: 'link',
+      text: 'Add content',
     },
   ];
 

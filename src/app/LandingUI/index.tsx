@@ -57,8 +57,8 @@ const LandingScreen = () => {
   };
   const addContent = {
     onClick: () => router.push('/youtube-upload'),
-    variant: 'secondary',
-    text: `Add content`,
+    variant: 'link',
+    text: 'Add content',
   };
 
   if (isWordStudyState && wordsState.length > 0) {
