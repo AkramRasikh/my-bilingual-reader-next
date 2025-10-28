@@ -868,7 +868,6 @@ export const LearningScreenProvider = ({
         getNextTranscript,
         handleSelectInitialTopic,
         generalTopicDisplayNameSelectedState,
-        setGeneralTopicDisplayNameSelectedState,
         checkHowManyOfTopicNeedsReview,
         getGeneralContentMetaData,
         getGeneralContentWordData,
