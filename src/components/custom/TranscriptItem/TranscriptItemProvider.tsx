@@ -135,7 +135,6 @@ export const TranscriptItemProvider = ({
         ulRef.current &&
         !ulRef.current.contains(event.target)
       ) {
-        console.log('## Clicked outside while highlight is active!');
         setHighlightedTextState(''); // or whatever action you need
       }
     }
