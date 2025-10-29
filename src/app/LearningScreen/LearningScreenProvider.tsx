@@ -779,6 +779,7 @@ export const LearningScreenProvider = ({
     setIsInReviewMode(false);
     setStudyFromHereTimeState(null);
     setSelectedContentTitleState('');
+    setSentenceRepsState(0);
   };
 
   const contentMetaMemoized = useMemo(() => {
