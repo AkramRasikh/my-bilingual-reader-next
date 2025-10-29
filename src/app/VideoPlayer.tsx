@@ -45,11 +45,16 @@ const VideoPlayer = ({
       {threeSecondLoopState && <LearningScreenLoopUI />}{' '}
       <div
         className={clsx(
-          threeSecondLoopState ? 'flex w-full justify-between' : '',
+          threeSecondLoopState ? 'flex w-full justify-between gap-2' : '',
         )}
       >
         {masterPlayComprehensiveState?.targetLang && (
-          <p className='text-center font-bold text-xl text-blue-900  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg'>
+          <p
+            className={clsx(
+              'text-center font-bold text-xl text-blue-900  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg',
+              threeSecondLoopState ? 'm-auto' : '',
+            )}
+          >
             {masterPlayComprehensiveState.targetLang}
           </p>
         )}
