@@ -4,7 +4,7 @@ import { useFetchData } from '../Providers/FetchDataProvider';
 import { getAudioURL } from '@/utils/get-media-url';
 import SentenceBlock from '@/components/custom/SentenceBlock';
 
-const IsolatedSentenceAudio = ({ contextData }) => {
+const WordStudyUIIsolatedSentence = ({ contextData }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const hoverTimerMasterRef = useRef(null);
   const { wordsState } = useData();
@@ -56,4 +56,4 @@ const IsolatedSentenceAudio = ({ contextData }) => {
   );
 };
 
-export default IsolatedSentenceAudio;
+export default WordStudyUIIsolatedSentence;

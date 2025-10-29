@@ -1,6 +1,6 @@
 import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import WordsStudyUIVideoEl from './WordsStudyUIVideoEl';
-import IsolatedSentenceAudio from './WordStudyUiIsolatedSentence';
+import WordStudyUIIsolatedSentence from './WordsStudyUIIsolatedSentence';
 
 const WordsStudyUIMediaElement = () => {
   const { formattedWordsStudyState, selectedElState } = useWordsStudyUIScreen();
@@ -24,7 +24,10 @@ const WordsStudyUIMediaElement = () => {
         }
 
         return (
-          <IsolatedSentenceAudio key={index} contextData={contextDataEl} />
+          <WordStudyUIIsolatedSentence
+            key={index}
+            contextData={contextDataEl}
+          />
         );
       })}
     </div>
