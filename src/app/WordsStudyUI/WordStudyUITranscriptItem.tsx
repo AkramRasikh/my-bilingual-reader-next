@@ -12,6 +12,7 @@ const WordStudyUITranscriptItem = ({
   isVideoPlaying,
   handlePause,
   handleAudio,
+  languageSelectedState,
 }) => {
   const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
     [],
@@ -45,6 +46,7 @@ const WordStudyUITranscriptItem = ({
       scrollToElState={''}
       wordsForSelectedTopic={[]}
       isWordStudyMode={true}
+      languageSelectedState={languageSelectedState}
     >
       <TranscriptItem />
     </TranscriptItemProvider>

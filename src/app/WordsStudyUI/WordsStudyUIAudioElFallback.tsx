@@ -111,6 +111,7 @@ const WordsStudyUIAudioElFallback = ({
                 isVideoPlaying={isVideoPlaying}
                 handlePause={handlePause}
                 handleAudio={handleAudio}
+                languageSelectedState={languageSelectedState}
               />
             </div>
           );
