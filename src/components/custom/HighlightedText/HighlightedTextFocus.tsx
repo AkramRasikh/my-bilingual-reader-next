@@ -1,9 +1,18 @@
+import clsx from 'clsx';
+
 const HighlightedTextFocus = ({
   highlightedTextState,
+  isLoadingState,
 }: {
   highlightedTextState: string;
+  isLoadingState?: boolean;
 }) => (
-  <p className='my-auto bg-blue-100 rounded px-1 text-sm'>
+  <p
+    className={clsx(
+      'my-auto bg-blue-100 rounded px-1 text-sm',
+      isLoadingState ? 'opacity-25' : '',
+    )}
+  >
     {highlightedTextState}
   </p>
 );
