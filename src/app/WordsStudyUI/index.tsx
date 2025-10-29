@@ -6,7 +6,6 @@ import WordsStudyUIMediaElement from './WordsStudyUIMediaElement';
 import clsx from 'clsx';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import WordsStudyUIUnifiedAnalytics from './WordsStudyUIUnifiedAnalytics';
-import WordsStudyUIActions from './WordsStudyUIActions';
 
 const WordsStudyUI = () => {
   const {
@@ -34,7 +33,6 @@ const WordsStudyUI = () => {
         <WordsStudyUIUnifiedAnalytics />
         <div className='flex justify-around gap-3'>
           <div className='w-1/2 flex flex-col gap-2 min-w-lg'>
-            <WordsStudyUIActions />
             <WordsStudyUIMediaElement />
           </div>
           <div className='flex flex-col gap-2 w-1/2'>

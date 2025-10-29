@@ -14,6 +14,7 @@ import useManageLoopInit from '../LearningScreen/hooks/useManageLoopInit';
 import LoopIndicatorWithProgress from '@/components/custom/LoopIndicatorWithProgress';
 import LoopBtn from '@/components/custom/LoopBtn';
 import { useFetchData } from '../Providers/FetchDataProvider';
+import WordsStudyUIActions from './WordsStudyUIActions';
 
 const WordsStudyUIVideoEl = ({ contextDataEl }) => {
   const [secondsState, setSecondsState] = useState([]);
@@ -135,26 +136,8 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
 
   if (error) {
     return (
-      <>
-        {threeSecondLoopState && (
-          <div className='flex m-auto'>
-            <div className='w-9/12 m-auto'>
-              <LoopIndicatorWithProgress
-                ref={ref}
-                threeSecondLoopState={threeSecondLoopState}
-                progress={progress}
-                setProgress={setProgress}
-                contractThreeSecondLoopState={contractThreeSecondLoopState}
-              />
-            </div>
-            <LoopBtn
-              threeSecondLoopState={threeSecondLoopState}
-              setThreeSecondLoopState={setThreeSecondLoopState}
-              contractThreeSecondLoopState={contractThreeSecondLoopState}
-              isVideoPlaying={isVideoPlaying}
-            />
-          </div>
-        )}
+      <div>
+        <WordsStudyUIActions />
         <WordsStudyUIAudioElFallback
           contextDataEl={contextDataEl}
           secondsState={secondsState}
@@ -163,7 +146,7 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
         <WordsStudyUIKeyListener
           handleJumpToSentenceViaKeys={handleJumpToSentenceViaKeys}
         />
-      </>
+      </div>
     );
   }
 
@@ -176,6 +159,7 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
     return (
       <div className='max-w-2xl'>
         <div>
+          <WordsStudyUIActions />
           <VideoPlayer
             ref={ref}
             url={videoUrl}

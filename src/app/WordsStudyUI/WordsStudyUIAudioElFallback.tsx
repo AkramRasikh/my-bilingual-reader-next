@@ -3,6 +3,8 @@ import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import { useEffect } from 'react';
 import useData from '../Providers/useData';
 import WordStudyUITranscriptItem from './WordStudyUITranscriptItem';
+import LoopIndicatorWithProgress from '@/components/custom/LoopIndicatorWithProgress';
+import LoopBtn from '@/components/custom/LoopBtn';
 
 const WordsStudyUIAudioElFallback = ({
   secondsState,
@@ -17,6 +19,11 @@ const WordsStudyUIAudioElFallback = ({
     setIsVideoPlaying,
     handleTimeUpdate,
     overlappingSnippetDataState,
+    progress,
+    setProgress,
+    setThreeSecondLoopState,
+    contractThreeSecondLoopState,
+    threeSecondLoopState,
   } = useWordsStudyUIScreen();
 
   const { wordsState, handleSaveWord, handleDeleteWordDataProvider } =
@@ -71,7 +78,25 @@ const WordsStudyUIAudioElFallback = ({
           onTimeUpdate={handleTimeUpdate}
         />
       </div>
-
+      {threeSecondLoopState && (
+        <div className='flex m-auto my-1'>
+          <div className='w-9/12 m-auto'>
+            <LoopIndicatorWithProgress
+              ref={ref}
+              threeSecondLoopState={threeSecondLoopState}
+              progress={progress}
+              setProgress={setProgress}
+              contractThreeSecondLoopState={contractThreeSecondLoopState}
+            />
+          </div>
+          <LoopBtn
+            threeSecondLoopState={threeSecondLoopState}
+            setThreeSecondLoopState={setThreeSecondLoopState}
+            contractThreeSecondLoopState={contractThreeSecondLoopState}
+            isVideoPlaying={isVideoPlaying}
+          />
+        </div>
+      )}
       <div className='flex flex-col gap-2'>
         {transcriptArr?.map((transcriptItem, index) => {
           return (
