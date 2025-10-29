@@ -6,6 +6,7 @@ import useTrackMasterTranscript from '../LearningScreen/hooks/useManageThreeSeco
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
+import useSentencesProgress from '../sentences/useSentencesProgress';
 
 const WordsStudyUIContext = createContext(null);
 
@@ -33,6 +34,8 @@ export const WordsStudyUIProvider = ({
     useState('');
   const [wordsRepsState, setWordsRepsState] = useState(0);
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState(null);
+  const [wordsToReviewOnMountState, setWordsToReviewOnMountState] =
+    useState(null);
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
   );
@@ -51,6 +54,7 @@ export const WordsStudyUIProvider = ({
     number | null
   >();
   const [progress, setProgress] = useState(0);
+  const [progressState, setProgressState] = useState(0);
   const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
     useState(false);
 
@@ -63,6 +67,18 @@ export const WordsStudyUIProvider = ({
     wordsForReviewMemoized,
     updateWordDataProvider,
   } = useData();
+
+  useEffect(() => {
+    if (!isNumber(wordsToReviewOnMountState)) {
+      setWordsToReviewOnMountState(wordsForReviewMemoized.length);
+    }
+  }, [wordsForReviewMemoized]);
+
+  useSentencesProgress({
+    setProgressState,
+    initNumState: wordsToReviewOnMountState,
+    numberOfSentences: wordsForReviewMemoized.length,
+  });
 
   const { data } = useFetchData();
 
@@ -448,6 +464,9 @@ export const WordsStudyUIProvider = ({
         updateWordDataWordsStudyUI,
         wordsRepsState,
         setWordsRepsState,
+        progressState,
+        wordsForReviewMemoized,
+        wordsToReviewOnMountState,
       }}
     >
       {children}
