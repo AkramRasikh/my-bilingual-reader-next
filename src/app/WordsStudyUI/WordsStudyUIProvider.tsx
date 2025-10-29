@@ -200,7 +200,9 @@ export const WordsStudyUIProvider = ({
       : '';
 
   const handlePlayFromHere = (time: number) => {
-    if (ref.current) {
+    if (ref.current && isVideoPlaying) {
+      ref.current.pause();
+    } else if (ref.current) {
       ref.current.currentTime = time;
       ref.current.play();
     }
