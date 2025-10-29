@@ -14,6 +14,7 @@ const WordsStudyUI = () => {
     setSelectedElState,
     selectedElState,
     updateWordDataWordsStudyUI,
+    playFromThisContext,
   } = useWordsStudyUIScreen();
 
   const { languageSelectedState } = useFetchData();
@@ -53,7 +54,11 @@ const WordsStudyUI = () => {
                     indexNum={index + 1}
                     {...wordItem}
                     updateWordData={updateWordDataWordsStudyUI}
-                    playFromThisContext={() => setSelectedElState(index)}
+                    playFromThisContext={
+                      !thisIsSelected
+                        ? () => setSelectedElState(index)
+                        : playFromThisContext
+                    }
                     languageSelectedState={languageSelectedState}
                   />
                 </div>

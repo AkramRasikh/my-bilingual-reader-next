@@ -244,12 +244,16 @@ export const WordsStudyUIProvider = ({
   const handleRewind = () =>
     (ref.current.currentTime = ref.current.currentTime - 3);
 
-  const playFromThisContext = (contextId) => {
-    const contextSentence = formattedTranscriptState.find(
-      (item) => item.id === contextId,
-    );
-    if (contextSentence) {
-      handleFromHere(contextSentence.time);
+  const playFromThisContext = () => {
+    const firstContextDataPoint =
+      formattedWordsStudyState[selectedElState]?.contextData?.[0];
+
+    const isMedia = firstContextDataPoint.isMedia;
+
+    if (isMedia && firstContextDataPoint) {
+      handleFromHere(firstContextDataPoint.time);
+    } else {
+      console.log('## playFromThisContext Not media!');
     }
   };
 
