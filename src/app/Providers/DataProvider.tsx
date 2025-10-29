@@ -33,7 +33,6 @@ export const DataProvider = ({
   const [sentencesState, setSentencesState] = useState([]);
   const [story, setStory] = useState();
   const [mountedState, setMountedState] = useState(false);
-  const [isWordStudyState, setIsWordStudyState] = useState(false);
   const [wordBasketState, setWordBasketState] = useState([]);
   const [toastMessageState, setToastMessageState] = useState('');
   const [isSentenceReviewState, setIsSentenceReviewState] = useState(false);
@@ -569,8 +568,6 @@ export const DataProvider = ({
         addGeneratedSentence,
         addImageDataProvider,
         getTopicStatus,
-        isWordStudyState,
-        setIsWordStudyState,
         wordsForReviewMemoized,
         wordsToReviewOnMountState,
       }}

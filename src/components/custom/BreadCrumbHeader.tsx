@@ -11,12 +11,7 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 
 const BreadCrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
-  const {
-    sentencesState,
-    wordsForReviewMemoized,
-    wordBasketState,
-    setIsWordStudyState,
-  } = useData();
+  const { sentencesState, wordsForReviewMemoized, wordBasketState } = useData();
   const { selectedContentState, handleOnHome } = useLearningScreen();
   const router = useRouter();
 
