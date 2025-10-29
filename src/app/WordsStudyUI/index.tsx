@@ -39,10 +39,6 @@ const WordsStudyUI = () => {
           <div className='flex flex-col gap-2 w-1/2'>
             {formattedWordsStudyState.map((wordItem, index) => {
               const thisIsSelected = selectedElState === index;
-
-              if (index === 0) {
-                console.log('## wordItem', wordItem);
-              }
               return (
                 <div
                   key={wordItem.id}
