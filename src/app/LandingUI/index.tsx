@@ -4,14 +4,9 @@ import LearningScreen from '../LearningScreen';
 import useData from '../Providers/useData';
 import LandingUIContentSelection from './LandingUIContentSelection';
 import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
-import { toast, Toaster } from 'sonner';
+import { toast } from 'sonner';
 import MockFlag from '../../components/custom/MockFlag';
 import BreadcrumbComponent from '../../components/custom/BreadCrumbHeader';
-import { Button } from '@/components/ui/button';
-import { WordsStudyUIProvider } from '../WordsStudyUI/WordsStudyUIProvider';
-import WordsStudyUI from '../WordsStudyUI';
-import BreadCrumbHeaderBase from '@/components/BreadCrumbHeaderBase';
-import { useRouter } from 'next/navigation';
 
 const LandingScreen = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
@@ -24,14 +19,7 @@ const LandingScreen = () => {
     setToastMessageState,
     isSentenceReviewState,
     setIsSentenceReviewState,
-    isWordStudyState,
-    setIsWordStudyState,
-    wordsForReviewMemoized,
-    wordsState,
-    wordsToReviewOnMountState,
   } = useData();
-
-  const router = useRouter();
 
   useEffect(() => {
     if (toastMessageState) {
@@ -41,55 +29,6 @@ const LandingScreen = () => {
   }, [toastMessageState]);
 
   const numberOfSentences = sentencesState.length;
-  const sentenceReview = {
-    onClick: () => router.push('/sentences'),
-    disabled: !(numberOfSentences > 0),
-    variant: 'secondary',
-    text: `Sentence reviews (${numberOfSentences})`,
-  };
-  const wordReview = {
-    onClick: () => setIsWordStudyState(true),
-    disabled: !(wordsForReviewMemoized.length > 0),
-    variant: 'secondary',
-    text: `Words due (${wordsForReviewMemoized.length})`,
-  };
-  const addContent = {
-    onClick: () => router.push('/youtube-upload'),
-    variant: 'link',
-    text: 'Add content',
-  };
-
-  if (isWordStudyState && wordsState.length > 0) {
-    const wordStudySubHeading = `${
-      wordsToReviewOnMountState - wordsForReviewMemoized.length
-    }/${wordsForReviewMemoized.length} Studied`;
-    return (
-      <WordsStudyUIProvider>
-        <Toaster position='top-center' />
-        <BreadCrumbHeaderBase
-          heading={'Home'}
-          subHeading={wordStudySubHeading}
-          onClick={() => setIsWordStudyState(false)}
-          navigationButtons={() =>
-            [sentenceReview, addContent].map((item, index) => {
-              return (
-                <Button
-                  key={index}
-                  className='m-1.5'
-                  onClick={item.onClick}
-                  disabled={item.disabled}
-                  variant={item.variant}
-                >
-                  {item.text}
-                </Button>
-              );
-            })
-          }
-        />
-        <WordsStudyUI />
-      </WordsStudyUIProvider>
-    );
-  }
 
   return (
     <LearningScreenProvider>

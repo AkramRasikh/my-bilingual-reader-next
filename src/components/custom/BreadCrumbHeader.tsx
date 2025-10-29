@@ -13,7 +13,6 @@ const BreadCrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
   const {
     sentencesState,
-    setIsSentenceReviewState,
     wordsForReviewMemoized,
     wordBasketState,
     setIsWordStudyState,
@@ -38,13 +37,13 @@ const BreadCrumbComponent = () => {
     {
       onClick: () => router.push('/sentences'),
       disabled: !(numberOfSentences > 0),
-      variant: 'secondary',
+      variant: 'link',
       text: `Sentence reviews (${numberOfSentences})`,
     },
     {
-      onClick: () => setIsWordStudyState(true),
+      onClick: () => router.push('/words'),
       disabled: !(wordsForReviewMemoized.length > 0),
-      variant: 'secondary',
+      variant: 'link',
       text: `Words due (${wordsForReviewMemoized.length})`,
     },
     {
