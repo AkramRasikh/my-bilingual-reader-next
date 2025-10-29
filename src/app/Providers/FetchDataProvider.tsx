@@ -8,12 +8,24 @@ const FetchDataContext = createContext(null);
 export function FetchDataProvider({ children }) {
   const [data, setData] = useState(null);
   const [languageSelectedState, setLanguageSelectedState] = useState('');
+  const [languageOnMountState, setLanguageOnMountState] = useState('');
 
   useEffect(() => {
     if (languageSelectedState) {
       localStorage.setItem('selectedLanguage', languageSelectedState);
     }
-  }, [languageSelectedState]);
+
+    if (!languageOnMountState && languageSelectedState) {
+      setLanguageOnMountState(languageSelectedState);
+    }
+    if (
+      languageOnMountState &&
+      languageSelectedState &&
+      languageOnMountState !== languageSelectedState
+    ) {
+      window.location.reload();
+    }
+  }, [languageSelectedState, languageOnMountState]);
 
   useEffect(() => {
     const selectedLanguage = localStorage.getItem('selectedLanguage');
