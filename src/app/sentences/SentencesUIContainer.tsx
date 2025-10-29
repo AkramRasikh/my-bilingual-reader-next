@@ -43,12 +43,11 @@ const SentencesUIContainer = () => {
         <div>
           <ul className='mt-1.5 mb-1.5'>
             {sentencesInQueue.map((sentence, index) => {
-              const sentenceIndex = index + 1 + ') ';
               return (
                 <li key={sentence.id} className='mb-2'>
                   <SentencesUITranscriptItem
                     sentence={sentence}
-                    sentenceIndex={sentenceIndex}
+                    sentenceNum={index}
                   />
                 </li>
               );

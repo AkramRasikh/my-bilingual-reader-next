@@ -11,16 +11,21 @@ import useData from '../Providers/useData';
 import useSentencesProgress from './useSentencesProgress';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
 import { useFetchData } from '../Providers/FetchDataProvider';
+import { getAudioURL } from '@/utils/get-media-url';
 
 const SentencesUIContext = createContext(null);
 
 export const SentencesUIProvider = ({
   children,
 }: PropsWithChildren<object>) => {
-  const ref = useRef<HTMLAudioElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const rafRef = useRef<number | null>(null);
+
   const transcriptRef = useRef(null);
-  const [selectedElState, setSelectedElState] = useState(2);
+  const [selectedElState, setSelectedElState] = useState(0);
+  const [isPlayingState, setIsPlayingState] = useState(false);
   const [progressState, setProgressState] = useState(0);
+  const [audioProgressState, setAudioProgressState] = useState(0);
   const [initNumState, setInitNumState] = useState();
 
   const { sentencesState, wordsState, updateAdhocSentenceData } = useData();
@@ -39,6 +44,29 @@ export const SentencesUIProvider = ({
     numberOfSentences,
   });
 
+  // Smooth progress updater
+  const updateProgress = () => {
+    const audio = audioRef.current;
+    if (audio && !audio.paused) {
+      setAudioProgressState(audio.currentTime);
+      rafRef.current = requestAnimationFrame(updateProgress);
+    }
+  };
+
+  const togglePlay = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlayingState) {
+      audio.pause();
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    } else {
+      audio.play();
+      rafRef.current = requestAnimationFrame(updateProgress);
+    }
+    setIsPlayingState(!isPlayingState);
+  };
+
   const handleReviewFunc = async (arg) => {
     if (arg?.isRemoveReview) {
       await updateAdhocSentenceData({
@@ -55,7 +83,9 @@ export const SentencesUIProvider = ({
     }
   };
 
-  const sentencesInQueue = sentencesState.slice(0, 5);
+  const handlePause = () => audioRef.current.pause();
+
+  const sentencesInQueue = sentencesState.slice(0, 4);
 
   const selectedSentenceDataMemoized = useMemo(() => {
     if (sentencesInQueue.length === 0) {
@@ -82,16 +112,21 @@ export const SentencesUIProvider = ({
     const uniqueWords = words.filter(
       (item, index, self) => index === self.findIndex((t) => t.id === item.id),
     );
+    const audioUrl = getAudioURL(selectedEl.id, languageSelectedState);
     return {
       notes: selectedEl?.notes,
       words: uniqueWords,
+      audioUrl,
+      id: selectedEl.id,
     };
   }, [selectedElState, sentencesInQueue, wordsState]);
+
+  const masterPlay = selectedSentenceDataMemoized?.id;
 
   return (
     <SentencesUIContext.Provider
       value={{
-        ref,
+        audioRef,
         transcriptRef,
         sentencesInQueue,
         progressState,
@@ -101,6 +136,13 @@ export const SentencesUIProvider = ({
         selectedSentenceDataMemoized,
         initNumState,
         handleReviewFunc,
+        togglePlay,
+        isPlayingState,
+        setIsPlayingState,
+        audioProgressState,
+        setAudioProgressState,
+        masterPlay,
+        handlePause,
       }}
     >
       {children}

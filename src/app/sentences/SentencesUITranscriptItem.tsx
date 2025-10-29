@@ -3,11 +3,25 @@ import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/Trans
 import useData from '../Providers/useData';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { useSentencesUIScreen } from './SentencesUIProvider';
+import SentencesUIAudioPlayer from './SentencesUIAudioPlayer';
 
-const SentencesUITranscriptItem = ({ sentence, sentenceIndex }) => {
+const SentencesUITranscriptItem = ({ sentence, sentenceNum }) => {
   const { wordsState } = useData();
   const { languageSelectedState } = useFetchData();
-  const { handleReviewFunc } = useSentencesUIScreen();
+  const {
+    handleReviewFunc,
+    selectedSentenceDataMemoized,
+    togglePlay,
+    selectedElState,
+    masterPlay,
+    isPlayingState,
+    handlePause,
+  } = useSentencesUIScreen();
+
+  const sentenceIndex = sentenceNum + 1 + ') ';
+  const thisSentenceIsSelected = selectedElState === sentenceNum;
+  const thisItemsAudioUrl = selectedSentenceDataMemoized?.audioUrl;
+
   return (
     <TranscriptItemProvider
       contentItem={sentence}
@@ -20,7 +34,7 @@ const SentencesUITranscriptItem = ({ sentence, sentenceIndex }) => {
       setSentenceHighlightingState={() => {}}
       sentenceHighlightingState={''}
       isPressDownShiftState={false}
-      masterPlay={''} //sentence.id
+      masterPlay={masterPlay}
       isGenericItemLoadingState={[]}
       handleSaveWord={() => {}} //handleSaveWord
       handleDeleteWordDataProvider={() => {}} //handleDeleteWordDataProvider
@@ -29,15 +43,20 @@ const SentencesUITranscriptItem = ({ sentence, sentenceIndex }) => {
       setLoopTranscriptState={() => {}}
       loopTranscriptState={[]}
       handleReviewFunc={handleReviewFunc}
-      isVideoPlaying={false} //isVideoPlaying
-      handlePause={() => {}} //handlePause
+      isVideoPlaying={isPlayingState} //isVideoPlaying
+      handlePause={handlePause} //handlePause
       handleBreakdownSentence={() => {}}
-      handleFromHere={() => {}} //handleAudio(transcriptItem.id, transcriptItem.time)
+      handleFromHere={togglePlay} //handleAudio(transcriptItem.id, transcriptItem.time)
       setBreakdownSentencesArrState={() => {}}
       wordsForSelectedTopic={[]}
       isSentenceReviewMode
     >
-      <TranscriptItem />
+      <div className='flex flex-col gap-1'>
+        {thisSentenceIsSelected && (
+          <SentencesUIAudioPlayer src={thisItemsAudioUrl} />
+        )}
+        <TranscriptItem />
+      </div>
     </TranscriptItemProvider>
   );
 };
