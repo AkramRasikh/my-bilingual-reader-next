@@ -40,9 +40,5 @@ const SentencePageContent = () => {
 };
 
 export default function SentencesPage() {
-  return (
-    <FetchDataProvider>
-      <SentencePageContent />
-    </FetchDataProvider>
-  );
+  return <SentencePageContent />;
 }

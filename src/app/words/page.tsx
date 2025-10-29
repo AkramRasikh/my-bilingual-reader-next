@@ -41,9 +41,5 @@ const WordStudyPageContent = () => {
   );
 };
 export default function WordsStudyPage() {
-  return (
-    <FetchDataProvider>
-      <WordStudyPageContent />
-    </FetchDataProvider>
-  );
+  return <WordStudyPageContent />;
 }
