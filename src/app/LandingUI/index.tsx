@@ -13,7 +13,6 @@ const LandingScreen = () => {
 
   const {
     generalTopicDisplayNameMemoized,
-    generalTopicDisplayNameSelectedState,
     toastMessageState,
     setToastMessageState,
   } = useData();
@@ -30,9 +29,6 @@ const LandingScreen = () => {
       <BreadcrumbComponent />
       {isMockEnv && <MockFlag />}
       <LandingUIContentSelection
-        generalTopicDisplayNameSelectedState={
-          generalTopicDisplayNameSelectedState
-        }
         generalTopicDisplayNameMemoized={generalTopicDisplayNameMemoized}
       />
       <LearningScreen />

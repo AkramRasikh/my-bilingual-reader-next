@@ -1,17 +1,52 @@
-import useLandingScreenContentSelection from './useLandingUIContentSelection';
 import LandingUIContentSelectionItem from './LandingUIContentSelectionItem';
 import useLearningScreen from '../LearningScreen/useLearningScreen';
+import { useMemo } from 'react';
+import useData from '../Providers/useData';
 
-const LandingScreenContentSelection = ({
-  generalTopicDisplayNameSelectedState,
-  generalTopicDisplayNameMemoized,
-}) => {
-  const { handleSelectInitialTopic, selectedContentState } =
-    useLearningScreen();
-  const contentSelectionMemoized = useLandingScreenContentSelection({
+const LandingScreenContentSelection = ({ generalTopicDisplayNameMemoized }) => {
+  const {
+    handleSelectInitialTopic,
+    selectedContentState,
     generalTopicDisplayNameSelectedState,
-    generalTopicDisplayNameMemoized,
-  });
+  } = useLearningScreen();
+  const { getTopicStatus } = useData();
+
+  const contentSelectionMemoized = useMemo(() => {
+    if (generalTopicDisplayNameMemoized?.length === 0) {
+      return [];
+    }
+
+    const today = new Date();
+    const comprehensiveState = generalTopicDisplayNameMemoized.map(
+      ({ youtubeId, title }) => {
+        const { isThisDue, isThisNew, hasAllBeenReviewed } = getTopicStatus(
+          title,
+          today,
+        );
+
+        return {
+          title,
+          youtubeId,
+          isThisDue,
+          isThisNew,
+          hasAllBeenReviewed,
+        };
+      },
+    );
+
+    const sortedComprehensiveState = comprehensiveState.sort((a, b) => {
+      const rank = (obj) =>
+        obj.isThisDue === true
+          ? 0 // highest priority
+          : obj.hasAllBeenReviewed
+          ? 1
+          : 2; // lowest
+
+      return rank(a) - rank(b);
+    });
+
+    return sortedComprehensiveState;
+  }, [generalTopicDisplayNameSelectedState]);
 
   return (
     <ul className='flex flex-wrap gap-2'>
