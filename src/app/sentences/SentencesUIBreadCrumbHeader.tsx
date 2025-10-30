@@ -18,7 +18,7 @@ const SentencesUIBreadCrumbHeader = () => {
   const addContent = {
     onClick: () => router.push('/youtube-upload'),
     variant: 'link',
-    text: 'Add content',
+    text: 'Content',
   };
   const navigationButtons = [addContent];
 

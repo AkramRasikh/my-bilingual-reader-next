@@ -33,18 +33,18 @@ const BreadCrumbComponent = () => {
       onClick: () => router.push('/sentences'),
       disabled: !(numberOfSentences > 0),
       variant: 'link',
-      text: `Sentence reviews (${numberOfSentences})`,
+      text: `Sentence (${numberOfSentences})`,
     },
     {
       onClick: () => router.push('/words'),
       disabled: !(wordsForReviewMemoized.length > 0),
       variant: 'link',
-      text: `Words due (${wordsForReviewMemoized.length})`,
+      text: `Words (${wordsForReviewMemoized.length})`,
     },
     {
       onClick: () => router.push('/youtube-upload'),
       variant: 'link',
-      text: 'Add content',
+      text: 'Content',
     },
   ];
 
