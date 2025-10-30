@@ -8,11 +8,18 @@ import BreadCrumbHeaderBase from '../BreadCrumbHeaderBase';
 import { useRouter } from 'next/navigation';
 import LanguageSelector from './LanguageSelector';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
+import ProgressHeader, { useProgressHeader } from './ProgressHeader';
 
 const BreadCrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
+  const [progressState, setProgressState] = useState(false);
   const { sentencesState, wordsForReviewMemoized, wordBasketState } = useData();
-  const { selectedContentState, handleOnHome } = useLearningScreen();
+  const {
+    selectedContentState,
+    handleOnHome,
+    numberOfSentenceDueOnMountState,
+    contentMetaMemoized,
+  } = useLearningScreen();
   const router = useRouter();
 
   const { languageSelectedState, setLanguageSelectedState } = useFetchData();
@@ -22,6 +29,18 @@ const BreadCrumbComponent = () => {
       setShowBasketState(false);
     }
   }, [wordBasketState, showBasketState]);
+  const sentencesNeedReview = contentMetaMemoized?.[0]?.sentencesNeedReview;
+
+  useProgressHeader({
+    setProgressState,
+    initNumState: numberOfSentenceDueOnMountState,
+    currentStateNumber: sentencesNeedReview,
+  });
+
+  const numberOfStudiedSentences =
+    numberOfSentenceDueOnMountState - sentencesNeedReview;
+
+  const progressText = `${numberOfStudiedSentences}/${numberOfSentenceDueOnMountState}`;
 
   const numberOfSentences = sentencesState.length;
   const generalTopicName = selectedContentState?.generalTopicName;
@@ -68,6 +87,17 @@ const BreadCrumbComponent = () => {
               </Button>
             );
           })
+        }
+        progressHeaderComponent={
+          sentencesNeedReview
+            ? () => (
+                <ProgressHeader
+                  progressState={progressState}
+                  progressText={progressText}
+                  small
+                />
+              )
+            : null
         }
       />
       <LanguageSelector

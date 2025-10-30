@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Progress } from '../ui/progress';
+import clsx from 'clsx';
 
 export const useProgressHeader = ({
   setProgressState,
@@ -17,10 +18,13 @@ export const useProgressHeader = ({
   }, [currentStateNumber, initNumState]);
 };
 
-const ProgressHeader = ({ progressState, progressText }) => {
+const ProgressHeader = ({ progressState, progressText, small = false }) => {
   return (
     <div className='flex gap-2'>
-      <Progress value={progressState} className='w-full my-auto' />
+      <Progress
+        value={progressState}
+        className={clsx(' my-auto', small ? 'w-7/12' : 'w-full')}
+      />
       <span className='my-auto font-medium text-sm'>{progressText}</span>
     </div>
   );

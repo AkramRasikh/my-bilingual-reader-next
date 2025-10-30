@@ -44,6 +44,8 @@ export const LearningScreenProvider = ({
     id: '',
     triggerScroll: false,
   });
+  const [numberOfSentenceDueOnMountState, setNumberOfSentenceDueOnMountState] =
+    useState<number | null>(null);
   const [
     generalTopicDisplayNameSelectedState,
     setGeneralTopicDisplayNameSelectedState,
@@ -798,6 +800,7 @@ export const LearningScreenProvider = ({
     setStudyFromHereTimeState(null);
     setSelectedContentTitleState('');
     setSentenceRepsState(0);
+    setNumberOfSentenceDueOnMountState(null);
   };
 
   const contentMetaMemoized = useMemo(() => {
@@ -817,6 +820,14 @@ export const LearningScreenProvider = ({
     wordsState,
     selectedContentStateMemoized,
   ]);
+
+  useEffect(() => {
+    const sentencesNeedReview = contentMetaMemoized?.[0]?.sentencesNeedReview;
+
+    if (!isNumber(numberOfSentenceDueOnMountState) && sentencesNeedReview > 0) {
+      setNumberOfSentenceDueOnMountState(sentencesNeedReview);
+    }
+  }, [contentMetaMemoized, numberOfSentenceDueOnMountState]);
 
   return (
     <LearningScreenContext.Provider
@@ -901,6 +912,7 @@ export const LearningScreenProvider = ({
         setSentenceRepsState,
         contentMetaMemoized,
         contentMetaWordMemoized,
+        numberOfSentenceDueOnMountState,
       }}
     >
       {children}
