@@ -14,7 +14,6 @@ const LandingScreen = () => {
   const {
     generalTopicDisplayNameMemoized,
     generalTopicDisplayNameSelectedState,
-    sentencesState,
     toastMessageState,
     setToastMessageState,
   } = useData();
@@ -26,8 +25,6 @@ const LandingScreen = () => {
     }
   }, [toastMessageState]);
 
-  const numberOfSentences = sentencesState.length;
-
   return (
     <LearningScreenProvider>
       <BreadcrumbComponent />
@@ -37,7 +34,6 @@ const LandingScreen = () => {
           generalTopicDisplayNameSelectedState
         }
         generalTopicDisplayNameMemoized={generalTopicDisplayNameMemoized}
-        numberOfSentences={numberOfSentences}
       />
       <LearningScreen />
     </LearningScreenProvider>
