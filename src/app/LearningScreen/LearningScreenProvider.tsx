@@ -115,19 +115,23 @@ export const LearningScreenProvider = ({
     latestDueIdMemoized,
     firstDueIndexMemoized,
     formattedTranscriptMemoized,
+    sentenceMapMemoized,
   } = useMemo(() => {
     if (!content) {
       return {
         firstDueIndexMemoized: 0,
         latestDueIdMemoized: { id: '', triggerScroll: false },
         formattedTranscriptMemoized: [],
+        sentenceMapMemoized: {},
       };
     }
+
     const now = new Date();
     let latestIsDueEl = '';
     let latestIsDueElIndex;
     let firstDueIndexMemoized;
 
+    // Step 1: Create formatted transcript (base processing)
     const formattedTranscript = content.map((item, index) => {
       if (item?.reviewData && isDueCheck(item, now)) {
         latestIsDueEl = item.id;
@@ -142,7 +146,6 @@ export const LearningScreenProvider = ({
 
       const hasBeenReviewed = item?.reviewData?.due;
       const isDueNow = new Date(hasBeenReviewed) < now;
-
       const dueStatus = !hasBeenReviewed ? '' : isDueNow ? 'now' : 'pending';
 
       const targetLangformatted = underlineWordsInSentence(
@@ -153,6 +156,7 @@ export const LearningScreenProvider = ({
         item.targetLang,
         wordsState,
       );
+
       return {
         ...item,
         dueStatus,
@@ -170,6 +174,19 @@ export const LearningScreenProvider = ({
       },
     );
 
+    // Step 3: Build prev/next lookup map
+    const sentenceMapMemoized = {};
+    for (let i = 0; i < formattedTranscriptMemoized.length; i++) {
+      const current = formattedTranscriptMemoized[i];
+      const prev = formattedTranscriptMemoized[i - 1];
+      const next = formattedTranscriptMemoized[i + 1];
+      sentenceMapMemoized[current.id] = {
+        prevSentence: prev ? prev.time : null,
+        nextSentence: next ? next.time : null,
+      };
+    }
+
+    // Step 4: Capture latest due info
     const latestDueIdMemoized = {
       id: latestIsDueEl || '',
       index: latestIsDueElIndex,
@@ -180,6 +197,7 @@ export const LearningScreenProvider = ({
       latestDueIdMemoized,
       firstDueIndexMemoized,
       formattedTranscriptMemoized,
+      sentenceMapMemoized,
     };
   }, [pureWordsMemoized, content]);
 
@@ -436,21 +454,20 @@ export const LearningScreenProvider = ({
   };
 
   const handleJumpToSentenceViaKeys = (nextIndex: number) => {
-    // defo revisit this
-
-    const thisSentenceIndex = formattedTranscriptMemoized.findIndex(
-      (item) => item.id === masterPlay,
-    );
-
-    if (thisSentenceIndex === -1) {
+    if (!sentenceMapMemoized) {
       return;
     }
-    if (thisSentenceIndex === 0 && nextIndex === -1) {
-      handleFromHere(formattedTranscriptMemoized[thisSentenceIndex]?.time);
-    } else {
-      handleFromHere(
-        formattedTranscriptMemoized[thisSentenceIndex + nextIndex]?.time,
-      );
+    const thisSentenceKey = sentenceMapMemoized[masterPlay];
+
+    const nextTimeToFollow =
+      nextIndex === 1
+        ? thisSentenceKey?.nextSentence
+        : nextIndex === 0
+        ? thisSentenceKey.thisSentence
+        : thisSentenceKey?.prevSentence;
+
+    if (nextTimeToFollow >= 0) {
+      handleFromHere(nextTimeToFollow);
     }
   };
 
