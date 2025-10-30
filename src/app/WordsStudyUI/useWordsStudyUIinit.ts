@@ -88,8 +88,6 @@ const useWordsStudyUIinit = ({
             );
 
             if (foundContextIdInAdhocSentences) {
-              console.log('## isAdhoc!!!');
-
               contextData.push({
                 ...foundContextIdInAdhocSentences,
                 isAdhoc: true,
