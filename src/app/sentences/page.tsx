@@ -2,10 +2,7 @@
 
 import PageContainer from '@/components/custom/PageContainer';
 import { DataProvider } from '../Providers/DataProvider';
-import {
-  FetchDataProvider,
-  useFetchData,
-} from '../Providers/FetchDataProvider';
+import { useFetchData } from '../Providers/FetchDataProvider';
 import SentencesUIContainer from './SentencesUIContainer';
 import { SentencesUIProvider } from './SentencesUIProvider';
 import SentencesUIBreadCrumbHeader from './SentencesUIBreadCrumbHeader';

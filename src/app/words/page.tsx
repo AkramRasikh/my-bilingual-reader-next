@@ -2,10 +2,7 @@
 
 import PageContainer from '@/components/custom/PageContainer';
 import { DataProvider } from '../Providers/DataProvider';
-import {
-  FetchDataProvider,
-  useFetchData,
-} from '../Providers/FetchDataProvider';
+import { useFetchData } from '../Providers/FetchDataProvider';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import { WordsStudyUIProvider } from '../WordsStudyUI/WordsStudyUIProvider';
 import WordsStudyUIBreadCrumbHeader from '../WordsStudyUI/WordsStudyUIBreadCrumbHeader';
