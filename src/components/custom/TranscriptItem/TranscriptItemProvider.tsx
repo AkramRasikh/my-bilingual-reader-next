@@ -38,7 +38,7 @@ export const TranscriptItemProvider = ({
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
-  const transcriptContainerRef = useRef(null);
+  const transcriptItemContainerRef = useRef(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [showSentenceBreakdownState, setShowSentenceBreakdownState] =
     useState(false);
@@ -134,8 +134,8 @@ export const TranscriptItemProvider = ({
       // Only act if highlight mode is on
       if (
         highlightedTextState &&
-        transcriptContainerRef.current &&
-        !transcriptContainerRef.current.contains(event.target)
+        transcriptItemContainerRef.current &&
+        !transcriptItemContainerRef.current.contains(event.target)
       ) {
         setHighlightedTextState(''); // or whatever action you need
       }
@@ -143,7 +143,7 @@ export const TranscriptItemProvider = ({
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [transcriptContainerRef, highlightedTextState]);
+  }, [transcriptItemContainerRef, highlightedTextState]);
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -314,7 +314,7 @@ export const TranscriptItemProvider = ({
         highlightedTextsArabicTransliteration,
         isSentenceReviewMode,
         indexNum,
-        transcriptContainerRef,
+        transcriptItemContainerRef,
       }}
     >
       {children}

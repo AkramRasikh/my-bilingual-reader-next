@@ -13,7 +13,7 @@ const TranscriptItemWrapper = ({ children }) => {
     overrideMiniReviewState,
     highlightedTextsArabicTransliteration,
     indexNum,
-    transcriptContainerRef,
+    transcriptItemContainerRef,
   } = useTranscriptItem();
 
   const hasBeenReviewed = contentItem?.reviewData?.due;
@@ -36,7 +36,7 @@ const TranscriptItemWrapper = ({ children }) => {
 
   return (
     <div
-      ref={transcriptContainerRef}
+      ref={transcriptItemContainerRef}
       className={clsx(
         'rounded-lg px-2 py-1 shadow h-fit border-2 gap-1.5 relative',
         dueStatus === 'now'
