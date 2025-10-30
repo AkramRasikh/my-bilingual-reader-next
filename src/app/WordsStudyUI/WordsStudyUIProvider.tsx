@@ -4,8 +4,8 @@ import { createContext, useEffect, useRef, useState, useContext } from 'react';
 import useData from '../Providers/useData';
 import useTrackMasterTranscript from '../LearningScreen/hooks/useManageThreeSecondLoop';
 import { useFetchData } from '../Providers/FetchDataProvider';
-import useSentencesProgress from '../sentences/useSentencesProgress';
 import useWordsStudyUIinit from './useWordsStudyUIinit';
+import { useProgressHeader } from '@/components/custom/ProgressHeader';
 
 const WordsStudyUIContext = createContext(null);
 
@@ -73,10 +73,10 @@ export const WordsStudyUIProvider = ({
     }
   }, [wordsForReviewMemoized]);
 
-  useSentencesProgress({
+  useProgressHeader({
     setProgressState,
     initNumState: wordsToReviewOnMountState,
-    numberOfSentences: wordsForReviewMemoized.length,
+    currentStateNumber: wordsForReviewMemoized.length,
   });
 
   const { data } = useFetchData();

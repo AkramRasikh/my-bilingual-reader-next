@@ -8,10 +8,10 @@ import {
   useMemo,
 } from 'react';
 import useData from '../Providers/useData';
-import useSentencesProgress from './useSentencesProgress';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { getAudioURL } from '@/utils/get-media-url';
+import { useProgressHeader } from '@/components/custom/ProgressHeader';
 
 const SentencesUIContext = createContext(null);
 
@@ -38,10 +38,10 @@ export const SentencesUIProvider = ({
     }
   }, [initNumState]);
 
-  useSentencesProgress({
+  useProgressHeader({
     setProgressState,
     initNumState,
-    numberOfSentences,
+    currentStateNumber: numberOfSentences,
   });
 
   // Smooth progress updater

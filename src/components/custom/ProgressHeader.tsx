@@ -1,4 +1,21 @@
+import { useEffect } from 'react';
 import { Progress } from '../ui/progress';
+
+export const useProgressHeader = ({
+  setProgressState,
+  initNumState,
+  currentStateNumber,
+}) => {
+  useEffect(() => {
+    if (!initNumState || !currentStateNumber) {
+      return;
+    }
+    const progressValue =
+      ((initNumState - currentStateNumber) / initNumState) * 100;
+
+    setProgressState(progressValue);
+  }, [currentStateNumber, initNumState]);
+};
 
 const ProgressHeader = ({ progressState, progressText }) => {
   return (
