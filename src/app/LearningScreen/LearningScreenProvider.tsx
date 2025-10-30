@@ -182,6 +182,7 @@ export const LearningScreenProvider = ({
       const next = formattedTranscriptMemoized[i + 1];
       sentenceMapMemoized[current.id] = {
         prevSentence: prev ? prev.time : null,
+        thisSentence: current.time,
         nextSentence: next ? next.time : null,
       };
     }
