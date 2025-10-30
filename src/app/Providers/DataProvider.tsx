@@ -19,6 +19,7 @@ import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { isNumber } from '@/utils/is-number';
 import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
+import { wordsReducer } from '../reducers/words-reducer';
 
 export const DataContext = createContext(null);
 
@@ -29,7 +30,6 @@ export const DataProvider = ({
   languageSelectedState,
   children,
 }: PropsWithChildren<object>) => {
-  const [wordsState, setWordsState] = useState(wordsData);
   const [sentencesState, setSentencesState] = useState([]);
   const [story, setStory] = useState();
   const [mountedState, setMountedState] = useState(false);
@@ -42,6 +42,7 @@ export const DataProvider = ({
     contentReducer,
     contentData,
   );
+  const [wordsState, dispatchWords] = useReducer(wordsReducer, wordsData);
 
   const generalTopicDisplayNameMemoized = useMemo(() => {
     const generalNamesArr = [];
@@ -154,10 +155,7 @@ export const DataProvider = ({
         });
         const data = await res.json();
 
-        const targetLanguageWordsStateUpdated = wordsState.filter(
-          (item) => item.id !== data.id,
-        );
-        setWordsState(targetLanguageWordsStateUpdated);
+        dispatchWords({ type: 'removeWord', wordId: data.id });
         setToastMessageState('Successful learned word ✅');
         return true;
       } else {
@@ -172,21 +170,11 @@ export const DataProvider = ({
         });
 
         const data = await res.json();
-
-        const dateNow = new Date();
-        const targetLanguageWordsStateUpdated = wordsState.map((item) => {
-          const thisWordId = item.id === wordId;
-          if (thisWordId) {
-            const isDue = data.reviewData?.due < dateNow;
-            return {
-              ...item,
-              ...data,
-              isDue,
-            };
-          }
-          return item;
+        dispatchWords({
+          type: 'updateWord',
+          wordId,
+          data,
         });
-        setWordsState(targetLanguageWordsStateUpdated);
         setToastMessageState('Word reviewed ✅');
         return true;
       }
@@ -205,17 +193,11 @@ export const DataProvider = ({
       });
       const data = await res.json();
       if (data) {
-        const targetLanguageWordsStateUpdated = wordsState.map((item) => {
-          const thisWordId = item.id === wordId;
-          if (thisWordId) {
-            return {
-              ...item,
-              imageUrl: data.imageUrl,
-            };
-          }
-          return item;
+        dispatchWords({
+          type: 'updateWordData',
+          wordId,
+          fields: { imageUrl: data.imageUrl },
         });
-        setWordsState(targetLanguageWordsStateUpdated);
       }
     } catch (error) {
       console.log('## addImageDataProvider DataProvider', { error });
@@ -381,19 +363,19 @@ export const DataProvider = ({
     });
 
     if (savedWord) {
-      const newWordsState = [...wordsState, savedWord];
-      setWordsState(newWordsState);
+      dispatchWords({
+        type: 'addWord',
+        word: savedWord, // can be one or multiple
+      });
+      return savedWord;
     }
-    return savedWord;
   };
 
   const handleDeleteWordDataProvider = async ({ wordId }) => {
     try {
       await deleteWordAPI({ wordId, language: languageSelectedState });
-      const targetLanguageWordsStateUpdated = wordsState.filter(
-        (item) => item.id !== wordId,
-      );
-      setWordsState(targetLanguageWordsStateUpdated);
+      dispatchWords({ type: 'removeWord', wordId });
+
       return true;
     } catch (error) {
       console.log('## handleDeleteWordDataProvider deleteWord', { error });
@@ -544,7 +526,6 @@ export const DataProvider = ({
         pureWordsMemoized,
         handleSaveWord,
         wordsState,
-        setWordsState,
         handleDeleteWordDataProvider,
         updateSentenceData,
         contentState,
