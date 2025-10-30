@@ -3,7 +3,7 @@ import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/Trans
 import useData from '../Providers/useData';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { useSentencesUIScreen } from './SentencesUIProvider';
-import SentencesUIAudioPlayer from './SentencesUIAudioPlayer';
+import SingleSentenceAudioPlayer from '@/components/custom/SingleSentenceAudioPlayer';
 
 const SentencesUITranscriptItem = ({ sentence, sentenceNum }) => {
   const { wordsState } = useData();
@@ -16,6 +16,10 @@ const SentencesUITranscriptItem = ({ sentence, sentenceNum }) => {
     masterPlay,
     isPlayingState,
     handlePause,
+    audioProgressState,
+    setAudioProgressState,
+    audioRef,
+    setIsPlayingState,
   } = useSentencesUIScreen();
 
   const sentenceIndex = sentenceNum + 1 + ') ';
@@ -53,7 +57,13 @@ const SentencesUITranscriptItem = ({ sentence, sentenceNum }) => {
     >
       <div className='flex flex-col gap-1'>
         {thisSentenceIsSelected && (
-          <SentencesUIAudioPlayer src={thisItemsAudioUrl} />
+          <SingleSentenceAudioPlayer
+            src={thisItemsAudioUrl}
+            audioProgressState={audioProgressState}
+            setAudioProgressState={setAudioProgressState}
+            audioRef={audioRef}
+            setIsPlayingState={setIsPlayingState}
+          />
         )}
         <TranscriptItem />
       </div>
