@@ -18,14 +18,11 @@ const LearningScreenContentContainer = () => {
 
   const topicName = !isFullReview && selectedContentState?.title;
 
-  const { setSecondsState } = useLearningScreen();
-
   return (
     <LearningScreenChapterToggleWrapper
       hasPreviousVideo={hasPreviousVideo}
       hasFollowingVideo={hasFollowingVideo}
       getNextTranscript={getNextTranscript}
-      setSecondsState={setSecondsState}
     >
       <Tabs defaultValue='transcript'>
         <LearningScreenTabSelection topicName={topicName} />

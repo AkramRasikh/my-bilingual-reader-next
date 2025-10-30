@@ -4,7 +4,6 @@ const LearningScreenChapterToggleWrapper = ({
   hasPreviousVideo,
   hasFollowingVideo,
   getNextTranscript,
-  setSecondsState,
   children,
 }) => (
   <div className='flex-1 max-w-xl'>
@@ -14,7 +13,6 @@ const LearningScreenChapterToggleWrapper = ({
         variant='ghost'
         onClick={() => {
           getNextTranscript();
-          setSecondsState([]);
         }}
       >
         ⏫⏫⏫⏫⏫
@@ -27,7 +25,6 @@ const LearningScreenChapterToggleWrapper = ({
         variant='ghost'
         onClick={() => {
           getNextTranscript(true);
-          setSecondsState([]);
         }}
       >
         ⏬⏬⏬⏬⏬
