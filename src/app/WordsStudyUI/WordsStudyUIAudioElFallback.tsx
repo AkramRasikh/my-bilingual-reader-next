@@ -2,7 +2,7 @@ import { getAudioURL } from '@/utils/get-media-url';
 import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import { useEffect } from 'react';
 import useData from '../Providers/useData';
-import WordStudyUITranscriptItem from './WordStudyUITranscriptItem';
+import WordsStudyUITranscriptItem from './WordsStudyUITranscriptItem';
 import LoopIndicatorWithProgress from '@/components/custom/LoopIndicatorWithProgress';
 import LoopBtn from '@/components/custom/LoopBtn';
 
@@ -101,7 +101,7 @@ const WordsStudyUIAudioElFallback = ({
         {transcriptArr?.map((transcriptItem, index) => {
           return (
             <div key={index}>
-              <WordStudyUITranscriptItem
+              <WordsStudyUITranscriptItem
                 masterPlay={masterPlay}
                 transcriptItem={transcriptItem}
                 overlappingSnippetDataState={overlappingSnippetDataState}
