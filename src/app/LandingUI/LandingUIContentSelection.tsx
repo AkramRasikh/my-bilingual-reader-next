@@ -8,7 +8,7 @@ const LandingScreenContentSelection = ({
 }) => {
   const { handleSelectInitialTopic, selectedContentState } =
     useLearningScreen();
-  const { contentSelectionState } = useLandingScreenContentSelection({
+  const contentSelectionMemoized = useLandingScreenContentSelection({
     generalTopicDisplayNameSelectedState,
     generalTopicDisplayNameMemoized,
   });
@@ -16,8 +16,8 @@ const LandingScreenContentSelection = ({
   return (
     <ul className='flex flex-wrap gap-2'>
       {!selectedContentState &&
-        contentSelectionState?.length > 0 &&
-        contentSelectionState.map((youtubeMetaData, index) => {
+        contentSelectionMemoized?.length > 0 &&
+        contentSelectionMemoized.map((youtubeMetaData, index) => {
           return (
             <li key={index}>
               <LandingUIContentSelectionItem
