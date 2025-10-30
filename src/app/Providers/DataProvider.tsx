@@ -35,7 +35,6 @@ export const DataProvider = ({
   const [mountedState, setMountedState] = useState(false);
   const [wordBasketState, setWordBasketState] = useState([]);
   const [toastMessageState, setToastMessageState] = useState('');
-  const [isSentenceReviewState, setIsSentenceReviewState] = useState(false);
   const [wordsToReviewOnMountState, setWordsToReviewOnMountState] =
     useState(null);
 
@@ -559,8 +558,6 @@ export const DataProvider = ({
         updateAdhocSentenceData,
         toastMessageState,
         setToastMessageState,
-        isSentenceReviewState,
-        setIsSentenceReviewState,
         wordBasketState,
         setWordBasketState,
         story,

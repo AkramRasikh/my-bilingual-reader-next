@@ -17,8 +17,6 @@ const LandingScreen = () => {
     sentencesState,
     toastMessageState,
     setToastMessageState,
-    isSentenceReviewState,
-    setIsSentenceReviewState,
   } = useData();
 
   useEffect(() => {
@@ -39,8 +37,6 @@ const LandingScreen = () => {
           generalTopicDisplayNameSelectedState
         }
         generalTopicDisplayNameMemoized={generalTopicDisplayNameMemoized}
-        isSentenceReviewState={isSentenceReviewState}
-        setIsSentenceReviewState={setIsSentenceReviewState}
         numberOfSentences={numberOfSentences}
       />
       <LearningScreen />
