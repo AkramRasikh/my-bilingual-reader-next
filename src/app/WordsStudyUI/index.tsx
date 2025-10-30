@@ -21,7 +21,7 @@ const WordsStudyUI = () => {
   if (!hasWords) {
     return (
       <PageContainer>
-        <h1>Words study</h1>
+        <h1 className='text-center'>Words study</h1>
         <LoadingSpinner big />
       </PageContainer>
     );
