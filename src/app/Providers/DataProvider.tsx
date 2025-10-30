@@ -20,6 +20,7 @@ import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { isNumber } from '@/utils/is-number';
 import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 import { wordsReducer } from '../reducers/words-reducer';
+import { sentencesReducer } from '../reducers/sentences-reducer';
 
 export const DataContext = createContext(null);
 
@@ -30,7 +31,7 @@ export const DataProvider = ({
   languageSelectedState,
   children,
 }: PropsWithChildren<object>) => {
-  const [sentencesState, setSentencesState] = useState([]);
+  const [sentencesState, dispatchSentences] = useReducer(sentencesReducer, []);
   const [story, setStory] = useState();
   const [mountedState, setMountedState] = useState(false);
   const [wordBasketState, setWordBasketState] = useState([]);
@@ -123,7 +124,7 @@ export const DataProvider = ({
       });
 
       setMountedState(true);
-      setSentencesState(formatSentence);
+      dispatchSentences({ type: 'initSentences', sentences: formatSentence });
     }
   }, [sentencesState, mountedState, pureWordsMemoized]);
 
@@ -258,24 +259,13 @@ export const DataProvider = ({
       });
 
       if (updatedFieldFromDB) {
-        const dateNow = new Date();
-        const updatedSentencesState = sentencesState
-          .map((item) => {
-            const matchedId = sentenceId === item.id;
-            if (matchedId && isRemoveReview) {
-              delete item.reviewData;
-              return item;
-            } else if (matchedId) {
-              return {
-                ...item,
-                ...updatedFieldFromDB,
-              };
-            }
-            return item;
-          })
-          .filter((i) => isDueCheck(i, dateNow));
-
-        setSentencesState(updatedSentencesState);
+        dispatchSentences({
+          type: 'updateSentence',
+          sentenceId,
+          isRemoveReview,
+          updatedFieldFromDB,
+          isDueCheck,
+        });
 
         setToastMessageState(
           isRemoveReview
@@ -469,7 +459,7 @@ export const DataProvider = ({
       });
     }
 
-    setSentencesState([...sentencesState, data]);
+    dispatchSentences({ type: 'addSentence', sentence: data });
   };
 
   const breakdownSentence = async ({
