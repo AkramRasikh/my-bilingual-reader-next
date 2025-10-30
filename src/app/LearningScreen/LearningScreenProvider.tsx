@@ -15,6 +15,7 @@ import useTrackMasterTranscript from './hooks/useTrackMasterTranscript';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
+import { mapSentenceIdsToSeconds } from './utils/map-sentence-ids-to-seconds';
 
 export const LearningScreenContext = createContext(null);
 
@@ -27,7 +28,6 @@ export const LearningScreenProvider = ({
   const transcriptRef = useRef(null);
 
   const [currentTime, setCurrentTime] = useState(0);
-  const [secondsState, setSecondsState] = useState([]);
   const [loopSecondsState, setLoopSecondsState] = useState([]);
   const [masterPlayComprehensiveState, setMasterPlayComprehensiveState] =
     useState(null);
@@ -103,13 +103,6 @@ export const LearningScreenProvider = ({
   }, [contentState, selectedContentTitleState]);
 
   const realStartTime = selectedContentStateMemoized?.realStartTime || 0;
-
-  const masterPlay =
-    currentTime && loopSecondsState.length > 0
-      ? loopSecondsState[Math.floor(currentTime)]
-      : secondsState?.length > 0
-      ? secondsState[Math.floor(currentTime)]
-      : '';
 
   const content = selectedContentStateMemoized?.content;
 
@@ -407,6 +400,27 @@ export const LearningScreenProvider = ({
     overlappingSnippetDataState,
   });
 
+  const secondsStateMemoized = useMemo(() => {
+    if (!ref.current?.duration || !selectedContentStateMemoized?.content) {
+      return [];
+    }
+    const arrOfSeconds = mapSentenceIdsToSeconds({
+      content: selectedContentStateMemoized?.content,
+      duration: ref.current?.duration,
+      isVideoModeState: true,
+      realStartTime,
+    });
+
+    return arrOfSeconds;
+  }, [ref.current?.duration, realStartTime, selectedContentStateMemoized]);
+
+  const masterPlay =
+    currentTime && loopSecondsState.length > 0
+      ? loopSecondsState[Math.floor(currentTime)]
+      : secondsStateMemoized.length > 0
+      ? secondsStateMemoized[Math.floor(currentTime)]
+      : '';
+
   useManageLoopInit({
     ref,
     threeSecondLoopState,
@@ -418,11 +432,7 @@ export const LearningScreenProvider = ({
   });
 
   useMapTranscriptToSeconds({
-    ref,
-    content,
-    realStartTime,
-    secondsState,
-    setSecondsState,
+    secondsState: secondsStateMemoized,
     setLoopSecondsState,
     loopTranscriptState,
   });
@@ -592,8 +602,8 @@ export const LearningScreenProvider = ({
   const handleLoopThisSentence = () => {
     const currentMasterPlay =
       isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[Math.floor(ref.current.currentTime)];
+      secondsStateMemoized.length > 0 &&
+      secondsStateMemoized[Math.floor(ref.current.currentTime)];
     const thisIndex = formattedTranscriptMemoized.findIndex(
       (item) => item.id === currentMasterPlay,
     );
@@ -650,8 +660,8 @@ export const LearningScreenProvider = ({
     const currentSecond = Math.floor(ref.current.currentTime);
     const currentMasterPlay =
       isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[currentSecond];
+      secondsStateMemoized.length > 0 &&
+      secondsStateMemoized[currentSecond];
 
     if (!currentMasterPlay) return null;
     const thisSentence = formattedTranscriptMemoized.find(
@@ -677,8 +687,8 @@ export const LearningScreenProvider = ({
   const handleBreakdownMasterSentence = async () => {
     const currentMasterPlay =
       isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[Math.floor(ref.current.currentTime)];
+      secondsStateMemoized.length > 0 &&
+      secondsStateMemoized[Math.floor(ref.current.currentTime)];
 
     if (!currentMasterPlay) return null;
     const thisSentence = formattedTranscriptMemoized.find(
@@ -718,8 +728,8 @@ export const LearningScreenProvider = ({
     const currentSecond = Math.floor(ref.current.currentTime);
     const currentMasterPlay =
       isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[currentSecond]; // need to make sure its part of the content
+      secondsStateMemoized.length > 0 &&
+      secondsStateMemoized[currentSecond]; // need to make sure its part of the content
 
     const sentenceHasReview =
       getThisSentenceInfo(currentMasterPlay)?.reviewData;
@@ -745,8 +755,8 @@ export const LearningScreenProvider = ({
     const currentSecond = Math.floor(ref.current.currentTime);
     const currentMasterPlay =
       isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[currentSecond]; // need to make sure its part of the content
+      secondsStateMemoized.length > 0 &&
+      secondsStateMemoized[currentSecond]; // need to make sure its part of the content
 
     const sentenceHasReview =
       getThisSentenceInfo(currentMasterPlay)?.reviewData;
@@ -795,7 +805,7 @@ export const LearningScreenProvider = ({
 
   const handleOnHome = () => {
     setGeneralTopicDisplayNameSelectedState('');
-    setSecondsState([]);
+    // setSecondsState([]);
     setIsInReviewMode(false);
     setStudyFromHereTimeState(null);
     setSelectedContentTitleState('');
@@ -837,8 +847,8 @@ export const LearningScreenProvider = ({
         ref,
         currentTime,
         formattedTranscriptState: formattedTranscriptMemoized,
-        secondsState,
-        setSecondsState,
+        secondsState: secondsStateMemoized,
+        // setSecondsState,
         masterPlayComprehensiveState,
         setMasterPlayComprehensiveState,
         isVideoPlaying,
