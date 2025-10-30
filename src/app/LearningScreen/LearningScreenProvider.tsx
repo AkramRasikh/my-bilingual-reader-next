@@ -10,7 +10,7 @@ import {
 } from '../srs-utils/srs-algo';
 import useManageThreeSecondLoop from './hooks/useManageThreeSecondLoop';
 import useManageLoopInit from './hooks/useManageLoopInit';
-import useMapTranscriptToSeconds from './hooks/useMapTranscriptToSeconds';
+import { useLoopSecondsHook } from './hooks/useMapTranscriptToSeconds';
 import useTrackMasterTranscript from './hooks/useTrackMasterTranscript';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
@@ -431,7 +431,7 @@ export const LearningScreenProvider = ({
     progress,
   });
 
-  useMapTranscriptToSeconds({
+  useLoopSecondsHook({
     secondsState: secondsStateMemoized,
     setLoopSecondsState,
     loopTranscriptState,
@@ -805,7 +805,6 @@ export const LearningScreenProvider = ({
 
   const handleOnHome = () => {
     setGeneralTopicDisplayNameSelectedState('');
-    // setSecondsState([]);
     setIsInReviewMode(false);
     setStudyFromHereTimeState(null);
     setSelectedContentTitleState('');
