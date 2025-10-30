@@ -10,7 +10,10 @@ const HighlightedText = ({
   highlightedTextState,
 }) => (
   <AnimationWrapper className='m-auto mt-1.5 flex gap-2.5 justify-end'>
-    <HighlightedTextFocus highlightedTextState={highlightedTextState} />
+    <HighlightedTextFocus
+      highlightedTextState={highlightedTextState}
+      isLoadingState={isLoadingState}
+    />
     <div className={clsx('flex gap-1.5', isLoadingState ? 'opacity-25' : '')}>
       <HighlightedTextActions
         handleSaveFunc={handleSaveFunc}
