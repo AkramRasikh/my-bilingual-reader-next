@@ -152,25 +152,6 @@ export const WordsStudyUIProvider = ({
     }
   };
 
-  const handleJumpToSentenceViaKeys = (nextIndex: number) => {
-    // defo revisit this
-
-    const thisSentenceIndex = formattedTranscriptState.findIndex(
-      (item) => item.id === masterPlay,
-    );
-
-    if (thisSentenceIndex === -1) {
-      return;
-    }
-    if (thisSentenceIndex === 0 && nextIndex === -1) {
-      handleFromHere(formattedTranscriptState[thisSentenceIndex]?.time);
-    } else {
-      handleFromHere(
-        formattedTranscriptState[thisSentenceIndex + nextIndex]?.time,
-      );
-    }
-  };
-
   const handleLoopThis3Second = () => {
     // if (loopTranscriptState) {
     //   setLoopTranscriptState(null);
@@ -223,8 +204,6 @@ export const WordsStudyUIProvider = ({
     ]);
   };
 
-  const handleOpenBreakdownSentence = () => {};
-
   const handleBreakdownMasterSentence = async () => {};
 
   const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {};
@@ -274,7 +253,6 @@ export const WordsStudyUIProvider = ({
         handleFromHere,
         handlePause,
         handleRewind,
-        handleJumpToSentenceViaKeys,
         handleLoopThis3Second,
         handleShiftLoopSentence,
         handleLoopThisSentence,
