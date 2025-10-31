@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
 import { content, sentences, words } from '../client-api/get-on-load-data';
-import { japanese } from '../languages';
+import useLanguageSelector from './useLanguageSelector';
 
 const FetchDataContext = createContext(null);
 
@@ -10,27 +10,12 @@ export function FetchDataProvider({ children }) {
   const [languageSelectedState, setLanguageSelectedState] = useState('');
   const [languageOnMountState, setLanguageOnMountState] = useState('');
 
-  useEffect(() => {
-    if (languageSelectedState) {
-      localStorage.setItem('selectedLanguage', languageSelectedState);
-    }
-
-    if (!languageOnMountState && languageSelectedState) {
-      setLanguageOnMountState(languageSelectedState);
-    }
-    if (
-      languageOnMountState &&
-      languageSelectedState &&
-      languageOnMountState !== languageSelectedState
-    ) {
-      window.location.reload();
-    }
-  }, [languageSelectedState, languageOnMountState]);
-
-  useEffect(() => {
-    const selectedLanguage = localStorage.getItem('selectedLanguage');
-    setLanguageSelectedState(selectedLanguage || japanese);
-  }, []);
+  useLanguageSelector({
+    languageSelectedState,
+    setLanguageOnMountState,
+    languageOnMountState,
+    setLanguageSelectedState,
+  });
 
   useEffect(() => {
     if (!data && languageSelectedState) {
