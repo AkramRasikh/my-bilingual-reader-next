@@ -13,8 +13,11 @@ import ProgressHeader, { useProgressHeader } from './ProgressHeader';
 const BreadCrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
   const [progressState, setProgressState] = useState(false);
-  const { sentencesDueForReview, wordsForReviewMemoized, wordBasketState } =
-    useData();
+  const {
+    sentencesDueForReviewMemoized,
+    wordsForReviewMemoized,
+    wordBasketState,
+  } = useData();
   const {
     selectedContentState,
     handleOnHome,
@@ -43,7 +46,7 @@ const BreadCrumbComponent = () => {
 
   const progressText = `${numberOfStudiedSentences}/${numberOfSentenceDueOnMountState}`;
 
-  const numberOfSentences = sentencesDueForReview.length;
+  const numberOfSentences = sentencesDueForReviewMemoized.length;
   const generalTopicName = selectedContentState?.generalTopicName;
 
   const firstHeader = 'Home';

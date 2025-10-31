@@ -114,7 +114,7 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     }
   }, [sentencesState, mountedState, pureWordsMemoized]);
 
-  const sentencesDueForReview = useMemo(() => {
+  const sentencesDueForReviewMemoized = useMemo(() => {
     if (sentencesState.length === 0) {
       return [];
     }
@@ -534,7 +534,7 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
         getTopicStatus,
         wordsForReviewMemoized,
         wordsToReviewOnMountState,
-        sentencesDueForReview,
+        sentencesDueForReviewMemoized,
       }}
     >
       {children}
