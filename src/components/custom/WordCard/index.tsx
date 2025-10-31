@@ -140,7 +140,7 @@ const WordCard = ({
           isVocab
         />
       ) : (
-        <span>{isDueText}</span>
+        <span className='font-medium text-sm'>{isDueText}</span>
       )}
     </WordCardWrapper>
   );
