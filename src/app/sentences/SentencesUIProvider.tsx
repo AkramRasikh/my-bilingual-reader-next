@@ -28,9 +28,10 @@ export const SentencesUIProvider = ({
   const [audioProgressState, setAudioProgressState] = useState(0);
   const [initNumState, setInitNumState] = useState();
 
-  const { sentencesState, wordsState, updateAdhocSentenceData } = useData();
+  const { sentencesDueForReviewMemoized, wordsState, updateAdhocSentenceData } =
+    useData();
   const { languageSelectedState } = useFetchData();
-  const numberOfSentences = sentencesState.length;
+  const numberOfSentences = sentencesDueForReviewMemoized.length;
 
   useEffect(() => {
     if (!initNumState) {
@@ -85,7 +86,7 @@ export const SentencesUIProvider = ({
 
   const handlePause = () => audioRef.current.pause();
 
-  const sentencesInQueue = sentencesState.slice(0, 4);
+  const sentencesInQueue = sentencesDueForReviewMemoized.slice(0, 4);
 
   const selectedSentenceDataMemoized = useMemo(() => {
     if (sentencesInQueue.length === 0) {
