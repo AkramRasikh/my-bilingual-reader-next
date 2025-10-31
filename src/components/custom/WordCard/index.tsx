@@ -47,10 +47,10 @@ const WordCard = ({
   const previewImage = !openContentState && cloudflareImageUrl;
 
   const isDueText = !isWordDue
-    ? getTimeDiffSRS({
+    ? `Due in ${getTimeDiffSRS({
         dueTimeStamp: new Date(reviewData?.due),
         timeNow: timeNow,
-      })
+      })}`
     : '';
 
   const addImage = async (formData) => {

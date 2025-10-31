@@ -2,7 +2,7 @@ export const getTimeDiffSRS = ({ dueTimeStamp, timeNow }) => {
   const timeDifference = dueTimeStamp - timeNow; // Difference in milliseconds
   const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
   if (days > 0) {
-    return `Due in ${days} days`;
+    return `${days} days`;
   }
 
   const hours = Math.floor(
@@ -10,12 +10,12 @@ export const getTimeDiffSRS = ({ dueTimeStamp, timeNow }) => {
   );
 
   if (hours > 0) {
-    return `Due in ${hours} hrs`;
+    return `${hours} hrs`;
   }
   const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
 
   if (minutes >= 0) {
-    return `Due in ${minutes} mins`;
+    return `${minutes} mins`;
   }
   // future
   const timeDifferenceFlipped = timeNow - dueTimeStamp; // Difference in milliseconds
