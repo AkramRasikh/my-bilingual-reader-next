@@ -114,6 +114,28 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     }
   }, [sentencesState, mountedState, pureWordsMemoized]);
 
+  const sentencesDueForReview = useMemo(() => {
+    if (sentencesState.length === 0) {
+      return [];
+    }
+    const dateNow = new Date();
+    const dueCardsNow = sentencesState.filter((sentence) =>
+      isDueCheck(sentence, dateNow),
+    );
+
+    const formatSentence = dueCardsNow?.map((item) => {
+      return {
+        ...item,
+        targetLangformatted: underlineWordsInSentence(
+          item.targetLang,
+          pureWordsMemoized,
+        ), // should all be moved eventually to new sentence sphere
+      };
+    });
+
+    return formatSentence;
+  }, [sentencesState]);
+
   const wordsForReviewMemoized = useMemo(() => {
     const dateNow = new Date();
     const wordsForReview = wordsState.filter((item) =>
@@ -512,6 +534,7 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
         getTopicStatus,
         wordsForReviewMemoized,
         wordsToReviewOnMountState,
+        sentencesDueForReview,
       }}
     >
       {children}
