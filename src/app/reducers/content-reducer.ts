@@ -5,6 +5,10 @@
 // Reducer for contentState
 export function contentReducer(state, action) {
   switch (action.type) {
+    case 'initContent':
+      // for your first useEffect initialization
+      return action.content;
+
     case 'updateSentence':
       return state.map((topic, idx) =>
         idx === action.contentIndex

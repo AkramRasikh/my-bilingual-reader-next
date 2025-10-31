@@ -1,14 +1,27 @@
 'use client';
-import { createContext, useContext, useState, useEffect } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useReducer,
+} from 'react';
 import { content, sentences, words } from '../client-api/get-on-load-data';
 import useLanguageSelector from './useLanguageSelector';
+import { sentencesReducer } from '../reducers/sentences-reducer';
+import { contentReducer } from '../reducers/content-reducer';
+import { wordsReducer } from '../reducers/words-reducer';
+import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 
 const FetchDataContext = createContext(null);
 
 export function FetchDataProvider({ children }) {
-  const [data, setData] = useState(null);
   const [languageSelectedState, setLanguageSelectedState] = useState('');
   const [languageOnMountState, setLanguageOnMountState] = useState('');
+  const [hasFetchedDataState, setHasFetchedDataState] = useState(false);
+  const [sentencesState, dispatchSentences] = useReducer(sentencesReducer, []);
+  const [contentState, dispatchContent] = useReducer(contentReducer, []);
+  const [wordsState, dispatchWords] = useReducer(wordsReducer, []);
 
   useLanguageSelector({
     languageSelectedState,
@@ -17,8 +30,16 @@ export function FetchDataProvider({ children }) {
     setLanguageSelectedState,
   });
 
+  useDataSaveToLocalStorage({
+    languageSelectedState,
+    wordsState,
+    sentencesState,
+    contentState,
+    hasFetchedDataState,
+  });
+
   useEffect(() => {
-    if (!data && languageSelectedState) {
+    if (!hasFetchedDataState && languageSelectedState) {
       const wordsState = JSON.parse(
         localStorage.getItem(`${languageSelectedState}-wordsState`) as string,
       );
@@ -31,16 +52,22 @@ export function FetchDataProvider({ children }) {
         localStorage.getItem(`${languageSelectedState}-contentState`) as string,
       );
 
-      const wordsExist = wordsState?.length >= 0;
-      const sentencesExist = sentencesState?.length >= 0;
       const contentStateExist = contentState?.length >= 0;
 
-      if (wordsExist && sentencesExist && contentStateExist) {
+      if (contentStateExist) {
         console.log('## Fetching from localStorage');
-        setData({
-          wordsData: wordsState,
-          sentencesData: sentencesState,
-          contentData: contentState,
+        setHasFetchedDataState(true);
+        dispatchWords({
+          type: 'initWords',
+          words: wordsState,
+        });
+        dispatchContent({
+          type: 'initContent',
+          content: contentState,
+        });
+        dispatchSentences({
+          type: 'initSentences',
+          sentences: sentencesState,
         });
       } else {
         fetch('/api/getOnLoadData', {
@@ -53,15 +80,39 @@ export function FetchDataProvider({ children }) {
           }),
         }) // your endpoint
           .then((res) => res.json())
-          .then(setData)
+          .then((data) => {
+            dispatchWords({
+              type: 'initWords',
+              words: data?.wordsData,
+            });
+            dispatchContent({
+              type: 'initContent',
+              content: data.contentData,
+            });
+            dispatchSentences({
+              type: 'initSentences',
+              sentences: data?.sentencesData,
+            });
+            setHasFetchedDataState(true);
+          })
           .catch(console.error);
       }
     }
-  }, [data, languageSelectedState]);
+  }, [hasFetchedDataState, languageSelectedState]);
 
   return (
     <FetchDataContext.Provider
-      value={{ data, setData, languageSelectedState, setLanguageSelectedState }}
+      value={{
+        languageSelectedState,
+        setLanguageSelectedState,
+        dispatchSentences,
+        dispatchContent,
+        dispatchWords,
+        sentencesState,
+        contentState,
+        wordsState,
+        hasFetchedDataState,
+      }}
     >
       {children}
     </FetchDataContext.Provider>

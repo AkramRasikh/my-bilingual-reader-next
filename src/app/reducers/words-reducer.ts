@@ -4,6 +4,10 @@
 // Reducer for wordsState
 export function wordsReducer(state, action) {
   switch (action.type) {
+    case 'initWords':
+      // for your first useEffect initialization
+      return action.words;
+
     case 'addWord':
       // Add one or multiple words to the state
       // If duplicates (by id) may occur, you can merge intelligently

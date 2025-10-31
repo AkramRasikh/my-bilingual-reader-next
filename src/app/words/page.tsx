@@ -10,24 +10,18 @@ import { Toaster } from 'sonner';
 import WordsStudyUI from '../WordsStudyUI';
 
 const WordStudyPageContent = () => {
-  const { data, languageSelectedState } = useFetchData();
+  const { wordsState, languageSelectedState } = useFetchData();
 
-  if (!data || !languageSelectedState)
+  if (!wordsState || !languageSelectedState)
     return (
       <PageContainer>
         <LoadingSpinner big />
       </PageContainer>
     );
-  const { wordsData, sentencesData, contentData } = data;
 
   return (
     <PageContainer>
-      <DataProvider
-        wordsData={wordsData}
-        sentencesData={sentencesData}
-        contentData={contentData}
-        languageSelectedState={languageSelectedState}
-      >
+      <DataProvider>
         <WordsStudyUIProvider>
           <Toaster position='top-center' />
           <WordsStudyUIBreadCrumbHeader />

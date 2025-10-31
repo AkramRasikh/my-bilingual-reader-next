@@ -7,19 +7,16 @@ import LandingUI from '.';
 import { DataProvider } from '../Providers/DataProvider';
 
 const LandingUIContainer = () => {
-  const { data, languageSelectedState } = useFetchData();
+  const { contentState, hasFetchedDataState, languageSelectedState } =
+    useFetchData();
 
-  if (!data || !languageSelectedState) return <LoadingSpinner big />;
+  if (!hasFetchedDataState || !contentState?.length || !languageSelectedState) {
+    return <LoadingSpinner big />;
+  }
 
-  const { wordsData, sentencesData, contentData } = data;
   return (
     <div className='p-4 bg-amber-50 h-lvh'>
-      <DataProvider
-        wordsData={wordsData}
-        sentencesData={sentencesData}
-        contentData={contentData}
-        languageSelectedState={languageSelectedState}
-      >
+      <DataProvider>
         <LandingUI />
       </DataProvider>
     </div>

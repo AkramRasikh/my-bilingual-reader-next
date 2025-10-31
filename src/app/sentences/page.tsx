@@ -9,24 +9,18 @@ import SentencesUIBreadCrumbHeader from './SentencesUIBreadCrumbHeader';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 
 const SentencePageContent = () => {
-  const { data, languageSelectedState } = useFetchData();
+  const { sentencesState, languageSelectedState } = useFetchData();
 
-  if (!data || !languageSelectedState)
+  if (!sentencesState || !languageSelectedState)
     return (
       <PageContainer>
         <LoadingSpinner big />
       </PageContainer>
     );
-  const { wordsData, sentencesData, contentData } = data;
 
   return (
     <PageContainer>
-      <DataProvider
-        wordsData={wordsData}
-        sentencesData={sentencesData}
-        contentData={contentData}
-        languageSelectedState={languageSelectedState}
-      >
+      <DataProvider>
         <SentencesUIProvider>
           <SentencesUIBreadCrumbHeader />
           <SentencesUIContainer />

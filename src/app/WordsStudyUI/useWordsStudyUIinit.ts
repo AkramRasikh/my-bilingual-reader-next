@@ -7,7 +7,7 @@ const useWordsStudyUIinit = ({
   wordsForReviewMemoized,
   pureWordsMemoized,
   contentState,
-  sentencesData,
+  sentencesState,
   wordsState,
 }) => {
   useEffect(() => {
@@ -83,7 +83,7 @@ const useWordsStudyUIinit = ({
             // Break inner loop since we found a match
             break;
           } else {
-            const foundContextIdInAdhocSentences = sentencesData.find(
+            const foundContextIdInAdhocSentences = sentencesState.find(
               (sentenceItem) => sentenceItem.id === contextId,
             );
 

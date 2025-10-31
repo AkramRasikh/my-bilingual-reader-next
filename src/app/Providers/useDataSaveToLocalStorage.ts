@@ -7,8 +7,13 @@ const useDataSaveToLocalStorage = ({
   wordsState,
   sentencesState,
   contentState,
+  hasFetchedDataState,
 }) => {
   useEffect(() => {
+    if (!hasFetchedDataState) {
+      return;
+    }
+
     if (!isMockEnv) {
       console.log('## Triggering save (words)', languageSelectedState);
       localStorage.setItem(
@@ -16,9 +21,13 @@ const useDataSaveToLocalStorage = ({
         JSON.stringify(wordsState),
       );
     }
-  }, [wordsState]);
+  }, [wordsState, hasFetchedDataState]);
 
   useEffect(() => {
+    if (!hasFetchedDataState) {
+      return;
+    }
+
     if (!isMockEnv) {
       console.log('## Triggering save (sentences)', languageSelectedState);
       localStorage.setItem(
@@ -26,9 +35,13 @@ const useDataSaveToLocalStorage = ({
         JSON.stringify(sentencesState),
       );
     }
-  }, [sentencesState]);
+  }, [sentencesState, hasFetchedDataState]);
 
   useEffect(() => {
+    if (!hasFetchedDataState) {
+      return;
+    }
+
     if (!isMockEnv) {
       console.log('## Triggering save (content)', languageSelectedState);
       localStorage.setItem(
@@ -36,7 +49,7 @@ const useDataSaveToLocalStorage = ({
         JSON.stringify(contentState),
       );
     }
-  }, [contentState]);
+  }, [contentState, hasFetchedDataState]);
 };
 
 export default useDataSaveToLocalStorage;

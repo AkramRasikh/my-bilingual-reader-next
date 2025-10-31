@@ -66,6 +66,7 @@ export const WordsStudyUIProvider = ({
     wordsForReviewMemoized,
     updateWordDataProvider,
   } = useData();
+  const { sentencesState } = useFetchData();
 
   useEffect(() => {
     if (!isNumber(wordsToReviewOnMountState)) {
@@ -79,16 +80,12 @@ export const WordsStudyUIProvider = ({
     currentStateNumber: wordsForReviewMemoized.length,
   });
 
-  const { data } = useFetchData();
-
-  const sentencesData = data.sentencesData;
-
   useWordsStudyUIinit({
     setFormattedWordsStudyState,
     wordsForReviewMemoized,
     pureWordsMemoized,
     contentState,
-    sentencesData,
+    sentencesState,
     wordsState,
   });
 

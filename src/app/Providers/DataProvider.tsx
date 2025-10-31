@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useEffect, useMemo, useReducer, useState } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 import saveWordAPI from '../client-api/save-word';
 import {
   getEmptyCard,
@@ -12,26 +12,16 @@ import { breakdownSentenceAPI } from '../client-api/breakdown-sentence';
 import { updateContentMetaDataAPI } from '../client-api/update-content-meta-data';
 import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
 import { getAudioURL } from '../../utils/get-media-url';
-import { contentReducer } from '../reducers/content-reducer';
 import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 import { isDueCheck } from '@/utils/is-due-check';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { isNumber } from '@/utils/is-number';
-import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
-import { wordsReducer } from '../reducers/words-reducer';
-import { sentencesReducer } from '../reducers/sentences-reducer';
+import { useFetchData } from './FetchDataProvider';
 
 export const DataContext = createContext(null);
 
-export const DataProvider = ({
-  wordsData,
-  sentencesData,
-  contentData,
-  languageSelectedState,
-  children,
-}: PropsWithChildren<object>) => {
-  const [sentencesState, dispatchSentences] = useReducer(sentencesReducer, []);
+export const DataProvider = ({ children }: PropsWithChildren<object>) => {
   const [story, setStory] = useState();
   const [mountedState, setMountedState] = useState(false);
   const [wordBasketState, setWordBasketState] = useState([]);
@@ -39,11 +29,15 @@ export const DataProvider = ({
   const [wordsToReviewOnMountState, setWordsToReviewOnMountState] =
     useState(null);
 
-  const [contentState, dispatchContent] = useReducer(
-    contentReducer,
-    contentData,
-  );
-  const [wordsState, dispatchWords] = useReducer(wordsReducer, wordsData);
+  const {
+    dispatchSentences,
+    dispatchContent,
+    dispatchWords,
+    sentencesState,
+    contentState,
+    wordsState,
+    languageSelectedState,
+  } = useFetchData();
 
   const generalTopicDisplayNameMemoized = useMemo(() => {
     const generalNamesArr = [];
@@ -65,13 +59,6 @@ export const DataProvider = ({
     return generalNamesArr;
   }, [contentState]);
 
-  useDataSaveToLocalStorage({
-    languageSelectedState,
-    wordsState,
-    sentencesState,
-    contentState,
-  });
-
   const getPureWords = () => {
     const pureWords = [];
     wordsState?.forEach((wordData) => {
@@ -83,7 +70,7 @@ export const DataProvider = ({
       }
     });
 
-    sentencesData?.forEach((sentence) => {
+    sentencesState?.forEach((sentence) => {
       if (sentence?.matchedWordsSurface) {
         sentence?.matchedWordsSurface.forEach((item) => {
           if (item && !pureWords.includes(item)) {
@@ -104,12 +91,11 @@ export const DataProvider = ({
   useEffect(() => {
     if (
       sentencesState.length === 0 &&
-      sentencesData?.length > 0 &&
       pureWordsMemoized.length > 0 &&
       !mountedState
     ) {
       const dateNow = new Date();
-      const dueCardsNow = sentencesData.filter((sentence) =>
+      const dueCardsNow = sentencesState.filter((sentence) =>
         isDueCheck(sentence, dateNow),
       );
 
@@ -124,7 +110,7 @@ export const DataProvider = ({
       });
 
       setMountedState(true);
-      dispatchSentences({ type: 'initSentences', sentences: formatSentence });
+      // dispatchSentences({ type: 'initSentences', sentences: formatSentence });
     }
   }, [sentencesState, mountedState, pureWordsMemoized]);
 
@@ -311,17 +297,6 @@ export const DataProvider = ({
           fields: { reviewData },
         });
       }
-
-      // if (selectedContentState?.isFullReview) {
-      //   // filter out ASSUMING its date() based
-      //   const updatedReviewSpecificState = selectedContentState.content.filter(
-      //     (sentenceData) => sentenceData.id !== sentenceId,
-      //   );
-      //   // setSelectedContentState({
-      //   //   ...selectedContentState,
-      //   //   content: updatedReviewSpecificState,
-      //   // });
-      // }
 
       return updatedFieldFromDB?.reviewData;
     } catch (error) {
@@ -512,7 +487,6 @@ export const DataProvider = ({
   return (
     <DataContext.Provider
       value={{
-        wordsData,
         pureWordsMemoized,
         handleSaveWord,
         wordsState,
