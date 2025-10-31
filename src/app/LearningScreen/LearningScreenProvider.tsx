@@ -810,6 +810,7 @@ export const LearningScreenProvider = ({
     setSelectedContentTitleState('');
     setSentenceRepsState(0);
     setNumberOfSentenceDueOnMountState(null);
+    setElapsed(0);
   };
 
   const contentMetaMemoized = useMemo(() => {
