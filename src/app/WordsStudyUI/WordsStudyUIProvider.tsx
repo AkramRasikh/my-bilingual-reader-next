@@ -38,8 +38,6 @@ export const WordsStudyUIProvider = ({
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
   );
-  const [isBreakingDownSentenceArrState, setIsBreakingDownSentenceArrState] =
-    useState([]);
   const [formattedWordsStudyState, setFormattedWordsStudyState] = useState([]);
   const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
     [],
@@ -48,7 +46,6 @@ export const WordsStudyUIProvider = ({
     useState([]);
 
   const [loopTranscriptState, setLoopTranscriptState] = useState([]);
-  const [selectedContentState, setSelectedContentState] = useState();
   const [threeSecondLoopState, setThreeSecondLoopState] = useState<
     number | null
   >();
@@ -61,7 +58,6 @@ export const WordsStudyUIProvider = ({
   const {
     contentState,
     pureWordsMemoized,
-    breakdownSentence,
     wordsState,
     wordsForReviewMemoized,
     updateWordDataProvider,
@@ -88,8 +84,6 @@ export const WordsStudyUIProvider = ({
     sentencesState,
     wordsState,
   });
-
-  const realStartTime = selectedContentState?.realStartTime || 0;
 
   const masterPlay =
     currentTime && loopSecondsState.length > 0
@@ -136,9 +130,9 @@ export const WordsStudyUIProvider = ({
       return null;
     }
 
-    const thisStartTime = realStartTime + time;
+    // const thisStartTime = realStartTime + time;
 
-    handlePlayFromHere(thisStartTime);
+    handlePlayFromHere(time);
   };
   const handlePause = () => ref.current.pause();
 
@@ -229,80 +223,11 @@ export const WordsStudyUIProvider = ({
     ]);
   };
 
-  const handleOpenBreakdownSentence = () => {
-    const currentSecond = Math.floor(ref.current.currentTime);
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[currentSecond];
+  const handleOpenBreakdownSentence = () => {};
 
-    if (!currentMasterPlay) return null;
-    const thisSentence = formattedTranscriptState.find(
-      (item) => item.id === currentMasterPlay,
-    );
+  const handleBreakdownMasterSentence = async () => {};
 
-    const alreadyHasBreakdown = thisSentence?.sentenceStructure;
-    if (!alreadyHasBreakdown) return null;
-
-    const isOpen = breakdownSentencesArrState.includes(currentMasterPlay);
-
-    if (isOpen) {
-      const updatedList = breakdownSentencesArrState.filter(
-        (i) => i !== currentMasterPlay,
-      );
-      setBreakdownSentencesArrState(updatedList);
-    } else {
-      const updatedList = [...breakdownSentencesArrState, currentMasterPlay];
-      setBreakdownSentencesArrState(updatedList);
-    }
-  };
-
-  const handleBreakdownMasterSentence = async () => {
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsState?.length > 0 &&
-      secondsState[Math.floor(ref.current.currentTime)];
-
-    if (!currentMasterPlay) return null;
-    const thisSentence = formattedTranscriptState.find(
-      (item) => item.id === currentMasterPlay,
-    );
-
-    const alreadyHasBreakdown = thisSentence?.sentenceStructure;
-    if (alreadyHasBreakdown) {
-      handleOpenBreakdownSentence();
-      return null;
-    }
-
-    const thisSentenceTargetLang = thisSentence.targetLang;
-    const contentIndex = selectedContentState?.contentIndex;
-
-    try {
-      setIsBreakingDownSentenceArrState((prev) => [...prev, currentMasterPlay]);
-      await breakdownSentence({
-        topicName: selectedContentState.title,
-        sentenceId: currentMasterPlay,
-        targetLang: thisSentenceTargetLang,
-        contentIndex,
-      });
-    } catch (error) {
-      console.log('## handleBreakdownMasterSentence error', error);
-    } finally {
-      setIsBreakingDownSentenceArrState((prev) =>
-        prev.filter((item) => item !== currentMasterPlay),
-      );
-    }
-  };
-
-  const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {
-    const contentIndex = selectedContentState?.contentIndex;
-    await breakdownSentence({
-      topicName: selectedContentState.title,
-      sentenceId,
-      targetLang,
-      contentIndex,
-    });
-  };
+  const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {};
 
   return (
     <WordsStudyUIContext.Provider
@@ -355,7 +280,6 @@ export const WordsStudyUIProvider = ({
         handleLoopThisSentence,
         handleBreakdownMasterSentence,
         handleBreakdownSentence,
-        isBreakingDownSentenceArrState,
         setStudyFromHereTimeState,
         studyFromHereTimeState,
         transcriptRef,
