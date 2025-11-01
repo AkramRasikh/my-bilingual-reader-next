@@ -72,6 +72,10 @@ const LearningScreenKeyListener = () => {
         return;
       }
       if (threeSecondLoopState || loopTranscriptState) {
+        if (e.key.toLowerCase() === 'o') {
+          handleSlowDownAudio(true); /// refactor all this
+          return;
+        }
         // think of properties and array things
         if (
           threeSecondLoopState &&
