@@ -23,7 +23,6 @@ export const DataContext = createContext(null);
 
 export const DataProvider = ({ children }: PropsWithChildren<object>) => {
   const [story, setStory] = useState();
-  const [mountedState, setMountedState] = useState(false);
   const [wordBasketState, setWordBasketState] = useState([]);
   const [toastMessageState, setToastMessageState] = useState('');
   const [wordsToReviewOnMountState, setWordsToReviewOnMountState] =
@@ -88,31 +87,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     () => getPureWords(),
     [getPureWords, wordsState],
   );
-  useEffect(() => {
-    if (
-      sentencesState.length === 0 &&
-      pureWordsMemoized.length > 0 &&
-      !mountedState
-    ) {
-      const dateNow = new Date();
-      const dueCardsNow = sentencesState.filter((sentence) =>
-        isDueCheck(sentence, dateNow),
-      );
-
-      const formatSentence = dueCardsNow?.map((item) => {
-        return {
-          ...item,
-          targetLangformatted: underlineWordsInSentence(
-            item.targetLang,
-            pureWordsMemoized,
-          ), // should all be moved eventually to new sentence sphere
-        };
-      });
-
-      setMountedState(true);
-      // dispatchSentences({ type: 'initSentences', sentences: formatSentence });
-    }
-  }, [sentencesState, mountedState, pureWordsMemoized]);
 
   const sentencesDueForReviewMemoized = useMemo(() => {
     if (sentencesState.length === 0) {
