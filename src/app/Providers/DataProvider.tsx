@@ -128,13 +128,10 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     return { isThisDue, isThisNew, hasAllBeenReviewed, numberOfDueWords };
   };
 
-  const handleGetComprehensiveReview = () => {};
-
   return (
     <DataContext.Provider
       value={{
         generalTopicDisplayNameMemoized,
-        handleGetComprehensiveReview,
         addImageDataProvider,
         getTopicStatus,
       }}
