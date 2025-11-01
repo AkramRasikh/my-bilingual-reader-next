@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
-const useCheckVideoIsWorking = (ref) => {
-  const [error, setError] = useState(null);
-
+const useCheckVideoIsWorking = (ref, setError) => {
   useEffect(() => {
     const video = ref.current;
 
@@ -24,8 +22,6 @@ const useCheckVideoIsWorking = (ref) => {
       video.removeEventListener('error', handleError);
     };
   }, []);
-
-  return error;
 };
 
 export default useCheckVideoIsWorking;

@@ -18,6 +18,7 @@ import WordsStudyUIActions from './WordsStudyUIActions';
 
 const WordsStudyUIVideoEl = ({ contextDataEl }) => {
   const [secondsState, setSecondsState] = useState([]);
+  const [errorVideoState, setErrorVideoState] = useState(false);
   const transcriptStringRef = useRef('');
 
   const {
@@ -41,7 +42,7 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
   const { wordsState, handleSaveWord, handleDeleteWordDataProvider } =
     useData();
   const isMedia = contextDataEl.isMedia;
-  const error = useCheckVideoIsWorking(ref);
+  useCheckVideoIsWorking(ref, setErrorVideoState);
 
   const transcriptArr = [
     contextDataEl?.previousSentence,
@@ -56,7 +57,9 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
   const masterPlay =
     secondsState?.length > 0 ? secondsState[Math.floor(currentTime)] : '';
 
-  const realStartTimeAudioVideo = error ? 0 : contextDataEl.realStartTime;
+  const realStartTimeAudioVideo = errorVideoState
+    ? 0
+    : contextDataEl.realStartTime; // fix to mirror learningProvider
 
   useManageThreeSecondLoop({
     threeSecondLoopState,
@@ -127,14 +130,14 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
         duration: ref?.current?.duration,
         isVideoModeState: true,
         // realStartTime: 0,
-        realStartTime: error ? 0 : contextDataEl.realStartTime,
+        realStartTime: errorVideoState ? 0 : contextDataEl.realStartTime,
       });
       setSecondsState(secondsToArr);
       transcriptStringRef.current = idsOfTranscript;
     }
   }, [ref?.current?.duration, secondsState]);
 
-  if (error) {
+  if (errorVideoState) {
     return (
       <div>
         <WordsStudyUIActions />

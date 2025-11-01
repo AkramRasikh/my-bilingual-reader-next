@@ -7,11 +7,11 @@ import useLearningScreen from './useLearningScreen';
 import LearningScreenActionBar from './LearningScreenActionBar';
 import LearningScreenActionBarVideoControls from './LearningScreenActionBarVideoControls';
 import { useFetchData } from '../Providers/FetchDataProvider';
-import useCheckVideoIsWorking from '../WordsStudyUI/useCheckVideoIsWorking';
 import AudioPlayer from '@/components/AudioPlayer';
 import clsx from 'clsx';
 import LearningScreenLoopBtn from './LearningScreenLoopBtn';
 import LearningScreenLoopUI from './LearningScreenLoopUI';
+import useCheckVideoIsWorking from '../WordsStudyUI/useCheckVideoIsWorking';
 
 const LearningScreenLeftSideContainer = () => {
   const {
@@ -22,8 +22,12 @@ const LearningScreenLeftSideContainer = () => {
     handleTimeUpdate,
     showOnVideoTranscriptState,
     selectedContentState,
+    contentMetaMemoized,
+    errorVideoState,
+    setErrorVideoState,
   } = useLearningScreen();
   const { languageSelectedState } = useFetchData();
+  const hasUnifiedChapter = contentMetaMemoized?.length === 1;
 
   const isFullReview = selectedContentState?.isFullReview;
 
@@ -31,13 +35,19 @@ const LearningScreenLeftSideContainer = () => {
     ? selectedContentState?.title
     : getGeneralTopicName(selectedContentState?.title);
   const videoUrl = getCloudflareVideoURL(generalTopic, languageSelectedState);
-  const audioUrl = getAudioURL(generalTopic, languageSelectedState);
-  const errorInVideo = useCheckVideoIsWorking(ref);
+
+  useCheckVideoIsWorking(ref, setErrorVideoState);
+  const defaultToBrokenUpAudio = errorVideoState && !hasUnifiedChapter;
+
+  const audioUrl = getAudioURL(
+    defaultToBrokenUpAudio ? selectedContentState.title : generalTopic,
+    languageSelectedState,
+  );
 
   return (
     <div className='flex-1 w-xl mx-auto'>
       <LearningScreenActionBarVideoControls />
-      {!errorInVideo ? (
+      {!errorVideoState ? (
         <VideoPlayer
           ref={ref}
           url={videoUrl}
