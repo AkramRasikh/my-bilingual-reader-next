@@ -29,6 +29,7 @@ import {
 import saveWordAPI from '../client-api/save-word';
 import { deleteWordAPI } from '../client-api/delete-word';
 import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
+import { getAudioURL } from '@/utils/get-media-url';
 
 const FetchDataContext = createContext(null);
 
@@ -423,6 +424,34 @@ export function FetchDataProvider({ children }) {
     }
   };
 
+  const addGeneratedSentence = async ({ targetLang, baseLang, notes }) => {
+    console.log('## addGeneratedSentence', targetLang, baseLang);
+    const res = await fetch('/api/addSentence', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        language: languageSelectedState,
+        targetLang,
+        baseLang,
+        localAudioPath: story.audioUrl,
+        notes,
+      }),
+    });
+    const data = await res.json();
+
+    console.log('## addGeneratedSentence data', data);
+
+    if (data) {
+      setStory({
+        ...story,
+        isSaved: true,
+        audioUrl: getAudioURL(data[0].id, languageSelectedState),
+      });
+    }
+
+    dispatchSentences({ type: 'addSentence', sentence: data });
+  };
+
   return (
     <FetchDataContext.Provider
       value={{
@@ -452,6 +481,7 @@ export function FetchDataProvider({ children }) {
         handleDeleteWordDataProvider,
         updateWordDataProvider,
         updateSentenceData,
+        addGeneratedSentence,
       }}
     >
       {children}

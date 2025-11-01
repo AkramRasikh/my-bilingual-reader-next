@@ -130,41 +130,11 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
 
   const handleGetComprehensiveReview = () => {};
 
-  const addGeneratedSentence = async ({ targetLang, baseLang, notes }) => {
-    console.log('## addGeneratedSentence', targetLang, baseLang);
-
-    const res = await fetch('/api/addSentence', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        language: languageSelectedState,
-        targetLang,
-        baseLang,
-        localAudioPath: story.audioUrl,
-        notes,
-      }),
-    });
-    const data = await res.json();
-
-    console.log('## addGeneratedSentence data', data);
-
-    if (data) {
-      setStory({
-        ...story,
-        isSaved: true,
-        audioUrl: getAudioURL(data[0].id, languageSelectedState),
-      });
-    }
-
-    dispatchSentences({ type: 'addSentence', sentence: data });
-  };
-
   return (
     <DataContext.Provider
       value={{
         generalTopicDisplayNameMemoized,
         handleGetComprehensiveReview,
-        addGeneratedSentence,
         addImageDataProvider,
         getTopicStatus,
       }}
