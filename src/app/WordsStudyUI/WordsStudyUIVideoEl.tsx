@@ -4,7 +4,6 @@ import VideoPlayer from '../VideoPlayer';
 import WordsStudyUIAudioElFallback from './WordsStudyUIAudioElFallback';
 import { getCloudflareVideoURL } from '@/utils/get-media-url';
 import useCheckVideoIsWorking from './useCheckVideoIsWorking';
-import useData from '../Providers/useData';
 import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import { mapSentenceIdsToSeconds } from '../LearningScreen/utils/map-sentence-ids-to-seconds';
 import { useEffect, useRef, useState } from 'react';

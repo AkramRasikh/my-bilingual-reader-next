@@ -1,7 +1,6 @@
 import { getAudioURL } from '@/utils/get-media-url';
 import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import { useEffect } from 'react';
-import useData from '../Providers/useData';
 import WordsStudyUITranscriptItem from './WordsStudyUITranscriptItem';
 import LoopIndicatorWithProgress from '@/components/custom/LoopIndicatorWithProgress';
 import LoopBtn from '@/components/custom/LoopBtn';

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
-import useData from '../Providers/useData';
 import useLearningScreen from './useLearningScreen';
 import LearningScreenUnifiedAnalytics from './LearningScreenUnifiedAnalytics';
 

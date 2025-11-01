@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import { TabsContent } from '@/components/ui/tabs';
 import useLearningScreen from '../useLearningScreen';
-import useData from '../../Providers/useData';
 import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
