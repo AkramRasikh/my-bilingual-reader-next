@@ -1,6 +1,5 @@
 'use client';
 import { createContext, useMemo } from 'react';
-import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
 import { getAudioURL } from '../../utils/get-media-url';
 import { isDueCheck } from '@/utils/is-due-check';
 import { useFetchData } from './FetchDataProvider';
@@ -10,7 +9,6 @@ export const DataContext = createContext(null);
 export const DataProvider = ({ children }: PropsWithChildren<object>) => {
   const {
     dispatchSentences,
-    dispatchContent,
     dispatchWords,
     contentState,
     languageSelectedState,
@@ -130,43 +128,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     return { isThisDue, isThisNew, hasAllBeenReviewed, numberOfDueWords };
   };
 
-  const updateSentenceData = async ({
-    topicName,
-    sentenceId,
-    fieldToUpdate,
-    contentIndex,
-    isRemoveReview,
-  }) => {
-    try {
-      const updatedFieldFromDB = await updateSentenceDataAPI({
-        topicName,
-        sentenceId,
-        fieldToUpdate,
-        language: languageSelectedState,
-      });
-
-      if (isRemoveReview) {
-        dispatchContent({
-          type: 'removeReview',
-          contentIndex,
-          sentenceId,
-        });
-      } else {
-        const { reviewData } = updatedFieldFromDB;
-        dispatchContent({
-          type: 'updateSentence',
-          contentIndex,
-          sentenceId,
-          fields: { reviewData },
-        });
-      }
-
-      return updatedFieldFromDB?.reviewData;
-    } catch (error) {
-      console.log('## updateSentenceData', { error });
-    }
-  };
-
   const handleGetComprehensiveReview = () => {};
 
   const addGeneratedSentence = async ({ targetLang, baseLang, notes }) => {
@@ -201,7 +162,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
   return (
     <DataContext.Provider
       value={{
-        updateSentenceData,
         generalTopicDisplayNameMemoized,
         handleGetComprehensiveReview,
         addGeneratedSentence,

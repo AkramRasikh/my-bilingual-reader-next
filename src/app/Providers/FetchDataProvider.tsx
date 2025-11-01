@@ -28,6 +28,7 @@ import {
 } from '../srs-utils/srs-algo';
 import saveWordAPI from '../client-api/save-word';
 import { deleteWordAPI } from '../client-api/delete-word';
+import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
 
 const FetchDataContext = createContext(null);
 
@@ -309,6 +310,43 @@ export function FetchDataProvider({ children }) {
     }
   };
 
+  const updateSentenceData = async ({
+    topicName,
+    sentenceId,
+    fieldToUpdate,
+    contentIndex,
+    isRemoveReview,
+  }) => {
+    try {
+      const updatedFieldFromDB = await updateSentenceDataAPI({
+        topicName,
+        sentenceId,
+        fieldToUpdate,
+        language: languageSelectedState,
+      });
+
+      if (isRemoveReview) {
+        dispatchContent({
+          type: 'removeReview',
+          contentIndex,
+          sentenceId,
+        });
+      } else {
+        const { reviewData } = updatedFieldFromDB;
+        dispatchContent({
+          type: 'updateSentence',
+          contentIndex,
+          sentenceId,
+          fields: { reviewData },
+        });
+      }
+
+      return updatedFieldFromDB?.reviewData;
+    } catch (error) {
+      console.log('## updateSentenceData', { error });
+    }
+  };
+
   // check between this and handleDelete
   const updateWordDataProvider = async ({
     wordId,
@@ -413,6 +451,7 @@ export function FetchDataProvider({ children }) {
         handleSaveWord,
         handleDeleteWordDataProvider,
         updateWordDataProvider,
+        updateSentenceData,
       }}
     >
       {children}
