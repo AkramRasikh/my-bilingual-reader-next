@@ -32,7 +32,6 @@ export const LearningScreenProvider = ({
   const [masterPlayComprehensiveState, setMasterPlayComprehensiveState] =
     useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const [isPressDownShiftState, setIsPressDownShiftState] = useState(false);
   const [isInReviewMode, setIsInReviewMode] = useState(false);
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
@@ -853,8 +852,6 @@ export const LearningScreenProvider = ({
         setMasterPlayComprehensiveState,
         isVideoPlaying,
         setIsVideoPlaying,
-        isPressDownShiftState,
-        setIsPressDownShiftState,
         isInReviewMode,
         setIsInReviewMode,
         sentenceHighlightingState,

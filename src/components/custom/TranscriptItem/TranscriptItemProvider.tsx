@@ -10,7 +10,6 @@ export const TranscriptItemProvider = ({
   setSentenceHighlightingState,
   sentenceHighlightingState,
   contentItem,
-  isPressDownShiftState,
   breakdownSentencesArrState,
   setBreakdownSentencesArrState,
   loopTranscriptState,
@@ -169,10 +168,10 @@ export const TranscriptItemProvider = ({
   }, [isInSentenceBreakdown]);
 
   useEffect(() => {
-    if (!isPressDownShiftState && showThisSentenceBreakdownPreviewState) {
+    if (showThisSentenceBreakdownPreviewState) {
       setShowThisSentenceBreakdownPreviewState(false);
     }
-  }, [isPressDownShiftState, showThisSentenceBreakdownPreviewState]);
+  }, [showThisSentenceBreakdownPreviewState]);
 
   const handleMouseEnter = (text) => {
     hoverTimer.current = setTimeout(() => {
@@ -244,7 +243,7 @@ export const TranscriptItemProvider = ({
   };
 
   const handleOnMouseEnterSentence = () => {
-    if (!isPressDownShiftState || !hasSentenceBreakdown) return null;
+    if (!hasSentenceBreakdown) return null;
     setShowThisSentenceBreakdownPreviewState(true);
   };
 

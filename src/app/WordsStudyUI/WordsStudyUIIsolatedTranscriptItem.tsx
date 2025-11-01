@@ -59,7 +59,6 @@ const WordsStudyUIIsolatedTranscriptItem = ({ contextData }) => {
       overlappingSnippetDataState={[]}
       setSentenceHighlightingState={() => {}}
       sentenceHighlightingState={''}
-      isPressDownShiftState={false}
       masterPlay={isPlayingsState ? contextData.id : ''}
       isGenericItemLoadingState={[]}
       handleSaveWord={() => {}} //handleSaveWord

@@ -22,7 +22,6 @@ export const WordsStudyUIProvider = ({
   const [masterPlayComprehensiveState, setMasterPlayComprehensiveState] =
     useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const [isPressDownShiftState, setIsPressDownShiftState] = useState(false);
   const [selectedElState, setSelectedElState] = useState(0);
   const [isInReviewMode, setIsInReviewMode] = useState(false);
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
@@ -223,8 +222,6 @@ export const WordsStudyUIProvider = ({
         setMasterPlayComprehensiveState,
         isVideoPlaying,
         setIsVideoPlaying,
-        isPressDownShiftState,
-        setIsPressDownShiftState,
         isInReviewMode,
         setIsInReviewMode,
         sentenceHighlightingState,

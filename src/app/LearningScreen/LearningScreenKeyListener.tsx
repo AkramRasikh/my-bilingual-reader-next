@@ -13,7 +13,6 @@ const LearningScreenKeyListener = () => {
     handleRewind,
     handleJumpToSentenceViaKeys,
     isVideoPlaying,
-    setIsPressDownShiftState,
     handleLoopThis3Second,
     handleShiftLoopSentence,
     threeSecondLoopState,
@@ -47,11 +46,6 @@ const LearningScreenKeyListener = () => {
 
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Shift') {
-        setIsPressDownShiftState(false);
-        return;
-      }
-
       if (threeSecondLoopState || loopTranscriptState) {
         if (e.key.toLowerCase() === 'o') {
           handleSlowDownAudio(false);
@@ -146,10 +140,6 @@ const LearningScreenKeyListener = () => {
         handleLoopThis3Second();
         return;
       }
-      if (e.shiftKey) {
-        setIsPressDownShiftState(true);
-        return;
-      }
 
       if (!isVideoPlaying) return;
 
@@ -195,7 +185,6 @@ const LearningScreenKeyListener = () => {
     handleBreakdownMasterSentence,
     handleRewind,
     handlePausePlay,
-    setIsPressDownShiftState,
     handleLoopThisSentence,
     handleLoopThis3Second,
     threeSecondLoopState,

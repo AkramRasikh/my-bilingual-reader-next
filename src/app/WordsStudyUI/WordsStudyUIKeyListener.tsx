@@ -12,7 +12,6 @@ const WordsStudyUIKeyListener = ({ handleJumpToSentenceViaKeys }) => {
     handlePausePlay,
     handleRewind,
     isVideoPlaying,
-    setIsPressDownShiftState,
     handleLoopThis3Second,
     handleShiftLoopSentence,
     threeSecondLoopState,
@@ -39,11 +38,6 @@ const WordsStudyUIKeyListener = ({ handleJumpToSentenceViaKeys }) => {
 
   useEffect(() => {
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Shift') {
-        setIsPressDownShiftState(false);
-        return;
-      }
-
       if (threeSecondLoopState) {
         if (e.key.toLowerCase() === 'o') {
           handleSlowDownAudio(false);
@@ -111,10 +105,6 @@ const WordsStudyUIKeyListener = ({ handleJumpToSentenceViaKeys }) => {
         handleLoopThis3Second();
         return;
       }
-      if (e.shiftKey) {
-        setIsPressDownShiftState(true);
-        return;
-      }
 
       if (!isVideoPlaying) return;
 
@@ -159,7 +149,6 @@ const WordsStudyUIKeyListener = ({ handleJumpToSentenceViaKeys }) => {
     handleJumpToSentenceViaKeys,
     handleRewind,
     handlePausePlay,
-    setIsPressDownShiftState,
     handleLoopThisSentence,
     handleLoopThis3Second,
     threeSecondLoopState,

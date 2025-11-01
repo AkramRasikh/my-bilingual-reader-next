@@ -197,7 +197,6 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
                 setSentenceHighlightingState={() => {}}
                 sentenceHighlightingState={''}
                 contentItem={transcriptItem}
-                isPressDownShiftState={false}
                 breakdownSentencesArrState={[]}
                 masterPlay={masterPlay}
                 isGenericItemLoadingState={[]}

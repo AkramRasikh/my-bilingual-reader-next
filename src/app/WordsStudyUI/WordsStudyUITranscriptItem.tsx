@@ -24,7 +24,6 @@ const WordStudyUITranscriptItem = ({
       setSentenceHighlightingState={() => {}}
       sentenceHighlightingState={''}
       contentItem={transcriptItem}
-      isPressDownShiftState={false}
       breakdownSentencesArrState={breakdownSentencesArrState}
       masterPlay={masterPlay}
       isGenericItemLoadingState={[]}

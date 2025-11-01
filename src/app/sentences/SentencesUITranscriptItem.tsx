@@ -37,7 +37,6 @@ const SentencesUITranscriptItem = ({ sentence, sentenceNum }) => {
       overlappingSnippetDataState={[]}
       setSentenceHighlightingState={() => {}}
       sentenceHighlightingState={''}
-      isPressDownShiftState={false}
       masterPlay={masterPlay}
       isGenericItemLoadingState={[]}
       handleSaveWord={() => {}} //handleSaveWord

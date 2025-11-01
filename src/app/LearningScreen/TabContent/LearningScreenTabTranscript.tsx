@@ -16,7 +16,6 @@ const LearningScreenTabTranscript = () => {
     overlappingSnippetDataState,
     setSentenceHighlightingState,
     sentenceHighlightingState,
-    isPressDownShiftState,
     breakdownSentencesArrState,
     masterPlay,
     isGenericItemLoadingState,
@@ -72,7 +71,6 @@ const LearningScreenTabTranscript = () => {
             setSentenceHighlightingState={setSentenceHighlightingState}
             sentenceHighlightingState={sentenceHighlightingState}
             contentItem={contentItem}
-            isPressDownShiftState={isPressDownShiftState}
             breakdownSentencesArrState={breakdownSentencesArrState}
             masterPlay={masterPlay}
             isGenericItemLoadingState={isGenericItemLoadingState}
