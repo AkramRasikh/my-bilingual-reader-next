@@ -18,6 +18,7 @@ import { isNumber } from '@/utils/is-number';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { breakdownSentenceAPI } from '../client-api/breakdown-sentence';
+import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 
 const FetchDataContext = createContext(null);
 
@@ -199,6 +200,34 @@ export function FetchDataProvider({ children }) {
     }
   };
 
+  const sentenceReviewBulk = async ({
+    fieldToUpdate,
+    topicName,
+    contentIndex,
+    removeReview,
+    sentenceIds,
+  }) => {
+    try {
+      const updatedSentenceIds = await sentenceReviewBulkAPI({
+        title: topicName,
+        fieldToUpdate,
+        language: languageSelectedState,
+        removeReview,
+        sentenceIds,
+      });
+      if (updatedSentenceIds) {
+        dispatchContent({
+          type: 'updateSentences',
+          contentIndex,
+          sentenceIds: updatedSentenceIds,
+          fields: { ...fieldToUpdate },
+        });
+      }
+    } catch (error) {
+      console.log('## sentenceReviewBulk error', error);
+    }
+  };
+
   return (
     <FetchDataContext.Provider
       value={{
@@ -217,6 +246,7 @@ export function FetchDataProvider({ children }) {
         wordBasketState,
         setWordBasketState,
         breakdownSentence,
+        sentenceReviewBulk,
       }}
     >
       {children}

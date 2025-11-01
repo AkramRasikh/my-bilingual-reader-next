@@ -80,10 +80,15 @@ export const LearningScreenProvider = ({
   ] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [errorVideoState, setErrorVideoState] = useState(false);
-  const { updateSentenceData, sentenceReviewBulk } = useData();
+  const { updateSentenceData } = useData();
 
-  const { pureWordsMemoized, wordsState, contentState, breakdownSentence } =
-    useFetchData();
+  const {
+    pureWordsMemoized,
+    wordsState,
+    contentState,
+    breakdownSentence,
+    sentenceReviewBulk,
+  } = useFetchData();
 
   const selectedContentStateMemoized = useMemo(() => {
     if (!selectedContentTitleState) {

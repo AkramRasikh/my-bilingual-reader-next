@@ -11,7 +11,6 @@ import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
 import { updateContentMetaDataAPI } from '../client-api/update-content-meta-data';
 import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
 import { getAudioURL } from '../../utils/get-media-url';
-import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 import { isDueCheck } from '@/utils/is-due-check';
 import { useFetchData } from './FetchDataProvider';
 
@@ -325,34 +324,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     }
   };
 
-  const sentenceReviewBulk = async ({
-    fieldToUpdate,
-    topicName,
-    contentIndex,
-    removeReview,
-    sentenceIds,
-  }) => {
-    try {
-      const updatedSentenceIds = await sentenceReviewBulkAPI({
-        title: topicName,
-        fieldToUpdate,
-        language: languageSelectedState,
-        removeReview,
-        sentenceIds,
-      });
-      if (updatedSentenceIds) {
-        dispatchContent({
-          type: 'updateSentences',
-          contentIndex,
-          sentenceIds: updatedSentenceIds,
-          fields: { ...fieldToUpdate },
-        });
-      }
-    } catch (error) {
-      console.log('## sentenceReviewBulk error', error);
-    }
-  };
-
   const handleGetComprehensiveReview = () => {};
 
   const addGeneratedSentence = async ({ targetLang, baseLang, notes }) => {
@@ -390,7 +361,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
         handleSaveWord,
         handleDeleteWordDataProvider,
         updateSentenceData,
-        sentenceReviewBulk,
         updateContentMetaData,
         generalTopicDisplayNameMemoized,
         handleGetComprehensiveReview,
