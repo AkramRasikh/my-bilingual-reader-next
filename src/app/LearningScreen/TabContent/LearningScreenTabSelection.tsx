@@ -11,7 +11,7 @@ const LearningScreenTabs = ({ topicName }) => {
 
   const hasUnifiedChapter = contentMetaMemoized?.length === 1;
 
-  const WordsDue = contentMetaWordMemoized[0].length;
+  const WordsDue = contentMetaWordMemoized?.[0].length;
 
   const wordsText = hasUnifiedChapter
     ? `Words ${WordsDue}/${wordsForSelectedTopic.length}`

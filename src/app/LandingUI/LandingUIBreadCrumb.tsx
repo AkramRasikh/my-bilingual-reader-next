@@ -2,26 +2,18 @@
 
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import useLearningScreen from '../../app/LearningScreen/useLearningScreen';
-import BreadCrumbHeaderBase from '../BreadCrumbHeaderBase';
+
 import { useRouter } from 'next/navigation';
-import LanguageSelector from './LanguageSelector';
+
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
-import ProgressHeader, { useProgressHeader } from './ProgressHeader';
+import LanguageSelector from '@/components/custom/LanguageSelector';
+import BreadCrumbHeaderBase from '@/components/BreadCrumbHeaderBase';
 
-const BreadCrumbComponent = () => {
+const LandingUIBreadCrumb = () => {
   const [showBasketState, setShowBasketState] = useState(false);
-  const [progressState, setProgressState] = useState(false);
-
-  const { wordBasketState } = useFetchData();
-  const {
-    selectedContentState,
-    handleOnHome,
-    numberOfSentenceDueOnMountState,
-    contentMetaMemoized,
-  } = useLearningScreen();
 
   const {
+    wordBasketState,
     languageSelectedState,
     setLanguageSelectedState,
     wordsForReviewMemoized,
@@ -35,21 +27,8 @@ const BreadCrumbComponent = () => {
       setShowBasketState(false);
     }
   }, [wordBasketState, showBasketState]);
-  const sentencesNeedReview = contentMetaMemoized?.[0]?.sentencesNeedReview;
-
-  useProgressHeader({
-    setProgressState,
-    initNumState: numberOfSentenceDueOnMountState,
-    currentStateNumber: sentencesNeedReview,
-  });
-
-  const numberOfStudiedSentences =
-    numberOfSentenceDueOnMountState - sentencesNeedReview;
-
-  const progressText = `${numberOfStudiedSentences}/${numberOfSentenceDueOnMountState}`;
 
   const numberOfSentences = sentencesDueForReviewMemoized.length;
-  const generalTopicName = selectedContentState?.generalTopicName;
 
   const firstHeader = 'Home';
 
@@ -77,8 +56,7 @@ const BreadCrumbComponent = () => {
     <div className='flex justify-between'>
       <BreadCrumbHeaderBase
         heading={firstHeader}
-        onClick={handleOnHome}
-        subHeading={generalTopicName}
+        onClick={() => {}}
         navigationButtons={() =>
           buttonsArr.map((item, index) => {
             return (
@@ -94,17 +72,6 @@ const BreadCrumbComponent = () => {
             );
           })
         }
-        progressHeaderComponent={
-          sentencesNeedReview
-            ? () => (
-                <ProgressHeader
-                  progressState={progressState}
-                  progressText={progressText}
-                  small
-                />
-              )
-            : null
-        }
       />
       <LanguageSelector
         defaultValue={languageSelectedState}
@@ -114,4 +81,4 @@ const BreadCrumbComponent = () => {
   );
 };
 
-export default BreadCrumbComponent;
+export default LandingUIBreadCrumb;

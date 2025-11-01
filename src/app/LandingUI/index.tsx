@@ -1,13 +1,11 @@
 'use client';
 import { useEffect } from 'react';
-import LearningScreen from '../LearningScreen';
 import LandingUIContentSelection from './LandingUIContentSelection';
-import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
 import { toast } from 'sonner';
 import MockFlag from '../../components/custom/MockFlag';
-import BreadcrumbComponent from '../../components/custom/BreadCrumbHeader';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { useLandingScreen } from '../Providers/LandingScreenProvider';
+import LandingUIBreadCrumb from './LandingUIBreadCrumb';
 
 const LandingScreen = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
@@ -23,14 +21,13 @@ const LandingScreen = () => {
   }, [toastMessageState]);
 
   return (
-    <LearningScreenProvider>
-      <BreadcrumbComponent />
+    <div>
+      <LandingUIBreadCrumb />
       {isMockEnv && <MockFlag />}
       <LandingUIContentSelection
         generalTopicDisplayNameMemoized={generalTopicDisplayNameMemoized}
       />
-      <LearningScreen />
-    </LearningScreenProvider>
+    </div>
   );
 };
 

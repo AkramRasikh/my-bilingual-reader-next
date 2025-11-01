@@ -805,14 +805,6 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const handleSelectInitialTopic = (youtubeTag) => {
-    const firstElOfYoutubeTitle = contentState.find(
-      (i) => i.generalTopicName === youtubeTag,
-    );
-    setGeneralTopicDisplayNameSelectedState(youtubeTag);
-    handleSelectedContent(firstElOfYoutubeTitle.title);
-  };
-
   const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {
     const contentIndex = selectedContentState?.contentIndex;
     await breakdownSentence({
@@ -916,7 +908,6 @@ export const LearningScreenProvider = ({
         scrollToElState,
         handleSelectedContent,
         getNextTranscript,
-        handleSelectInitialTopic,
         generalTopicDisplayNameSelectedState,
         checkHowManyOfTopicNeedsReview,
         getGeneralContentMetaData,
@@ -935,6 +926,9 @@ export const LearningScreenProvider = ({
         numberOfSentenceDueOnMountState,
         errorVideoState,
         setErrorVideoState,
+        setSelectedContentTitleState,
+        selectedContentTitleState,
+        setGeneralTopicDisplayNameSelectedState,
       }}
     >
       {children}

@@ -1,21 +1,17 @@
 import LandingUIContentSelectionItem from './LandingUIContentSelectionItem';
-import useLearningScreen from '../LearningScreen/useLearningScreen';
 import { useMemo } from 'react';
 import { useLandingScreen } from '../Providers/LandingScreenProvider';
+import { useRouter } from 'next/navigation';
 
 const LandingUIContentSelection = ({ generalTopicDisplayNameMemoized }) => {
-  const {
-    handleSelectInitialTopic,
-    selectedContentState,
-    generalTopicDisplayNameSelectedState,
-  } = useLearningScreen();
+  const router = useRouter();
   const { getTopicStatus } = useLandingScreen();
 
-  const contentSelectionMemoized = useMemo(() => {
-    if (generalTopicDisplayNameMemoized?.length === 0) {
-      return [];
-    }
+  const handleSelectInitialTopic = (topicName) => {
+    router.push(`/content?topic=${topicName}`);
+  };
 
+  const contentSelectionMemoized = useMemo(() => {
     const today = new Date();
     const comprehensiveState = generalTopicDisplayNameMemoized.map(
       ({ youtubeId, title }) => {
@@ -45,12 +41,11 @@ const LandingUIContentSelection = ({ generalTopicDisplayNameMemoized }) => {
     });
 
     return sortedComprehensiveState;
-  }, [generalTopicDisplayNameSelectedState]);
+  }, []);
 
   return (
     <ul className='flex flex-wrap gap-2'>
-      {!selectedContentState &&
-        contentSelectionMemoized?.length > 0 &&
+      {contentSelectionMemoized?.length > 0 &&
         contentSelectionMemoized.map((youtubeMetaData, index) => {
           return (
             <li key={index}>
