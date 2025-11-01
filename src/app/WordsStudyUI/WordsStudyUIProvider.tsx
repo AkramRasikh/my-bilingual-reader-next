@@ -1,7 +1,6 @@
 'use client';
 import { isNumber } from '@/utils/is-number';
-import { createContext, useEffect, useRef, useState, useContext } from 'react';
-import useData from '../Providers/useData';
+import { createContext, useRef, useState, useContext } from 'react';
 import useTrackMasterTranscript from '../LearningScreen/hooks/useManageThreeSecondLoop';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import useWordsStudyUIinit from './useWordsStudyUIinit';
@@ -53,7 +52,6 @@ export const WordsStudyUIProvider = ({
     useState(false);
 
   const [elapsed, setElapsed] = useState(0);
-  const { updateWordDataProvider } = useData();
 
   const {
     sentencesState,
@@ -62,6 +60,7 @@ export const WordsStudyUIProvider = ({
     wordsState,
     wordsToReviewOnMountState,
     wordsForReviewMemoized,
+    updateWordDataProvider,
   } = useFetchData();
 
   useProgressHeader({

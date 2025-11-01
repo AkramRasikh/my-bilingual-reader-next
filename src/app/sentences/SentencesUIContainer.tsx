@@ -2,15 +2,13 @@ import { Toaster } from 'sonner';
 import SentencesUITranscriptItem from './SentencesUITranscriptItem';
 import { useSentencesUIScreen } from './SentencesUIProvider';
 import WordCard from '@/components/custom/WordCard';
-import useData from '../Providers/useData';
 import { useFetchData } from '../Providers/FetchDataProvider';
 
 const SentencesUIContainer = () => {
   const { sentencesInQueue, selectedSentenceDataMemoized } =
     useSentencesUIScreen();
 
-  const { updateWordDataProvider } = useData();
-  const { languageSelectedState } = useFetchData();
+  const { updateWordDataProvider, languageSelectedState } = useFetchData();
   const thisItemsWords = selectedSentenceDataMemoized?.words;
   const thisItemsNotes = selectedSentenceDataMemoized?.notes;
 

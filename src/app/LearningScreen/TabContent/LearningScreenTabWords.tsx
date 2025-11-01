@@ -5,10 +5,14 @@ import { TabsContent } from '@radix-ui/react-tabs';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 
 const LearningScreenTabWords = () => {
-  const { updateWordDataProvider, addImageDataProvider } = useData();
+  const { addImageDataProvider } = useData();
   const { wordsForSelectedTopic, playFromThisContext } = useLearningScreen();
-  const { languageSelectedState, wordBasketState, setWordBasketState } =
-    useFetchData();
+  const {
+    updateWordDataProvider,
+    languageSelectedState,
+    wordBasketState,
+    setWordBasketState,
+  } = useFetchData();
 
   const addWordToBasket = (word) => {
     const wordIsInBasic = wordBasketState.some(

@@ -1,12 +1,5 @@
 'use client';
 import { createContext, useMemo } from 'react';
-import saveWordAPI from '../client-api/save-word';
-import {
-  getEmptyCard,
-  getNextScheduledOptions,
-  srsRetentionKeyTypes,
-} from '../srs-utils/srs-algo';
-import { deleteWordAPI } from '../client-api/delete-word';
 import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
 import { getAudioURL } from '../../utils/get-media-url';
 import { isDueCheck } from '@/utils/is-due-check';
@@ -22,7 +15,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     contentState,
     languageSelectedState,
     wordsForReviewMemoized,
-    setToastMessageState,
     story,
     setStory,
   } = useFetchData();
@@ -68,49 +60,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
 
     return generalTopicsObject;
   }, [generalTopicDisplayNameMemoized]);
-
-  const updateWordDataProvider = async ({
-    wordId,
-    fieldToUpdate,
-    isRemoveReview,
-  }) => {
-    try {
-      if (isRemoveReview) {
-        const res = await fetch('/api/deleteWord', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: wordId, language: languageSelectedState }),
-        });
-        const data = await res.json();
-
-        dispatchWords({ type: 'removeWord', wordId: data.id });
-        setToastMessageState('Successful learned word ✅');
-        return true;
-      } else {
-        const res = await fetch('/api/updateWord', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: wordId,
-            fieldToUpdate,
-            language: languageSelectedState,
-          }),
-        });
-
-        const data = await res.json();
-        dispatchWords({
-          type: 'updateWord',
-          wordId,
-          data,
-        });
-        setToastMessageState('Word reviewed ✅');
-        return true;
-      }
-    } catch (error) {
-      console.log('## updateWordDataProvider DataProvider', { error });
-      setToastMessageState('Error reviewing word ❌');
-    }
-  };
 
   const addImageDataProvider = async ({ wordId, formData }) => {
     try {
@@ -255,7 +204,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
         updateSentenceData,
         generalTopicDisplayNameMemoized,
         handleGetComprehensiveReview,
-        updateWordDataProvider,
         addGeneratedSentence,
         addImageDataProvider,
         getTopicStatus,

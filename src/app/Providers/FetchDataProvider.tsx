@@ -309,6 +309,50 @@ export function FetchDataProvider({ children }) {
     }
   };
 
+  // check between this and handleDelete
+  const updateWordDataProvider = async ({
+    wordId,
+    fieldToUpdate,
+    isRemoveReview,
+  }) => {
+    try {
+      if (isRemoveReview) {
+        const res = await fetch('/api/deleteWord', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: wordId, language: languageSelectedState }),
+        });
+        const data = await res.json();
+
+        dispatchWords({ type: 'removeWord', wordId: data.id });
+        setToastMessageState('Successful learned word ✅');
+        return true;
+      } else {
+        const res = await fetch('/api/updateWord', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: wordId,
+            fieldToUpdate,
+            language: languageSelectedState,
+          }),
+        });
+
+        const data = await res.json();
+        dispatchWords({
+          type: 'updateWord',
+          wordId,
+          data,
+        });
+        setToastMessageState('Word reviewed ✅');
+        return true;
+      }
+    } catch (error) {
+      console.log('## updateWordDataProvider DataProvider', { error });
+      setToastMessageState('Error reviewing word ❌');
+    }
+  };
+
   const handleSaveWord = async ({
     highlightedWord,
     highlightedWordSentenceId,
@@ -368,6 +412,7 @@ export function FetchDataProvider({ children }) {
         updateAdhocSentenceData,
         handleSaveWord,
         handleDeleteWordDataProvider,
+        updateWordDataProvider,
       }}
     >
       {children}
