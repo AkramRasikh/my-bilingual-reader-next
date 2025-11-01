@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { Check } from 'lucide-react';
+import { Check, WholeWordIcon } from 'lucide-react';
 
 const LandingUIContentSelectionItemImage = ({ youtubeId }) => (
   <div className='relative h-20 w-5/6 m-auto'>
@@ -46,6 +46,7 @@ const LandingScreenContentSelectionItem = ({
   const isThisDue = youtubeMetaData.isThisDue;
   const isThisNew = youtubeMetaData?.isThisNew;
   const hasAllBeenReviewed = youtubeMetaData?.hasAllBeenReviewed;
+  const numberOfDueWords = youtubeMetaData?.numberOfDueWords;
 
   return (
     <div className='rounded-2xl border flex flex-col gap-1 p-2 relative'>
@@ -72,6 +73,13 @@ const LandingScreenContentSelectionItem = ({
         hasAllBeenReviewed={hasAllBeenReviewed}
         isThisNew={isThisNew}
       />
+
+      {numberOfDueWords > 0 && (
+        <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-100 rounded-xl p-1'>
+          <WholeWordIcon className='h-3 w-3 m-auto' />
+          <span className='text-sm font-light'>{numberOfDueWords}</span>{' '}
+        </div>
+      )}
     </div>
   );
 };
