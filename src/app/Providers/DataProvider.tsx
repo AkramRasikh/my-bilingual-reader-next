@@ -8,7 +8,6 @@ import {
 } from '../srs-utils/srs-algo';
 import { deleteWordAPI } from '../client-api/delete-word';
 import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
-import { breakdownSentenceAPI } from '../client-api/breakdown-sentence';
 import { updateContentMetaDataAPI } from '../client-api/update-content-meta-data';
 import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
 import { getAudioURL } from '../../utils/get-media-url';
@@ -354,13 +353,7 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     }
   };
 
-  const handleGetComprehensiveReview = () => {
-    // setSelectedContentState({
-    //   content: checkHowManyOfTopicNeedsReview(),
-    //   title: generalTopicDisplayNameSelectedState,
-    //   isFullReview: true,
-    // });
-  };
+  const handleGetComprehensiveReview = () => {};
 
   const addGeneratedSentence = async ({ targetLang, baseLang, notes }) => {
     console.log('## addGeneratedSentence', targetLang, baseLang);
@@ -391,53 +384,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     dispatchSentences({ type: 'addSentence', sentence: data });
   };
 
-  const breakdownSentence = async ({
-    topicName,
-    sentenceId,
-    targetLang,
-    contentIndex,
-  }) => {
-    try {
-      const resObj = await breakdownSentenceAPI({
-        topicName,
-        sentenceId,
-        targetLang,
-        language: languageSelectedState,
-      });
-
-      dispatchContent({
-        type: 'updateSentence',
-        contentIndex,
-        sentenceId,
-        fields: { ...resObj },
-      });
-      // if (selectedContentState?.isFullReview) {
-      //   const updatedReviewSpecificState = selectedContentState.content.map(
-      //     (sentenceData) => {
-      //       if (sentenceData.id === sentenceId) {
-      //         const { sentenceStructure, vocab, meaning } = resObj;
-      //         return {
-      //           ...sentenceData,
-      //           sentenceStructure,
-      //           vocab,
-      //           meaning,
-      //         };
-      //       }
-      //       return sentenceData;
-      //     },
-      //   );
-      // setSelectedContentState({
-      //   ...selectedContentState,
-      //   content: updatedReviewSpecificState,
-      // });
-      // }
-
-      return true;
-    } catch (error) {
-      console.log('## breakdownSentence', { error });
-    }
-  };
-
   return (
     <DataContext.Provider
       value={{
@@ -445,7 +391,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
         handleDeleteWordDataProvider,
         updateSentenceData,
         sentenceReviewBulk,
-        breakdownSentence,
         updateContentMetaData,
         generalTopicDisplayNameMemoized,
         handleGetComprehensiveReview,

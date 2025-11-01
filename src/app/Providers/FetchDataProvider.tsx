@@ -17,6 +17,7 @@ import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { isNumber } from '@/utils/is-number';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
+import { breakdownSentenceAPI } from '../client-api/breakdown-sentence';
 
 const FetchDataContext = createContext(null);
 
@@ -172,6 +173,32 @@ export function FetchDataProvider({ children }) {
     return formatSentence;
   }, [sentencesState]);
 
+  const breakdownSentence = async ({
+    topicName,
+    sentenceId,
+    targetLang,
+    contentIndex,
+  }) => {
+    try {
+      const resObj = await breakdownSentenceAPI({
+        topicName,
+        sentenceId,
+        targetLang,
+        language: languageSelectedState,
+      });
+
+      dispatchContent({
+        type: 'updateSentence',
+        contentIndex,
+        sentenceId,
+        fields: { ...resObj },
+      });
+      return true;
+    } catch (error) {
+      console.log('## breakdownSentence', { error });
+    }
+  };
+
   return (
     <FetchDataContext.Provider
       value={{
@@ -189,6 +216,7 @@ export function FetchDataProvider({ children }) {
         sentencesDueForReviewMemoized,
         wordBasketState,
         setWordBasketState,
+        breakdownSentence,
       }}
     >
       {children}
