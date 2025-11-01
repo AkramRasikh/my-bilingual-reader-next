@@ -3,7 +3,7 @@ import useLearningScreen from '../LearningScreen/useLearningScreen';
 import { useMemo } from 'react';
 import { useLandingScreen } from '../Providers/LandingScreenProvider';
 
-const LandingScreenContentSelection = ({ generalTopicDisplayNameMemoized }) => {
+const LandingUIContentSelection = ({ generalTopicDisplayNameMemoized }) => {
   const {
     handleSelectInitialTopic,
     selectedContentState,
@@ -65,4 +65,4 @@ const LandingScreenContentSelection = ({ generalTopicDisplayNameMemoized }) => {
   );
 };
 
-export default LandingScreenContentSelection;
+export default LandingUIContentSelection;
