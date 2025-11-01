@@ -11,18 +11,14 @@ import useData from './Providers/useData';
 import LoadingSpinner from '../components/custom/LoadingSpinner';
 import { useState } from 'react';
 import StoryComponent from './words/StoryComponent';
+import { useFetchData } from './Providers/FetchDataProvider';
 
 const BasketDialogue = () => {
   const [loading, setLoading] = useState(false);
   const [valueState, setValueState] = useState('');
 
-  const {
-    wordBasketState,
-    addGeneratedSentence,
-    setWordBasketState,
-    setStory,
-    story,
-  } = useData();
+  const { wordBasketState, setWordBasketState } = useFetchData();
+  const { addGeneratedSentence, setStory, story } = useData();
   // const nowTime = new Date();
   // const howManyDue = wordsForSelectedTopic.filter((i) =>
   //   isDueCheck(i, nowTime),

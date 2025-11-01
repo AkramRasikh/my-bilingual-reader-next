@@ -1,6 +1,5 @@
 'use client';
 
-import useData from '../../app/Providers/useData';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import useLearningScreen from '../../app/LearningScreen/useLearningScreen';
@@ -14,7 +13,7 @@ const BreadCrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
   const [progressState, setProgressState] = useState(false);
 
-  const { wordBasketState } = useData();
+  const { wordBasketState } = useFetchData();
   const {
     selectedContentState,
     handleOnHome,

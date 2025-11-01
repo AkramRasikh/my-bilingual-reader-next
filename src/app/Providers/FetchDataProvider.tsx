@@ -29,6 +29,7 @@ export function FetchDataProvider({ children }) {
   const [wordsState, dispatchWords] = useReducer(wordsReducer, []);
   const [wordsToReviewOnMountState, setWordsToReviewOnMountState] =
     useState(null);
+  const [wordBasketState, setWordBasketState] = useState([]);
 
   useLanguageSelector({
     languageSelectedState,
@@ -186,6 +187,8 @@ export function FetchDataProvider({ children }) {
         pureWordsMemoized,
         wordsForReviewMemoized,
         sentencesDueForReviewMemoized,
+        wordBasketState,
+        setWordBasketState,
       }}
     >
       {children}

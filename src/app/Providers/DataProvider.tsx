@@ -20,7 +20,6 @@ export const DataContext = createContext(null);
 
 export const DataProvider = ({ children }: PropsWithChildren<object>) => {
   const [story, setStory] = useState();
-  const [wordBasketState, setWordBasketState] = useState([]);
   const [toastMessageState, setToastMessageState] = useState('');
 
   const {
@@ -455,8 +454,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
         updateAdhocSentenceData,
         toastMessageState,
         setToastMessageState,
-        wordBasketState,
-        setWordBasketState,
         story,
         setStory,
         addGeneratedSentence,
