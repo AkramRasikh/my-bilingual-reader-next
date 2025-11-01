@@ -494,7 +494,7 @@ export const LearningScreenProvider = ({
       nextIndex === 1
         ? thisSentenceKey?.nextSentence
         : nextIndex === 0
-        ? thisSentenceKey.thisSentence
+        ? thisSentenceKey?.thisSentence
         : thisSentenceKey?.prevSentence;
 
     if (nextTimeToFollow >= 0) {
