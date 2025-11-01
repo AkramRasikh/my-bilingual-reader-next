@@ -8,7 +8,6 @@ import {
 } from '../srs-utils/srs-algo';
 import { deleteWordAPI } from '../client-api/delete-word';
 import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
-import { updateContentMetaDataAPI } from '../client-api/update-content-meta-data';
 import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
 import { getAudioURL } from '../../utils/get-media-url';
 import { isDueCheck } from '@/utils/is-due-check';
@@ -299,31 +298,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     }
   };
 
-  const updateContentMetaData = async ({
-    topicName,
-    fieldToUpdate,
-    contentIndex,
-  }) => {
-    try {
-      const resObj = await updateContentMetaDataAPI({
-        title: topicName,
-        fieldToUpdate,
-        language: languageSelectedState,
-      });
-
-      if (resObj) {
-        dispatchContent({
-          type: 'updateMetaData',
-          contentIndex,
-          fieldToUpdate: resObj,
-        });
-      }
-    } catch (error) {
-      console.log('## updateContentMetaData', error);
-      setToastMessageState('Error deleting word ❌');
-    }
-  };
-
   const handleGetComprehensiveReview = () => {};
 
   const addGeneratedSentence = async ({ targetLang, baseLang, notes }) => {
@@ -361,7 +335,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
         handleSaveWord,
         handleDeleteWordDataProvider,
         updateSentenceData,
-        updateContentMetaData,
         generalTopicDisplayNameMemoized,
         handleGetComprehensiveReview,
         updateWordDataProvider,

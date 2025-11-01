@@ -19,6 +19,7 @@ import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { breakdownSentenceAPI } from '../client-api/breakdown-sentence';
 import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
+import { updateContentMetaDataAPI } from '../client-api/update-content-meta-data';
 
 const FetchDataContext = createContext(null);
 
@@ -228,6 +229,31 @@ export function FetchDataProvider({ children }) {
     }
   };
 
+  const updateContentMetaData = async ({
+    topicName,
+    fieldToUpdate,
+    contentIndex,
+  }) => {
+    try {
+      const resObj = await updateContentMetaDataAPI({
+        title: topicName,
+        fieldToUpdate,
+        language: languageSelectedState,
+      });
+
+      if (resObj) {
+        dispatchContent({
+          type: 'updateMetaData',
+          contentIndex,
+          fieldToUpdate: resObj,
+        });
+      }
+    } catch (error) {
+      console.log('## updateContentMetaData', error);
+      setToastMessageState('Error deleting word ❌');
+    }
+  };
+
   return (
     <FetchDataContext.Provider
       value={{
@@ -247,6 +273,7 @@ export function FetchDataProvider({ children }) {
         setWordBasketState,
         breakdownSentence,
         sentenceReviewBulk,
+        updateContentMetaData,
       }}
     >
       {children}

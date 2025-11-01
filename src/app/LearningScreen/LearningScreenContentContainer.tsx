@@ -3,12 +3,12 @@ import LearningScreenTabMeta from './TabContent/LearningScreenTabMeta';
 import LearningScreenTabSelection from './TabContent/LearningScreenTabSelection';
 import LearningScreenChapterToggleWrapper from './LearningScreenChapterToggleWrapper';
 import useLearningScreen from './useLearningScreen';
-import useData from '../Providers/useData';
 import LearningScreenTabTranscript from './TabContent/LearningScreenTabTranscript';
 import LearningScreenTabWords from './TabContent/LearningScreenTabWords';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 const LearningScreenContentContainer = () => {
-  const { updateContentMetaData } = useData();
+  const { updateContentMetaData } = useFetchData();
   const { getNextTranscript, selectedContentState } = useLearningScreen();
 
   const isFullReview = selectedContentState?.isFullReview;
