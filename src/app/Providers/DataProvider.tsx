@@ -17,7 +17,6 @@ export const DataContext = createContext(null);
 
 export const DataProvider = ({ children }: PropsWithChildren<object>) => {
   const [story, setStory] = useState();
-  const [toastMessageState, setToastMessageState] = useState('');
 
   const {
     dispatchSentences,
@@ -27,6 +26,7 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     contentState,
     languageSelectedState,
     wordsForReviewMemoized,
+    setToastMessageState,
   } = useFetchData();
 
   const generalTopicDisplayNameMemoized = useMemo(() => {
@@ -340,8 +340,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
         updateWordDataProvider,
         sentencesState,
         updateAdhocSentenceData,
-        toastMessageState,
-        setToastMessageState,
         story,
         setStory,
         addGeneratedSentence,

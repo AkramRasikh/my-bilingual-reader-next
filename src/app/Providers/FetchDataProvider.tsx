@@ -33,6 +33,7 @@ export function FetchDataProvider({ children }) {
   const [wordsToReviewOnMountState, setWordsToReviewOnMountState] =
     useState(null);
   const [wordBasketState, setWordBasketState] = useState([]);
+  const [toastMessageState, setToastMessageState] = useState('');
 
   useLanguageSelector({
     languageSelectedState,
@@ -274,6 +275,8 @@ export function FetchDataProvider({ children }) {
         breakdownSentence,
         sentenceReviewBulk,
         updateContentMetaData,
+        toastMessageState,
+        setToastMessageState,
       }}
     >
       {children}

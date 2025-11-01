@@ -7,15 +7,13 @@ import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider
 import { toast } from 'sonner';
 import MockFlag from '../../components/custom/MockFlag';
 import BreadcrumbComponent from '../../components/custom/BreadCrumbHeader';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 const LandingScreen = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
 
-  const {
-    generalTopicDisplayNameMemoized,
-    toastMessageState,
-    setToastMessageState,
-  } = useData();
+  const { generalTopicDisplayNameMemoized } = useData();
+  const { toastMessageState, setToastMessageState } = useFetchData();
 
   useEffect(() => {
     if (toastMessageState) {
