@@ -138,9 +138,12 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
 
   const wordsForReviewMemoized = useMemo(() => {
     const dateNow = new Date();
-    const wordsForReview = wordsState.filter((item) =>
-      isDueCheck(item, dateNow),
-    );
+    const wordsForReview = wordsState.filter((item) => {
+      const isLegacyWordWithNoReview = !item?.reviewData;
+      if (isLegacyWordWithNoReview || isDueCheck(item, dateNow)) {
+        return true;
+      }
+    });
     return wordsForReview;
   }, [wordsState]);
 

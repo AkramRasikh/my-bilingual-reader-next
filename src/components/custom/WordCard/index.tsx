@@ -36,7 +36,9 @@ const WordCard = ({
   const [isLoadingState, setIsLoadingState] = useState(false);
   const timeNow = new Date();
   const textTitle = indexNum + ') ' + definition;
-  const isWordDue = isDueCheck({ reviewData }, timeNow);
+  const isLegacyWordWithNoReview = !reviewData;
+  const isWordDue =
+    isLegacyWordWithNoReview || isDueCheck({ reviewData }, timeNow);
 
   const originalContextId = contexts[0];
 
