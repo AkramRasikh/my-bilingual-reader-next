@@ -38,6 +38,8 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     languageSelectedState,
   } = useFetchData();
 
+  const { pureWordsMemoized } = useFetchData();
+
   const generalTopicDisplayNameMemoized = useMemo(() => {
     const generalNamesArr = [];
 
@@ -79,36 +81,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
 
     return generalTopicsObject;
   }, [generalTopicDisplayNameMemoized]);
-
-  const getPureWords = () => {
-    const pureWords = [];
-    wordsState?.forEach((wordData) => {
-      if (wordData?.baseForm) {
-        pureWords.push(wordData.baseForm);
-      }
-      if (wordData?.surfaceForm) {
-        pureWords.push(wordData.surfaceForm);
-      }
-    });
-
-    sentencesState?.forEach((sentence) => {
-      if (sentence?.matchedWordsSurface) {
-        sentence?.matchedWordsSurface.forEach((item) => {
-          if (item && !pureWords.includes(item)) {
-            pureWords.push(item);
-          }
-        });
-      }
-    });
-    const pureWordsUnique =
-      pureWords?.length > 0 ? makeWordArrayUnique(pureWords) : [];
-    return pureWordsUnique;
-  };
-
-  const pureWordsMemoized = useMemo(
-    () => getPureWords(),
-    [getPureWords, wordsState],
-  );
 
   const sentencesDueForReviewMemoized = useMemo(() => {
     if (sentencesState.length === 0) {

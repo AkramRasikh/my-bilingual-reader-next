@@ -16,6 +16,7 @@ import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
 import { mapSentenceIdsToSeconds } from './utils/map-sentence-ids-to-seconds';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 export const LearningScreenContext = createContext(null);
 
@@ -83,10 +84,11 @@ export const LearningScreenProvider = ({
     contentState,
     updateSentenceData,
     sentenceReviewBulk,
-    pureWordsMemoized,
     breakdownSentence,
     wordsState,
   } = useData();
+
+  const { pureWordsMemoized } = useFetchData();
 
   const selectedContentStateMemoized = useMemo(() => {
     if (!selectedContentTitleState) {

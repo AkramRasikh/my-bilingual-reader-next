@@ -5,6 +5,7 @@ import {
   useState,
   useEffect,
   useReducer,
+  useMemo,
 } from 'react';
 import { content, sentences, words } from '../client-api/get-on-load-data';
 import useLanguageSelector from './useLanguageSelector';
@@ -12,6 +13,7 @@ import { sentencesReducer } from '../reducers/sentences-reducer';
 import { contentReducer } from '../reducers/content-reducer';
 import { wordsReducer } from '../reducers/words-reducer';
 import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
+import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 
 const FetchDataContext = createContext(null);
 
@@ -37,6 +39,31 @@ export function FetchDataProvider({ children }) {
     contentState,
     hasFetchedDataState,
   });
+
+  const pureWordsMemoized = useMemo(() => {
+    const pureWords = [];
+    wordsState?.forEach((wordData) => {
+      if (wordData?.baseForm) {
+        pureWords.push(wordData.baseForm);
+      }
+      if (wordData?.surfaceForm) {
+        pureWords.push(wordData.surfaceForm);
+      }
+    });
+
+    sentencesState?.forEach((sentence) => {
+      if (sentence?.matchedWordsSurface) {
+        sentence?.matchedWordsSurface.forEach((item) => {
+          if (item && !pureWords.includes(item)) {
+            pureWords.push(item);
+          }
+        });
+      }
+    });
+    const pureWordsUnique =
+      pureWords?.length > 0 ? makeWordArrayUnique(pureWords) : [];
+    return pureWordsUnique;
+  }, [wordsState]);
 
   useEffect(() => {
     if (!hasFetchedDataState && languageSelectedState) {
@@ -112,6 +139,7 @@ export function FetchDataProvider({ children }) {
         contentState,
         wordsState,
         hasFetchedDataState,
+        pureWordsMemoized,
       }}
     >
       {children}
