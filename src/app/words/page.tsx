@@ -1,7 +1,7 @@
 'use client';
 
 import PageContainer from '@/components/custom/PageContainer';
-import { DataProvider } from '../Providers/DataProvider';
+
 import { useFetchData } from '../Providers/FetchDataProvider';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import { WordsStudyUIProvider } from '../WordsStudyUI/WordsStudyUIProvider';
@@ -21,13 +21,11 @@ const WordStudyPageContent = () => {
 
   return (
     <PageContainer>
-      <DataProvider>
-        <WordsStudyUIProvider>
-          <Toaster position='top-center' />
-          <WordsStudyUIBreadCrumbHeader />
-          <WordsStudyUI />
-        </WordsStudyUIProvider>
-      </DataProvider>
+      <WordsStudyUIProvider>
+        <Toaster position='top-center' />
+        <WordsStudyUIBreadCrumbHeader />
+        <WordsStudyUI />
+      </WordsStudyUIProvider>
     </PageContainer>
   );
 };

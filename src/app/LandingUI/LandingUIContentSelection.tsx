@@ -1,7 +1,7 @@
 import LandingUIContentSelectionItem from './LandingUIContentSelectionItem';
 import useLearningScreen from '../LearningScreen/useLearningScreen';
 import { useMemo } from 'react';
-import useData from '../Providers/useData';
+import { useLandingScreen } from '../Providers/LandingScreenProvider';
 
 const LandingScreenContentSelection = ({ generalTopicDisplayNameMemoized }) => {
   const {
@@ -9,7 +9,7 @@ const LandingScreenContentSelection = ({ generalTopicDisplayNameMemoized }) => {
     selectedContentState,
     generalTopicDisplayNameSelectedState,
   } = useLearningScreen();
-  const { getTopicStatus } = useData();
+  const { getTopicStatus } = useLandingScreen();
 
   const contentSelectionMemoized = useMemo(() => {
     if (generalTopicDisplayNameMemoized?.length === 0) {

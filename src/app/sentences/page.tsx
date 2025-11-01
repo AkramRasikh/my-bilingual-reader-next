@@ -1,7 +1,6 @@
 'use client';
 
 import PageContainer from '@/components/custom/PageContainer';
-import { DataProvider } from '../Providers/DataProvider';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import SentencesUIContainer from './SentencesUIContainer';
 import { SentencesUIProvider } from './SentencesUIProvider';
@@ -20,12 +19,10 @@ const SentencePageContent = () => {
 
   return (
     <PageContainer>
-      <DataProvider>
-        <SentencesUIProvider>
-          <SentencesUIBreadCrumbHeader />
-          <SentencesUIContainer />
-        </SentencesUIProvider>
-      </DataProvider>
+      <SentencesUIProvider>
+        <SentencesUIBreadCrumbHeader />
+        <SentencesUIContainer />
+      </SentencesUIProvider>
     </PageContainer>
   );
 };

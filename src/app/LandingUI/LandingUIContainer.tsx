@@ -4,7 +4,7 @@ import LoadingSpinner from '@/components/custom/LoadingSpinner';
 
 import { useFetchData } from '../Providers/FetchDataProvider';
 import LandingUI from '.';
-import { DataProvider } from '../Providers/DataProvider';
+import { LandingScreenProvider } from '../Providers/LandingScreenProvider';
 
 const LandingUIContainer = () => {
   const { contentState, hasFetchedDataState, languageSelectedState } =
@@ -16,9 +16,9 @@ const LandingUIContainer = () => {
 
   return (
     <div className='p-4 bg-amber-50 h-lvh'>
-      <DataProvider>
+      <LandingScreenProvider>
         <LandingUI />
-      </DataProvider>
+      </LandingScreenProvider>
     </div>
   );
 };

@@ -1,11 +1,13 @@
 'use client';
-import { createContext, useMemo } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import { isDueCheck } from '@/utils/is-due-check';
 import { useFetchData } from './FetchDataProvider';
 
-export const DataContext = createContext(null);
+export const LandingScreenContext = createContext(null);
 
-export const DataProvider = ({ children }: PropsWithChildren<object>) => {
+export const LandingScreenProvider = ({
+  children,
+}: PropsWithChildren<object>) => {
   const { contentState, wordsForReviewMemoized } = useFetchData();
 
   const generalTopicDisplayNameMemoized = useMemo(() => {
@@ -100,13 +102,24 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
   };
 
   return (
-    <DataContext.Provider
+    <LandingScreenContext.Provider
       value={{
         generalTopicDisplayNameMemoized,
         getTopicStatus,
       }}
     >
       {children}
-    </DataContext.Provider>
+    </LandingScreenContext.Provider>
   );
+};
+
+export const useLandingScreen = () => {
+  const context = useContext(LandingScreenContext);
+
+  if (!context)
+    throw new Error(
+      'useLandingScreen must be used within a LandingScreenProvider',
+    );
+
+  return context;
 };
