@@ -329,7 +329,8 @@ export const LearningScreenProvider = ({
           thisTopicsWordsArr.push(word);
           return;
         }
-        if (isDueCheck(word, todayDateObj)) {
+        const isLegacyWordWithNoReview = !word?.reviewData;
+        if (isLegacyWordWithNoReview || isDueCheck(word, todayDateObj)) {
           thisTopicsWordsArr.push(word);
         }
       }
