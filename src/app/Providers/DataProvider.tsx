@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useMemo, useState } from 'react';
 import saveWordAPI from '../client-api/save-word';
 import {
   getEmptyCard,
@@ -14,8 +14,6 @@ import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
 import { getAudioURL } from '../../utils/get-media-url';
 import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 import { isDueCheck } from '@/utils/is-due-check';
-import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
-import { isNumber } from '@/utils/is-number';
 import { useFetchData } from './FetchDataProvider';
 
 export const DataContext = createContext(null);
@@ -24,8 +22,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
   const [story, setStory] = useState();
   const [wordBasketState, setWordBasketState] = useState([]);
   const [toastMessageState, setToastMessageState] = useState('');
-  const [wordsToReviewOnMountState, setWordsToReviewOnMountState] =
-    useState(null);
 
   const {
     dispatchSentences,
@@ -33,9 +29,8 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     dispatchWords,
     sentencesState,
     contentState,
-    wordsState,
     languageSelectedState,
-    pureWordsMemoized,
+    wordsForReviewMemoized,
   } = useFetchData();
 
   const generalTopicDisplayNameMemoized = useMemo(() => {
@@ -79,45 +74,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
 
     return generalTopicsObject;
   }, [generalTopicDisplayNameMemoized]);
-
-  const sentencesDueForReviewMemoized = useMemo(() => {
-    if (sentencesState.length === 0) {
-      return [];
-    }
-    const dateNow = new Date();
-    const dueCardsNow = sentencesState.filter((sentence) =>
-      isDueCheck(sentence, dateNow),
-    );
-
-    const formatSentence = dueCardsNow?.map((item) => {
-      return {
-        ...item,
-        targetLangformatted: underlineWordsInSentence(
-          item.targetLang,
-          pureWordsMemoized,
-        ), // should all be moved eventually to new sentence sphere
-      };
-    });
-
-    return formatSentence;
-  }, [sentencesState]);
-
-  const wordsForReviewMemoized = useMemo(() => {
-    const dateNow = new Date();
-    const wordsForReview = wordsState.filter((item) => {
-      const isLegacyWordWithNoReview = !item?.reviewData;
-      if (isLegacyWordWithNoReview || isDueCheck(item, dateNow)) {
-        return true;
-      }
-    });
-    return wordsForReview;
-  }, [wordsState]);
-
-  useEffect(() => {
-    if (!isNumber(wordsToReviewOnMountState)) {
-      setWordsToReviewOnMountState(wordsForReviewMemoized.length);
-    }
-  }, [wordsForReviewMemoized]);
 
   const updateWordDataProvider = async ({
     wordId,
@@ -486,7 +442,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
   return (
     <DataContext.Provider
       value={{
-        pureWordsMemoized,
         handleSaveWord,
         handleDeleteWordDataProvider,
         updateSentenceData,
@@ -507,9 +462,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
         addGeneratedSentence,
         addImageDataProvider,
         getTopicStatus,
-        wordsForReviewMemoized,
-        wordsToReviewOnMountState,
-        sentencesDueForReviewMemoized,
       }}
     >
       {children}

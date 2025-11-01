@@ -28,8 +28,9 @@ export const SentencesUIProvider = ({
   const [audioProgressState, setAudioProgressState] = useState(0);
   const [initNumState, setInitNumState] = useState();
 
-  const { sentencesDueForReviewMemoized, updateAdhocSentenceData } = useData();
-  const { languageSelectedState, wordsState } = useFetchData();
+  const { updateAdhocSentenceData } = useData();
+  const { languageSelectedState, wordsState, sentencesDueForReviewMemoized } =
+    useFetchData();
   const numberOfSentences = sentencesDueForReviewMemoized.length;
 
   useEffect(() => {

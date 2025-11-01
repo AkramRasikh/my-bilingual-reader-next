@@ -13,20 +13,23 @@ import ProgressHeader, { useProgressHeader } from './ProgressHeader';
 const BreadCrumbComponent = () => {
   const [showBasketState, setShowBasketState] = useState(false);
   const [progressState, setProgressState] = useState(false);
-  const {
-    sentencesDueForReviewMemoized,
-    wordsForReviewMemoized,
-    wordBasketState,
-  } = useData();
+
+  const { wordBasketState } = useData();
   const {
     selectedContentState,
     handleOnHome,
     numberOfSentenceDueOnMountState,
     contentMetaMemoized,
   } = useLearningScreen();
-  const router = useRouter();
 
-  const { languageSelectedState, setLanguageSelectedState } = useFetchData();
+  const {
+    languageSelectedState,
+    setLanguageSelectedState,
+    wordsForReviewMemoized,
+    sentencesDueForReviewMemoized,
+  } = useFetchData();
+
+  const router = useRouter();
 
   useEffect(() => {
     if (wordBasketState.length === 0 && showBasketState) {

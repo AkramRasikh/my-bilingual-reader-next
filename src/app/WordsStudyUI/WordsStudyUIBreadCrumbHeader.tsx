@@ -3,12 +3,13 @@ import ProgressHeader from '@/components/custom/ProgressHeader';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 const WordsStudyUIBreadCrumbHeader = () => {
   const router = useRouter();
 
-  const { progressState, wordsForReviewMemoized, wordsToReviewOnMountState } =
-    useWordsStudyUIScreen();
+  const { wordsToReviewOnMountState, wordsForReviewMemoized } = useFetchData();
+  const { progressState } = useWordsStudyUIScreen();
 
   const numberOfStudiedWords =
     wordsToReviewOnMountState - wordsForReviewMemoized.length;

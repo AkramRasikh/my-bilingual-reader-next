@@ -14,6 +14,9 @@ import { contentReducer } from '../reducers/content-reducer';
 import { wordsReducer } from '../reducers/words-reducer';
 import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
+import { isNumber } from '@/utils/is-number';
+import { isDueCheck } from '@/utils/is-due-check';
+import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 
 const FetchDataContext = createContext(null);
 
@@ -24,6 +27,8 @@ export function FetchDataProvider({ children }) {
   const [sentencesState, dispatchSentences] = useReducer(sentencesReducer, []);
   const [contentState, dispatchContent] = useReducer(contentReducer, []);
   const [wordsState, dispatchWords] = useReducer(wordsReducer, []);
+  const [wordsToReviewOnMountState, setWordsToReviewOnMountState] =
+    useState(null);
 
   useLanguageSelector({
     languageSelectedState,
@@ -64,6 +69,23 @@ export function FetchDataProvider({ children }) {
       pureWords?.length > 0 ? makeWordArrayUnique(pureWords) : [];
     return pureWordsUnique;
   }, [wordsState]);
+
+  const wordsForReviewMemoized = useMemo(() => {
+    const dateNow = new Date();
+    const wordsForReview = wordsState.filter((item) => {
+      const isLegacyWordWithNoReview = !item?.reviewData;
+      if (isLegacyWordWithNoReview || isDueCheck(item, dateNow)) {
+        return true;
+      }
+    });
+    return wordsForReview;
+  }, [wordsState]);
+
+  useEffect(() => {
+    if (!isNumber(wordsToReviewOnMountState)) {
+      setWordsToReviewOnMountState(wordsForReviewMemoized.length);
+    }
+  }, [wordsForReviewMemoized]);
 
   useEffect(() => {
     if (!hasFetchedDataState && languageSelectedState) {
@@ -127,6 +149,28 @@ export function FetchDataProvider({ children }) {
     }
   }, [hasFetchedDataState, languageSelectedState]);
 
+  const sentencesDueForReviewMemoized = useMemo(() => {
+    if (sentencesState.length === 0) {
+      return [];
+    }
+    const dateNow = new Date();
+    const dueCardsNow = sentencesState.filter((sentence) =>
+      isDueCheck(sentence, dateNow),
+    );
+
+    const formatSentence = dueCardsNow?.map((item) => {
+      return {
+        ...item,
+        targetLangformatted: underlineWordsInSentence(
+          item.targetLang,
+          pureWordsMemoized,
+        ), // should all be moved eventually to new sentence sphere
+      };
+    });
+
+    return formatSentence;
+  }, [sentencesState]);
+
   return (
     <FetchDataContext.Provider
       value={{
@@ -140,6 +184,8 @@ export function FetchDataProvider({ children }) {
         wordsState,
         hasFetchedDataState,
         pureWordsMemoized,
+        wordsForReviewMemoized,
+        sentencesDueForReviewMemoized,
       }}
     >
       {children}

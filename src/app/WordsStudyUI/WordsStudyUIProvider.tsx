@@ -32,8 +32,7 @@ export const WordsStudyUIProvider = ({
     useState('');
   const [wordsRepsState, setWordsRepsState] = useState(0);
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState(null);
-  const [wordsToReviewOnMountState, setWordsToReviewOnMountState] =
-    useState(null);
+
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
   );
@@ -54,16 +53,16 @@ export const WordsStudyUIProvider = ({
     useState(false);
 
   const [elapsed, setElapsed] = useState(0);
-  const { wordsForReviewMemoized, updateWordDataProvider } = useData();
+  const { updateWordDataProvider } = useData();
 
-  const { sentencesState, pureWordsMemoized, contentState, wordsState } =
-    useFetchData();
-
-  useEffect(() => {
-    if (!isNumber(wordsToReviewOnMountState)) {
-      setWordsToReviewOnMountState(wordsForReviewMemoized.length);
-    }
-  }, [wordsForReviewMemoized]);
+  const {
+    sentencesState,
+    pureWordsMemoized,
+    contentState,
+    wordsState,
+    wordsToReviewOnMountState,
+    wordsForReviewMemoized,
+  } = useFetchData();
 
   useProgressHeader({
     setProgressState,
