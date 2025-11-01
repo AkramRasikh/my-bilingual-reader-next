@@ -58,6 +58,28 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     return generalNamesArr;
   }, [contentState]);
 
+  const squashedSentenceIdsViaContentMemoized = useMemo(() => {
+    const generalTopicsObject = generalTopicDisplayNameMemoized.reduce(
+      (acc, key) => {
+        acc[key?.title] = [];
+        return acc;
+      },
+      {},
+    );
+
+    contentState.forEach((contentEl) => {
+      const isInGeneralTopicObject =
+        generalTopicsObject[contentEl?.generalTopicName];
+      if (isInGeneralTopicObject) {
+        generalTopicsObject[contentEl?.generalTopicName].push(
+          ...contentEl.content.map((transcriptItem) => transcriptItem.id),
+        );
+      }
+    });
+
+    return generalTopicsObject;
+  }, [generalTopicDisplayNameMemoized]);
+
   const getPureWords = () => {
     const pureWords = [];
     wordsState?.forEach((wordData) => {
@@ -207,14 +229,16 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     let isThisNew = true;
     let hasAllBeenReviewed = true;
 
+    const collectiveSentenceIds = [];
+
     for (const contentEl of allTheseTopics) {
       // --- Check for due items
       if (!isThisDue && contentEl.content) {
         for (const transcriptEl of contentEl.content) {
-          if (transcriptEl?.reviewData?.due) {
+          collectiveSentenceIds.push(transcriptEl.id);
+          if (transcriptEl?.reviewData?.due && !isThisDue) {
             if (isDueCheck(transcriptEl, todayDateObj)) {
               isThisDue = true;
-              break; // no need to check further
             }
           }
         }
@@ -228,7 +252,13 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
       }
     }
 
-    return { isThisDue, isThisNew, hasAllBeenReviewed };
+    const numberOfDueWords = wordsForReviewMemoized.filter((wordObj) =>
+      squashedSentenceIdsViaContentMemoized[genTop]?.includes(
+        wordObj?.contexts?.[0],
+      ),
+    ).length;
+
+    return { isThisDue, isThisNew, hasAllBeenReviewed, numberOfDueWords };
   };
 
   const updateAdhocSentenceData = async ({
