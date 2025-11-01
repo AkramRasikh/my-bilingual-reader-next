@@ -815,17 +815,6 @@ export const LearningScreenProvider = ({
     });
   };
 
-  const handleOnHome = () => {
-    setGeneralTopicDisplayNameSelectedState('');
-    setIsInReviewMode(false);
-    setStudyFromHereTimeState(null);
-    setSelectedContentTitleState('');
-    setSentenceRepsState(0);
-    setNumberOfSentenceDueOnMountState(null);
-    setElapsed(0);
-    setErrorVideoState(false);
-  };
-
   const contentMetaWordMemoized = useMemo(() => {
     if (!generalTopicDisplayNameSelectedState) return null;
     return getGeneralContentWordData();
@@ -914,7 +903,6 @@ export const LearningScreenProvider = ({
         getGeneralContentWordData,
         wordsForSelectedTopic: wordsForSelectedTopicMemoized,
         selectedContentState: selectedContentStateMemoized,
-        handleOnHome,
         sentenceRepsState,
         elapsed,
         setElapsed,
