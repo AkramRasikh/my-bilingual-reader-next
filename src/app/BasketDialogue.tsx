@@ -17,8 +17,9 @@ const BasketDialogue = () => {
   const [loading, setLoading] = useState(false);
   const [valueState, setValueState] = useState('');
 
-  const { wordBasketState, setWordBasketState } = useFetchData();
-  const { addGeneratedSentence, setStory, story } = useData();
+  const { wordBasketState, setWordBasketState, setStory, story } =
+    useFetchData();
+  const { addGeneratedSentence } = useData();
   // const nowTime = new Date();
   // const howManyDue = wordsForSelectedTopic.filter((i) =>
   //   isDueCheck(i, nowTime),

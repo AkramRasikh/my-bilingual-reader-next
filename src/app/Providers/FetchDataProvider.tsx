@@ -34,6 +34,7 @@ export function FetchDataProvider({ children }) {
     useState(null);
   const [wordBasketState, setWordBasketState] = useState([]);
   const [toastMessageState, setToastMessageState] = useState('');
+  const [story, setStory] = useState();
 
   useLanguageSelector({
     languageSelectedState,
@@ -277,6 +278,8 @@ export function FetchDataProvider({ children }) {
         updateContentMetaData,
         toastMessageState,
         setToastMessageState,
+        story,
+        setStory,
       }}
     >
       {children}

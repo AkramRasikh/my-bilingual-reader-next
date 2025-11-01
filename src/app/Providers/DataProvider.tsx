@@ -16,8 +16,6 @@ import { useFetchData } from './FetchDataProvider';
 export const DataContext = createContext(null);
 
 export const DataProvider = ({ children }: PropsWithChildren<object>) => {
-  const [story, setStory] = useState();
-
   const {
     dispatchSentences,
     dispatchContent,
@@ -27,6 +25,8 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     languageSelectedState,
     wordsForReviewMemoized,
     setToastMessageState,
+    story,
+    setStory,
   } = useFetchData();
 
   const generalTopicDisplayNameMemoized = useMemo(() => {
@@ -340,8 +340,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
         updateWordDataProvider,
         sentencesState,
         updateAdhocSentenceData,
-        story,
-        setStory,
         addGeneratedSentence,
         addImageDataProvider,
         getTopicStatus,
