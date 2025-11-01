@@ -35,9 +35,8 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     contentState,
     wordsState,
     languageSelectedState,
+    pureWordsMemoized,
   } = useFetchData();
-
-  const { pureWordsMemoized } = useFetchData();
 
   const generalTopicDisplayNameMemoized = useMemo(() => {
     const generalNamesArr = [];
