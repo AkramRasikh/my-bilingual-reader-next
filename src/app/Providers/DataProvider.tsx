@@ -14,7 +14,6 @@ import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
 import { getAudioURL } from '../../utils/get-media-url';
 import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 import { isDueCheck } from '@/utils/is-due-check';
-import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { isNumber } from '@/utils/is-number';
 import { useFetchData } from './FetchDataProvider';
@@ -490,10 +489,8 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
       value={{
         pureWordsMemoized,
         handleSaveWord,
-        wordsState,
         handleDeleteWordDataProvider,
         updateSentenceData,
-        contentState,
         sentenceReviewBulk,
         breakdownSentence,
         updateContentMetaData,
