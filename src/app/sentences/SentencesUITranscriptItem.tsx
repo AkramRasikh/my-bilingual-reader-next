@@ -1,13 +1,11 @@
 import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
-import useData from '../Providers/useData';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { useSentencesUIScreen } from './SentencesUIProvider';
 import SingleSentenceAudioPlayer from '@/components/custom/SingleSentenceAudioPlayer';
 
 const SentencesUITranscriptItem = ({ sentence, sentenceNum }) => {
-  const { wordsState } = useData();
-  const { languageSelectedState } = useFetchData();
+  const { wordsState, languageSelectedState } = useFetchData();
   const {
     handleReviewFunc,
     selectedSentenceDataMemoized,

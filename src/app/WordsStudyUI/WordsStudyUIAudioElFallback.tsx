@@ -5,6 +5,7 @@ import useData from '../Providers/useData';
 import WordsStudyUITranscriptItem from './WordsStudyUITranscriptItem';
 import LoopIndicatorWithProgress from '@/components/custom/LoopIndicatorWithProgress';
 import LoopBtn from '@/components/custom/LoopBtn';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 const WordsStudyUIAudioElFallback = ({
   secondsState,
@@ -26,8 +27,9 @@ const WordsStudyUIAudioElFallback = ({
     threeSecondLoopState,
   } = useWordsStudyUIScreen();
 
-  const { wordsState, handleSaveWord, handleDeleteWordDataProvider } =
-    useData();
+  const { handleSaveWord, handleDeleteWordDataProvider } = useData();
+
+  const { wordsState } = useFetchData();
 
   const audioUrl = getAudioURL(contextDataEl.title, languageSelectedState);
   const currentTime = ref?.current?.currentTime;

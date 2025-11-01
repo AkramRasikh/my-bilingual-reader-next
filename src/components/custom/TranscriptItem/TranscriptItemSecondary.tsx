@@ -3,12 +3,15 @@ import FormattedSentence from '../FormattedSentence';
 import useLearningScreen from '../../../app/LearningScreen/useLearningScreen';
 import useData from '../../../app/Providers/useData';
 import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
+import { useFetchData } from '@/app/Providers/FetchDataProvider';
 
 const TranscriptItemSecondary = ({ contentItem }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
 
+  const { wordsState } = useFetchData();
   const { wordsForSelectedTopic } = useLearningScreen();
-  const { wordsState, handleDeleteWordDataProvider } = useData();
+  const { handleDeleteWordDataProvider } = useData();
+
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
 
   const hasSentenceBreakdown = contentItem?.sentenceStructure;

@@ -3,12 +3,11 @@ import { getAudioURL } from '@/utils/get-media-url';
 import { useRef, useState } from 'react';
 import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
-import useData from '../Providers/useData';
 import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import SingleSentenceAudioPlayer from '@/components/custom/SingleSentenceAudioPlayer';
 
 const WordsStudyUIIsolatedTranscriptItem = ({ contextData }) => {
-  const { languageSelectedState } = useFetchData();
+  const { languageSelectedState, wordsState } = useFetchData();
 
   const hasAudio = contextData?.hasAudio;
   const title = contextData.title;
@@ -17,7 +16,6 @@ const WordsStudyUIIsolatedTranscriptItem = ({ contextData }) => {
     ? getAudioURL(contextData.id, languageSelectedState)
     : getAudioURL(title, languageSelectedState);
 
-  const { wordsState } = useData();
   const [audioProgressState, setAudioProgressState] = useState(0);
   const [isPlayingsState, setIsPlayingsState] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
