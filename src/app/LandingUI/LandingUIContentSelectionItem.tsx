@@ -75,7 +75,7 @@ const LandingScreenContentSelectionItem = ({
       />
 
       {numberOfDueWords > 0 && (
-        <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-100 rounded-xl p-1'>
+        <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-100 rounded-xl p-1 -bottom-3 right-0 z-10'>
           <WholeWordIcon className='h-3 w-3 m-auto' />
           <span className='text-sm font-light'>{numberOfDueWords}</span>{' '}
         </div>
