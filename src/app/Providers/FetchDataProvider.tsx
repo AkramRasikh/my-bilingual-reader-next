@@ -20,6 +20,7 @@ import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { breakdownSentenceAPI } from '../client-api/breakdown-sentence';
 import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 import { updateContentMetaDataAPI } from '../client-api/update-content-meta-data';
+import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
 
 const FetchDataContext = createContext(null);
 
@@ -256,6 +257,41 @@ export function FetchDataProvider({ children }) {
     }
   };
 
+  const updateAdhocSentenceData = async ({
+    sentenceId,
+    fieldToUpdate,
+    isRemoveReview,
+  }) => {
+    try {
+      const updatedFieldFromDB = await updateAdhocSentenceAPI({
+        sentenceId,
+        fieldToUpdate,
+        language: languageSelectedState,
+      });
+
+      if (updatedFieldFromDB) {
+        dispatchSentences({
+          type: 'updateSentence',
+          sentenceId,
+          isRemoveReview,
+          updatedFieldFromDB,
+          isDueCheck,
+        });
+
+        setToastMessageState(
+          isRemoveReview
+            ? 'Successful learned sentence ✅'
+            : 'Sentence reviewed ✅',
+        );
+      }
+    } catch (error) {
+      console.log('## updateAdhocSentenceData', { error });
+      // updatePromptFunc(`Error updating sentence for ${topicName}`);
+    } finally {
+      // setUpdatingSentenceState('');
+    }
+  };
+
   return (
     <FetchDataContext.Provider
       value={{
@@ -280,6 +316,7 @@ export function FetchDataProvider({ children }) {
         setToastMessageState,
         story,
         setStory,
+        updateAdhocSentenceData,
       }}
     >
       {children}

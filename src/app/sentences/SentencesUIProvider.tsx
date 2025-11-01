@@ -7,7 +7,6 @@ import {
   useEffect,
   useMemo,
 } from 'react';
-import useData from '../Providers/useData';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { getAudioURL } from '@/utils/get-media-url';
@@ -28,9 +27,12 @@ export const SentencesUIProvider = ({
   const [audioProgressState, setAudioProgressState] = useState(0);
   const [initNumState, setInitNumState] = useState();
 
-  const { updateAdhocSentenceData } = useData();
-  const { languageSelectedState, wordsState, sentencesDueForReviewMemoized } =
-    useFetchData();
+  const {
+    languageSelectedState,
+    wordsState,
+    sentencesDueForReviewMemoized,
+    updateAdhocSentenceData,
+  } = useFetchData();
   const numberOfSentences = sentencesDueForReviewMemoized.length;
 
   useEffect(() => {

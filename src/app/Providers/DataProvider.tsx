@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useMemo, useState } from 'react';
+import { createContext, useMemo } from 'react';
 import saveWordAPI from '../client-api/save-word';
 import {
   getEmptyCard,
@@ -8,7 +8,6 @@ import {
 } from '../srs-utils/srs-algo';
 import { deleteWordAPI } from '../client-api/delete-word';
 import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
-import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
 import { getAudioURL } from '../../utils/get-media-url';
 import { isDueCheck } from '@/utils/is-due-check';
 import { useFetchData } from './FetchDataProvider';
@@ -20,7 +19,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     dispatchSentences,
     dispatchContent,
     dispatchWords,
-    sentencesState,
     contentState,
     languageSelectedState,
     wordsForReviewMemoized,
@@ -183,41 +181,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     return { isThisDue, isThisNew, hasAllBeenReviewed, numberOfDueWords };
   };
 
-  const updateAdhocSentenceData = async ({
-    sentenceId,
-    fieldToUpdate,
-    isRemoveReview,
-  }) => {
-    try {
-      const updatedFieldFromDB = await updateAdhocSentenceAPI({
-        sentenceId,
-        fieldToUpdate,
-        language: languageSelectedState,
-      });
-
-      if (updatedFieldFromDB) {
-        dispatchSentences({
-          type: 'updateSentence',
-          sentenceId,
-          isRemoveReview,
-          updatedFieldFromDB,
-          isDueCheck,
-        });
-
-        setToastMessageState(
-          isRemoveReview
-            ? 'Successful learned sentence ✅'
-            : 'Sentence reviewed ✅',
-        );
-      }
-    } catch (error) {
-      console.log('## updateAdhocSentenceData', { error });
-      // updatePromptFunc(`Error updating sentence for ${topicName}`);
-    } finally {
-      // setUpdatingSentenceState('');
-    }
-  };
-
   const updateSentenceData = async ({
     topicName,
     sentenceId,
@@ -338,8 +301,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
         generalTopicDisplayNameMemoized,
         handleGetComprehensiveReview,
         updateWordDataProvider,
-        sentencesState,
-        updateAdhocSentenceData,
         addGeneratedSentence,
         addImageDataProvider,
         getTopicStatus,
