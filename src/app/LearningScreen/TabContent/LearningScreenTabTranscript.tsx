@@ -7,8 +7,6 @@ import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/Trans
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 
 const LearningScreenTabTranscript = () => {
-  const { handleSaveWord, handleDeleteWordDataProvider } = useData();
-
   const {
     formattedTranscriptState,
     threeSecondLoopState,
@@ -36,7 +34,12 @@ const LearningScreenTabTranscript = () => {
     scrollToElState,
     wordsForSelectedTopic,
   } = useLearningScreen();
-  const { languageSelectedState, wordsState } = useFetchData();
+  const {
+    languageSelectedState,
+    wordsState,
+    handleSaveWord,
+    handleDeleteWordDataProvider,
+  } = useFetchData();
 
   const learnFormattedTranscript =
     isInReviewMode && latestDueIdState?.id

@@ -218,49 +218,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     }
   };
 
-  const handleSaveWord = async ({
-    highlightedWord,
-    highlightedWordSentenceId,
-    contextSentence,
-    meaning,
-    isGoogle,
-  }) => {
-    const cardDataRelativeToNow = getEmptyCard();
-    const nextScheduledOptions = getNextScheduledOptions({
-      card: cardDataRelativeToNow,
-      contentType: srsRetentionKeyTypes.vocab,
-    });
-
-    const savedWord = await saveWordAPI({
-      highlightedWord,
-      highlightedWordSentenceId,
-      contextSentence,
-      reviewData: nextScheduledOptions['1'].card,
-      meaning,
-      isGoogle,
-      language: languageSelectedState,
-    });
-
-    if (savedWord) {
-      dispatchWords({
-        type: 'addWord',
-        word: savedWord, // can be one or multiple
-      });
-      return savedWord;
-    }
-  };
-
-  const handleDeleteWordDataProvider = async ({ wordId }) => {
-    try {
-      await deleteWordAPI({ wordId, language: languageSelectedState });
-      dispatchWords({ type: 'removeWord', wordId });
-
-      return true;
-    } catch (error) {
-      console.log('## handleDeleteWordDataProvider deleteWord', { error });
-    }
-  };
-
   const handleGetComprehensiveReview = () => {};
 
   const addGeneratedSentence = async ({ targetLang, baseLang, notes }) => {
@@ -295,8 +252,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
   return (
     <DataContext.Provider
       value={{
-        handleSaveWord,
-        handleDeleteWordDataProvider,
         updateSentenceData,
         generalTopicDisplayNameMemoized,
         handleGetComprehensiveReview,

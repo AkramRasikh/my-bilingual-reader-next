@@ -21,6 +21,13 @@ import { breakdownSentenceAPI } from '../client-api/breakdown-sentence';
 import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 import { updateContentMetaDataAPI } from '../client-api/update-content-meta-data';
 import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
+import {
+  getEmptyCard,
+  getNextScheduledOptions,
+  srsRetentionKeyTypes,
+} from '../srs-utils/srs-algo';
+import saveWordAPI from '../client-api/save-word';
+import { deleteWordAPI } from '../client-api/delete-word';
 
 const FetchDataContext = createContext(null);
 
@@ -291,6 +298,48 @@ export function FetchDataProvider({ children }) {
       // setUpdatingSentenceState('');
     }
   };
+  const handleDeleteWordDataProvider = async ({ wordId }) => {
+    try {
+      await deleteWordAPI({ wordId, language: languageSelectedState });
+      dispatchWords({ type: 'removeWord', wordId });
+
+      return true;
+    } catch (error) {
+      console.log('## handleDeleteWordDataProvider deleteWord', { error });
+    }
+  };
+
+  const handleSaveWord = async ({
+    highlightedWord,
+    highlightedWordSentenceId,
+    contextSentence,
+    meaning,
+    isGoogle,
+  }) => {
+    const cardDataRelativeToNow = getEmptyCard();
+    const nextScheduledOptions = getNextScheduledOptions({
+      card: cardDataRelativeToNow,
+      contentType: srsRetentionKeyTypes.vocab,
+    });
+
+    const savedWord = await saveWordAPI({
+      highlightedWord,
+      highlightedWordSentenceId,
+      contextSentence,
+      reviewData: nextScheduledOptions['1'].card,
+      meaning,
+      isGoogle,
+      language: languageSelectedState,
+    });
+
+    if (savedWord) {
+      dispatchWords({
+        type: 'addWord',
+        word: savedWord, // can be one or multiple
+      });
+      return savedWord;
+    }
+  };
 
   return (
     <FetchDataContext.Provider
@@ -317,6 +366,8 @@ export function FetchDataProvider({ children }) {
         story,
         setStory,
         updateAdhocSentenceData,
+        handleSaveWord,
+        handleDeleteWordDataProvider,
       }}
     >
       {children}

@@ -27,9 +27,8 @@ const WordsStudyUIAudioElFallback = ({
     threeSecondLoopState,
   } = useWordsStudyUIScreen();
 
-  const { handleSaveWord, handleDeleteWordDataProvider } = useData();
-
-  const { wordsState } = useFetchData();
+  const { handleSaveWord, wordsState, handleDeleteWordDataProvider } =
+    useFetchData();
 
   const audioUrl = getAudioURL(contextDataEl.title, languageSelectedState);
   const currentTime = ref?.current?.currentTime;

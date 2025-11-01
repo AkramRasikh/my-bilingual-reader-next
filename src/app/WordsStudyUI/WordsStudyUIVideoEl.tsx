@@ -37,9 +37,13 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
     progress,
     setProgress,
   } = useWordsStudyUIScreen();
-  const { languageSelectedState, wordsState } = useFetchData();
+  const {
+    handleSaveWord,
+    languageSelectedState,
+    wordsState,
+    handleDeleteWordDataProvider,
+  } = useFetchData();
 
-  const { handleSaveWord, handleDeleteWordDataProvider } = useData();
   const isMedia = contextDataEl.isMedia;
   useCheckVideoIsWorking(ref, setErrorVideoState);
 

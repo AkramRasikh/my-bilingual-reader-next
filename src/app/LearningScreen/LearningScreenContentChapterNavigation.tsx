@@ -6,7 +6,6 @@ import useLearningScreen from './useLearningScreen';
 import LearningScreenUnifiedAnalytics from './LearningScreenUnifiedAnalytics';
 
 const LearningScreenContentChapterNavigation = () => {
-  const { handleGetComprehensiveReview } = useData();
   const [sentenceRepsPerMinState, setSentenceRepsPerMinState] = useState<
     string | null
   >(null);
@@ -43,7 +42,7 @@ const LearningScreenContentChapterNavigation = () => {
   return (
     <ul className='flex flex-col gap-1 overflow-y-scroll max-h-96 pr-2.5'>
       {!hasUnifiedChapter && (
-        <Button variant='outline' onClick={handleGetComprehensiveReview}>
+        <Button variant='outline'>
           All{' '}
           <span className='text-xs font-medium italic'>
             ({numberOfSentencesPendingOrDueState})

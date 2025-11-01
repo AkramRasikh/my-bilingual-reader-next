@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import FormattedSentence from '@/components/custom/FormattedSentence';
 import useTranscriptItem from './useTranscriptItem';
-import useData from '@/app/Providers/useData';
 import SentenceBreakdown from '../SentenceBreakdown';
 import { arabic } from '@/app/languages';
+import { useFetchData } from '@/app/Providers/FetchDataProvider';
 
 const TranscriptItemContent = () => {
   const {
@@ -20,9 +20,10 @@ const TranscriptItemContent = () => {
     onlyShowEngState,
     wordsForSelectedTopic,
     languageSelectedState,
+    handleDeleteWordTranscript,
   } = useTranscriptItem();
 
-  const { handleDeleteWordDataProvider } = useData();
+  const { handleDeleteWordDataProvider } = useFetchData(); // must be moved!!
 
   const baseLang = contentItem.baseLang;
   const transliteration = contentItem?.transliteration;
