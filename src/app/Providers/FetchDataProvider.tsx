@@ -503,6 +503,7 @@ export function FetchDataProvider({ children }) {
         updateSentenceData,
         addGeneratedSentence,
         addImageDataProvider,
+        wordsToReviewOnMountState,
       }}
     >
       {children}
