@@ -1,17 +1,16 @@
 import WordCard from '@/components/custom/WordCard';
-import useData from '../../Providers/useData';
 import useLearningScreen from '../useLearningScreen';
 import { TabsContent } from '@radix-ui/react-tabs';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 
 const LearningScreenTabWords = () => {
-  const { addImageDataProvider } = useData();
   const { wordsForSelectedTopic, playFromThisContext } = useLearningScreen();
   const {
     updateWordDataProvider,
     languageSelectedState,
     wordBasketState,
     setWordBasketState,
+    addImageDataProvider,
   } = useFetchData();
 
   const addWordToBasket = (word) => {

@@ -1,21 +1,12 @@
 'use client';
 import { createContext, useMemo } from 'react';
-import { getAudioURL } from '../../utils/get-media-url';
 import { isDueCheck } from '@/utils/is-due-check';
 import { useFetchData } from './FetchDataProvider';
 
 export const DataContext = createContext(null);
 
 export const DataProvider = ({ children }: PropsWithChildren<object>) => {
-  const {
-    dispatchSentences,
-    dispatchWords,
-    contentState,
-    languageSelectedState,
-    wordsForReviewMemoized,
-    story,
-    setStory,
-  } = useFetchData();
+  const { contentState, wordsForReviewMemoized } = useFetchData();
 
   const generalTopicDisplayNameMemoized = useMemo(() => {
     const generalNamesArr = [];
@@ -58,26 +49,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
 
     return generalTopicsObject;
   }, [generalTopicDisplayNameMemoized]);
-
-  const addImageDataProvider = async ({ wordId, formData }) => {
-    try {
-      formData.append('language', languageSelectedState);
-      const res = await fetch('/api/addWordImage', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      if (data) {
-        dispatchWords({
-          type: 'updateWordData',
-          wordId,
-          fields: { imageUrl: data.imageUrl },
-        });
-      }
-    } catch (error) {
-      console.log('## addImageDataProvider DataProvider', { error });
-    }
-  };
 
   const getTopicStatus = (genTop, todayDateObj) => {
     const allTheseTopics = contentState.filter(
@@ -132,7 +103,6 @@ export const DataProvider = ({ children }: PropsWithChildren<object>) => {
     <DataContext.Provider
       value={{
         generalTopicDisplayNameMemoized,
-        addImageDataProvider,
         getTopicStatus,
       }}
     >

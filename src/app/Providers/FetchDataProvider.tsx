@@ -424,6 +424,26 @@ export function FetchDataProvider({ children }) {
     }
   };
 
+  const addImageDataProvider = async ({ wordId, formData }) => {
+    try {
+      formData.append('language', languageSelectedState);
+      const res = await fetch('/api/addWordImage', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data) {
+        dispatchWords({
+          type: 'updateWordData',
+          wordId,
+          fields: { imageUrl: data.imageUrl },
+        });
+      }
+    } catch (error) {
+      console.log('## addImageDataProvider DataProvider', { error });
+    }
+  };
+
   const addGeneratedSentence = async ({ targetLang, baseLang, notes }) => {
     console.log('## addGeneratedSentence', targetLang, baseLang);
     const res = await fetch('/api/addSentence', {
@@ -482,6 +502,7 @@ export function FetchDataProvider({ children }) {
         updateWordDataProvider,
         updateSentenceData,
         addGeneratedSentence,
+        addImageDataProvider,
       }}
     >
       {children}
