@@ -6,13 +6,10 @@ import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/Trans
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { useMemo, useState } from 'react';
 import { isDueCheck } from '@/utils/is-due-check';
-import WordCard from '@/components/custom/WordCard';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import LearningScreenTabTranscriptNestedWordsReview from './LearningScreenTabTranscriptNestedWordsReview';
 
 const LearningScreenTabTranscript = () => {
-  const [showNestedRelevantWordsState, setShowNestedRelevantWordsState] =
-    useState(true);
+  useState(true);
   const {
     formattedTranscriptState,
     threeSecondLoopState,
@@ -39,17 +36,12 @@ const LearningScreenTabTranscript = () => {
     transcriptRef,
     scrollToElState,
     wordsForSelectedTopic,
-    playFromThisContext,
   } = useLearningScreen();
   const {
     languageSelectedState,
     wordsState,
     handleSaveWord,
     handleDeleteWordDataProvider,
-    wordBasketState,
-    updateWordDataProvider,
-    addWordToBasket,
-    addImageDataProvider,
   } = useFetchData();
 
   const learnFormattedTranscript =
@@ -102,39 +94,9 @@ const LearningScreenTabTranscript = () => {
       className={clsx(contentClasses, 'border rounded-lg')}
     >
       {hasSentencesAndWordsInTandem && (
-        <div className='flex gap-2 m-auto justify-center p-1'>
-          <Label className='text-sm font-medium'>Show Relevant Words</Label>
-          <Switch
-            checked={showNestedRelevantWordsState}
-            onCheckedChange={setShowNestedRelevantWordsState}
-          />
-        </div>
-      )}
-      {hasSentencesAndWordsInTandem && showNestedRelevantWordsState && (
-        <div className='text-center m-auto p-1.5'>
-          <ul className='flex flex-wrap gap-2.5 m-auto'>
-            {sentencesForReviewMemoized.map((word, index) => {
-              const isInBasket = wordBasketState?.some(
-                (i) => i?.id === word.id,
-              );
-
-              return (
-                <li key={word.id} className='mx-auto'>
-                  <WordCard
-                    {...word}
-                    indexNum={index + 1}
-                    updateWordData={updateWordDataProvider}
-                    addWordToBasket={addWordToBasket}
-                    isInBasket={isInBasket}
-                    addImageDataProvider={addImageDataProvider}
-                    playFromThisContext={playFromThisContext}
-                    languageSelectedState={languageSelectedState}
-                  />
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+        <LearningScreenTabTranscriptNestedWordsReview
+          sentencesForReviewMemoized={sentencesForReviewMemoized}
+        />
       )}
       <ul
         className={clsx(
