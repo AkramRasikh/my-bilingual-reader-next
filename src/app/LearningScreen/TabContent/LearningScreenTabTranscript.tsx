@@ -93,22 +93,26 @@ const LearningScreenTabTranscript = () => {
     });
   }, [learnFormattedTranscript, isInReviewMode, wordsForSelectedTopic]);
 
+  const hasSentencesAndWordsInTandem = sentencesForReviewMemoized.length > 0;
+
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
   return (
     <TabsContent
       value='transcript'
       className={clsx(contentClasses, 'border rounded-lg')}
     >
-      {sentencesForReviewMemoized.length > 0 && (
+      {hasSentencesAndWordsInTandem && (
+        <div className='flex gap-2 m-auto justify-center p-1'>
+          <Label className='text-sm font-medium'>Show Relevant Words</Label>
+          <Switch
+            checked={showNestedRelevantWordsState}
+            onCheckedChange={setShowNestedRelevantWordsState}
+          />
+        </div>
+      )}
+      {hasSentencesAndWordsInTandem && showNestedRelevantWordsState && (
         <div className='text-center m-auto p-1.5'>
           <ul className='flex flex-wrap gap-2.5 m-auto'>
-            <div className='flex gap-2 m-auto'>
-              <Label>Review Relevant Words</Label>
-              <Switch
-                checked={showNestedRelevantWordsState}
-                onCheckedChange={setShowNestedRelevantWordsState}
-              />
-            </div>
             {sentencesForReviewMemoized.map((word, index) => {
               const isInBasket = wordBasketState?.some(
                 (i) => i?.id === word.id,
