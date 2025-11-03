@@ -38,7 +38,7 @@ const SingleSentenceAudioPlayer = ({
   };
 
   return (
-    <div className={'flex items-center gap-4 w-full'}>
+    <div className={'flex items-center gap-4 w-9/10 m-auto p-1'}>
       <Slider
         value={[audioProgressState]}
         min={0}
