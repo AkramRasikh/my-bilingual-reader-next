@@ -28,7 +28,7 @@ const WordsStudyUIUnifiedAnalytics = () => {
 
   return (
     <div className='flex flex-col gap-2 h-fit'>
-      <div className='flex gap-2 w-fit m-auto'>
+      <div className='flex gap-2 w-fit m-auto mr-3'>
         <span className='m-auto flex-none text-xs font-medium'>{repsText}</span>
         {wordsRepsState ? (
           <Button
