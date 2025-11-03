@@ -6,23 +6,32 @@ import { useFetchData } from '../Providers/FetchDataProvider';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import { WordsStudyUIProvider } from '../WordsStudyUI/WordsStudyUIProvider';
 import WordsStudyUIBreadCrumbHeader from '../WordsStudyUI/WordsStudyUIBreadCrumbHeader';
-import { Toaster } from 'sonner';
 import WordsStudyUI from '../WordsStudyUI';
 
 const WordStudyPageContent = () => {
-  const { wordsState, languageSelectedState } = useFetchData();
+  const {
+    wordsState,
+    languageSelectedState,
+    toastMessageState,
+    setToastMessageState,
+  } = useFetchData();
 
   if (!wordsState || !languageSelectedState)
     return (
-      <PageContainer>
+      <PageContainer
+        toastMessageState={toastMessageState}
+        setToastMessageState={setToastMessageState}
+      >
         <LoadingSpinner big />
       </PageContainer>
     );
 
   return (
-    <PageContainer>
+    <PageContainer
+      toastMessageState={toastMessageState}
+      setToastMessageState={setToastMessageState}
+    >
       <WordsStudyUIProvider>
-        <Toaster position='top-center' />
         <WordsStudyUIBreadCrumbHeader />
         <WordsStudyUI />
       </WordsStudyUIProvider>

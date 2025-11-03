@@ -8,17 +8,28 @@ import SentencesUIBreadCrumbHeader from './SentencesUIBreadCrumbHeader';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 
 const SentencePageContent = () => {
-  const { sentencesState, languageSelectedState } = useFetchData();
+  const {
+    sentencesState,
+    languageSelectedState,
+    toastMessageState,
+    setToastMessageState,
+  } = useFetchData();
 
   if (!sentencesState || !languageSelectedState)
     return (
-      <PageContainer>
+      <PageContainer
+        toastMessageState={toastMessageState}
+        setToastMessageState={setToastMessageState}
+      >
         <LoadingSpinner big />
       </PageContainer>
     );
 
   return (
-    <PageContainer>
+    <PageContainer
+      toastMessageState={toastMessageState}
+      setToastMessageState={setToastMessageState}
+    >
       <SentencesUIProvider>
         <SentencesUIBreadCrumbHeader />
         <SentencesUIContainer />

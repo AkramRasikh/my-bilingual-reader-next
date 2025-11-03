@@ -1,6 +1,5 @@
 'use client';
 
-import PageContainer from '@/components/custom/PageContainer';
 import { YoutubeUploadProvider } from './YoutubeUploadProvider';
 import YoutubeUploadContainer from './YoutubeUploadContainer';
 import BreadCrumbHeaderBase from '@/components/BreadCrumbHeaderBase';
@@ -10,7 +9,7 @@ export default function YoutubeUploadPage() {
   const router = useRouter();
 
   return (
-    <PageContainer>
+    <div className='p-4 bg-amber-50 h-lvh'>
       <YoutubeUploadProvider>
         <BreadCrumbHeaderBase
           onClick={() => router.push('/')}
@@ -21,6 +20,6 @@ export default function YoutubeUploadPage() {
 
         <YoutubeUploadContainer />
       </YoutubeUploadProvider>
-    </PageContainer>
+    </div>
   );
 }

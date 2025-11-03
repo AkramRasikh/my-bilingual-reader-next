@@ -20,15 +20,15 @@ const WordsStudyUI = () => {
   const hasWords = formattedWordsStudyState?.length > 0;
   if (!hasWords) {
     return (
-      <PageContainer>
+      <div>
         <h1 className='text-center'>Words study</h1>
         <LoadingSpinner big />
-      </PageContainer>
+      </div>
     );
   }
 
   return (
-    <PageContainer>
+    <div>
       <div className='flex flex-row gap-2 mx-auto max-w-6xl'>
         <WordsStudyUIUnifiedAnalytics />
         <div className='flex justify-around gap-3'>
@@ -65,7 +65,7 @@ const WordsStudyUI = () => {
           </div>
         </div>
       </div>
-    </PageContainer>
+    </div>
   );
 };
 

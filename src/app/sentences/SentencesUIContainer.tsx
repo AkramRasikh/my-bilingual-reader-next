@@ -1,4 +1,3 @@
-import { Toaster } from 'sonner';
 import SentencesUITranscriptItem from './SentencesUITranscriptItem';
 import { useSentencesUIScreen } from './SentencesUIProvider';
 import WordCard from '@/components/custom/WordCard';
@@ -14,7 +13,6 @@ const SentencesUIContainer = () => {
 
   return (
     <div>
-      <Toaster position='top-center' />
       <div className='grid grid-cols-2 gap-2 max-w-6xl mx-auto'>
         <div>
           <ul className='flex flex-col gap-2 mb-2'>

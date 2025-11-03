@@ -41,20 +41,16 @@ const ContentScreenContainer = () => {
     }
   }, [topicValue, selectedContentTitleState, contentState]);
 
-  useEffect(() => {
-    if (toastMessageState) {
-      toast(toastMessageState);
-      setTimeout(() => setToastMessageState(''), 1000);
-    }
-  }, [toastMessageState]);
-
   if (!hasFetchedDataState || !contentState?.length || !languageSelectedState) {
     return <LoadingSpinner big />;
   }
 
   return (
     <div>
-      <PageContainer>
+      <PageContainer
+        toastMessageState={toastMessageState}
+        setToastMessageState={setToastMessageState}
+      >
         <LearningScreenBreadCrumbHeader />
         {isMockEnv && <MockFlag />}
         <LearningScreen />
