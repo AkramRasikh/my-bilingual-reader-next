@@ -4,7 +4,13 @@ import { TabsContent } from '@radix-ui/react-tabs';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 
 const LearningScreenTabWords = () => {
-  const { wordsForSelectedTopic, playFromThisContext } = useLearningScreen();
+  const {
+    wordsForSelectedTopic,
+    playFromThisContext,
+    masterPlay,
+    handlePause,
+    isVideoPlaying,
+  } = useLearningScreen();
   const {
     updateWordDataProvider,
     languageSelectedState,
@@ -35,6 +41,8 @@ const LearningScreenTabWords = () => {
         <ul className='flex flex-wrap gap-2.5 justify-center'>
           {wordsForSelectedTopic.map((word, index) => {
             const isInBasket = wordBasketState?.some((i) => i?.id === word.id);
+            const wordContextIsPlaying =
+              isVideoPlaying && word?.contexts?.[0] === masterPlay;
 
             return (
               <li key={word.id}>
@@ -47,6 +55,8 @@ const LearningScreenTabWords = () => {
                   addImageDataProvider={addImageDataProvider}
                   playFromThisContext={playFromThisContext}
                   languageSelectedState={languageSelectedState}
+                  wordContextIsPlaying={wordContextIsPlaying}
+                  handlePause={handlePause}
                 />
               </li>
             );

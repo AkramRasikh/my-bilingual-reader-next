@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { CardTitle } from '@/components/ui/card';
 import clsx from 'clsx';
-import { LucidePlay, MoreVerticalIcon } from 'lucide-react';
+import { LucidePause, LucidePlay, MoreVerticalIcon } from 'lucide-react';
 
 const WordCardHeader = ({
   textTitle,
@@ -10,6 +10,7 @@ const WordCardHeader = ({
   onClickPlayContext,
   setOpenContentState,
   openContentState,
+  wordContextIsPlaying,
 }) => (
   <div className='flex gap-3 flex-wrap justify-between'>
     <CardTitle
@@ -28,7 +29,7 @@ const WordCardHeader = ({
         className={'h-3 w-3 p-3 bg-transparent'}
         onClick={onClickPlayContext}
       >
-        <LucidePlay />
+        {wordContextIsPlaying ? <LucidePause /> : <LucidePlay />}
       </Button>
       <Button
         variant={isInBasket ? 'destructive' : 'default'}

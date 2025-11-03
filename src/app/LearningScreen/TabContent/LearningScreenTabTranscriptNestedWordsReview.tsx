@@ -1,16 +1,17 @@
+import { useState } from 'react';
 import WordCard from '@/components/custom/WordCard';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import useLearningScreen from '../useLearningScreen';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
-import { useState } from 'react';
 
 const LearningScreenTabTranscriptNestedWordsReview = ({
   sentencesForReviewMemoized,
 }) => {
   const [showNestedRelevantWordsState, setShowNestedRelevantWordsState] =
     useState(true);
-  const { playFromThisContext } = useLearningScreen();
+  const { playFromThisContext, isVideoPlaying, handlePause, masterPlay } =
+    useLearningScreen();
   const {
     languageSelectedState,
     wordBasketState,
@@ -36,6 +37,9 @@ const LearningScreenTabTranscriptNestedWordsReview = ({
                 (i) => i?.id === word.id,
               );
 
+              const wordContextIsPlaying =
+                isVideoPlaying && word?.contexts?.[0] === masterPlay;
+
               return (
                 <li key={word.id} className='mx-auto'>
                   <WordCard
@@ -47,6 +51,8 @@ const LearningScreenTabTranscriptNestedWordsReview = ({
                     addImageDataProvider={addImageDataProvider}
                     playFromThisContext={playFromThisContext}
                     languageSelectedState={languageSelectedState}
+                    wordContextIsPlaying={wordContextIsPlaying}
+                    handlePause={handlePause}
                   />
                 </li>
               );

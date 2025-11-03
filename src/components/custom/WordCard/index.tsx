@@ -30,6 +30,8 @@ const WordCard = ({
   contexts,
   playFromThisContext,
   languageSelectedState,
+  wordContextIsPlaying,
+  handlePause,
   ...rest
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
@@ -67,6 +69,10 @@ const WordCard = ({
   };
 
   const handlePlayThisContext = () => {
+    if (wordContextIsPlaying) {
+      handlePause?.();
+      return;
+    }
     if (originalContextId) {
       playFromThisContext(originalContextId);
     }
@@ -100,6 +106,7 @@ const WordCard = ({
           onClickPlayContext={handlePlayThisContext}
           setOpenContentState={setOpenContentState}
           openContentState={openContentState}
+          wordContextIsPlaying={wordContextIsPlaying}
         />
 
         <WordCardConditionalContentWrapper
