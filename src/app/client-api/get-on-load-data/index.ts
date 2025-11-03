@@ -32,24 +32,3 @@ export const getFormattedData = (loadedData) => {
 
   return data;
 };
-
-export const getOnLoadData = async (language) => {
-  const url = process.env.NEXT_PUBLIC_GET_ON_ALL_LOAD_URL as string;
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json', //<----
-      'Content-Type': 'application/json', //<---
-    },
-    body: JSON.stringify({
-      language,
-      refs: [content, words, sentences],
-    }),
-  });
-
-  if (!res.ok) throw new Error('Failed to fetch data');
-  const jsonData = await res.json();
-  const formattedData = getFormattedData(jsonData);
-  return formattedData;
-};

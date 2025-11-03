@@ -266,7 +266,7 @@ export function FetchDataProvider({ children }) {
       setToastMessageState('Updated content data ✅!');
     } catch (error) {
       console.log('## updateContentMetaData', error);
-      setToastMessageState('Error deleting word ❌');
+      setToastMessageState('Error updating content data ❌');
     }
   };
 
@@ -429,7 +429,7 @@ export function FetchDataProvider({ children }) {
         type: 'addWord',
         word: savedWord, // can be one or multiple
       });
-      setToastMessageState('Word saved!');
+      setToastMessageState(`${highlightedWord} saved!`);
       return savedWord;
     }
   };
