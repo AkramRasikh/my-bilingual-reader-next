@@ -120,7 +120,6 @@ export function FetchDataProvider({ children }) {
       const contentStateExist = contentState?.length >= 0;
 
       if (contentStateExist) {
-        console.log('## Fetching from localStorage');
         setHasFetchedDataState(true);
         dispatchWords({
           type: 'initWords',
@@ -134,6 +133,7 @@ export function FetchDataProvider({ children }) {
           type: 'initSentences',
           sentences: sentencesState,
         });
+        setToastMessageState('Loaded data from LocalStorage ✅💰');
       } else {
         fetch('/api/getOnLoadData', {
           //not fully sure how i will need this
@@ -159,6 +159,7 @@ export function FetchDataProvider({ children }) {
               sentences: data?.sentencesData,
             });
             setHasFetchedDataState(true);
+            setToastMessageState('Loaded data from DB ✅');
           })
           .catch(console.error);
       }
@@ -207,6 +208,7 @@ export function FetchDataProvider({ children }) {
         sentenceId,
         fields: { ...resObj },
       });
+      setToastMessageState('Sentence broken down 🧱 🔨!');
       return true;
     } catch (error) {
       console.log('## breakdownSentence', { error });
@@ -236,6 +238,7 @@ export function FetchDataProvider({ children }) {
           fields: { ...fieldToUpdate },
         });
       }
+      setToastMessageState(`Bulk reviewed ${sentenceIds.length} sentences ✅`);
     } catch (error) {
       console.log('## sentenceReviewBulk error', error);
     }
@@ -260,6 +263,7 @@ export function FetchDataProvider({ children }) {
           fieldToUpdate: resObj,
         });
       }
+      setToastMessageState('Updated content data ✅!');
     } catch (error) {
       console.log('## updateContentMetaData', error);
       setToastMessageState('Error deleting word ❌');
@@ -304,7 +308,7 @@ export function FetchDataProvider({ children }) {
     try {
       await deleteWordAPI({ wordId, language: languageSelectedState });
       dispatchWords({ type: 'removeWord', wordId });
-
+      setToastMessageState('Word deleted!');
       return true;
     } catch (error) {
       console.log('## handleDeleteWordDataProvider deleteWord', { error });
@@ -342,6 +346,11 @@ export function FetchDataProvider({ children }) {
         });
       }
 
+      setToastMessageState(
+        isRemoveReview
+          ? 'Successful learned sentence ✅'
+          : 'Sentence reviewed ✅',
+      );
       return updatedFieldFromDB?.reviewData;
     } catch (error) {
       console.log('## updateSentenceData', { error });
@@ -420,6 +429,7 @@ export function FetchDataProvider({ children }) {
         type: 'addWord',
         word: savedWord, // can be one or multiple
       });
+      setToastMessageState('Word saved!');
       return savedWord;
     }
   };
@@ -438,6 +448,7 @@ export function FetchDataProvider({ children }) {
           wordId,
           fields: { imageUrl: data.imageUrl },
         });
+        setToastMessageState('Image saved!');
       }
     } catch (error) {
       console.log('## addImageDataProvider DataProvider', { error });
@@ -470,6 +481,7 @@ export function FetchDataProvider({ children }) {
     }
 
     dispatchSentences({ type: 'addSentence', sentence: data });
+    setToastMessageState('Generated sentence saved!');
   };
 
   return (

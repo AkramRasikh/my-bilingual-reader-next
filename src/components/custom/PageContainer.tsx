@@ -9,13 +9,13 @@ const PageContainer = ({
   useEffect(() => {
     if (toastMessageState) {
       toast(toastMessageState);
-      setTimeout(() => setToastMessageState(''), 500);
+      setToastMessageState('');
     }
   }, [toastMessageState]);
 
   return (
     <div className='p-4 bg-amber-50 h-lvh'>
-      <Toaster position='top-center' />
+      <Toaster position='top-center' duration={1000} />
       {children}
     </div>
   );
