@@ -208,10 +208,11 @@ export function FetchDataProvider({ children }) {
         sentenceId,
         fields: { ...resObj },
       });
-      setToastMessageState('Sentence broken down 🧱 🔨!');
+      setToastMessageState('Sentence broken down 🧱🔨!');
       return true;
     } catch (error) {
       console.log('## breakdownSentence', { error });
+      setToastMessageState('Sentence breakdown error 🧱🔨❌');
     }
   };
 
@@ -241,6 +242,7 @@ export function FetchDataProvider({ children }) {
       setToastMessageState(`Bulk reviewed ${sentenceIds.length} sentences ✅`);
     } catch (error) {
       console.log('## sentenceReviewBulk error', error);
+      setToastMessageState('Error reviewing in BULK ❌');
     }
   };
 
@@ -265,7 +267,7 @@ export function FetchDataProvider({ children }) {
       }
       setToastMessageState('Updated content data ✅!');
     } catch (error) {
-      console.log('## updateContentMetaData', error);
+      console.log('## updateContentMetaData', { error });
       setToastMessageState('Error updating content data ❌');
     }
   };
@@ -300,8 +302,7 @@ export function FetchDataProvider({ children }) {
     } catch (error) {
       console.log('## updateAdhocSentenceData', { error });
       // updatePromptFunc(`Error updating sentence for ${topicName}`);
-    } finally {
-      // setUpdatingSentenceState('');
+      setToastMessageState('Error updating adhoc-sentence sentence ❌');
     }
   };
   const handleDeleteWordDataProvider = async ({ wordId }) => {
@@ -311,7 +312,8 @@ export function FetchDataProvider({ children }) {
       setToastMessageState('Word deleted!');
       return true;
     } catch (error) {
-      console.log('## handleDeleteWordDataProvider deleteWord', { error });
+      console.log('## handleDeleteWordDataProvider', { error });
+      setToastMessageState('Error deleting word ❌');
     }
   };
 
@@ -354,6 +356,7 @@ export function FetchDataProvider({ children }) {
       return updatedFieldFromDB?.reviewData;
     } catch (error) {
       console.log('## updateSentenceData', { error });
+      setToastMessageState('Error updating sentence ❌');
     }
   };
 
@@ -396,7 +399,7 @@ export function FetchDataProvider({ children }) {
         return true;
       }
     } catch (error) {
-      console.log('## updateWordDataProvider DataProvider', { error });
+      console.log('## updateWordDataProvider', { error });
       setToastMessageState('Error reviewing word ❌');
     }
   };
@@ -408,29 +411,34 @@ export function FetchDataProvider({ children }) {
     meaning,
     isGoogle,
   }) => {
-    const cardDataRelativeToNow = getEmptyCard();
-    const nextScheduledOptions = getNextScheduledOptions({
-      card: cardDataRelativeToNow,
-      contentType: srsRetentionKeyTypes.vocab,
-    });
-
-    const savedWord = await saveWordAPI({
-      highlightedWord,
-      highlightedWordSentenceId,
-      contextSentence,
-      reviewData: nextScheduledOptions['1'].card,
-      meaning,
-      isGoogle,
-      language: languageSelectedState,
-    });
-
-    if (savedWord) {
-      dispatchWords({
-        type: 'addWord',
-        word: savedWord, // can be one or multiple
+    try {
+      const cardDataRelativeToNow = getEmptyCard();
+      const nextScheduledOptions = getNextScheduledOptions({
+        card: cardDataRelativeToNow,
+        contentType: srsRetentionKeyTypes.vocab,
       });
-      setToastMessageState(`${highlightedWord} saved!`);
-      return savedWord;
+
+      const savedWord = await saveWordAPI({
+        highlightedWord,
+        highlightedWordSentenceId,
+        contextSentence,
+        reviewData: nextScheduledOptions['1'].card,
+        meaning,
+        isGoogle,
+        language: languageSelectedState,
+      });
+
+      if (savedWord) {
+        dispatchWords({
+          type: 'addWord',
+          word: savedWord, // can be one or multiple
+        });
+        setToastMessageState(`${highlightedWord} saved!`);
+        return savedWord;
+      }
+    } catch (error) {
+      console.log('## handleSaveWord', { error });
+      setToastMessageState(`Failed to save word 🫤❌`);
     }
   };
 
@@ -451,37 +459,42 @@ export function FetchDataProvider({ children }) {
         setToastMessageState('Image saved!');
       }
     } catch (error) {
-      console.log('## addImageDataProvider DataProvider', { error });
+      console.log('## addImageDataProvider', { error });
+      setToastMessageState(`Failed to save image 🫤❌`);
     }
   };
 
   const addGeneratedSentence = async ({ targetLang, baseLang, notes }) => {
-    console.log('## addGeneratedSentence', targetLang, baseLang);
-    const res = await fetch('/api/addSentence', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        language: languageSelectedState,
-        targetLang,
-        baseLang,
-        localAudioPath: story.audioUrl,
-        notes,
-      }),
-    });
-    const data = await res.json();
-
-    console.log('## addGeneratedSentence data', data);
-
-    if (data) {
-      setStory({
-        ...story,
-        isSaved: true,
-        audioUrl: getAudioURL(data[0].id, languageSelectedState),
+    try {
+      console.log('## addGeneratedSentence', targetLang, baseLang);
+      const res = await fetch('/api/addSentence', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          language: languageSelectedState,
+          targetLang,
+          baseLang,
+          localAudioPath: story.audioUrl,
+          notes,
+        }),
       });
-    }
+      const data = await res.json();
 
-    dispatchSentences({ type: 'addSentence', sentence: data });
-    setToastMessageState('Generated sentence saved!');
+      console.log('## addGeneratedSentence data', data);
+
+      if (data) {
+        setStory({
+          ...story,
+          isSaved: true,
+          audioUrl: getAudioURL(data[0].id, languageSelectedState),
+        });
+        dispatchSentences({ type: 'addSentence', sentence: data });
+        setToastMessageState('Generated sentence saved ✅🤖!');
+      }
+    } catch (error) {
+      console.log('## addGeneratedSentence', { error });
+      setToastMessageState(`Failed to save generated sentence ❌`);
+    }
   };
 
   return (
