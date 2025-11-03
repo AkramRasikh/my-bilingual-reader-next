@@ -1,4 +1,3 @@
-import PageContainer from '@/components/custom/PageContainer';
 import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import WordCard from '@/components/custom/WordCard';
