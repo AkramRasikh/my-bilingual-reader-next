@@ -1,5 +1,4 @@
 import { getAudioURL, getCloudflareVideoURL } from '../../utils/get-media-url';
-import { getGeneralTopicName } from '../../utils/get-general-topic-name';
 import KeyListener from './LearningScreenKeyListener';
 import VideoPlayer from '../VideoPlayer';
 import TranscriptItemSecondary from '../../components/custom/TranscriptItem/TranscriptItemSecondary';
@@ -33,7 +32,7 @@ const LearningScreenLeftSideContainer = () => {
 
   const generalTopic = isFullReview
     ? selectedContentState?.title
-    : getGeneralTopicName(selectedContentState?.title);
+    : selectedContentState?.generalTopicName;
   const videoUrl = getCloudflareVideoURL(generalTopic, languageSelectedState);
 
   useCheckVideoIsWorking(ref, setErrorVideoState);

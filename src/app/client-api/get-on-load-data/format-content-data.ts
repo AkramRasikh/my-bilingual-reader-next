@@ -1,8 +1,11 @@
+import { stringEndsWithNumber } from '@/utils/string-ends-with-number';
 import { getGeneralTopicName } from '@/utils/get-general-topic-name';
 
 export const formatContentData = (targetLanguageLoadedContent) =>
   targetLanguageLoadedContent.map((contentWidget, contentIndex) => {
-    const generalTopicName = getGeneralTopicName(contentWidget.title);
+    const generalTopicName = !stringEndsWithNumber(contentWidget.title)
+      ? contentWidget.title
+      : getGeneralTopicName(contentWidget.title);
     const isFirst =
       contentWidget.title.endsWith('-1') || contentWidget.title.endsWith('-01');
     const isLastInTotalArr =
