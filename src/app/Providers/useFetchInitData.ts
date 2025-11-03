@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { content, sentences, words } from '../client-api/get-on-load-data';
 
 const useFetchInitData = ({
   hasFetchedDataState,
