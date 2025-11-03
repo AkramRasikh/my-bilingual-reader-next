@@ -12,6 +12,8 @@ export const WordsStudyUIProvider = ({
   children,
 }: PropsWithChildren<object>) => {
   const ref = useRef<HTMLVideoElement | HTMLAudioElement>(null);
+  const seperateSentenceAudioRef = useRef<HTMLAudioElement | null>(null);
+  const seperateSentenceRafRef = useRef<number | null>(null);
   const transcriptRef = useRef(null);
 
   const [currentTime, setCurrentTime] = useState(0);
@@ -48,8 +50,15 @@ export const WordsStudyUIProvider = ({
   >();
   const [progress, setProgress] = useState(0);
   const [progressState, setProgressState] = useState(0);
+  const [audioSentenceProgressState, setAudioSentenceProgressState] =
+    useState(0);
   const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
     useState(false);
+
+  const [isSentencePlayingsState, setIsSentencePlayingsState] = useState(false);
+
+  // const [sentenceAudioProgressState, setSentenceAudioProgressState] =
+  //   useState(0);
 
   const [elapsed, setElapsed] = useState(0);
 
@@ -77,6 +86,29 @@ export const WordsStudyUIProvider = ({
     sentencesState,
     wordsState,
   });
+
+  // const updateProgress = () => {
+  //   const audio = seperateSentenceAudioRef.current;
+  //   if (audio && !audio.paused) {
+  //     setSentenceAudioProgressState(audio.currentTime);
+  //     seperateSentenceRafRef.current = requestAnimationFrame(updateProgress);
+  //   }
+  // };
+
+  // const togglePlayAdhocSentence = () => {
+  //   const audio = seperateSentenceAudioRef.current;
+  //   if (!audio) return;
+
+  //   if (isPlayingsState) {
+  //     audio.pause();
+  //     if (seperateSentenceRafRef.current)
+  //       cancelAnimationFrame(seperateSentenceRafRef.current);
+  //   } else {
+  //     audio.play();
+  //     seperateSentenceRafRef.current = requestAnimationFrame(updateProgress);
+  //   }
+  //   setIsPlayingsState(!isPlayingsState);
+  // };
 
   const masterPlay =
     currentTime && loopSecondsState.length > 0
@@ -142,8 +174,42 @@ export const WordsStudyUIProvider = ({
       handleFromHere(firstContextDataPoint.time);
     } else {
       console.log('## playFromThisContext Not media!');
+      if (seperateSentenceAudioRef?.current) {
+        // adhocPlay
+        togglePlayAdhocSentence();
+      }
     }
   };
+
+  const updateSeperatedSentenceProgress = () => {
+    const audio = seperateSentenceAudioRef.current;
+    if (audio && !audio.paused) {
+      setAudioSentenceProgressState(audio.currentTime);
+      seperateSentenceRafRef.current = requestAnimationFrame(
+        updateSeperatedSentenceProgress,
+      );
+    }
+  };
+
+  const togglePlayAdhocSentence = () => {
+    const audio = seperateSentenceAudioRef.current;
+    if (!audio) return;
+
+    if (isSentencePlayingsState) {
+      audio.pause();
+      if (seperateSentenceRafRef.current)
+        cancelAnimationFrame(seperateSentenceRafRef.current);
+    } else {
+      audio.play();
+      seperateSentenceRafRef.current = requestAnimationFrame(
+        updateSeperatedSentenceProgress,
+      );
+    }
+    setIsSentencePlayingsState(!isSentencePlayingsState);
+  };
+
+  const handleSeperatedSentencePause = () =>
+    seperateSentenceAudioRef.current?.pause();
 
   const handleLoopThis3Second = () => {
     // if (loopTranscriptState) {
@@ -265,6 +331,14 @@ export const WordsStudyUIProvider = ({
         progressState,
         wordsForReviewMemoized,
         wordsToReviewOnMountState,
+        seperateSentenceAudioRef,
+        seperateSentenceRafRef,
+        isSentencePlayingsState,
+        setIsSentencePlayingsState,
+        handleSeperatedSentencePause,
+        togglePlayAdhocSentence,
+        setAudioSentenceProgressState,
+        audioSentenceProgressState,
       }}
     >
       {children}
