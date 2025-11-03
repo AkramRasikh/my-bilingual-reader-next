@@ -4,13 +4,12 @@ import { useFetchData } from '../Providers/FetchDataProvider';
 import { useSentencesUIScreen } from './SentencesUIProvider';
 import SingleSentenceAudioPlayer from '@/components/custom/SingleSentenceAudioPlayer';
 
-const SentencesUITranscriptItem = ({ sentence, sentenceNum }) => {
+const SentencesUITranscriptItem = ({ sentence, sentenceNum, isSelected }) => {
   const { wordsState, languageSelectedState } = useFetchData();
   const {
     handleReviewFunc,
     selectedSentenceDataMemoized,
     togglePlay,
-    selectedElState,
     masterPlay,
     isPlayingState,
     handlePause,
@@ -18,10 +17,19 @@ const SentencesUITranscriptItem = ({ sentence, sentenceNum }) => {
     setAudioProgressState,
     audioRef,
     setIsPlayingState,
+    setSelectedElState,
   } = useSentencesUIScreen();
 
+  const handleTogglePlay = (arg) => {
+    if (!isSelected) {
+      setSelectedElState(sentenceNum);
+      setTimeout(() => togglePlay(arg), 100);
+    } else {
+      togglePlay(arg);
+    }
+  };
+
   const sentenceIndex = sentenceNum + 1 + ') ';
-  const thisSentenceIsSelected = selectedElState === sentenceNum;
   const thisItemsAudioUrl = selectedSentenceDataMemoized?.audioUrl;
 
   return (
@@ -47,13 +55,13 @@ const SentencesUITranscriptItem = ({ sentence, sentenceNum }) => {
       isVideoPlaying={isPlayingState} //isVideoPlaying
       handlePause={handlePause} //handlePause
       handleBreakdownSentence={() => {}}
-      handleFromHere={togglePlay} //handleAudio(transcriptItem.id, transcriptItem.time)
+      handleFromHere={handleTogglePlay} //handleAudio(transcriptItem.id, transcriptItem.time)
       setBreakdownSentencesArrState={() => {}}
       wordsForSelectedTopic={[]}
       isSentenceReviewMode
     >
-      <div className='flex flex-col gap-1'>
-        {thisSentenceIsSelected && (
+      <div className={'flex flex-col gap-1'}>
+        {isSelected && (
           <SingleSentenceAudioPlayer
             src={thisItemsAudioUrl}
             audioProgressState={audioProgressState}

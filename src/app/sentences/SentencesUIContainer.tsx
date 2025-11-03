@@ -4,7 +4,7 @@ import WordCard from '@/components/custom/WordCard';
 import { useFetchData } from '../Providers/FetchDataProvider';
 
 const SentencesUIContainer = () => {
-  const { sentencesInQueue, selectedSentenceDataMemoized } =
+  const { sentencesInQueue, selectedSentenceDataMemoized, selectedElState } =
     useSentencesUIScreen();
 
   const { updateWordDataProvider, languageSelectedState } = useFetchData();
@@ -39,11 +39,13 @@ const SentencesUIContainer = () => {
         <div>
           <ul className='mt-1.5 mb-1.5'>
             {sentencesInQueue.map((sentence, index) => {
+              const isSelected = selectedElState === index;
               return (
                 <li key={sentence.id} className='mb-2'>
                   <SentencesUITranscriptItem
-                    sentence={sentence}
                     sentenceNum={index}
+                    sentence={sentence}
+                    isSelected={isSelected}
                   />
                 </li>
               );
