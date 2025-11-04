@@ -26,6 +26,7 @@ const LearningScreenKeyListener = () => {
     handleAddMasterToReview,
     handleIsEasyReviewShortCut,
     handleBulkReviews,
+    handleJumpToFirstElInReviewTranscript,
   } = useLearningScreen();
 
   const handleSlowDownAudio = (isSlow) => {
@@ -64,6 +65,10 @@ const LearningScreenKeyListener = () => {
       ) {
         handleLoopThisSentence();
         return;
+      }
+
+      if (isInReviewMode && e.key.toLowerCase() === '[') {
+        handleJumpToFirstElInReviewTranscript();
       }
 
       if (shiftKey && isInReviewMode && e.key.toLowerCase() === ')') {
@@ -202,6 +207,7 @@ const LearningScreenKeyListener = () => {
     handleIsEasyReviewShortCut,
     setContractThreeSecondLoopState,
     handleBulkReviews,
+    handleJumpToFirstElInReviewTranscript,
   ]);
 
   return null;

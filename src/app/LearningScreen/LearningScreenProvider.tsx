@@ -399,6 +399,19 @@ export const LearningScreenProvider = ({
     setSelectedContentTitleState(thisYoutubeTitle);
   };
 
+  const handleJumpToFirstElInReviewTranscript = () => {
+    if (!isNumber(firstDueIndexMemoized) || !sentenceMapMemoized) {
+      return;
+    }
+
+    const latestestReviewSentenceTime =
+      formattedTranscriptMemoized[firstDueIndexMemoized].time;
+
+    if (latestestReviewSentenceTime >= 0) {
+      handleFromHere(latestestReviewSentenceTime);
+    }
+  };
+
   useEffect(() => {
     if (content) {
       getFormattedData();
@@ -917,6 +930,7 @@ export const LearningScreenProvider = ({
         setSelectedContentTitleState,
         selectedContentTitleState,
         setGeneralTopicDisplayNameSelectedState,
+        handleJumpToFirstElInReviewTranscript,
       }}
     >
       {children}
