@@ -95,7 +95,7 @@ export function FetchDataProvider({ children }) {
     const pureWordsUnique =
       pureWords?.length > 0 ? makeWordArrayUnique(pureWords) : [];
     return pureWordsUnique;
-  }, [wordsState]);
+  }, [wordsState, sentencesState]);
 
   const wordsForReviewMemoized = useMemo(() => {
     const dateNow = new Date();
@@ -109,7 +109,10 @@ export function FetchDataProvider({ children }) {
   }, [wordsState]);
 
   useEffect(() => {
-    if (!isNumber(wordsToReviewOnMountState)) {
+    if (
+      !isNumber(wordsToReviewOnMountState) &&
+      wordsForReviewMemoized.length !== 0
+    ) {
       setWordsToReviewOnMountState(wordsForReviewMemoized.length);
     }
   }, [wordsForReviewMemoized]);
