@@ -399,13 +399,20 @@ export const LearningScreenProvider = ({
     setSelectedContentTitleState(thisYoutubeTitle);
   };
 
-  const handleJumpToFirstElInReviewTranscript = () => {
+  const handleJumpToFirstElInReviewTranscript = (isSecondIndex) => {
     if (!isNumber(firstDueIndexMemoized) || !sentenceMapMemoized) {
       return;
     }
+    if (loopSecondsState.length > 0) {
+      setLoopSecondsState([]);
+    } else if (threeSecondLoopState) {
+      setThreeSecondLoopState(null);
+    }
 
     const latestestReviewSentenceTime =
-      formattedTranscriptMemoized[firstDueIndexMemoized].time;
+      formattedTranscriptMemoized[
+        isSecondIndex ? firstDueIndexMemoized + 1 : firstDueIndexMemoized
+      ].time;
 
     if (latestestReviewSentenceTime >= 0) {
       handleFromHere(latestestReviewSentenceTime);
