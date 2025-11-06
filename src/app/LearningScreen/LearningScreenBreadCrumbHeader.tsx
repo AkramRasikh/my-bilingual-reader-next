@@ -38,16 +38,23 @@ const LearningScreenBreadCrumbHeader = () => {
   }, [wordBasketState, showBasketState]);
   const sentencesNeedReview = contentMetaMemoized?.[0]?.sentencesNeedReview;
 
+  const numberOfStudiedSentences =
+    numberOfSentenceDueOnMountState - sentencesNeedReview;
+  const updatedNumberOfSentencesDue =
+    numberOfStudiedSentences < 0
+      ? numberOfSentenceDueOnMountState + Math.abs(numberOfStudiedSentences)
+      : numberOfSentenceDueOnMountState;
+
+  const numberOfStudiedSentencesUpdated =
+    numberOfStudiedSentences < 0 ? 0 : numberOfStudiedSentences;
+
   useProgressHeader({
     setProgressState,
-    initNumState: numberOfSentenceDueOnMountState,
+    initNumState: updatedNumberOfSentencesDue,
     currentStateNumber: sentencesNeedReview,
   });
 
-  const numberOfStudiedSentences =
-    numberOfSentenceDueOnMountState - sentencesNeedReview;
-
-  const progressText = `${numberOfStudiedSentences}/${numberOfSentenceDueOnMountState}`;
+  const progressText = `${numberOfStudiedSentencesUpdated}/${updatedNumberOfSentencesDue}`;
 
   const numberOfSentences = sentencesDueForReviewMemoized.length;
   const generalTopicName = selectedContentState?.generalTopicName;
