@@ -3,6 +3,18 @@ import { getTimeDiffSRS } from './get-time-diff-srs';
 
 const sentenceHelperUpperLimit = 30;
 
+export const isMoreThanADayAhead = (date, currentDue) => {
+  const diffMs = new Date(date).getTime() - currentDue.getTime();
+
+  return diffMs >= (23 * 60 + 50) * 60 * 1000;
+};
+
+export const setToFiveAM = (date) => {
+  const newDate = new Date(date);
+  newDate.setHours(5, 0, 0, 0);
+  return newDate;
+};
+
 export const srsCalculationAndText = ({ reviewData, contentType, timeNow }) => {
   const hasDueDate = reviewData?.due ? new Date(reviewData?.due) : null; // check if due yet
 

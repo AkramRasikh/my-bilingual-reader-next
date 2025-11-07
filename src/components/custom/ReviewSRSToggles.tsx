@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
+  isMoreThanADayAhead,
+  setToFiveAM,
   srsCalculationAndText,
   srsRetentionKeyTypes,
 } from '../../app/srs-utils/srs-algo';
@@ -30,17 +32,26 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {
 
   const handleNextReview = async (difficulty) => {
     const nextReviewData = nextScheduledOptions[difficulty].card;
+    const isMoreThanADayAheadBool = isMoreThanADayAhead(
+      nextReviewData.due,
+      new Date(),
+    );
+
+    const formattedToBe5am = isMoreThanADayAheadBool
+      ? { ...nextReviewData, due: setToFiveAM(nextReviewData.due) }
+      : nextReviewData;
+
     try {
       setIsLoadingSRSState(true);
       if (isVocab) {
         await handleReviewFunc({
           wordId: contentItem.id,
-          fieldToUpdate: { reviewData: nextReviewData },
+          fieldToUpdate: { reviewData: formattedToBe5am },
         });
       } else {
         await handleReviewFunc({
           sentenceId: contentItem.id,
-          nextDue: nextReviewData,
+          nextDue: formattedToBe5am,
         });
       }
     } catch (error) {
