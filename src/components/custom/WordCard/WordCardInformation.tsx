@@ -1,4 +1,7 @@
+import { useState } from 'react';
 import AnimationWrapper from '../AnimationWrapper';
+import WordCardJapaneseKanjiBreakdown from './experimental/WordCardJapaneseKanjiBreakdown';
+import { extractKanji } from './experimental/utils/kanji-detector';
 
 const WordCardInformation = ({
   baseForm,
@@ -7,6 +10,8 @@ const WordCardInformation = ({
   transliteration,
   definition,
 }) => {
+  const [kanjiDataState, setKanjiDataState] = useState<any>(null);
+
   const wordDataArr = [
     { preText: 'BaseForm', text: baseForm },
     { preText: 'Surface Form', text: surfaceForm },
@@ -14,6 +19,9 @@ const WordCardInformation = ({
     { preText: 'Transliteration', text: transliteration },
     { preText: 'Definition', text: definition },
   ];
+
+  const hasKanji = extractKanji(baseForm);
+  const uniqueSetOfKanj = [...new Set(hasKanji)];
 
   return (
     <AnimationWrapper>
@@ -27,6 +35,15 @@ const WordCardInformation = ({
             )
           );
         })}
+        {uniqueSetOfKanj?.length > 0 && (
+          <WordCardJapaneseKanjiBreakdown
+            kanji={hasKanji}
+            uniqueSetOfKanj={uniqueSetOfKanj}
+            kanjiDataState={kanjiDataState}
+            setKanjiDataState={setKanjiDataState}
+            baseForm={baseForm}
+          />
+        )}
       </div>
     </AnimationWrapper>
   );
