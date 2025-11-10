@@ -852,6 +852,66 @@ export const LearningScreenProvider = ({
     }
   }, [contentMetaMemoized, numberOfSentenceDueOnMountState]);
 
+  const learnFormattedTranscript =
+    isInReviewMode && latestDueIdState?.id
+      ? formattedTranscriptMemoized.slice(
+          firstDueIndexMemoized,
+          latestDueIdState?.index + 1,
+        )
+      : studyFromHereTimeState
+      ? formattedTranscriptMemoized.slice(studyFromHereTimeState)
+      : formattedTranscriptMemoized;
+
+  const sentencesForReviewMemoized = useMemo(() => {
+    if (!isInReviewMode || wordsForSelectedTopicMemoized?.length === 0) {
+      return [];
+    }
+
+    const sentenceIdsForReview = [];
+
+    learnFormattedTranscript.forEach((transcriptEl) => {
+      if (transcriptEl.dueStatus === 'now') {
+        sentenceIdsForReview.push(transcriptEl.id);
+      }
+    });
+
+    if (sentenceIdsForReview.length === 0) {
+      return [];
+    }
+    const now = new Date();
+
+    const sentencesForReviewMemoized = wordsForSelectedTopicMemoized.filter(
+      (wordItem) => {
+        const firstContext = wordItem.contexts[0];
+        if (
+          sentenceIdsForReview.includes(firstContext) &&
+          isDueCheck(wordItem, now)
+        ) {
+          return true;
+        }
+
+        return false;
+      },
+    );
+
+    return sentencesForReviewMemoized;
+  }, [learnFormattedTranscript, isInReviewMode, wordsForSelectedTopicMemoized]);
+
+  const groupedByContextBySentence = useMemo(() => {
+    if (!isInReviewMode || wordsForSelectedTopicMemoized?.length === 0) {
+      return [];
+    }
+
+    return sentencesForReviewMemoized.reduce((acc, obj) => {
+      const key = obj.contexts[0];
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(obj);
+      return acc;
+    }, {});
+  }, [sentencesForReviewMemoized]);
+
   return (
     <LearningScreenContext.Provider
       value={{
@@ -938,6 +998,9 @@ export const LearningScreenProvider = ({
         selectedContentTitleState,
         setGeneralTopicDisplayNameSelectedState,
         handleJumpToFirstElInReviewTranscript,
+        learnFormattedTranscript,
+        groupedByContextBySentence,
+        sentencesForReviewMemoized,
       }}
     >
       {children}
