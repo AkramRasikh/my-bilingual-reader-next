@@ -928,6 +928,51 @@ export const LearningScreenProvider = ({
     }, {});
   }, [sentencesForReviewMemoized]);
 
+  const slicedByMinuteIntervalsMemoized = useMemo(() => {
+    // Combine potential candidates from both arrays, normalized to a common structure
+    const dueCandidates = [
+      ...wordsForSelectedTopicMemoized
+        .filter((item) => item.isDue)
+        .map((item) => ({ time: item.time, source: 'words' })),
+      ...learnFormattedTranscript
+        .filter((item) => item.dueStatus === 'now')
+        .map((item) => ({ time: item.time, source: 'transcript' })),
+    ];
+
+    // Find the earliest .time across both
+    const firstDue = dueCandidates.length
+      ? dueCandidates.reduce((earliest, curr) =>
+          curr.time < earliest.time ? curr : earliest,
+        )
+      : null;
+
+    let firstTime = firstDue ? firstDue.time : null;
+
+    if (firstTime === null) {
+      console.log('No items due now found in either array.');
+    } else {
+      const interval = 60; // seconds
+
+      // Filter each array separately within that 60s window
+      const sentencesWithinInterval = wordsForSelectedTopicMemoized.filter(
+        (item) =>
+          item?.isDue &&
+          item.time >= firstTime &&
+          item.time <= firstTime + interval,
+      );
+
+      const transcriptsWithinInterval = learnFormattedTranscript.filter(
+        (item) => item.time >= firstTime && item.time <= firstTime + interval,
+      );
+
+      return {
+        sentencesWithinInterval,
+        transcriptsWithinInterval,
+        firstTime,
+      };
+    }
+  }, [wordsForSelectedTopicMemoized, learnFormattedTranscript]);
+
   return (
     <LearningScreenContext.Provider
       value={{
@@ -1017,6 +1062,11 @@ export const LearningScreenProvider = ({
         learnFormattedTranscript,
         groupedByContextBySentence,
         sentencesForReviewMemoized,
+        sentencesWithinInterval:
+          slicedByMinuteIntervalsMemoized?.sentencesWithinInterval,
+        transcriptsWithinInterval:
+          slicedByMinuteIntervalsMemoized?.transcriptsWithinInterval,
+        firstTime: slicedByMinuteIntervalsMemoized?.firstTime,
       }}
     >
       {children}
