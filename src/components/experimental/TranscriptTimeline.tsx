@@ -51,7 +51,7 @@ export default function TranscriptTimeline({
 
   return (
     <TooltipProvider delayDuration={50}>
-      <div className='relative w-full h-20 flex items-center'>
+      <div className='relative w-full h-10 flex items-center'>
         {/* Base timeline line */}
         <div className='absolute left-0 right-0 top-1/2 h-[2px] bg-muted rounded-full' />
 
@@ -62,7 +62,7 @@ export default function TranscriptTimeline({
               <div
                 onClick={() => onSelectSentence?.(sentence)}
                 className={cn(
-                  'absolute bottom-1/2 w-[2px] h-6 bg-primary hover:bg-primary/70 rounded-full cursor-pointer transition-colors',
+                  'absolute bottom-1/2 w-[2px] h-3 bg-primary hover:bg-primary/70 rounded-full cursor-pointer transition-colors',
                 )}
                 style={{ left: `${sentence.position * 100}%` }}
               />
@@ -83,7 +83,7 @@ export default function TranscriptTimeline({
               <div
                 onClick={() => onSelectWord?.(word)}
                 className={cn(
-                  'absolute top-1/2 w-[1.5px] h-4 bg-secondary hover:bg-secondary/70 rounded-full cursor-pointer transition-colors',
+                  'absolute top-1/2 w-[1.5px] h-3 bg-blue-300 hover:bg-blue-300/70 rounded-full cursor-pointer transition-colors',
                 )}
                 style={{ left: `${word.position * 100}%` }}
               />
