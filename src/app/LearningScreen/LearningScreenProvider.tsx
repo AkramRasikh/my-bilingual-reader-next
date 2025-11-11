@@ -949,7 +949,7 @@ export const LearningScreenProvider = ({
     let firstTime = firstDue ? firstDue.time : null;
 
     if (firstTime === null) {
-      console.log('No items due now found in either array.');
+      // console.log('No items due now found in either array.');
     } else {
       const interval = 60; // seconds
 
