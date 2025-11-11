@@ -46,16 +46,14 @@ const ContentScreenContainer = () => {
   }
 
   return (
-    <div>
-      <PageContainer
-        toastMessageState={toastMessageState}
-        setToastMessageState={setToastMessageState}
-      >
-        <LearningScreenBreadCrumbHeader />
-        {isMockEnv && <MockFlag />}
-        <LearningScreen />
-      </PageContainer>
-    </div>
+    <PageContainer
+      toastMessageState={toastMessageState}
+      setToastMessageState={setToastMessageState}
+    >
+      <LearningScreenBreadCrumbHeader />
+      {isMockEnv && <MockFlag />}
+      <LearningScreen />
+    </PageContainer>
   );
 };
 
