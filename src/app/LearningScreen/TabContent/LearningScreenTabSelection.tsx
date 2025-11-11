@@ -6,6 +6,7 @@ const LearningScreenTabs = ({ topicName }) => {
     wordsForSelectedTopic,
     contentMetaMemoized,
     contentMetaWordMemoized,
+    isInReviewMode,
   } = useLearningScreen();
   const thisTopicHasWords = wordsForSelectedTopic?.length > 0;
 
@@ -20,7 +21,9 @@ const LearningScreenTabs = ({ topicName }) => {
   return (
     <TabsList>
       <TabsTrigger value='transcript'>Transcript</TabsTrigger>
-      <TabsTrigger value='comprehensive'>Comprehensive</TabsTrigger>
+      <TabsTrigger value='comprehensive' disabled={!isInReviewMode}>
+        Comprehensive
+      </TabsTrigger>
       <TabsTrigger value='words' disabled={!thisTopicHasWords}>
         {wordsText}
       </TabsTrigger>

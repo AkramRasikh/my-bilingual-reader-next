@@ -10,7 +10,8 @@ import LearningScreenTabJointTranscriptWords from './TabContent/LearningScreenTa
 
 const LearningScreenContentContainer = () => {
   const { updateContentMetaData } = useFetchData();
-  const { getNextTranscript, selectedContentState } = useLearningScreen();
+  const { getNextTranscript, selectedContentState, isInReviewMode } =
+    useLearningScreen();
 
   const isFullReview = selectedContentState?.isFullReview;
 
@@ -28,7 +29,7 @@ const LearningScreenContentContainer = () => {
       <Tabs defaultValue='transcript'>
         <LearningScreenTabSelection topicName={topicName} />
         <LearningScreenTabTranscript />
-        <LearningScreenTabJointTranscriptWords />
+        {isInReviewMode && <LearningScreenTabJointTranscriptWords />}
         <LearningScreenTabWords />
         {topicName && (
           <LearningScreenTabMeta
