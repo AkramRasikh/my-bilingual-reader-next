@@ -7,6 +7,7 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 
 const LearningScreenTabTranscriptNestedWordsReview = ({
   sentencesForReviewMemoized,
+  withToggle = true,
 }) => {
   const [showNestedRelevantWordsState, setShowNestedRelevantWordsState] =
     useState(true);
@@ -21,14 +22,15 @@ const LearningScreenTabTranscriptNestedWordsReview = ({
   } = useFetchData();
   return (
     <>
-      <div className='flex gap-2 m-auto justify-center p-1'>
-        <Label className='text-sm font-medium'>Show Relevant Words</Label>
-        <Switch
-          checked={showNestedRelevantWordsState}
-          onCheckedChange={setShowNestedRelevantWordsState}
-        />
-      </div>
-
+      {withToggle && (
+        <div className='flex gap-2 m-auto justify-center p-1'>
+          <Label className='text-sm font-medium'>Show Relevant Words</Label>
+          <Switch
+            checked={showNestedRelevantWordsState}
+            onCheckedChange={setShowNestedRelevantWordsState}
+          />
+        </div>
+      )}
       {showNestedRelevantWordsState && (
         <div className='text-center m-auto p-1.5'>
           <ul className='flex flex-wrap gap-2.5 m-auto'>

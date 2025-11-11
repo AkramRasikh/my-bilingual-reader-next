@@ -20,6 +20,7 @@ const LearningScreenTabs = ({ topicName }) => {
   return (
     <TabsList>
       <TabsTrigger value='transcript'>Transcript</TabsTrigger>
+      <TabsTrigger value='comprehensive'>Comprehensive</TabsTrigger>
       <TabsTrigger value='words' disabled={!thisTopicHasWords}>
         {wordsText}
       </TabsTrigger>

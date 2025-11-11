@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import clsx from 'clsx';
 import { TabsContent } from '@/components/ui/tabs';
 import useLearningScreen from '../useLearningScreen';
@@ -9,7 +8,6 @@ import LearningScreenTabTranscriptNestedWordsReview from './LearningScreenTabTra
 import WordCard from '@/components/custom/WordCard';
 
 const LearningScreenTabTranscript = () => {
-  useState(true);
   const {
     threeSecondLoopState,
     overlappingSnippetDataState,

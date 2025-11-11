@@ -325,14 +325,28 @@ export const LearningScreenProvider = ({
 
     wordsState.forEach((word) => {
       const originalContextId = word.contexts[0];
+      const isDue = !word?.reviewData || isDueCheck(word, todayDateObj);
       if (thisTopicsSentenceIds.includes(originalContextId)) {
         if (!isDueBool) {
-          thisTopicsWordsArr.push(word);
+          const time = content.find(
+            (item) => item.id === word?.contexts?.[0],
+          ).time;
+          thisTopicsWordsArr.push({
+            ...word,
+            time,
+            isDue,
+          });
           return;
         }
-        const isLegacyWordWithNoReview = !word?.reviewData;
-        if (isLegacyWordWithNoReview || isDueCheck(word, todayDateObj)) {
-          thisTopicsWordsArr.push(word);
+        if (isDue) {
+          const time = content.find(
+            (item) => item.id === word?.contexts?.[0],
+          ).time;
+          thisTopicsWordsArr.push({
+            ...word,
+            time,
+            isDue,
+          });
         }
       }
     });
@@ -879,20 +893,22 @@ export const LearningScreenProvider = ({
       return [];
     }
     const now = new Date();
+    const sentencesForReviewMemoized = [];
+    wordsForSelectedTopicMemoized.forEach((wordItem) => {
+      const firstContext = wordItem.contexts[0];
 
-    const sentencesForReviewMemoized = wordsForSelectedTopicMemoized.filter(
-      (wordItem) => {
-        const firstContext = wordItem.contexts[0];
-        if (
-          sentenceIdsForReview.includes(firstContext) &&
-          isDueCheck(wordItem, now)
-        ) {
-          return true;
-        }
-
-        return false;
-      },
-    );
+      if (
+        sentenceIdsForReview.includes(firstContext) &&
+        isDueCheck(wordItem, now)
+      ) {
+        sentencesForReviewMemoized.push({
+          ...wordItem,
+          time: learnFormattedTranscript.find(
+            (item) => item.id === firstContext,
+          ).time,
+        });
+      }
+    });
 
     return sentencesForReviewMemoized;
   }, [learnFormattedTranscript, isInReviewMode, wordsForSelectedTopicMemoized]);

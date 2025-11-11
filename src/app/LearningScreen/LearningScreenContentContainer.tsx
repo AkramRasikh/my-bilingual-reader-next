@@ -6,6 +6,7 @@ import useLearningScreen from './useLearningScreen';
 import LearningScreenTabTranscript from './TabContent/LearningScreenTabTranscript';
 import LearningScreenTabWords from './TabContent/LearningScreenTabWords';
 import { useFetchData } from '../Providers/FetchDataProvider';
+import LearningScreenTabJointTranscriptWords from './TabContent/LearningScreenTabJointTranscriptWords';
 
 const LearningScreenContentContainer = () => {
   const { updateContentMetaData } = useFetchData();
@@ -27,6 +28,7 @@ const LearningScreenContentContainer = () => {
       <Tabs defaultValue='transcript'>
         <LearningScreenTabSelection topicName={topicName} />
         <LearningScreenTabTranscript />
+        <LearningScreenTabJointTranscriptWords />
         <LearningScreenTabWords />
         {topicName && (
           <LearningScreenTabMeta
