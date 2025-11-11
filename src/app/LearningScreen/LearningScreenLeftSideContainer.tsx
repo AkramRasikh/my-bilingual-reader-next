@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { getAudioURL, getCloudflareVideoURL } from '../../utils/get-media-url';
 import KeyListener from './LearningScreenKeyListener';
 import VideoPlayer from '../VideoPlayer';
@@ -11,6 +12,7 @@ import clsx from 'clsx';
 import LearningScreenLoopBtn from './LearningScreenLoopBtn';
 import LearningScreenLoopUI from './LearningScreenLoopUI';
 import useCheckVideoIsWorking from '../WordsStudyUI/useCheckVideoIsWorking';
+import TranscriptTimeline from '@/components/experimental/TranscriptTimeline';
 
 const LearningScreenLeftSideContainer = () => {
   const {
@@ -24,6 +26,9 @@ const LearningScreenLeftSideContainer = () => {
     contentMetaMemoized,
     errorVideoState,
     setErrorVideoState,
+    wordsForSelectedTopic,
+    learnFormattedTranscript,
+    firstTime,
   } = useLearningScreen();
   const { languageSelectedState } = useFetchData();
   const hasUnifiedChapter = contentMetaMemoized?.length === 1;
@@ -42,6 +47,17 @@ const LearningScreenLeftSideContainer = () => {
     defaultToBrokenUpAudio ? selectedContentState.title : generalTopic,
     languageSelectedState,
   );
+
+  const timelineContentMemoized = useMemo(() => {
+    return {
+      words: wordsForSelectedTopic.filter((item) => item.isDue),
+      sentences: learnFormattedTranscript.filter(
+        (item) => item.dueStatus === 'now',
+      ),
+    };
+  }, [wordsForSelectedTopic, learnFormattedTranscript]);
+
+  const { words, sentences } = timelineContentMemoized;
 
   return (
     <div className='flex-1 w-xl mx-auto'>
@@ -80,6 +96,16 @@ const LearningScreenLeftSideContainer = () => {
           </div>
         </div>
       )}
+      {ref?.current?.duration ? (
+        <TranscriptTimeline
+          videoDuration={ref.current.duration}
+          words={words}
+          sentences={sentences}
+          onSelectSentence={(e) => console.log('## onSelectSentence', e)}
+          onSelectWord={(e) => console.log('## onSelectWord', e)}
+          firstTime={firstTime}
+        />
+      ) : null}
       <LearningScreenActionBar />
       {masterPlayComprehensiveState && (
         <TranscriptItemSecondary contentItem={masterPlayComprehensiveState} />
