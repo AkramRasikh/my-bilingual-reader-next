@@ -954,7 +954,7 @@ export const LearningScreenProvider = ({
       const interval = 60; // seconds
 
       // Filter each array separately within that 60s window
-      const sentencesWithinInterval = wordsForSelectedTopicMemoized.filter(
+      const wordsWithinInterval = wordsForSelectedTopicMemoized.filter(
         (item) =>
           item?.isDue &&
           item.time >= firstTime &&
@@ -966,12 +966,34 @@ export const LearningScreenProvider = ({
       );
 
       return {
-        sentencesWithinInterval,
+        wordsWithinInterval,
         transcriptsWithinInterval,
         firstTime,
       };
     }
   }, [wordsForSelectedTopicMemoized, learnFormattedTranscript]);
+
+  const transcriptSentenceIdsDue = useMemo(() => {
+    const sentenceIdsForReview = [];
+
+    learnFormattedTranscript.forEach((transcriptEl) => {
+      if (transcriptEl.dueStatus === 'now') {
+        sentenceIdsForReview.push(transcriptEl.id);
+      }
+    });
+    return sentenceIdsForReview;
+  }, [learnFormattedTranscript]);
+
+  const transcriptWordsIdsDue = useMemo(() => {
+    const wordIdsForReview = [];
+
+    wordsForSelectedTopicMemoized.forEach((transcriptEl) => {
+      if (transcriptEl.isDue) {
+        wordIdsForReview.push(transcriptEl.id);
+      }
+    });
+    return wordIdsForReview;
+  }, [wordsForSelectedTopicMemoized]);
 
   return (
     <LearningScreenContext.Provider
@@ -1062,11 +1084,13 @@ export const LearningScreenProvider = ({
         learnFormattedTranscript,
         groupedByContextBySentence,
         sentencesForReviewMemoized,
-        sentencesWithinInterval:
-          slicedByMinuteIntervalsMemoized?.sentencesWithinInterval,
+        wordsWithinInterval:
+          slicedByMinuteIntervalsMemoized?.wordsWithinInterval,
         transcriptsWithinInterval:
           slicedByMinuteIntervalsMemoized?.transcriptsWithinInterval,
         firstTime: slicedByMinuteIntervalsMemoized?.firstTime,
+        transcriptSentenceIdsDue,
+        transcriptWordsIdsDue,
       }}
     >
       {children}

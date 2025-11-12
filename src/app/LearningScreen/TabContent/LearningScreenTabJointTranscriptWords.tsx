@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { TabsContent } from '@/components/ui/tabs';
 import useLearningScreen from '../useLearningScreen';
@@ -30,8 +31,10 @@ const LearningScreenTabJointTranscriptWords = () => {
     transcriptRef,
     scrollToElState,
     wordsForSelectedTopic,
-    sentencesWithinInterval,
+    wordsWithinInterval,
     transcriptsWithinInterval,
+    transcriptSentenceIdsDue,
+    transcriptWordsIdsDue,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -40,15 +43,62 @@ const LearningScreenTabJointTranscriptWords = () => {
     handleDeleteWordDataProvider,
   } = useFetchData();
 
+  const [postSentencesState, setPostSentencesState] = useState([]);
+  const [postWordsState, setPostWordsState] = useState([]);
+
+  const transcriptWordsIdsDueRef = useRef(transcriptWordsIdsDue.length);
+  const transcriptSentenceIdsDueRef = useRef(transcriptSentenceIdsDue.length);
+
+  useEffect(() => {
+    if (postSentencesState.length === 0 && postWordsState.length === 0) {
+      setPostSentencesState(transcriptsWithinInterval);
+      setPostWordsState(wordsWithinInterval);
+    }
+  }, [
+    transcriptsWithinInterval,
+    wordsWithinInterval,
+    postSentencesState,
+    postWordsState,
+  ]);
+
+  useEffect(() => {
+    if (
+      postSentencesState?.length > 0 &&
+      transcriptSentenceIdsDueRef.current !== transcriptSentenceIdsDue.length
+    ) {
+      const updatedSentences = postSentencesState.filter((item) =>
+        transcriptSentenceIdsDue.includes(item.id),
+      );
+      setPostSentencesState(updatedSentences);
+      transcriptSentenceIdsDueRef.current = transcriptSentenceIdsDue.length;
+    }
+  }, [postSentencesState, transcriptSentenceIdsDue]);
+
+  useEffect(() => {
+    if (
+      postWordsState?.length > 0 &&
+      transcriptWordsIdsDueRef.current !== transcriptWordsIdsDue.length
+    ) {
+      const updatedWords = postWordsState.filter((item) =>
+        transcriptWordsIdsDue.includes(item.id),
+      );
+      setPostWordsState(updatedWords);
+      transcriptWordsIdsDueRef.current = transcriptWordsIdsDue.length;
+    }
+  }, [postWordsState, transcriptWordsIdsDue]);
+
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
   return (
     <TabsContent
       value='comprehensive'
       className={clsx(contentClasses, 'border rounded-lg')}
     >
-      {sentencesWithinInterval.length > 0 && (
+      <h1 className='text-center font-medium mx-auto'>
+        words: {postWordsState.length} / sentences: {postSentencesState.length}
+      </h1>
+      {postWordsState.length > 0 && (
         <LearningScreenTabTranscriptNestedWordsReview
-          sentencesForReviewMemoized={sentencesWithinInterval}
+          sentencesForReviewMemoized={postWordsState}
           withToggle={false}
         />
       )}
@@ -59,7 +109,7 @@ const LearningScreenTabJointTranscriptWords = () => {
         )}
         ref={transcriptRef}
       >
-        {transcriptsWithinInterval?.map((contentItem, index) => {
+        {postSentencesState?.map((contentItem, index) => {
           return (
             <TranscriptItemProvider
               key={index}
