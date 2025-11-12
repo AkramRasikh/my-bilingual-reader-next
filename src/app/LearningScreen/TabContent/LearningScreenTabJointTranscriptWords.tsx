@@ -61,39 +61,39 @@ const LearningScreenTabJointTranscriptWords = () => {
       >
         {transcriptsWithinInterval?.map((contentItem, index) => {
           return (
-            <div key={index}>
-              <TranscriptItemProvider
-                indexNum={index}
-                threeSecondLoopState={threeSecondLoopState}
-                overlappingSnippetDataState={overlappingSnippetDataState}
-                setSentenceHighlightingState={setSentenceHighlightingState}
-                sentenceHighlightingState={sentenceHighlightingState}
-                contentItem={contentItem}
-                breakdownSentencesArrState={breakdownSentencesArrState}
-                masterPlay={masterPlay}
-                isGenericItemLoadingState={isGenericItemLoadingState}
-                handleSaveWord={handleSaveWord}
-                handleDeleteWordDataProvider={handleDeleteWordDataProvider}
-                wordsState={wordsState}
-                isInReviewMode={isInReviewMode}
-                onlyShowEngState={onlyShowEngState}
-                setLoopTranscriptState={setLoopTranscriptState}
-                loopTranscriptState={loopTranscriptState}
-                handleReviewFunc={handleReviewFunc}
-                isVideoPlaying={isVideoPlaying}
-                handlePause={handlePause}
-                handleFromHere={handleFromHere}
-                handleBreakdownSentence={handleBreakdownSentence}
-                setBreakdownSentencesArrState={setBreakdownSentencesArrState}
-                isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
-                latestDueIdState={latestDueIdState}
-                scrollToElState={scrollToElState}
-                wordsForSelectedTopic={wordsForSelectedTopic}
-                languageSelectedState={languageSelectedState}
-              >
-                <TranscriptItem />
-              </TranscriptItemProvider>
-            </div>
+            <TranscriptItemProvider
+              key={index}
+              indexNum={index}
+              threeSecondLoopState={threeSecondLoopState}
+              overlappingSnippetDataState={overlappingSnippetDataState}
+              setSentenceHighlightingState={setSentenceHighlightingState}
+              sentenceHighlightingState={sentenceHighlightingState}
+              contentItem={contentItem}
+              breakdownSentencesArrState={breakdownSentencesArrState}
+              masterPlay={masterPlay}
+              isGenericItemLoadingState={isGenericItemLoadingState}
+              handleSaveWord={handleSaveWord}
+              handleDeleteWordDataProvider={handleDeleteWordDataProvider}
+              wordsState={wordsState}
+              isInReviewMode={isInReviewMode}
+              onlyShowEngState={onlyShowEngState}
+              setLoopTranscriptState={setLoopTranscriptState}
+              loopTranscriptState={loopTranscriptState}
+              handleReviewFunc={handleReviewFunc}
+              isVideoPlaying={isVideoPlaying}
+              handlePause={handlePause}
+              handleFromHere={handleFromHere}
+              handleBreakdownSentence={handleBreakdownSentence}
+              setBreakdownSentencesArrState={setBreakdownSentencesArrState}
+              isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+              latestDueIdState={latestDueIdState}
+              scrollToElState={scrollToElState}
+              wordsForSelectedTopic={wordsForSelectedTopic}
+              languageSelectedState={languageSelectedState}
+              isComprehensiveMode={true}
+            >
+              <TranscriptItem />
+            </TranscriptItemProvider>
           );
         })}
       </ul>

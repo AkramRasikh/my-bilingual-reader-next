@@ -34,6 +34,7 @@ export const TranscriptItemProvider = ({
   languageSelectedState,
   indexNum,
   isSentenceReviewMode,
+  isComprehensiveMode,
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -43,6 +44,7 @@ export const TranscriptItemProvider = ({
     useState(false);
   const [overrideMiniReviewState, setOverrideMiniReviewState] = useState(false);
   const [showMenuState, setShowMenuState] = useState(false);
+  const [collapseState, setCollapseState] = useState(false);
   const [thisSnippetOverlapState, setThisSnippetOverlapState] = useState();
 
   const [isLoadingState, setIsLoadingState] = useState(false);
@@ -250,10 +252,16 @@ export const TranscriptItemProvider = ({
   const handleReviewTranscriptItem = async (arg) => {
     try {
       setIsLoadingState(true);
+      if (isComprehensiveMode) {
+        setCollapseState(true);
+      }
       await handleReviewFunc(arg);
     } catch (error) {
       console.log('## handleReviewTranscriptItem error', error);
     } finally {
+      if (isComprehensiveMode) {
+        setCollapseState(false);
+      }
       setIsLoadingState(false);
     }
   };
@@ -314,6 +322,9 @@ export const TranscriptItemProvider = ({
         isSentenceReviewMode,
         indexNum,
         transcriptItemContainerRef,
+        collapseState,
+        setCollapseState,
+        isComprehensiveMode,
       }}
     >
       {children}

@@ -14,6 +14,8 @@ const TranscriptItemWrapper = ({ children }) => {
     highlightedTextsArabicTransliteration,
     indexNum,
     transcriptItemContainerRef,
+    collapseState,
+    isComprehensiveMode,
   } = useTranscriptItem();
 
   const hasBeenReviewed = contentItem?.reviewData?.due;
@@ -39,6 +41,9 @@ const TranscriptItemWrapper = ({ children }) => {
       ref={transcriptItemContainerRef}
       className={clsx(
         'rounded-lg px-2 py-1 shadow h-fit border-2 gap-1.5 relative',
+        isComprehensiveMode
+          ? 'transition-all duration-300 overflow-hidden'
+          : '',
         dueStatus === 'now'
           ? 'border-red-500'
           : hasBeenReviewed
@@ -47,6 +52,11 @@ const TranscriptItemWrapper = ({ children }) => {
         dueStatus !== 'now' ? 'opacity-50' : 'opacity-100',
         isInReviewMode ? 'w-full' : '',
         isFirstInIndex ? 'mt-5' : '',
+        collapseState
+          ? 'max-h-0 opacity-0 py-0 my-0'
+          : isComprehensiveMode
+          ? 'max-h-96 opacity-100 py-1'
+          : '',
       )}
       style={{
         animation: !isInReviewMode ? fadeAnimationStyle : '',

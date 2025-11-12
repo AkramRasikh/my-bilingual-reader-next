@@ -7,7 +7,7 @@ const TranscriptItemReviewSection = () => {
     contentItem,
     isInReviewMode,
     isSentenceReviewMode,
-    handleReviewFunc,
+    handleReviewTranscriptItem,
   } = useTranscriptItem();
 
   const hasBeenReviewed = contentItem?.reviewData?.due;
@@ -19,7 +19,7 @@ const TranscriptItemReviewSection = () => {
       {(isSentenceReviewMode || isInReviewMode) && isDueNow ? (
         <ReviewSRSToggles
           contentItem={contentItem}
-          handleReviewFunc={handleReviewFunc}
+          handleReviewFunc={handleReviewTranscriptItem}
           isVocab={false}
         />
       ) : isInReviewMode && hasBeenReviewed ? (
