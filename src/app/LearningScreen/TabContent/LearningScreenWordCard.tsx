@@ -40,42 +40,40 @@ const LearningScreenWordCard = ({ word, indexNum }) => {
     isVideoPlaying && word?.contexts?.[0] === masterPlay;
 
   return (
-    <>
-      <li className='mx-auto w-full'>
-        {collapseState && (
-          <div className='relative w-full p-3'>
-            <div className='absolute left-5/10 top-1/3'>
-              <LoadingSpinner />
-            </div>
+    <li className={clsx('mx-auto', collapseState ? 'w-full' : '')}>
+      {collapseState && (
+        <div className='relative w-full p-3'>
+          <div className='absolute left-5/10 top-1/3'>
+            <LoadingSpinner />
           </div>
-        )}
-        <div
-          className={clsx(
-            'transition-all duration-300 overflow-hidden',
-            collapseState
-              ? 'max-h-0 opacity-0 py-0 my-0'
-              : 'max-h-[700px] opacity-100 py-1',
-            triggerHideState ? 'hidden' : '',
-          )}
-          style={{
-            animation: '',
-          }}
-        >
-          <WordCard
-            {...word}
-            indexNum={indexNum}
-            updateWordData={handleUpdateWord}
-            addWordToBasket={addWordToBasket}
-            isInBasket={isInBasket}
-            addImageDataProvider={addImageDataProvider}
-            playFromThisContext={playFromThisContext}
-            languageSelectedState={languageSelectedState}
-            wordContextIsPlaying={wordContextIsPlaying}
-            handlePause={handlePause}
-          />
         </div>
-      </li>
-    </>
+      )}
+      <div
+        className={clsx(
+          'transition-all duration-300 overflow-hidden',
+          collapseState
+            ? 'max-h-0 opacity-0 py-0 my-0'
+            : 'max-h-[700px] opacity-100 py-1',
+          triggerHideState ? 'hidden' : '',
+        )}
+        style={{
+          animation: '',
+        }}
+      >
+        <WordCard
+          {...word}
+          indexNum={indexNum}
+          updateWordData={handleUpdateWord}
+          addWordToBasket={addWordToBasket}
+          isInBasket={isInBasket}
+          addImageDataProvider={addImageDataProvider}
+          playFromThisContext={playFromThisContext}
+          languageSelectedState={languageSelectedState}
+          wordContextIsPlaying={wordContextIsPlaying}
+          handlePause={handlePause}
+        />
+      </div>
+    </li>
   );
 };
 
