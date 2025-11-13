@@ -56,9 +56,6 @@ const LearningScreenWordCard = ({ word, indexNum }) => {
             : 'max-h-[700px] opacity-100 py-1',
           triggerHideState ? 'hidden' : '',
         )}
-        style={{
-          animation: '',
-        }}
       >
         <WordCard
           {...word}
