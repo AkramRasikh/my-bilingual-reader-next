@@ -19,9 +19,16 @@ const LearningScreenWordCard = ({ word, indexNum }) => {
   } = useFetchData();
 
   useEffect(() => {
+    let timeoutId;
+
     if (collapseState) {
-      setTimeout(() => setTriggerHideState(true), 300);
+      timeoutId = setTimeout(() => setTriggerHideState(true), 300);
     }
+
+    return () => {
+      // Cleanup — clear any pending timeout
+      clearTimeout(timeoutId);
+    };
   }, [collapseState]);
 
   const handleUpdateWord = async (arg) => {
