@@ -52,7 +52,7 @@ const LearningScreenTabJointTranscriptWords = () => {
   useEffect(() => {
     if (postSentencesState.length === 0 && postWordsState.length === 0) {
       setPostSentencesState(
-        transcriptsWithinInterval.filter((item) =>
+        transcriptsWithinInterval?.filter((item) =>
           transcriptSentenceIdsDue.includes(item.id),
         ),
       );
