@@ -79,6 +79,10 @@ export const LearningScreenProvider = ({
   ] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [errorVideoState, setErrorVideoState] = useState(false);
+  const [
+    reviewWordsAlongWithSentencesState,
+    setReviewWordsAlongWithSentencesState,
+  ] = useState(false);
 
   const {
     pureWordsMemoized,
@@ -1091,6 +1095,8 @@ export const LearningScreenProvider = ({
         firstTime: slicedByMinuteIntervalsMemoized?.firstTime,
         transcriptSentenceIdsDue,
         transcriptWordsIdsDue,
+        reviewWordsAlongWithSentencesState,
+        setReviewWordsAlongWithSentencesState,
       }}
     >
       {children}

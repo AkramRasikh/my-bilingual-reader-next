@@ -15,6 +15,8 @@ const LearningScreenActionBarVideoControls = () => {
     ref,
     elapsed,
     setElapsed,
+    reviewWordsAlongWithSentencesState,
+    setReviewWordsAlongWithSentencesState,
   } = useLearningScreen();
 
   return (
@@ -22,6 +24,13 @@ const LearningScreenActionBarVideoControls = () => {
       <div className='flex gap-2 my-auto'>
         <Label>Review</Label>
         <Switch checked={isInReviewMode} onCheckedChange={setIsInReviewMode} />
+      </div>
+      <div className='flex gap-2 my-auto'>
+        <Label>Words ➡️ Sentences</Label>
+        <Switch
+          checked={reviewWordsAlongWithSentencesState}
+          onCheckedChange={setReviewWordsAlongWithSentencesState}
+        />
       </div>
       <div className='w-px h-5 my-auto bg-gray-300' />
       <div className='flex gap-2 my-auto'>

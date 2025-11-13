@@ -35,6 +35,7 @@ const LearningScreenTabTranscript = () => {
     learnFormattedTranscript,
     groupedByContextBySentence,
     sentencesForReviewMemoized,
+    reviewWordsAlongWithSentencesState,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -69,6 +70,7 @@ const LearningScreenTabTranscript = () => {
         {learnFormattedTranscript.map((contentItem, index) => {
           const isInReviewModeAndHasSentences =
             isInReviewMode &&
+            reviewWordsAlongWithSentencesState &&
             groupedByContextBySentence?.[contentItem.id]?.length > 0;
 
           return (
