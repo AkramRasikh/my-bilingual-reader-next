@@ -965,9 +965,13 @@ export const LearningScreenProvider = ({
           item.time <= firstTime + interval,
       );
 
-      const transcriptsWithinInterval = learnFormattedTranscript.filter(
-        (item) => item.time >= firstTime && item.time <= firstTime + interval,
-      );
+      const transcriptsWithinInterval = [];
+      formattedTranscriptMemoized.forEach((item, index) => {
+        if (item.time >= firstTime && item.time <= firstTime + interval) {
+          const sentenceIndex = index;
+          transcriptsWithinInterval.push({ ...item, sentenceIndex });
+        }
+      });
 
       return {
         wordsWithinInterval,

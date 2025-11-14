@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { TabsContent } from '@/components/ui/tabs';
 import useLearningScreen from '../useLearningScreen';
@@ -35,6 +35,7 @@ const LearningScreenTabJointTranscriptWords = () => {
     transcriptsWithinInterval,
     transcriptSentenceIdsDue,
     transcriptWordsIdsDue,
+    formattedTranscriptState,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -48,14 +49,22 @@ const LearningScreenTabJointTranscriptWords = () => {
 
   const transcriptWordsIdsDueRef = useRef(transcriptWordsIdsDue.length);
   const transcriptSentenceIdsDueRef = useRef(transcriptSentenceIdsDue.length);
+  const transcriptSliceRangeRef = useRef(null);
 
   useEffect(() => {
     if (postSentencesState.length === 0 && postWordsState.length === 0) {
-      setPostSentencesState(
-        transcriptsWithinInterval?.filter((item) =>
-          transcriptSentenceIdsDue.includes(item.id),
-        ),
+      const initPostSentences = transcriptsWithinInterval?.filter((item) =>
+        transcriptSentenceIdsDue.includes(item.id),
       );
+      setPostSentencesState(initPostSentences);
+
+      if (transcriptsWithinInterval?.length > 0) {
+        transcriptSliceRangeRef.current = [
+          transcriptsWithinInterval[0].sentenceIndex,
+          transcriptsWithinInterval[transcriptsWithinInterval.length - 1]
+            .sentenceIndex,
+        ];
+      }
       setPostWordsState(wordsWithinInterval);
     }
   }, [
@@ -91,7 +100,24 @@ const LearningScreenTabJointTranscriptWords = () => {
     }
   }, [postWordsState, transcriptWordsIdsDue]);
 
+  const slicedTranscriptArrayMemoized = formattedTranscriptState.slice(
+    transcriptSliceRangeRef.current?.[0],
+    transcriptSliceRangeRef.current?.[1],
+  );
+
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
+
+  if (postWordsState?.length === 0 && postSentencesState?.length === 0) {
+    return (
+      <TabsContent
+        value='comprehensive'
+        className={clsx(contentClasses, 'border rounded-lg')}
+      >
+        <h2>Done!</h2>
+      </TabsContent>
+    );
+  }
+
   return (
     <TabsContent
       value='comprehensive'
@@ -113,7 +139,7 @@ const LearningScreenTabJointTranscriptWords = () => {
         )}
         ref={transcriptRef}
       >
-        {postSentencesState?.map((contentItem, index) => {
+        {slicedTranscriptArrayMemoized?.map((contentItem, index) => {
           return (
             <TranscriptItemProvider
               key={index}
