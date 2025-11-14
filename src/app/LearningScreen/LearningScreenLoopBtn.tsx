@@ -24,7 +24,7 @@ const LearningScreenLoopBtn = () => {
       onClick={() => setThreeSecondLoopState(null)}
       className={clsx(
         isVideoPlaying && 'animate-spin',
-        'rounded-full h-9 w-9 relative inline-block my-2',
+        'rounded-full h-9 w-9 relative inline-block my-auto',
       )}
       size='icon'
       variant={'destructive'}

@@ -1,8 +1,10 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import LearningScreenLoopUI from './LearningScreen/LearningScreenLoopUI';
 import clsx from 'clsx';
 import LearningScreenLoopBtn from './LearningScreen/LearningScreenLoopBtn';
+import { Button } from '@/components/ui/button';
+import { Loader2, SaveIcon } from 'lucide-react';
 
 const VideoPlayer = ({
   url,
@@ -11,7 +13,11 @@ const VideoPlayer = ({
   setIsVideoPlaying,
   masterPlayComprehensiveState,
   threeSecondLoopState,
+  handleSaveSnippet,
 }) => {
+  const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
+    useState(false);
+
   const videoUrl = url;
 
   useEffect(() => {
@@ -30,6 +36,17 @@ const VideoPlayer = ({
       video.removeEventListener('pause', handlePause);
     };
   }, []);
+
+  const handleSaveSnippetFlow = async () => {
+    try {
+      setIsLoadingSaveSnippetState(true);
+      await handleSaveSnippet();
+    } catch (error) {
+      console.log('## handleSaveSnippetFlow error', error);
+    } finally {
+      setIsLoadingSaveSnippetState(false);
+    }
+  };
 
   return (
     <div className='flex flex-col'>
@@ -59,6 +76,20 @@ const VideoPlayer = ({
           </p>
         )}
         {threeSecondLoopState && <LearningScreenLoopBtn />}
+        {handleSaveSnippet && threeSecondLoopState && (
+          <Button
+            size='icon'
+            variant='outline'
+            className={clsx(
+              'rounded-full h-9 w-9 my-auto',
+              isLoadingSaveSnippetState ? 'animate-pulse bg-amber-600' : '',
+            )}
+            onClick={handleSaveSnippetFlow}
+            disabled={isLoadingSaveSnippetState}
+          >
+            {isLoadingSaveSnippetState ? <Loader2 /> : <SaveIcon />}
+          </Button>
+        )}
       </div>
     </div>
   );

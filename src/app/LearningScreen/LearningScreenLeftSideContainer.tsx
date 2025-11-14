@@ -29,6 +29,7 @@ const LearningScreenLeftSideContainer = () => {
     wordsForSelectedTopic,
     learnFormattedTranscript,
     firstTime,
+    handleSaveSnippet,
   } = useLearningScreen();
   const { languageSelectedState } = useFetchData();
   const hasUnifiedChapter = contentMetaMemoized?.length === 1;
@@ -72,6 +73,7 @@ const LearningScreenLeftSideContainer = () => {
             showOnVideoTranscriptState && masterPlayComprehensiveState
           }
           threeSecondLoopState={threeSecondLoopState}
+          handleSaveSnippet={handleSaveSnippet}
         />
       ) : (
         <div>

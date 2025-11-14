@@ -5,6 +5,7 @@ import {
   getEmptyCard,
   getNextScheduledOptions,
   srsCalculationAndText,
+  srsRetentionKey,
   srsRetentionKeyTypes,
 } from '../srs-utils/srs-algo';
 import useManageThreeSecondLoop from './hooks/useManageThreeSecondLoop';
@@ -91,6 +92,7 @@ export const LearningScreenProvider = ({
     breakdownSentence,
     sentenceReviewBulk,
     updateSentenceData,
+    updateContentMetaData,
   } = useFetchData();
 
   const selectedContentStateMemoized = useMemo(() => {
@@ -319,6 +321,41 @@ export const LearningScreenProvider = ({
       (item) => item?.title === contentState[nextIndex]?.title,
     )?.title;
     setSelectedContentTitleState(thisContentTitle);
+  };
+
+  const handleSaveSnippet = async () => {
+    const contentSnippets = selectedContentStateMemoized?.snippets || [];
+    const hasThisSnippet =
+      contentSnippets?.length === 0
+        ? false
+        : contentSnippets.some((item) => item?.time === threeSecondLoopState);
+    if (hasThisSnippet) {
+      return null;
+    }
+    const contentIndex = selectedContentStateMemoized?.contentIndex;
+    const topicName = selectedContentStateMemoized.title;
+    const timeNow = new Date();
+
+    const { nextScheduledOptions } = srsCalculationAndText({
+      contentType: srsRetentionKey.snippet,
+      timeNow,
+    });
+
+    const reviewData = nextScheduledOptions['1'].card;
+    await updateContentMetaData({
+      topicName,
+      fieldToUpdate: {
+        snippets: [
+          ...contentSnippets,
+          {
+            time: threeSecondLoopState,
+            isContracted: contractThreeSecondLoopState,
+            reviewData,
+          },
+        ],
+      },
+      contentIndex,
+    });
   };
 
   const getSelectedTopicsWordsFunc = (content, isDueBool = false) => {
@@ -1101,6 +1138,7 @@ export const LearningScreenProvider = ({
         transcriptWordsIdsDue,
         reviewWordsAlongWithSentencesState,
         setReviewWordsAlongWithSentencesState,
+        handleSaveSnippet,
       }}
     >
       {children}
