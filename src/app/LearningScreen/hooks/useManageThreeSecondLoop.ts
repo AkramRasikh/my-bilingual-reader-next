@@ -7,7 +7,7 @@ const threeSecondLoopLogic = ({
   contractThreeSecondLoopState,
   formattedTranscriptState,
   realStartTime,
-  setOverlappingSnippetDataState,
+  setState,
 }) => {
   const startTime =
     threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
@@ -44,7 +44,7 @@ const threeSecondLoopLogic = ({
 
   refSeconds.current = threeSecondLoopState;
   if (results?.length > 0) {
-    setOverlappingSnippetDataState(results);
+    setState(results);
   }
 };
 
@@ -75,7 +75,7 @@ const useManageThreeSecondLoop = ({
         contractThreeSecondLoopState,
         formattedTranscriptState,
         realStartTime,
-        setOverlappingSnippetDataState,
+        setState: setOverlappingSnippetDataState,
       });
     }
   }, [
