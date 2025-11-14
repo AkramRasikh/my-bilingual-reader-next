@@ -26,41 +26,39 @@ const TranscriptItem = () => {
   } = useTranscriptItem();
 
   return (
-    <>
-      <TranscriptItemWrapper>
-        {highlightedTextsArabicTransliteration && (
-          <p className='-top-6 p-1 absolute left-1/2 -translate-x-1/2 bg-amber-300 rounded whitespace-nowrap'>
-            {highlightedTextsArabicTransliteration}
-          </p>
-        )}
-        {thisSnippetOverlapState && (
-          <TranscriptItemTimeOverlappingIndicator
-            thisSnippetOverlapState={thisSnippetOverlapState}
-          />
-        )}
+    <TranscriptItemWrapper>
+      {highlightedTextsArabicTransliteration && (
+        <p className='-top-6 p-1 absolute left-1/2 -translate-x-1/2 bg-amber-300 rounded whitespace-nowrap'>
+          {highlightedTextsArabicTransliteration}
+        </p>
+      )}
+      {thisSnippetOverlapState && (
+        <TranscriptItemTimeOverlappingIndicator
+          thisSnippetOverlapState={thisSnippetOverlapState}
+        />
+      )}
 
-        <div className='flex gap-1'>
-          <TranscriptItemActionBar />
-          <div className='flex w-full gap-1 justify-between'>
-            <TranscriptItemContent />
-            {!isWordStudyMode && !isSentenceReviewMode && (
-              <TranscriptItemMenuSection />
-            )}
-          </div>
+      <div className='flex gap-1'>
+        <TranscriptItemActionBar />
+        <div className='flex w-full gap-1 justify-between'>
+          <TranscriptItemContent />
+          {!isWordStudyMode && !isSentenceReviewMode && (
+            <TranscriptItemMenuSection />
+          )}
         </div>
-        {!isWordStudyMode && <TranscriptItemReviewSection />}
-        {highlightedTextState && (
-          <HighlightedText
-            isLoadingState={isLoadingState}
-            handleSaveFunc={handleSaveFunc}
-            setHighlightedTextState={setHighlightedTextState}
-            highlightedTextState={highlightedTextState}
-          />
-        )}
-        {contentItem?.title && (
-          <p className='flex justify-end opacity-50'>{contentItem.title}</p>
-        )}
-      </TranscriptItemWrapper>
+      </div>
+      {!isWordStudyMode && <TranscriptItemReviewSection />}
+      {highlightedTextState && (
+        <HighlightedText
+          isLoadingState={isLoadingState}
+          handleSaveFunc={handleSaveFunc}
+          setHighlightedTextState={setHighlightedTextState}
+          highlightedTextState={highlightedTextState}
+        />
+      )}
+      {contentItem?.title && (
+        <p className='flex justify-end opacity-50'>{contentItem.title}</p>
+      )}
       {thisHasSavedSnippetOverlap?.length > 0 && (
         <TranscriptItemTimeOverlappingIndicatorMulti
           thisHasSavedSnippetOverlap={thisHasSavedSnippetOverlap}
@@ -68,7 +66,7 @@ const TranscriptItem = () => {
           handleLoopHere={handleLoopHere}
         />
       )}
-    </>
+    </TranscriptItemWrapper>
   );
 };
 
