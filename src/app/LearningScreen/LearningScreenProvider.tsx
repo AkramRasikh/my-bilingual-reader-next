@@ -1,5 +1,6 @@
 'use client';
 import { isNumber } from '@/utils/is-number';
+import { v4 as uuidv4 } from 'uuid';
 import { createContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   getEmptyCard,
@@ -323,7 +324,7 @@ export const LearningScreenProvider = ({
     setSelectedContentTitleState(thisContentTitle);
   };
 
-  const handleSaveSnippet = async () => {
+  const handleSaveSnippet = async (snippetArgs) => {
     const contentSnippets = selectedContentStateMemoized?.snippets || [];
     const hasThisSnippet =
       contentSnippets?.length === 0
@@ -348,11 +349,28 @@ export const LearningScreenProvider = ({
         snippets: [
           ...contentSnippets,
           {
+            id: uuidv4(),
             time: threeSecondLoopState,
             isContracted: contractThreeSecondLoopState,
             reviewData,
+            ...snippetArgs,
           },
         ],
+      },
+      contentIndex,
+    });
+  };
+
+  const handleDeleteSnippet = async (snippetId) => {
+    const updatedSnippets = selectedContentStateMemoized.snippets.filter(
+      (item) => item.id !== snippetId,
+    );
+    const contentIndex = selectedContentStateMemoized?.contentIndex;
+    const topicName = selectedContentStateMemoized.title;
+    await updateContentMetaData({
+      topicName,
+      fieldToUpdate: {
+        snippets: [...updatedSnippets],
       },
       contentIndex,
     });
@@ -1029,6 +1047,30 @@ export const LearningScreenProvider = ({
     return sentenceIdsForReview;
   }, [learnFormattedTranscript]);
 
+  const overlappingTextMemoized = useMemo(() => {
+    if (!threeSecondLoopState) {
+      return;
+    }
+
+    const overlappingIds = overlappingSnippetDataState.map((item) => item.id);
+    const entries = formattedTranscriptMemoized.filter((x) =>
+      overlappingIds.includes(x.id),
+    );
+
+    const targetLang = entries.map((item) => item.targetLang).join('');
+    const baseLang = entries.map((item) => item.baseLang).join('');
+
+    return {
+      targetLang,
+      baseLang,
+    };
+  }, [
+    overlappingSnippetDataState,
+    threeSecondLoopState,
+    contractThreeSecondLoopState,
+    formattedTranscriptMemoized,
+  ]);
+
   const transcriptWordsIdsDue = useMemo(() => {
     const wordIdsForReview = [];
 
@@ -1039,6 +1081,20 @@ export const LearningScreenProvider = ({
     });
     return wordIdsForReview;
   }, [wordsForSelectedTopicMemoized]);
+
+  const transcriptSnippetsIdsDue = useMemo(() => {
+    const now = new Date();
+
+    const dueSnippets = [];
+    selectedContentStateMemoized?.snippets.forEach((item) => {
+      const hasBeenReviewed = item?.reviewData?.due;
+      const isDueNow = new Date(hasBeenReviewed) < now;
+      if (isDueNow) {
+        dueSnippets.push(item);
+      }
+    });
+    return dueSnippets;
+  }, [selectedContentStateMemoized?.snippets]);
 
   return (
     <LearningScreenContext.Provider
@@ -1139,6 +1195,9 @@ export const LearningScreenProvider = ({
         reviewWordsAlongWithSentencesState,
         setReviewWordsAlongWithSentencesState,
         handleSaveSnippet,
+        transcriptSnippetsIdsDue,
+        handleDeleteSnippet,
+        overlappingTextMemoized,
       }}
     >
       {children}

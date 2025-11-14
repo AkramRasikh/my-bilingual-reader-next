@@ -30,6 +30,7 @@ const LearningScreenLeftSideContainer = () => {
     learnFormattedTranscript,
     firstTime,
     handleSaveSnippet,
+    overlappingTextMemoized,
   } = useLearningScreen();
   const { languageSelectedState } = useFetchData();
   const hasUnifiedChapter = contentMetaMemoized?.length === 1;
@@ -74,6 +75,7 @@ const LearningScreenLeftSideContainer = () => {
           }
           threeSecondLoopState={threeSecondLoopState}
           handleSaveSnippet={handleSaveSnippet}
+          overlappingTextMemoized={overlappingTextMemoized}
         />
       ) : (
         <div>

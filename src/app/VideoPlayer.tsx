@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import LearningScreenLoopUI from './LearningScreen/LearningScreenLoopUI';
 import clsx from 'clsx';
 import LearningScreenLoopBtn from './LearningScreen/LearningScreenLoopBtn';
@@ -14,9 +14,32 @@ const VideoPlayer = ({
   masterPlayComprehensiveState,
   threeSecondLoopState,
   handleSaveSnippet,
+  overlappingTextMemoized,
 }) => {
   const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
     useState(false);
+  const [highlightedTextFocusLoopState, setHighlightedTextFocusLoopState] =
+    useState('');
+
+  const masterTextRef = useRef(null);
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      const selection = window.getSelection();
+      const selectedText = selection?.toString().trim();
+
+      const anchorNode = selection?.anchorNode;
+      if (!anchorNode || !masterTextRef.current?.contains(anchorNode)) return;
+
+      setHighlightedTextFocusLoopState(selectedText || '');
+    };
+
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
 
   const videoUrl = url;
 
@@ -40,10 +63,14 @@ const VideoPlayer = ({
   const handleSaveSnippetFlow = async () => {
     try {
       setIsLoadingSaveSnippetState(true);
-      await handleSaveSnippet();
+      await handleSaveSnippet({
+        ...overlappingTextMemoized,
+        focusedText: highlightedTextFocusLoopState,
+      });
     } catch (error) {
       console.log('## handleSaveSnippetFlow error', error);
     } finally {
+      setHighlightedTextFocusLoopState('');
       setIsLoadingSaveSnippetState(false);
     }
   };
@@ -65,15 +92,27 @@ const VideoPlayer = ({
           threeSecondLoopState ? 'flex w-full justify-between gap-2' : '',
         )}
       >
-        {masterPlayComprehensiveState?.targetLang && (
+        {overlappingTextMemoized ? (
           <p
+            ref={masterTextRef}
             className={clsx(
-              'text-center font-bold text-xl text-blue-900  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg',
+              'text-center font-bold text-xl text-blue-700 backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg',
               threeSecondLoopState ? 'm-auto' : '',
             )}
           >
-            {masterPlayComprehensiveState.targetLang}
+            {overlappingTextMemoized?.targetLang}
           </p>
+        ) : (
+          masterPlayComprehensiveState?.targetLang && (
+            <p
+              className={clsx(
+                'text-center font-bold text-xl text-blue-900  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg',
+                threeSecondLoopState ? 'm-auto' : '',
+              )}
+            >
+              {masterPlayComprehensiveState.targetLang}
+            </p>
+          )
         )}
         {threeSecondLoopState && <LearningScreenLoopBtn />}
         {handleSaveSnippet && threeSecondLoopState && (
@@ -83,9 +122,12 @@ const VideoPlayer = ({
             className={clsx(
               'rounded-full h-9 w-9 my-auto',
               isLoadingSaveSnippetState ? 'animate-pulse bg-amber-600' : '',
+              highlightedTextFocusLoopState ? 'animate-in' : '',
             )}
             onClick={handleSaveSnippetFlow}
-            disabled={isLoadingSaveSnippetState}
+            disabled={
+              !highlightedTextFocusLoopState || isLoadingSaveSnippetState
+            }
           >
             {isLoadingSaveSnippetState ? <Loader2 /> : <SaveIcon />}
           </Button>

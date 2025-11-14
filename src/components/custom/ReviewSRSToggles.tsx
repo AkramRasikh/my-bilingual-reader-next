@@ -9,7 +9,12 @@ import {
 import { Trash } from 'lucide-react';
 import clsx from 'clsx';
 
-const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {
+const ReviewSRSToggles = ({
+  contentItem,
+  handleReviewFunc,
+  isSnippet,
+  isVocab,
+}) => {
   const [isLoadingSRSState, setIsLoadingSRSState] = useState(false);
   const reviewData = contentItem.reviewData;
 
@@ -24,7 +29,9 @@ const ReviewSRSToggles = ({ contentItem, handleReviewFunc, isVocab }) => {
     isScheduledForDeletion,
   } = srsCalculationAndText({
     reviewData,
-    contentType: isVocab
+    contentType: isSnippet
+      ? srsRetentionKeyTypes.snippet
+      : isVocab
       ? srsRetentionKeyTypes.vocab
       : srsRetentionKeyTypes.sentences,
     timeNow,

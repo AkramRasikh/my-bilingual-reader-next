@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { TabsContent } from '@/components/ui/tabs';
 import useLearningScreen from '../useLearningScreen';
@@ -6,6 +6,32 @@ import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './LearningScreenTabTranscriptNestedWordsReview';
+import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
+import { Button } from '@/components/ui/button';
+import { PlayIcon } from 'lucide-react';
+
+function highlightFocusedText(fullText: string, focusedText: string) {
+  if (!focusedText) return fullText;
+
+  const idx = fullText.indexOf(focusedText);
+  if (idx === -1) {
+    return fullText; // no match
+  }
+
+  const before = fullText.slice(0, idx);
+  const focus = fullText.slice(idx, idx + focusedText.length);
+  const after = fullText.slice(idx + focusedText.length);
+
+  return (
+    <>
+      {before}
+      <strong style={{ background: '#fff176', borderRadius: '4px' }}>
+        {focus}
+      </strong>
+      {after}
+    </>
+  );
+}
 
 const LearningScreenTabJointTranscriptWords = () => {
   const {
@@ -35,7 +61,12 @@ const LearningScreenTabJointTranscriptWords = () => {
     transcriptsWithinInterval,
     transcriptSentenceIdsDue,
     transcriptWordsIdsDue,
+    transcriptSnippetsIdsDue,
     formattedTranscriptState,
+    handleDeleteSnippet,
+    setThreeSecondLoopState,
+    setContractThreeSecondLoopState,
+    handlePlayFromHere,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -46,18 +77,20 @@ const LearningScreenTabJointTranscriptWords = () => {
 
   const [postSentencesState, setPostSentencesState] = useState([]);
   const [postWordsState, setPostWordsState] = useState([]);
+  const [postSnippetsState, setPostSnippetsState] = useState([]);
 
   const transcriptWordsIdsDueRef = useRef(transcriptWordsIdsDue.length);
+  const transcriptSnippetsIdsDueRef = useRef(transcriptSnippetsIdsDue.length);
   const transcriptSentenceIdsDueRef = useRef(transcriptSentenceIdsDue.length);
   const transcriptSliceRangeRef = useRef(null);
 
   useEffect(() => {
-    if (postSentencesState.length === 0 && postWordsState.length === 0) {
+    if (postSentencesState?.length === 0 && postWordsState?.length === 0) {
       const initPostSentences = transcriptsWithinInterval?.filter((item) =>
         transcriptSentenceIdsDue.includes(item.id),
       );
       setPostSentencesState(initPostSentences);
-
+      setPostSnippetsState(transcriptSnippetsIdsDue);
       if (transcriptsWithinInterval?.length > 0) {
         transcriptSliceRangeRef.current = [
           transcriptsWithinInterval[0].sentenceIndex,
@@ -72,6 +105,7 @@ const LearningScreenTabJointTranscriptWords = () => {
     wordsWithinInterval,
     postSentencesState,
     postWordsState,
+    postSnippetsState,
   ]);
 
   useEffect(() => {
@@ -89,6 +123,25 @@ const LearningScreenTabJointTranscriptWords = () => {
 
   useEffect(() => {
     if (
+      postSentencesState?.length > 0 &&
+      transcriptSnippetsIdsDueRef.current !== transcriptSnippetsIdsDue.length
+    ) {
+      const updatedSnippets = postSnippetsState.filter((item) =>
+        transcriptSnippetsIdsDue.includes(item.id),
+      );
+      setPostSentencesState(updatedSnippets);
+      transcriptSnippetsIdsDueRef.current = transcriptSnippetsIdsDue.length;
+    }
+  }, [postSnippetsState, transcriptSnippetsIdsDue]);
+
+  const handleLoopHere = ({ time, isContracted }) => {
+    setThreeSecondLoopState(time);
+    setContractThreeSecondLoopState(isContracted);
+    handlePlayFromHere(time);
+  };
+
+  useEffect(() => {
+    if (
       postWordsState?.length > 0 &&
       transcriptWordsIdsDueRef.current !== transcriptWordsIdsDue.length
     ) {
@@ -99,6 +152,12 @@ const LearningScreenTabJointTranscriptWords = () => {
       transcriptWordsIdsDueRef.current = transcriptWordsIdsDue.length;
     }
   }, [postWordsState, transcriptWordsIdsDue]);
+
+  const finalDeleteSnippet = async (snippetId) => {
+    await handleDeleteSnippet(snippetId);
+  };
+
+  // highlightTarget.tsx
 
   const slicedTranscriptArrayMemoized = formattedTranscriptState.slice(
     transcriptSliceRangeRef.current?.[0],
@@ -124,14 +183,35 @@ const LearningScreenTabJointTranscriptWords = () => {
       className={clsx(contentClasses, 'border rounded-lg')}
     >
       <h1 className='text-center font-medium mx-auto'>
-        words: {postWordsState.length} / sentences: {postSentencesState.length}
+        words: {postWordsState?.length} / sentences:{' '}
+        {postSentencesState?.length}
       </h1>
-      {postWordsState.length > 0 && (
+      {postWordsState?.length > 0 && (
         <LearningScreenTabTranscriptNestedWordsReview
           sentencesForReviewMemoized={postWordsState}
           withToggle={false}
         />
       )}
+      {postSnippetsState?.map((item, index) => (
+        <div key={index}>
+          <p>{highlightFocusedText(item?.targetLang, item?.focusedText)}</p>
+          <ReviewSRSToggles
+            isSnippet
+            contentItem={item}
+            handleReviewFunc={() => finalDeleteSnippet(item.id)}
+          />
+          <Button
+            onClick={() =>
+              handleLoopHere({
+                time: item.time,
+                isContracted: item.isContracted,
+              })
+            }
+          >
+            <PlayIcon />
+          </Button>
+        </div>
+      ))}
       <ul
         className={clsx(
           'gap-1',
