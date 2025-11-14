@@ -9,7 +9,9 @@ import {
   srsRetentionKey,
   srsRetentionKeyTypes,
 } from '../srs-utils/srs-algo';
-import useManageThreeSecondLoop from './hooks/useManageThreeSecondLoop';
+import useManageThreeSecondLoop, {
+  threeSecondLoopLogic,
+} from './hooks/useManageThreeSecondLoop';
 import useManageLoopInit from './hooks/useManageLoopInit';
 import { useLoopSecondsHook } from './hooks/useMapTranscriptToSeconds';
 import useTrackMasterTranscript from './hooks/useTrackMasterTranscript';
@@ -28,6 +30,7 @@ export const LearningScreenProvider = ({
 }: PropsWithChildren<object>) => {
   const ref = useRef<HTMLVideoElement>(null);
   const transcriptRef = useRef(null);
+  const loopDataRef = useRef(null);
 
   const [currentTime, setCurrentTime] = useState(0);
   const [loopSecondsState, setLoopSecondsState] = useState([]);
@@ -1096,6 +1099,29 @@ export const LearningScreenProvider = ({
     return dueSnippets;
   }, [selectedContentStateMemoized?.snippets]);
 
+  const savedSnippetsMemoized = useMemo(() => {
+    const allRes = [];
+
+    if (!selectedContentStateMemoized?.snippets) {
+      return [];
+    }
+    selectedContentStateMemoized?.snippets.map((snippetData) => {
+      const resultOfThis = threeSecondLoopLogic({
+        refSeconds: loopDataRef,
+        threeSecondLoopState: snippetData.time,
+        contractThreeSecondLoopState: snippetData?.isContracted,
+        formattedTranscriptState: formattedTranscriptMemoized,
+        realStartTime,
+      });
+      allRes.push(...resultOfThis);
+    });
+    return allRes;
+  }, [
+    selectedContentStateMemoized,
+    formattedTranscriptMemoized,
+    realStartTime,
+  ]);
+
   return (
     <LearningScreenContext.Provider
       value={{
@@ -1198,6 +1224,7 @@ export const LearningScreenProvider = ({
         transcriptSnippetsIdsDue,
         handleDeleteSnippet,
         overlappingTextMemoized,
+        savedSnippetsMemoized,
       }}
     >
       {children}

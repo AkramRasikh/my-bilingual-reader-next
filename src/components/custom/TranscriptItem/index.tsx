@@ -1,7 +1,9 @@
 import HighlightedText from '@/components/custom/HighlightedText';
 import useTranscriptItem from './useTranscriptItem';
 import TranscriptItemWrapper from './TranscriptItemWrapper';
-import TranscriptItemTimeOverlappingIndicator from './TranscriptItemTimeOverlappingIndicator';
+import TranscriptItemTimeOverlappingIndicator, {
+  TranscriptItemTimeOverlappingIndicatorMulti,
+} from './TranscriptItemTimeOverlappingIndicator';
 import TranscriptItemMenuSection from './TranscriptItemMenuSection';
 import TranscriptItemReviewSection from './TranscriptItemReviewSection';
 import TranscriptItemActionBar from './TranscriptItemActionBar';
@@ -18,6 +20,7 @@ const TranscriptItem = () => {
     isWordStudyMode,
     highlightedTextsArabicTransliteration,
     isSentenceReviewMode,
+    thisHasSavedSnippetOverlap,
   } = useTranscriptItem();
 
   return (
@@ -32,6 +35,7 @@ const TranscriptItem = () => {
           thisSnippetOverlapState={thisSnippetOverlapState}
         />
       )}
+
       <div className='flex gap-1'>
         <TranscriptItemActionBar />
         <div className='flex w-full gap-1 justify-between'>
@@ -52,6 +56,11 @@ const TranscriptItem = () => {
       )}
       {contentItem?.title && (
         <p className='flex justify-end opacity-50'>{contentItem.title}</p>
+      )}
+      {thisHasSavedSnippetOverlap?.length > 0 && (
+        <TranscriptItemTimeOverlappingIndicatorMulti
+          thisHasSavedSnippetOverlap={thisHasSavedSnippetOverlap}
+        />
       )}
     </TranscriptItemWrapper>
   );

@@ -1,7 +1,7 @@
 import { isNumber } from '@/utils/is-number';
 import { useEffect, useRef } from 'react';
 
-const threeSecondLoopLogic = ({
+export const threeSecondLoopLogic = ({
   refSeconds,
   threeSecondLoopState,
   contractThreeSecondLoopState,
@@ -44,7 +44,11 @@ const threeSecondLoopLogic = ({
 
   refSeconds.current = threeSecondLoopState;
   if (results?.length > 0) {
-    setState(results);
+    if (setState) {
+      setState(results);
+    } else {
+      return results;
+    }
   }
 };
 

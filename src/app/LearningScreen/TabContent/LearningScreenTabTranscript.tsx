@@ -36,6 +36,8 @@ const LearningScreenTabTranscript = () => {
     groupedByContextBySentence,
     sentencesForReviewMemoized,
     reviewWordsAlongWithSentencesState,
+    savedSnippets,
+    savedSnippetsMemoized,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -131,6 +133,7 @@ const LearningScreenTabTranscript = () => {
                 scrollToElState={scrollToElState}
                 wordsForSelectedTopic={wordsForSelectedTopic}
                 languageSelectedState={languageSelectedState}
+                savedSnippetsMemoized={savedSnippetsMemoized}
               >
                 <TranscriptItem />
               </TranscriptItemProvider>

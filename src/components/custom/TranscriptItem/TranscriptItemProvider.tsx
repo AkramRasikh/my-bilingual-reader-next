@@ -35,6 +35,7 @@ export const TranscriptItemProvider = ({
   indexNum,
   isSentenceReviewMode,
   isComprehensiveMode,
+  savedSnippetsMemoized,
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -129,6 +130,18 @@ export const TranscriptItemProvider = ({
 
     setThisSnippetOverlapState(hasOverlappingSnippet);
   }, [threeSecondLoopState, overlappingSnippetDataState, contentItem]);
+
+  const thisHasSavedSnippetOverlapMemoized = useMemo(() => {
+    if (!savedSnippetsMemoized || savedSnippetsMemoized.length === 0) {
+      return null;
+    }
+
+    const hasOverlappingSnippet = savedSnippetsMemoized.filter(
+      (i) => i.id === contentItem.id,
+    );
+
+    return hasOverlappingSnippet;
+  }, [savedSnippetsMemoized, contentItem.id]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -325,6 +338,7 @@ export const TranscriptItemProvider = ({
         collapseState,
         setCollapseState,
         isComprehensiveMode,
+        thisHasSavedSnippetOverlap: thisHasSavedSnippetOverlapMemoized,
       }}
     >
       {children}
