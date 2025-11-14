@@ -36,6 +36,10 @@ export const TranscriptItemProvider = ({
   isSentenceReviewMode,
   isComprehensiveMode,
   savedSnippetsMemoized,
+  handleDeleteSnippet,
+  setThreeSecondLoopState,
+  setContractThreeSecondLoopState,
+  handlePlayFromHere,
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -188,6 +192,12 @@ export const TranscriptItemProvider = ({
     }
   }, [showThisSentenceBreakdownPreviewState]);
 
+  const handleLoopHere = ({ time, isContracted }) => {
+    setThreeSecondLoopState(time);
+    setContractThreeSecondLoopState(isContracted);
+    handlePlayFromHere(time);
+  };
+
   const handleMouseEnter = (text) => {
     hoverTimer.current = setTimeout(() => {
       const wordsAmongstHighlightedText = wordsState?.filter((item) => {
@@ -339,6 +349,8 @@ export const TranscriptItemProvider = ({
         setCollapseState,
         isComprehensiveMode,
         thisHasSavedSnippetOverlap: thisHasSavedSnippetOverlapMemoized,
+        handleDeleteSnippet,
+        handleLoopHere,
       }}
     >
       {children}

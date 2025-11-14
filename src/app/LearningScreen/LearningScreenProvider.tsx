@@ -1113,7 +1113,14 @@ export const LearningScreenProvider = ({
         formattedTranscriptState: formattedTranscriptMemoized,
         realStartTime,
       });
-      allRes.push(...resultOfThis);
+      allRes.push(
+        ...resultOfThis?.map((item) => ({
+          ...item,
+          snippetId: snippetData.id,
+          time: snippetData.time,
+          isContracted: snippetData?.isContracted,
+        })),
+      );
     });
     return allRes;
   }, [
