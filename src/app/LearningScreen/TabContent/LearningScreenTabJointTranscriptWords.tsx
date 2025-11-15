@@ -61,6 +61,7 @@ const LearningScreenTabJointTranscriptWords = () => {
     transcriptsWithinInterval,
     transcriptSentenceIdsDue,
     transcriptWordsIdsDue,
+    snippetsWithinInterval,
     transcriptSnippetsIdsDue,
     formattedTranscriptState,
     handleDeleteSnippet,
@@ -85,12 +86,16 @@ const LearningScreenTabJointTranscriptWords = () => {
   const transcriptSliceRangeRef = useRef(null);
 
   useEffect(() => {
-    if (postSentencesState?.length === 0 && postWordsState?.length === 0) {
+    if (
+      postSentencesState?.length === 0 &&
+      postWordsState?.length === 0 &&
+      postSnippetsState?.length === 0
+    ) {
       const initPostSentences = transcriptsWithinInterval?.filter((item) =>
         transcriptSentenceIdsDue.includes(item.id),
       );
       setPostSentencesState(initPostSentences);
-      setPostSnippetsState(transcriptSnippetsIdsDue);
+      setPostSnippetsState(snippetsWithinInterval);
       if (transcriptsWithinInterval?.length > 0) {
         transcriptSliceRangeRef.current = [
           transcriptsWithinInterval[0].sentenceIndex,
@@ -101,6 +106,7 @@ const LearningScreenTabJointTranscriptWords = () => {
       setPostWordsState(wordsWithinInterval);
     }
   }, [
+    snippetsWithinInterval,
     transcriptsWithinInterval,
     wordsWithinInterval,
     postSentencesState,
@@ -123,13 +129,13 @@ const LearningScreenTabJointTranscriptWords = () => {
 
   useEffect(() => {
     if (
-      postSentencesState?.length > 0 &&
+      postSnippetsState?.length > 0 &&
       transcriptSnippetsIdsDueRef.current !== transcriptSnippetsIdsDue.length
     ) {
       const updatedSnippets = postSnippetsState.filter((item) =>
         transcriptSnippetsIdsDue.includes(item.id),
       );
-      setPostSentencesState(updatedSnippets);
+      setPostSnippetsState(updatedSnippets);
       transcriptSnippetsIdsDueRef.current = transcriptSnippetsIdsDue.length;
     }
   }, [postSnippetsState, transcriptSnippetsIdsDue]);
@@ -157,8 +163,6 @@ const LearningScreenTabJointTranscriptWords = () => {
     await handleDeleteSnippet(snippetId);
   };
 
-  // highlightTarget.tsx
-
   const slicedTranscriptArrayMemoized = formattedTranscriptState.slice(
     transcriptSliceRangeRef.current?.[0],
     transcriptSliceRangeRef.current?.[1],
@@ -166,7 +170,11 @@ const LearningScreenTabJointTranscriptWords = () => {
 
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
 
-  if (postWordsState?.length === 0 && postSentencesState?.length === 0) {
+  if (
+    postWordsState?.length === 0 &&
+    postSentencesState?.length === 0 &&
+    postSnippetsState?.length === 0
+  ) {
     return (
       <TabsContent
         value='comprehensive'
@@ -184,7 +192,7 @@ const LearningScreenTabJointTranscriptWords = () => {
     >
       <h1 className='text-center font-medium mx-auto'>
         words: {postWordsState?.length} / sentences:{' '}
-        {postSentencesState?.length}
+        {postSentencesState?.length} / snippets : {postSnippetsState?.length}
       </h1>
       {postWordsState?.length > 0 && (
         <LearningScreenTabTranscriptNestedWordsReview

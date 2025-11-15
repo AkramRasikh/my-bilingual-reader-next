@@ -990,6 +990,15 @@ export const LearningScreenProvider = ({
     }, {});
   }, [sentencesForReviewMemoized]);
 
+  const snippetsWithDueStatusMemoized = useMemo(() => {
+    const now = new Date();
+    return (
+      selectedContentStateMemoized?.snippets
+        .filter((item) => new Date(item?.reviewData?.due) < now)
+        .map((item) => ({ time: item.time, source: 'snippet' })) || []
+    );
+  }, [selectedContentStateMemoized]);
+
   const slicedByMinuteIntervalsMemoized = useMemo(() => {
     // Combine potential candidates from both arrays, normalized to a common structure
     const dueCandidates = [
@@ -999,6 +1008,7 @@ export const LearningScreenProvider = ({
       ...learnFormattedTranscript
         .filter((item) => item.dueStatus === 'now')
         .map((item) => ({ time: item.time, source: 'transcript' })),
+      ...snippetsWithDueStatusMemoized,
     ];
 
     // Find the earliest .time across both
@@ -1022,6 +1032,15 @@ export const LearningScreenProvider = ({
           item.time >= firstTime &&
           item.time <= firstTime + interval,
       );
+      const now = new Date();
+
+      const snippetsWithinInterval =
+        selectedContentStateMemoized?.snippets.filter(
+          (item) =>
+            new Date(item?.reviewData?.due) < now &&
+            item.time >= firstTime &&
+            item.time <= firstTime + interval,
+        );
 
       const transcriptsWithinInterval = [];
       formattedTranscriptMemoized.forEach((item, index) => {
@@ -1034,10 +1053,16 @@ export const LearningScreenProvider = ({
       return {
         wordsWithinInterval,
         transcriptsWithinInterval,
+        snippetsWithinInterval,
         firstTime,
       };
     }
-  }, [wordsForSelectedTopicMemoized, learnFormattedTranscript]);
+  }, [
+    selectedContentStateMemoized?.snippets,
+    wordsForSelectedTopicMemoized,
+    learnFormattedTranscript,
+    snippetsWithDueStatusMemoized,
+  ]);
 
   const transcriptSentenceIdsDue = useMemo(() => {
     const sentenceIdsForReview = [];
@@ -1093,7 +1118,7 @@ export const LearningScreenProvider = ({
       const hasBeenReviewed = item?.reviewData?.due;
       const isDueNow = new Date(hasBeenReviewed) < now;
       if (isDueNow) {
-        dueSnippets.push(item);
+        dueSnippets.push(item.id);
       }
     });
     return dueSnippets;
@@ -1222,6 +1247,8 @@ export const LearningScreenProvider = ({
           slicedByMinuteIntervalsMemoized?.wordsWithinInterval,
         transcriptsWithinInterval:
           slicedByMinuteIntervalsMemoized?.transcriptsWithinInterval,
+        snippetsWithinInterval:
+          slicedByMinuteIntervalsMemoized?.snippetsWithinInterval,
         firstTime: slicedByMinuteIntervalsMemoized?.firstTime,
         transcriptSentenceIdsDue,
         transcriptWordsIdsDue,
