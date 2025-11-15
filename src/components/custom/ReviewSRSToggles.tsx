@@ -55,6 +55,11 @@ const ReviewSRSToggles = ({
           wordId: contentItem.id,
           fieldToUpdate: { reviewData: formattedToBe5am },
         });
+      } else if (isSnippet) {
+        await handleReviewFunc({
+          id: contentItem.id,
+          fieldToUpdate: { reviewData: formattedToBe5am },
+        });
       } else {
         await handleReviewFunc({
           sentenceId: contentItem.id,
@@ -73,6 +78,11 @@ const ReviewSRSToggles = ({
       if (isVocab) {
         await handleReviewFunc({
           wordId: contentItem.id,
+          isRemoveReview: true,
+        });
+      } else if (isSnippet) {
+        await handleReviewFunc({
+          id: contentItem.id,
           isRemoveReview: true,
         });
       } else {

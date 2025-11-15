@@ -9,6 +9,7 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
     sentenceRepsState,
     numberOfSentencesPendingOrDueState,
     setSentenceRepsState,
+    numberOfSnippets,
   } = useLearningScreen();
   const sentencesNeedReview = contentMetaMemoized[0]?.sentencesNeedReview;
 
@@ -23,6 +24,9 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
       </p>
       <p className='text-xs font-medium m-auto w-fit'>
         Words Due: {contentMetaWordMemoized[0].length}
+      </p>
+      <p className='text-xs font-medium m-auto w-fit'>
+        Snippets: {numberOfSnippets.length}
       </p>
       <hr className='my-1' />
       <p className='flex gap-2 text-xs font-medium  w-fit m-auto'>

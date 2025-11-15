@@ -68,6 +68,7 @@ const LearningScreenTabJointTranscriptWords = () => {
     setThreeSecondLoopState,
     setContractThreeSecondLoopState,
     handlePlayFromHere,
+    handleUpdateSnippetReview,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -159,8 +160,21 @@ const LearningScreenTabJointTranscriptWords = () => {
     }
   }, [postWordsState, transcriptWordsIdsDue]);
 
+  const handleReviewSnippets = async (args) => {
+    const isRemoveReview = args?.isRemoveReview;
+    if (isRemoveReview) {
+      await finalDeleteSnippet(args.id);
+      return;
+    }
+    setThreeSecondLoopState(null);
+    setContractThreeSecondLoopState();
+    await handleUpdateSnippetReview(args);
+  };
+
   const finalDeleteSnippet = async (snippetId) => {
     await handleDeleteSnippet(snippetId);
+    setThreeSecondLoopState(null);
+    setContractThreeSecondLoopState();
   };
 
   const slicedTranscriptArrayMemoized = formattedTranscriptState.slice(
@@ -201,23 +215,26 @@ const LearningScreenTabJointTranscriptWords = () => {
         />
       )}
       {postSnippetsState?.map((item, index) => (
-        <div key={index}>
-          <p>{highlightFocusedText(item?.targetLang, item?.focusedText)}</p>
+        <div key={index} className='rounded border text-center py-2 px-1'>
+          <div className='flex mb-2 gap-1'>
+            <Button
+              className='h-7 w-7'
+              onClick={() =>
+                handleLoopHere({
+                  time: item.time,
+                  isContracted: item.isContracted,
+                })
+              }
+            >
+              <PlayIcon />
+            </Button>
+            <p>{highlightFocusedText(item?.targetLang, item?.focusedText)}</p>
+          </div>
           <ReviewSRSToggles
             isSnippet
             contentItem={item}
-            handleReviewFunc={() => finalDeleteSnippet(item.id)}
+            handleReviewFunc={handleReviewSnippets}
           />
-          <Button
-            onClick={() =>
-              handleLoopHere({
-                time: item.time,
-                isContracted: item.isContracted,
-              })
-            }
-          >
-            <PlayIcon />
-          </Button>
         </div>
       ))}
       <ul

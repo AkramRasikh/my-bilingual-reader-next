@@ -362,12 +362,40 @@ export const LearningScreenProvider = ({
       },
       contentIndex,
     });
+    setThreeSecondLoopState(null);
+    setContractThreeSecondLoopState(false);
   };
 
   const handleDeleteSnippet = async (snippetId) => {
     const updatedSnippets = selectedContentStateMemoized.snippets.filter(
       (item) => item.id !== snippetId,
     );
+    const contentIndex = selectedContentStateMemoized?.contentIndex;
+    const topicName = selectedContentStateMemoized.title;
+    await updateContentMetaData({
+      topicName,
+      fieldToUpdate: {
+        snippets: [...updatedSnippets],
+      },
+      contentIndex,
+    });
+  };
+
+  const handleUpdateSnippetReview = async (snippetArgs) => {
+    const id = snippetArgs.id;
+    const fieldToUpdate = snippetArgs.fieldToUpdate;
+    const updatedSnippets = selectedContentStateMemoized.snippets.map(
+      (item) => {
+        if (item.id === id) {
+          return {
+            ...item,
+            ...fieldToUpdate,
+          };
+        }
+        return item;
+      },
+    );
+
     const contentIndex = selectedContentStateMemoized?.contentIndex;
     const topicName = selectedContentStateMemoized.title;
     await updateContentMetaData({
@@ -994,8 +1022,8 @@ export const LearningScreenProvider = ({
     const now = new Date();
     return (
       selectedContentStateMemoized?.snippets
-        .filter((item) => new Date(item?.reviewData?.due) < now)
-        .map((item) => ({ time: item.time, source: 'snippet' })) || []
+        ?.filter((item) => new Date(item?.reviewData?.due) < now)
+        ?.map((item) => ({ time: item.time, source: 'snippet' })) || []
     );
   }, [selectedContentStateMemoized]);
 
@@ -1035,7 +1063,7 @@ export const LearningScreenProvider = ({
       const now = new Date();
 
       const snippetsWithinInterval =
-        selectedContentStateMemoized?.snippets.filter(
+        selectedContentStateMemoized?.snippets?.filter(
           (item) =>
             new Date(item?.reviewData?.due) < now &&
             item.time >= firstTime &&
@@ -1256,9 +1284,11 @@ export const LearningScreenProvider = ({
         setReviewWordsAlongWithSentencesState,
         handleSaveSnippet,
         transcriptSnippetsIdsDue,
-        handleDeleteSnippet,
         overlappingTextMemoized,
         savedSnippetsMemoized,
+        handleUpdateSnippetReview,
+        handleDeleteSnippet,
+        numberOfSnippets: selectedContentStateMemoized?.snippets || [],
       }}
     >
       {children}
