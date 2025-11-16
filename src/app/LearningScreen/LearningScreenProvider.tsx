@@ -1288,7 +1288,7 @@ export const LearningScreenProvider = ({
         savedSnippetsMemoized,
         handleUpdateSnippetReview,
         handleDeleteSnippet,
-        numberOfSnippets: selectedContentStateMemoized?.snippets || [],
+        contentSnippets: selectedContentStateMemoized?.snippets || [],
       }}
     >
       {children}

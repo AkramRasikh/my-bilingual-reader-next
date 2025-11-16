@@ -32,6 +32,7 @@ const WordCard = ({
   languageSelectedState,
   wordContextIsPlaying,
   handlePause,
+  wordHasOverlappingSnippetTime,
   ...rest
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
@@ -107,6 +108,7 @@ const WordCard = ({
           setOpenContentState={setOpenContentState}
           openContentState={openContentState}
           wordContextIsPlaying={wordContextIsPlaying}
+          wordHasOverlappingSnippetTime={wordHasOverlappingSnippetTime}
         />
 
         <WordCardConditionalContentWrapper

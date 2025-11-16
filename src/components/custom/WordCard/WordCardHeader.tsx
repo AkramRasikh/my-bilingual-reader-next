@@ -11,6 +11,7 @@ const WordCardHeader = ({
   setOpenContentState,
   openContentState,
   wordContextIsPlaying,
+  wordHasOverlappingSnippetTime,
 }) => (
   <div className='flex gap-3 flex-wrap justify-between'>
     <CardTitle
@@ -26,7 +27,10 @@ const WordCardHeader = ({
     <div className='my-auto flex gap-2'>
       <Button
         variant={'secondary'}
-        className={'h-3 w-3 p-3 bg-transparent'}
+        className={clsx(
+          'h-3 w-3 p-3',
+          wordHasOverlappingSnippetTime ? 'bg-green-400' : 'bg-transparent',
+        )}
         onClick={onClickPlayContext}
       >
         {wordContextIsPlaying ? <LucidePause /> : <LucidePlay />}

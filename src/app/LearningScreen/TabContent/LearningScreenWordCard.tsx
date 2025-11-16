@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import WordCard from '@/components/custom/WordCard';
 import useLearningScreen from '../useLearningScreen';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
@@ -8,8 +8,14 @@ import LoadingSpinner from '@/components/custom/LoadingSpinner';
 const LearningScreenWordCard = ({ word, indexNum }) => {
   const [collapseState, setCollapseState] = useState(false);
   const [triggerHideState, setTriggerHideState] = useState(false);
-  const { playFromThisContext, isVideoPlaying, handlePause, masterPlay } =
-    useLearningScreen();
+  const {
+    playFromThisContext,
+    isVideoPlaying,
+    handlePause,
+    masterPlay,
+    contentSnippets,
+    handlePlayFromHere,
+  } = useLearningScreen();
   const {
     languageSelectedState,
     wordBasketState,
@@ -17,6 +23,18 @@ const LearningScreenWordCard = ({ word, indexNum }) => {
     addWordToBasket,
     addImageDataProvider,
   } = useFetchData();
+
+  const wordHasOverlappingSnippetTime = useMemo(() => {
+    const overlappedWord = contentSnippets.find(
+      (item) =>
+        item.focusedText.includes(word.surfaceForm) ||
+        item.focusedText.includes(word.baseForm),
+    );
+    if (overlappedWord) {
+      const time = overlappedWord.time;
+      return overlappedWord?.isContract ? time - 0.75 : time - 1.5;
+    }
+  }, [word, contentSnippets]);
 
   useEffect(() => {
     let timeoutId;
@@ -40,6 +58,15 @@ const LearningScreenWordCard = ({ word, indexNum }) => {
     } finally {
       setCollapseState(false);
     }
+  };
+
+  const handlePlayFromContextFinal = (args) => {
+    if (wordHasOverlappingSnippetTime) {
+      handlePlayFromHere(wordHasOverlappingSnippetTime);
+      return;
+    }
+
+    playFromThisContext(args);
   };
   const isInBasket = wordBasketState?.some((i) => i?.id === word.id);
 
@@ -71,10 +98,11 @@ const LearningScreenWordCard = ({ word, indexNum }) => {
           addWordToBasket={addWordToBasket}
           isInBasket={isInBasket}
           addImageDataProvider={addImageDataProvider}
-          playFromThisContext={playFromThisContext}
+          playFromThisContext={handlePlayFromContextFinal}
           languageSelectedState={languageSelectedState}
           wordContextIsPlaying={wordContextIsPlaying}
           handlePause={handlePause}
+          wordHasOverlappingSnippetTime={wordHasOverlappingSnippetTime}
         />
       </div>
     </li>
