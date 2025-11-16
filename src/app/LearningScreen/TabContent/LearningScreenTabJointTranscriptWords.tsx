@@ -90,13 +90,13 @@ const LearningScreenTabJointTranscriptWords = () => {
     if (
       postSentencesState?.length === 0 &&
       postWordsState?.length === 0 &&
-      postSnippetsState?.length === 0
+      (!postSnippetsState || postSnippetsState?.length === 0)
     ) {
       const initPostSentences = transcriptsWithinInterval?.filter((item) =>
         transcriptSentenceIdsDue.includes(item.id),
       );
       setPostSentencesState(initPostSentences);
-      setPostSnippetsState(snippetsWithinInterval);
+      setPostSnippetsState(snippetsWithinInterval || []);
       if (transcriptsWithinInterval?.length > 0) {
         transcriptSliceRangeRef.current = [
           transcriptsWithinInterval[0].sentenceIndex,
@@ -133,18 +133,20 @@ const LearningScreenTabJointTranscriptWords = () => {
       postSnippetsState?.length > 0 &&
       transcriptSnippetsIdsDueRef.current !== transcriptSnippetsIdsDue.length
     ) {
-      const updatedSnippets = postSnippetsState.filter((item) =>
-        transcriptSnippetsIdsDue.includes(item.id),
-      );
+      const updatedSnippets =
+        postSnippetsState.filter((item) =>
+          transcriptSnippetsIdsDue.includes(item.id),
+        ) || [];
       setPostSnippetsState(updatedSnippets);
       transcriptSnippetsIdsDueRef.current = transcriptSnippetsIdsDue.length;
     }
   }, [postSnippetsState, transcriptSnippetsIdsDue]);
 
   const handleLoopHere = ({ time, isContracted }) => {
+    const playFromTime = time - (isContracted ? 0.75 : 1.5);
     setThreeSecondLoopState(time);
     setContractThreeSecondLoopState(isContracted);
-    handlePlayFromHere(time);
+    handlePlayFromHere(playFromTime);
   };
 
   useEffect(() => {
