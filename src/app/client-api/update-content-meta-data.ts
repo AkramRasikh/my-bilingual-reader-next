@@ -2,6 +2,7 @@ export const updateContentMetaDataAPI = async ({
   title,
   fieldToUpdate,
   language,
+  contentIndex,
 }) => {
   try {
     const response = await fetch('/api/updateContentMetaData', {
@@ -13,6 +14,7 @@ export const updateContentMetaDataAPI = async ({
         language,
         title,
         fieldToUpdate,
+        contentIndex,
       }),
     });
 

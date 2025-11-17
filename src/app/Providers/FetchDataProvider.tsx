@@ -207,13 +207,14 @@ export function FetchDataProvider({ children }) {
         title: topicName,
         fieldToUpdate,
         language: languageSelectedState,
+        contentIndex,
       });
 
       if (resObj) {
         dispatchContent({
           type: 'updateMetaData',
           contentIndex,
-          fieldToUpdate: resObj,
+          fieldToUpdate, // shouldn't really be like this
         });
       }
       setToastMessageState('Updated content data ✅!');

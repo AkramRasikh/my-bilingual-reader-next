@@ -114,6 +114,7 @@ export const LearningScreenProvider = ({
   }, [contentState, selectedContentTitleState]);
 
   const content = selectedContentStateMemoized?.content;
+  const contentIndex = selectedContentStateMemoized?.contentIndex;
 
   const getGeneralContentMetaData = () => {
     if (!generalTopicDisplayNameSelectedState) {
@@ -336,7 +337,6 @@ export const LearningScreenProvider = ({
     if (hasThisSnippet) {
       return null;
     }
-    const contentIndex = selectedContentStateMemoized?.contentIndex;
     const topicName = selectedContentStateMemoized.title;
     const timeNow = new Date();
 
@@ -370,7 +370,6 @@ export const LearningScreenProvider = ({
     const updatedSnippets = selectedContentStateMemoized.snippets.filter(
       (item) => item.id !== snippetId,
     );
-    const contentIndex = selectedContentStateMemoized?.contentIndex;
     const topicName = selectedContentStateMemoized.title;
     await updateContentMetaData({
       topicName,
@@ -396,7 +395,6 @@ export const LearningScreenProvider = ({
       },
     );
 
-    const contentIndex = selectedContentStateMemoized?.contentIndex;
     const topicName = selectedContentStateMemoized.title;
     await updateContentMetaData({
       topicName,
@@ -475,7 +473,7 @@ export const LearningScreenProvider = ({
       }
 
       const thisStartTime = contentEl.realStartTime;
-      const contentIndex = contentEl.contentIndex;
+      const contentIndexEl = contentEl.contentIndex;
       const transcript = contentEl.content;
       const generalTopicName = contentEl.generalTopicName;
       const title = contentEl.title;
@@ -488,7 +486,7 @@ export const LearningScreenProvider = ({
           sentencesNeedReview.push({
             ...transcriptEl,
             time: thisStartTime + transcriptEl.time,
-            contentIndex,
+            contentIndex: contentIndexEl,
             title,
             generalTopicName,
           });
@@ -659,7 +657,6 @@ export const LearningScreenProvider = ({
       contentType: srsRetentionKeyTypes.sentences,
     });
 
-    const contentIndex = selectedContentStateMemoized?.contentIndex;
     const hasContentToReview = content?.some(
       (sentenceWidget) => sentenceWidget?.reviewData,
     );
@@ -680,7 +677,7 @@ export const LearningScreenProvider = ({
         fieldToUpdate: {
           reviewData: nextDueCard,
         },
-        contentIndex: contentIndex,
+        contentIndex,
         removeReview: hasContentToReview,
         sentenceIds,
       });
@@ -700,7 +697,6 @@ export const LearningScreenProvider = ({
       contentType: srsRetentionKeyTypes.sentences,
     });
     const isFullReview = selectedContentStateMemoized?.isFullReview;
-    const contentIndex = selectedContentStateMemoized?.contentIndex;
 
     try {
       await updateSentenceData({
@@ -846,7 +842,6 @@ export const LearningScreenProvider = ({
     }
 
     const thisSentenceTargetLang = thisSentence.targetLang;
-    const contentIndex = selectedContentStateMemoized?.contentIndex;
 
     try {
       setIsBreakingDownSentenceArrState((prev) => [...prev, currentMasterPlay]);
@@ -930,7 +925,6 @@ export const LearningScreenProvider = ({
   };
 
   const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {
-    const contentIndex = selectedContentState?.contentIndex;
     await breakdownSentence({
       topicName: selectedContentState.title,
       sentenceId,
