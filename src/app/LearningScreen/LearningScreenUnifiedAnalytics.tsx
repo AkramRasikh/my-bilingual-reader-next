@@ -24,7 +24,7 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
       return [];
     }
 
-    return contentSnippets.filter((item) => isDueCheck(item));
+    return contentSnippets.filter((item) => isDueCheck(item, new Date()));
   }, [contentSnippets]).length;
 
   return (
