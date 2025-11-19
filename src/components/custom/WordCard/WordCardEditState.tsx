@@ -55,7 +55,7 @@ const WordCardEditState = ({
 
         {/* VIEW MODE */}
         {!isEditing && (
-          <span className='text-sm flex-1 text-left'>{value}</span>
+          <span className='text-sm font-medium flex-1 text-left'>{value}</span>
         )}
 
         {/* EDIT MODE */}
