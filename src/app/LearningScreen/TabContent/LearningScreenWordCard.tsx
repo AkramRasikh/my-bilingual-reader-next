@@ -50,13 +50,18 @@ const LearningScreenWordCard = ({ word, indexNum }) => {
   }, [collapseState]);
 
   const handleUpdateWord = async (arg) => {
+    const isWordData = arg?.isWordData;
     try {
-      setCollapseState(true);
-      await updateWordDataProvider(arg);
+      if (!isWordData) {
+        setCollapseState(true);
+      }
+      const wordResBool = await updateWordDataProvider(arg);
+      return wordResBool;
     } catch (error) {
-      //
     } finally {
-      setCollapseState(false);
+      if (!isWordData) {
+        setCollapseState(false);
+      }
     }
   };
 

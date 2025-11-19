@@ -30,33 +30,33 @@ const WordCardInformation = ({
     {
       key: 'baseForm',
       preText: 'BaseForm',
-      text: baseForm,
+      text: wordData.baseForm,
       label: 'Base Form',
     },
     {
       key: 'surfaceForm',
       label: 'Surface Form',
-      text: surfaceForm,
+      text: wordData.surfaceForm,
     },
     {
       key: 'phonetic',
       label: 'Phonetic',
-      text: phonetic,
+      text: wordData.phonetic,
     },
     {
       key: 'transliteration',
       label: 'Transliteration',
-      text: transliteration,
+      text: wordData.transliteration,
     },
     {
       key: 'definition',
       label: 'Definition',
-      text: definition,
+      text: wordData.definition,
     },
     {
       key: 'mnemonic',
       label: 'Mnemonic',
-      text: mnemonic,
+      text: wordData.mnemonic,
     },
   ];
 
@@ -73,6 +73,7 @@ const WordCardInformation = ({
       fieldToUpdate: {
         [field]: newValue,
       },
+      isWordData: true,
     });
 
     if (wordResBool) {
