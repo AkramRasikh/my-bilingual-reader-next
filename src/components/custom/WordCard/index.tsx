@@ -123,12 +123,14 @@ const WordCard = ({
             <CardContent className='mt-2 p-0'>
               {!previewImage && openContentState! && (
                 <WordCardInformation
+                  wordId={id}
                   baseForm={baseForm}
                   surfaceForm={surfaceForm}
                   phonetic={phonetic}
                   transliteration={transliteration}
                   definition={definition}
                   mnemonic={mnemonic}
+                  updateWordData={updateWordData}
                 />
               )}
               <WordCardImage

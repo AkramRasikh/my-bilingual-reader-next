@@ -3,6 +3,7 @@ import { useState } from 'react';
 import AnimationWrapper from '../AnimationWrapper';
 import WordCardJapaneseKanjiBreakdown from './experimental/WordCardJapaneseKanjiBreakdown';
 import { extractKanji } from './experimental/utils/kanji-detector';
+import WordCardEditState from './WordCardEditState';
 
 const WordCardInformation = ({
   baseForm,
@@ -11,31 +12,88 @@ const WordCardInformation = ({
   transliteration,
   definition,
   mnemonic,
+  updateWordData,
+  wordId,
 }) => {
+  const [wordData, setWordData] = useState({
+    baseForm,
+    surfaceForm,
+    phonetic,
+    transliteration,
+    definition,
+    mnemonic,
+  });
+
   const [kanjiDataState, setKanjiDataState] = useState<any>(null);
 
   const wordDataArr = [
-    { preText: 'BaseForm', text: baseForm },
-    { preText: 'Surface Form', text: surfaceForm },
-    { preText: 'Phonetic', text: phonetic },
-    { preText: 'Transliteration', text: transliteration },
-    { preText: 'Definition', text: definition },
-    { preText: 'Mnemonic', text: mnemonic },
+    {
+      key: 'baseForm',
+      preText: 'BaseForm',
+      text: baseForm,
+      label: 'Base Form',
+    },
+    {
+      key: 'surfaceForm',
+      label: 'Surface Form',
+      text: surfaceForm,
+    },
+    {
+      key: 'phonetic',
+      label: 'Phonetic',
+      text: phonetic,
+    },
+    {
+      key: 'transliteration',
+      label: 'Transliteration',
+      text: transliteration,
+    },
+    {
+      key: 'definition',
+      label: 'Definition',
+      text: definition,
+    },
+    {
+      key: 'mnemonic',
+      label: 'Mnemonic',
+      text: mnemonic,
+    },
   ];
 
   const hasKanji = extractKanji(baseForm);
   const uniqueSetOfKanj = [...new Set(hasKanji)];
 
+  const handleUpdateWordData = async (field: string, newValue: string) => {
+    console.log('## handleUpdateWordData', {
+      field,
+      newValue,
+    });
+    const wordResBool = await updateWordData({
+      wordId,
+      fieldToUpdate: {
+        [field]: newValue,
+      },
+    });
+
+    if (wordResBool) {
+      setWordData((prev) => ({
+        ...prev,
+        [field]: newValue,
+      }));
+    }
+  };
+
   return (
     <AnimationWrapper>
       <div className={'flex flex-col gap-1 mb-2 flex-wrap items-start'}>
-        {wordDataArr.map((wordData, index) => {
+        {wordDataArr.map(({ key, label }) => {
           return (
-            wordData.text && (
-              <span key={index} className='text-sm text-left font-medium'>
-                {wordData.preText}: {wordData.text}
-              </span>
-            )
+            <WordCardEditState
+              key={key}
+              label={label}
+              value={wordData[key]}
+              onSave={(newValue) => handleUpdateWordData(key, newValue)}
+            />
           );
         })}
         {uniqueSetOfKanj?.length > 0 && (
@@ -44,7 +102,7 @@ const WordCardInformation = ({
             uniqueSetOfKanj={uniqueSetOfKanj}
             kanjiDataState={kanjiDataState}
             setKanjiDataState={setKanjiDataState}
-            baseForm={baseForm}
+            baseForm={wordData.baseForm}
           />
         )}
       </div>
