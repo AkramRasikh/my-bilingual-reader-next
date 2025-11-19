@@ -69,6 +69,7 @@ const LearningScreenTabJointTranscriptWords = () => {
     setContractThreeSecondLoopState,
     handlePlayFromHere,
     handleUpdateSnippetReview,
+    savedSnippetsMemoized,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -281,6 +282,7 @@ const LearningScreenTabJointTranscriptWords = () => {
               scrollToElState={scrollToElState}
               wordsForSelectedTopic={wordsForSelectedTopic}
               languageSelectedState={languageSelectedState}
+              savedSnippetsMemoized={savedSnippetsMemoized}
               isComprehensiveMode={true}
             >
               <TranscriptItem />
