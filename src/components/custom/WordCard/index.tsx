@@ -26,6 +26,7 @@ const WordCard = ({
   reduceChar = true,
   indexNum,
   imageUrl,
+  mnemonic,
   addImageDataProvider,
   contexts,
   playFromThisContext,
@@ -127,6 +128,7 @@ const WordCard = ({
                   phonetic={phonetic}
                   transliteration={transliteration}
                   definition={definition}
+                  mnemonic={mnemonic}
                 />
               )}
               <WordCardImage
