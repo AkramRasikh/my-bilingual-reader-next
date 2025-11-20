@@ -7,7 +7,6 @@ import {
   useReducer,
   useMemo,
 } from 'react';
-import { content, sentences, words } from '../client-api/get-on-load-data';
 import useLanguageSelector from './useLanguageSelector';
 import { sentencesReducer } from '../reducers/sentences-reducer';
 import { contentReducer } from '../reducers/content-reducer';
