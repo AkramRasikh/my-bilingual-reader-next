@@ -702,15 +702,16 @@ export const LearningScreenProvider = ({
           ? getThisSentenceInfo(sentenceId).title
           : selectedContentStateMemoized.title,
         sentenceId,
-        fieldToUpdate: {
-          reviewData: isRemoveReview
-            ? null
-            : nextDue || nextScheduledOptions['1'].card,
-        },
+        fieldToUpdate: isRemoveReview
+          ? { removeReview: true }
+          : {
+              reviewData: nextDue || nextScheduledOptions['1'].card,
+            },
         contentIndex: isFullReview
           ? getThisSentenceInfo(sentenceId).contentIndex
           : contentIndex,
         isRemoveReview,
+        indexKey: selectedContentStateMemoized.id,
       });
       setSentenceRepsState(sentenceRepsState + 1);
     } catch (error) {

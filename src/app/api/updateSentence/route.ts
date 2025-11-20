@@ -1,7 +1,6 @@
 export async function POST(req: Request) {
   const body = await req.json();
-  const url =
-    process.env.NEXT_PUBLIC_BACKEND_ENDPOINT + '/update-sentence-review';
+  const url = process.env.NEXT_PUBLIC_UPDATE_SENTENCE_URL as string;
 
   const response = await fetch(url, {
     method: 'POST',

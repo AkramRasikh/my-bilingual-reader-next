@@ -268,15 +268,15 @@ export function FetchDataProvider({ children }) {
   };
 
   const updateSentenceData = async ({
-    topicName,
     sentenceId,
     fieldToUpdate,
     contentIndex,
     isRemoveReview,
+    indexKey,
   }) => {
     try {
       const updatedFieldFromDB = await updateSentenceDataAPI({
-        topicName,
+        indexKey,
         sentenceId,
         fieldToUpdate,
         language: languageSelectedState,

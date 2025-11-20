@@ -1,5 +1,5 @@
 export const updateSentenceDataAPI = async ({
-  topicName,
+  indexKey,
   sentenceId,
   fieldToUpdate,
   language,
@@ -12,7 +12,7 @@ export const updateSentenceDataAPI = async ({
       },
       body: JSON.stringify({
         language,
-        title: topicName,
+        indexKey,
         id: sentenceId,
         fieldToUpdate,
       }),
