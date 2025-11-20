@@ -64,10 +64,6 @@ const WordCardInformation = ({
   const uniqueSetOfKanj = [...new Set(hasKanji)];
 
   const handleUpdateWordData = async (field: string, newValue: string) => {
-    console.log('## handleUpdateWordData', {
-      field,
-      newValue,
-    });
     const wordResBool = await updateWordData({
       wordId,
       fieldToUpdate: {
