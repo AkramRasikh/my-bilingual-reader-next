@@ -10,10 +10,10 @@ import useLearningScreen from '../useLearningScreen';
 const LearningScreenTabMeta = ({ updateContentMetaData }) => {
   const { selectedContentState } = useLearningScreen();
 
-  const topicName = selectedContentState?.title;
   const url = selectedContentState?.url;
   const reviewHistory = selectedContentState?.reviewHistory;
   const contentIndex = selectedContentState?.contentIndex;
+  const id = selectedContentState.id;
 
   const hasBeenReviewed = reviewHistory?.length > 0;
 
@@ -36,8 +36,8 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
       setIsLoading(true);
       if (hasBeenReviewed) {
         await updateContentMetaData({
-          topicName,
           contentIndex,
+          indexKey: id,
           fieldToUpdate: {
             reviewHistory: [],
             nextReview: null,
@@ -52,9 +52,9 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
         };
 
         await updateContentMetaData({
-          topicName,
           contentIndex,
           fieldToUpdate,
+          indexKey: id,
         });
       }
     } catch (error) {

@@ -1,5 +1,5 @@
 export const breakdownSentenceAPI = async ({
-  topicName,
+  indexKey,
   sentenceId,
   language,
   targetLang,
@@ -12,7 +12,7 @@ export const breakdownSentenceAPI = async ({
       },
       body: JSON.stringify({
         language,
-        title: topicName,
+        indexKey,
         id: sentenceId,
         targetLang,
       }),

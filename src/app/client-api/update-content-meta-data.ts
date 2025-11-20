@@ -1,8 +1,7 @@
 export const updateContentMetaDataAPI = async ({
-  title,
   fieldToUpdate,
   language,
-  contentIndex,
+  indexKey,
 }) => {
   try {
     const response = await fetch('/api/updateContentMetaData', {
@@ -12,9 +11,8 @@ export const updateContentMetaDataAPI = async ({
       },
       body: JSON.stringify({
         language,
-        title,
         fieldToUpdate,
-        contentIndex,
+        indexKey,
       }),
     });
 

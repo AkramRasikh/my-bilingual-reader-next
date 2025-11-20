@@ -115,6 +115,7 @@ export const LearningScreenProvider = ({
 
   const content = selectedContentStateMemoized?.content;
   const contentIndex = selectedContentStateMemoized?.contentIndex;
+  const id = selectedContentStateMemoized?.id;
 
   const getGeneralContentMetaData = () => {
     if (!generalTopicDisplayNameSelectedState) {
@@ -337,7 +338,6 @@ export const LearningScreenProvider = ({
     if (hasThisSnippet) {
       return null;
     }
-    const topicName = selectedContentStateMemoized.title;
     const timeNow = new Date();
 
     const { nextScheduledOptions } = srsCalculationAndText({
@@ -347,7 +347,6 @@ export const LearningScreenProvider = ({
 
     const reviewData = nextScheduledOptions['1'].card;
     await updateContentMetaData({
-      topicName,
       fieldToUpdate: {
         snippets: [
           ...contentSnippets,
@@ -360,6 +359,7 @@ export const LearningScreenProvider = ({
           },
         ],
       },
+      indexKey: id,
       contentIndex,
     });
     setThreeSecondLoopState(null);
@@ -370,13 +370,12 @@ export const LearningScreenProvider = ({
     const updatedSnippets = selectedContentStateMemoized.snippets.filter(
       (item) => item.id !== snippetId,
     );
-    const topicName = selectedContentStateMemoized.title;
     await updateContentMetaData({
-      topicName,
       fieldToUpdate: {
         snippets: [...updatedSnippets],
       },
       contentIndex,
+      indexKey: id,
     });
   };
 
@@ -395,13 +394,12 @@ export const LearningScreenProvider = ({
       },
     );
 
-    const topicName = selectedContentStateMemoized.title;
     await updateContentMetaData({
-      topicName,
       fieldToUpdate: {
         snippets: [...updatedSnippets],
       },
       contentIndex,
+      indexKey: id,
     });
   };
 
@@ -846,7 +844,7 @@ export const LearningScreenProvider = ({
     try {
       setIsBreakingDownSentenceArrState((prev) => [...prev, currentMasterPlay]);
       await breakdownSentence({
-        topicName: selectedContentStateMemoized.title,
+        indexKey: selectedContentStateMemoized.id,
         sentenceId: currentMasterPlay,
         targetLang: thisSentenceTargetLang,
         contentIndex,
@@ -926,7 +924,7 @@ export const LearningScreenProvider = ({
 
   const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {
     await breakdownSentence({
-      topicName: selectedContentState.title,
+      indexKey: selectedContentStateMemoized.id,
       sentenceId,
       targetLang,
       contentIndex,

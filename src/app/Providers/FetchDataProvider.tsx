@@ -140,14 +140,14 @@ export function FetchDataProvider({ children }) {
   }, [sentencesState]);
 
   const breakdownSentence = async ({
-    topicName,
+    indexKey,
     sentenceId,
     targetLang,
     contentIndex,
   }) => {
     try {
       const resObj = await breakdownSentenceAPI({
-        topicName,
+        indexKey,
         sentenceId,
         targetLang,
         language: languageSelectedState,
@@ -198,16 +198,15 @@ export function FetchDataProvider({ children }) {
   };
 
   const updateContentMetaData = async ({
-    topicName,
     fieldToUpdate,
     contentIndex,
+    indexKey,
   }) => {
     try {
       const resObj = await updateContentMetaDataAPI({
-        title: topicName,
         fieldToUpdate,
         language: languageSelectedState,
-        contentIndex,
+        indexKey,
       });
 
       if (resObj) {
