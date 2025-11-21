@@ -195,7 +195,7 @@ export const TranscriptItemProvider = ({
   const handleLoopHere = ({ time, isContracted }) => {
     setThreeSecondLoopState(time);
     setContractThreeSecondLoopState(isContracted);
-    handlePlayFromHere(time);
+    handlePlayFromHere?.(time);
   };
 
   const handleMouseEnter = (text) => {

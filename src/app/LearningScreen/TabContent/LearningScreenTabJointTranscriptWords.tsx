@@ -284,6 +284,8 @@ const LearningScreenTabJointTranscriptWords = () => {
               languageSelectedState={languageSelectedState}
               savedSnippetsMemoized={savedSnippetsMemoized}
               isComprehensiveMode={true}
+              setThreeSecondLoopState={setThreeSecondLoopState}
+              setContractThreeSecondLoopState={setContractThreeSecondLoopState}
             >
               <TranscriptItem />
             </TranscriptItemProvider>
