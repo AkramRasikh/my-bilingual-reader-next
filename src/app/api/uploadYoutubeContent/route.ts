@@ -1,5 +1,6 @@
 import { uploadAudioCloudflare } from '@/app/shared-apis/upload-audio-cloudflare';
 import { addContentLogic } from './uploadContentToFirebase';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req) {
   try {
@@ -27,9 +28,12 @@ export async function POST(req) {
       language,
     });
 
+    const id = uuidv4();
     const resUploadContent = await addContentLogic({
+      id,
       language,
       content: {
+        id,
         title,
         hasAudio: audioUploaded,
         origin: 'youtube',

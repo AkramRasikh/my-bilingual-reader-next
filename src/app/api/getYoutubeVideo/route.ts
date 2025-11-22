@@ -8,6 +8,7 @@ import { downloadTargetLangSubs } from './downloadTargetLangSubs';
 import { downloadBaseLangHumanSubs } from './downloadBaseLangMachineSubs';
 import { downloadYoutubeAudio } from './downloadYoutubeAudio';
 import { sanitizeFilename } from './santizeFilename';
+import { downloadYoutubeVideo } from './downloadYoutubeVideo';
 
 export const googleLanguagesKey = {
   [japanese]: 'ja',
@@ -16,6 +17,7 @@ export const googleLanguagesKey = {
 };
 
 const youtubeAudioPath = path.join(process.cwd(), 'public', 'youtube');
+const youtubeVideoPath = path.join(process.cwd(), 'public', 'youtube-video');
 
 export async function POST(req) {
   try {
@@ -69,9 +71,11 @@ export async function POST(req) {
 
     const baseName = sanitizeFilename(String(title));
     const audioOutputPath = path.join(youtubeAudioPath, `${baseName}.%(ext)s`);
+    const videoOutputPath = path.join(youtubeVideoPath, `${baseName}.%(ext)s`);
 
     try {
       await downloadYoutubeAudio({ outTemplate: audioOutputPath, url });
+      await downloadYoutubeVideo({ outTemplate: videoOutputPath, url });
     } catch (error) {
       console.log('## failed to get audio ', error);
     }
