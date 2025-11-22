@@ -8,6 +8,7 @@ import TranscriptItemMenuSection from './TranscriptItemMenuSection';
 import TranscriptItemReviewSection from './TranscriptItemReviewSection';
 import TranscriptItemActionBar from './TranscriptItemActionBar';
 import TranscriptItemContent from './TranscriptItemContent';
+import TranscriptItemLoopingSentence from './TranscriptItemLoopingSentence';
 
 const TranscriptItem = () => {
   const {
@@ -23,7 +24,10 @@ const TranscriptItem = () => {
     thisHasSavedSnippetOverlap,
     handleDeleteSnippet,
     handleLoopHere,
+    biggestOverlappedSnippet,
   } = useTranscriptItem();
+
+  const thisIsOverlapping = biggestOverlappedSnippet === contentItem.id;
 
   return (
     <TranscriptItemWrapper>
@@ -41,8 +45,12 @@ const TranscriptItem = () => {
       <div className='flex gap-1'>
         <TranscriptItemActionBar />
         <div className='flex w-full gap-1 justify-between'>
-          <TranscriptItemContent />
-          {!isWordStudyMode && !isSentenceReviewMode && (
+          {thisIsOverlapping ? (
+            <TranscriptItemLoopingSentence />
+          ) : (
+            <TranscriptItemContent />
+          )}
+          {!thisIsOverlapping && !isWordStudyMode && !isSentenceReviewMode && (
             <TranscriptItemMenuSection />
           )}
         </div>

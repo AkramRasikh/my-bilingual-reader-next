@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import clsx from 'clsx';
 import { TabsContent } from '@/components/ui/tabs';
 import useLearningScreen from '../useLearningScreen';
@@ -6,6 +7,7 @@ import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/Trans
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './LearningScreenTabTranscriptNestedWordsReview';
 import WordCard from '@/components/custom/WordCard';
+import getBiggestOverlap from '@/components/custom/TranscriptItem/get-biggest-overlap';
 
 const LearningScreenTabTranscript = () => {
   const {
@@ -41,6 +43,8 @@ const LearningScreenTabTranscript = () => {
     setThreeSecondLoopState,
     setContractThreeSecondLoopState,
     handlePlayFromHere,
+    overlappingTextMemoized,
+    handleSaveSnippet,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -55,6 +59,17 @@ const LearningScreenTabTranscript = () => {
   const hasSentencesAndWordsInTandem = sentencesForReviewMemoized?.length > 0;
 
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
+
+  const biggestOverlappedSnippet = useMemo(() => {
+    if (overlappingSnippetDataState.length === 0) {
+      return null;
+    }
+    if (overlappingSnippetDataState.length > 1) {
+      return getBiggestOverlap(overlappingSnippetDataState).id;
+    }
+    return overlappingSnippetDataState[0].id;
+  }, [overlappingSnippetDataState]);
+
   return (
     <TabsContent
       value='transcript'
@@ -143,6 +158,9 @@ const LearningScreenTabTranscript = () => {
                   setContractThreeSecondLoopState
                 }
                 handlePlayFromHere={handlePlayFromHere}
+                biggestOverlappedSnippet={biggestOverlappedSnippet}
+                overlappingTextMemoized={overlappingTextMemoized}
+                handleSaveSnippet={handleSaveSnippet}
               >
                 <TranscriptItem />
               </TranscriptItemProvider>

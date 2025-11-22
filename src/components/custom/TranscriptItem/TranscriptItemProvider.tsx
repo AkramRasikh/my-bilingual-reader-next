@@ -40,6 +40,9 @@ export const TranscriptItemProvider = ({
   setThreeSecondLoopState,
   setContractThreeSecondLoopState,
   handlePlayFromHere,
+  biggestOverlappedSnippet,
+  overlappingTextMemoized,
+  handleSaveSnippet,
   children,
 }) => {
   const ulRef = useRef<HTMLUListElement>(null);
@@ -351,6 +354,9 @@ export const TranscriptItemProvider = ({
         thisHasSavedSnippetOverlap: thisHasSavedSnippetOverlapMemoized,
         handleDeleteSnippet,
         handleLoopHere,
+        biggestOverlappedSnippet,
+        overlappingTextMemoized,
+        handleSaveSnippet,
       }}
     >
       {children}
