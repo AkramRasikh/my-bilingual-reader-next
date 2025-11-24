@@ -61,18 +61,24 @@ const useManageThreeSecondLoop = ({
   overlappingSnippetDataState,
 }) => {
   const refSeconds = useRef<number | null>(null);
+  const prevContractThreeSecondLoopState = useRef(contractThreeSecondLoopState);
 
   useEffect(() => {
-    if (!formattedTranscriptState || formattedTranscriptState?.length === 0) {
+    if (!formattedTranscriptState || formattedTranscriptState.length === 0)
       return;
-    }
+
     if (!threeSecondLoopState && overlappingSnippetDataState?.length > 0) {
       setOverlappingSnippetDataState([]);
     }
-    if (
+
+    const threeSecondChanged =
       isNumber(threeSecondLoopState) &&
-      refSeconds?.current !== threeSecondLoopState
-    ) {
+      refSeconds.current !== threeSecondLoopState;
+
+    const contractChanged =
+      prevContractThreeSecondLoopState.current !== contractThreeSecondLoopState;
+
+    if (threeSecondChanged || contractChanged) {
       threeSecondLoopLogic({
         refSeconds,
         threeSecondLoopState,
@@ -82,6 +88,8 @@ const useManageThreeSecondLoop = ({
         setState: setOverlappingSnippetDataState,
       });
     }
+
+    prevContractThreeSecondLoopState.current = contractThreeSecondLoopState;
   }, [
     threeSecondLoopState,
     contractThreeSecondLoopState,
