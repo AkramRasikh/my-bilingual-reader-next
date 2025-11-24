@@ -126,16 +126,12 @@ export const TranscriptItemProvider = ({
     }
   }, [ulRef.current, latestDueIdState, scrollToElState]);
 
-  useEffect(() => {
-    if (!threeSecondLoopState && thisSnippetOverlapState) {
-      setThisSnippetOverlapState(null);
-      return;
+  const thisSnippetOverlapMemoized = useMemo(() => {
+    if (!threeSecondLoopState || overlappingSnippetDataState.length === 0) {
+      return null;
     }
-    const hasOverlappingSnippet =
-      overlappingSnippetDataState.length > 0 &&
-      overlappingSnippetDataState.find((i) => i.id === contentItem.id);
 
-    setThisSnippetOverlapState(hasOverlappingSnippet);
+    return overlappingSnippetDataState.find((i) => i.id === contentItem.id);
   }, [threeSecondLoopState, overlappingSnippetDataState, contentItem]);
 
   const thisHasSavedSnippetOverlapMemoized = useMemo(() => {
@@ -357,6 +353,7 @@ export const TranscriptItemProvider = ({
         biggestOverlappedSnippet,
         overlappingTextMemoized,
         handleSaveSnippet,
+        thisSnippetOverlapMemoized,
       }}
     >
       {children}

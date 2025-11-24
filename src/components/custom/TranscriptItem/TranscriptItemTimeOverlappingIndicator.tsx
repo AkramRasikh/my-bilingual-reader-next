@@ -2,14 +2,14 @@ import clsx from 'clsx';
 import { useState } from 'react';
 
 const TranscriptItemTimeOverlappingIndicator = ({
-  thisSnippetOverlapState,
+  thisSnippetOverlapMemoized,
 }) => (
   <div className='relative h-1'>
     <div
       className='absolute bg-red-500 opacity-50 rounded'
       style={{
-        width: `${thisSnippetOverlapState.percentageOverlap}%`,
-        left: `${thisSnippetOverlapState.startPoint}%`,
+        width: `${thisSnippetOverlapMemoized.percentageOverlap}%`,
+        left: `${thisSnippetOverlapMemoized.startPoint}%`,
         height: '100%',
       }}
     />

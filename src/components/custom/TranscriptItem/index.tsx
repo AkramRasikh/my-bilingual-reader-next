@@ -14,7 +14,7 @@ const TranscriptItem = () => {
   const {
     highlightedTextState,
     setHighlightedTextState,
-    thisSnippetOverlapState,
+    thisSnippetOverlapMemoized,
     isLoadingState,
     contentItem,
     handleSaveFunc,
@@ -25,10 +25,10 @@ const TranscriptItem = () => {
     handleDeleteSnippet,
     handleLoopHere,
     biggestOverlappedSnippet,
+    overlappingTextMemoized,
   } = useTranscriptItem();
 
   const thisIsOverlapping = biggestOverlappedSnippet === contentItem.id;
-
   return (
     <TranscriptItemWrapper>
       {highlightedTextsArabicTransliteration && (
@@ -36,17 +36,19 @@ const TranscriptItem = () => {
           {highlightedTextsArabicTransliteration}
         </p>
       )}
-      {thisSnippetOverlapState && (
+      {thisSnippetOverlapMemoized && (
         <TranscriptItemTimeOverlappingIndicator
-          thisSnippetOverlapState={thisSnippetOverlapState}
+          thisSnippetOverlapMemoized={thisSnippetOverlapMemoized}
         />
       )}
 
       <div className='flex gap-1'>
         <TranscriptItemActionBar />
         <div className='flex w-full gap-1 justify-between'>
-          {thisIsOverlapping ? (
-            <TranscriptItemLoopingSentence />
+          {thisIsOverlapping && overlappingTextMemoized ? (
+            <TranscriptItemLoopingSentence
+              overlappingTextMemoized={overlappingTextMemoized}
+            />
           ) : (
             <TranscriptItemContent />
           )}
