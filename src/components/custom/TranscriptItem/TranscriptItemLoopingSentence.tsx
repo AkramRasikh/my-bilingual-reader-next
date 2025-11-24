@@ -4,7 +4,55 @@ import { Button } from '@/components/ui/button';
 import clsx from 'clsx';
 import { Loader2, SaveIcon } from 'lucide-react';
 
-const TranscriptItemLoopingSentence = () => {
+function highlightApprox(fullText, slicedText) {
+  function findApproxIndex(text, query) {
+    // If exact match exists, return it
+    const exact = text.indexOf(query);
+    if (exact !== -1) return exact;
+
+    // Otherwise fuzzy: sliding window + similarity scoring
+    let bestIndex = 0;
+    let bestScore = 0;
+
+    const qLen = query.length;
+
+    for (let i = 0; i <= text.length - qLen; i++) {
+      const chunk = text.slice(i, i + qLen);
+
+      // similarity = proportion of matching characters
+      let score = 0;
+      for (let j = 0; j < qLen; j++) {
+        if (chunk[j] === query[j]) score++;
+      }
+      score = score / qLen;
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestIndex = i;
+      }
+    }
+
+    return bestScore > 0.4 ? bestIndex : -1;
+    // threshold can be tuned
+  }
+
+  const index = findApproxIndex(fullText, slicedText);
+  if (index === -1) return fullText; // no suitable match
+
+  const before = fullText.slice(0, index);
+  const match = fullText.slice(index, index + slicedText.length);
+  const after = fullText.slice(index + slicedText.length);
+
+  return `
+        ${before}
+        <span class="bg-yellow-200 shadow-yellow-500 shadow-sm px-1 rounded">
+            ${match}
+        </span>
+        ${after}
+    `;
+}
+
+const TranscriptItemLoopingSentence = ({ overlappingTextMemoized }) => {
   const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
     useState(false);
   const [highlightedTextFocusLoopState, setHighlightedTextFocusLoopState] =
@@ -12,7 +60,11 @@ const TranscriptItemLoopingSentence = () => {
 
   const masterTextRef = useRef(null);
 
-  const { overlappingTextMemoized, handleSaveSnippet } = useTranscriptItem();
+  const { handleSaveSnippet } = useTranscriptItem();
+
+  const targetLang = overlappingTextMemoized.targetLang;
+  const baseLang = overlappingTextMemoized.baseLang;
+  const suggestedFocusText = overlappingTextMemoized.suggestedFocusText;
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -31,19 +83,13 @@ const TranscriptItemLoopingSentence = () => {
   }, [masterTextRef, highlightedTextFocusLoopState]);
 
   const handleSaveSnippetFlow = async () => {
-    console.log('## handleSaveSnippetFlow 1');
-
     try {
-      console.log('## handleSaveSnippetFlow 2');
       setIsLoadingSaveSnippetState(true);
-      console.log('## handleSaveSnippetFlow 3');
       await handleSaveSnippet({
         ...overlappingTextMemoized,
         focusedText: highlightedTextFocusLoopState,
       });
-      console.log('## handleSaveSnippetFlow 4');
     } catch (error) {
-      console.log('## handleSaveSnippetFlow error', error);
     } finally {
       setHighlightedTextFocusLoopState('');
       setIsLoadingSaveSnippetState(false);
@@ -68,20 +114,13 @@ const TranscriptItemLoopingSentence = () => {
     };
   }, []);
 
-  console.log(
-    '## highlightedTextFocusLoopState',
-    highlightedTextFocusLoopState,
-  );
+  const approxSuggestedText = highlightApprox(targetLang, suggestedFocusText);
 
   return (
     <div className='flex justify-between w-full' ref={masterTextRef}>
       <div>
-        <p className={'italic font-medium'}>
-          {overlappingTextMemoized?.targetLang}
-        </p>
-        <p className={'italic font-medium'}>
-          {overlappingTextMemoized?.baseLang}
-        </p>
+        <p dangerouslySetInnerHTML={{ __html: approxSuggestedText }} />
+        <p className={'italic font-medium'}>{baseLang}</p>
       </div>
       <Button
         size='icon'

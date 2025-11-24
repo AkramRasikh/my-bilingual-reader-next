@@ -252,6 +252,8 @@ export const LearningScreenProvider = ({
       sentenceMapMemoized[current.id] = {
         prevSentence: prev ? prev.time : null,
         thisSentence: current.time,
+        targetLang: current.targetLang,
+        baseLang: current.baseLang,
         nextSentence: next ? next.time : null,
       };
     }
@@ -1096,6 +1098,27 @@ export const LearningScreenProvider = ({
     return sentenceIdsForReview;
   }, [learnFormattedTranscript]);
 
+  function sliceTranscriptItems(items) {
+    let result = '';
+
+    for (const item of items) {
+      const text = sentenceMapMemoized[item.id].targetLang;
+      if (!text) continue;
+
+      const L = text.length;
+
+      const startIndex = Math.floor(L * (item.startPoint / 100));
+      const endIndex =
+        Math.floor(L * (item.percentageOverlap / 100)) + startIndex;
+      const safeStart = Math.min(startIndex, L);
+      const safeEnd = Math.max(safeStart, Math.min(endIndex, L));
+
+      result += text.substring(safeStart, safeEnd);
+    }
+
+    return result;
+  }
+
   const overlappingTextMemoized = useMemo(() => {
     if (!threeSecondLoopState) {
       return;
@@ -1112,6 +1135,7 @@ export const LearningScreenProvider = ({
     return {
       targetLang,
       baseLang,
+      suggestedFocusText: sliceTranscriptItems(overlappingSnippetDataState),
     };
   }, [
     overlappingSnippetDataState,
@@ -1132,6 +1156,9 @@ export const LearningScreenProvider = ({
   }, [wordsForSelectedTopicMemoized]);
 
   const transcriptSnippetsIdsDue = useMemo(() => {
+    if (!selectedContentStateMemoized?.snippets) {
+      return [];
+    }
     const now = new Date();
 
     const dueSnippets = [];
@@ -1282,6 +1309,7 @@ export const LearningScreenProvider = ({
         handleUpdateSnippetReview,
         handleDeleteSnippet,
         contentSnippets: selectedContentStateMemoized?.snippets || [],
+        sentenceMapMemoized,
       }}
     >
       {children}
