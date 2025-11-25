@@ -145,6 +145,26 @@ const TranscriptItemLoopingSentence = ({ overlappingTextMemoized }) => {
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === ',') {
+        setStartIndexKeyState(startIndexKeyState - 1);
+        setEndIndexKeyState(endIndexKeyState - 1);
+        return;
+      }
+      if (e.key.toLowerCase() === '.') {
+        setStartIndexKeyState(startIndexKeyState + 1);
+        setEndIndexKeyState(endIndexKeyState + 1);
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [startIndexKeyState, endIndexKeyState]);
+
   return (
     <div className='flex justify-between w-full' ref={masterTextRef}>
       <div>
