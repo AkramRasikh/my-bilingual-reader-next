@@ -130,7 +130,13 @@ const TranscriptItemLoopingSentence = ({ overlappingTextMemoized }) => {
     endIndexKeyState,
   ]);
 
+  const hasSnippetText =
+    textMatch || highlightedTextFocusLoopState || suggestedFocusText;
+
   const handleSaveSnippetFlow = async () => {
+    if (!hasSnippetText) {
+      return;
+    }
     try {
       setIsLoadingSaveSnippetState(true);
       await handleSaveSnippet({
@@ -146,7 +152,9 @@ const TranscriptItemLoopingSentence = ({ overlappingTextMemoized }) => {
   };
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = async (e: KeyboardEvent) => {
+      const shiftKey = e.shiftKey;
+
       if (e.key.toLowerCase() === ',') {
         setStartIndexKeyState(startIndexKeyState - 1);
         setEndIndexKeyState(endIndexKeyState - 1);
@@ -157,13 +165,18 @@ const TranscriptItemLoopingSentence = ({ overlappingTextMemoized }) => {
         setEndIndexKeyState(endIndexKeyState + 1);
         return;
       }
+
+      if (hasSnippetText && shiftKey && e.key.toLowerCase() === 'enter') {
+        await handleSaveSnippetFlow();
+        return;
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [startIndexKeyState, endIndexKeyState]);
+  }, [startIndexKeyState, endIndexKeyState, hasSnippetText]);
 
   return (
     <div className='flex justify-between w-full' ref={masterTextRef}>

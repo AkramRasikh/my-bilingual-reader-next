@@ -139,9 +139,10 @@ const LearningScreenKeyListener = () => {
             handleUpdateLoopedSentence(false);
           } else if (e.key.toLowerCase() === 'arrowright') {
             handleShiftLoopSentence(true);
-          } else if (e.key.toLowerCase() === 'enter') {
-            handleBulkReviews();
           }
+          //  else if (e.key.toLowerCase() === 'enter') {
+          //   handleBulkReviews();
+          // }
         }
       }
 
