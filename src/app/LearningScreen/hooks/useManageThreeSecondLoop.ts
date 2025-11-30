@@ -4,16 +4,12 @@ import { useEffect, useRef } from 'react';
 export const threeSecondLoopLogic = ({
   refSeconds,
   threeSecondLoopState,
-  contractThreeSecondLoopState,
   formattedTranscriptState,
   realStartTime,
   setState,
+  startTime,
+  endTime,
 }) => {
-  const startTime =
-    threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
-  const endTime =
-    threeSecondLoopState + (contractThreeSecondLoopState ? 0.75 : 1.5);
-
   const results = [];
 
   formattedTranscriptState.forEach((item, index) => {
@@ -79,13 +75,19 @@ const useManageThreeSecondLoop = ({
       prevContractThreeSecondLoopState.current !== contractThreeSecondLoopState;
 
     if (threeSecondChanged || contractChanged) {
+      const startTime =
+        threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
+      const endTime =
+        threeSecondLoopState + (contractThreeSecondLoopState ? 0.75 : 1.5);
+
       threeSecondLoopLogic({
         refSeconds,
         threeSecondLoopState,
-        contractThreeSecondLoopState,
         formattedTranscriptState,
         realStartTime,
         setState: setOverlappingSnippetDataState,
+        startTime,
+        endTime,
       });
     }
 

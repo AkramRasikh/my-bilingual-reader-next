@@ -1175,12 +1175,19 @@ export const LearningScreenProvider = ({
       return [];
     }
     selectedContentStateMemoized?.snippets.map((snippetData) => {
+      const startTime =
+        snippetData.time - (snippetData?.isContracted ? 0.75 : 1.5);
+      const endTime =
+        snippetData.time + (snippetData?.isContracted ? 0.75 : 1.5);
+
       const resultOfThis = threeSecondLoopLogic({
         refSeconds: loopDataRef,
         threeSecondLoopState: snippetData.time,
-        contractThreeSecondLoopState: snippetData?.isContracted,
         formattedTranscriptState: formattedTranscriptMemoized,
         realStartTime,
+        startTime,
+        endTime,
+        setState: null,
       });
       allRes.push(
         ...resultOfThis?.map((item) => ({
