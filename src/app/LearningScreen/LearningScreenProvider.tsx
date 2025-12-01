@@ -327,6 +327,86 @@ export const LearningScreenProvider = ({
     setSelectedContentTitleState(thisContentTitle);
   };
 
+  const handleQuickSaveSnippet = async () => {
+    const contentSnippets = selectedContentStateMemoized?.snippets || [];
+    const hasThisSnippet =
+      contentSnippets?.length === 0
+        ? false
+        : contentSnippets.some(
+            (item) => item?.time.toFixed(1) === currentTime.toFixed(1),
+          );
+
+    if (hasThisSnippet) {
+      return null;
+    }
+
+    const fauxRef = {
+      currentTime: null,
+    };
+
+    const timeNow = new Date();
+
+    const { nextScheduledOptions } = srsCalculationAndText({
+      contentType: srsRetentionKey.snippet,
+      timeNow,
+    });
+    const startTime = currentTime - 1.5;
+    const endTime = currentTime + 1.5;
+
+    const reviewData = nextScheduledOptions['1'].card;
+
+    const resultOfThis = threeSecondLoopLogic({
+      refSeconds: fauxRef,
+      threeSecondLoopState: currentTime,
+      formattedTranscriptState: formattedTranscriptMemoized,
+      realStartTime,
+      startTime,
+      endTime,
+      setState: null,
+    });
+
+    if (!resultOfThis || resultOfThis?.length === 0) {
+      return null;
+    }
+
+    const overlappingIds = resultOfThis.map((item) => item.id);
+    const entries = formattedTranscriptMemoized.filter((x) =>
+      overlappingIds.includes(x.id),
+    );
+
+    const targetLang = entries.map((item) => item.targetLang).join('');
+    const baseLang = entries.map((item) => item.baseLang).join('');
+    const suggestedFocusText = sliceTranscriptItems(resultOfThis);
+
+    const finalSnippetObject = {
+      id: uuidv4(),
+      time: currentTime,
+      isContracted: false,
+      reviewData,
+      targetLang,
+      baseLang,
+      suggestedFocusText,
+      isPreSnippet: true,
+    };
+
+    try {
+      setIsGenericItemLoadingState((prev) => [...prev, ...overlappingIds]);
+      await updateContentMetaData({
+        fieldToUpdate: {
+          snippets: [...contentSnippets, finalSnippetObject],
+        },
+        indexKey: id,
+        contentIndex,
+      });
+    } catch (error) {
+      console.log('## handleQuickSaveSnippet error', error);
+    } finally {
+      setIsGenericItemLoadingState((prev) =>
+        prev.filter((item) => !overlappingIds.includes(item)),
+      );
+    }
+  };
+
   const handleSaveSnippet = async (snippetArgs) => {
     const contentSnippets = selectedContentStateMemoized?.snippets || [];
     const hasThisSnippet =
@@ -1195,6 +1275,7 @@ export const LearningScreenProvider = ({
           snippetId: snippetData.id,
           time: snippetData.time,
           isContracted: snippetData?.isContracted,
+          isPreSnippet: snippetData?.isPreSnippet,
         })),
       );
     });
@@ -1311,6 +1392,7 @@ export const LearningScreenProvider = ({
         handleDeleteSnippet,
         contentSnippets: selectedContentStateMemoized?.snippets || [],
         sentenceMapMemoized,
+        handleQuickSaveSnippet,
       }}
     >
       {children}
