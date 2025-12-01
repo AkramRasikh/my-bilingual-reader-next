@@ -30,6 +30,7 @@ import { deleteWordAPI } from '../client-api/delete-word';
 import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
 import { getAudioURL } from '@/utils/get-media-url';
 import useFetchInitData from './useFetchInitData';
+import { deleteContentAPI } from '../client-api/delete-content';
 
 const FetchDataContext = createContext(null);
 
@@ -106,6 +107,17 @@ export function FetchDataProvider({ children }) {
     });
     return wordsForReview;
   }, [wordsState]);
+
+  const wordsToReviewGivenOriginalContextId = useMemo(() => {
+    return wordsForReviewMemoized.reduce((acc, obj) => {
+      const key = obj.contexts[0];
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(obj);
+      return acc;
+    }, {});
+  }, [wordsForReviewMemoized]);
 
   useEffect(() => {
     if (
@@ -353,6 +365,25 @@ export function FetchDataProvider({ children }) {
     }
   };
 
+  const deleteContent = async ({ contentId, title }) => {
+    try {
+      const deleteSuccess = await deleteContentAPI({
+        contentId,
+        title,
+        language: languageSelectedState,
+      });
+      if (deleteSuccess) {
+        dispatchContent({
+          type: 'deleteContent',
+          id: contentId,
+        });
+      }
+    } catch (error) {
+      console.log('## deleteContent', { error });
+      setToastMessageState(`Failed to delete content 🫤❌`);
+    }
+  };
+
   const handleSaveWord = async ({
     highlightedWord,
     highlightedWordSentenceId,
@@ -478,6 +509,8 @@ export function FetchDataProvider({ children }) {
         addGeneratedSentence,
         addImageDataProvider,
         wordsToReviewOnMountState,
+        wordsToReviewGivenOriginalContextId,
+        deleteContent,
       }}
     >
       {children}

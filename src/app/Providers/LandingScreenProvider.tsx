@@ -8,10 +8,20 @@ export const LandingScreenContext = createContext(null);
 export const LandingScreenProvider = ({
   children,
 }: PropsWithChildren<object>) => {
-  const { contentState, wordsForReviewMemoized } = useFetchData();
+  const {
+    contentState,
+    wordsForReviewMemoized,
+    wordsToReviewGivenOriginalContextId,
+  } = useFetchData();
 
-  const generalTopicDisplayNameMemoized = useMemo(() => {
+  const {
+    generalTopicDisplayNameMemoized,
+    nonMediaGeneralTopicDisplayNameMemoized,
+    hasScheduledForDeletion,
+  } = useMemo(() => {
     const generalNamesArr = [];
+    const nonMediaGeneralNamesArr = [];
+    let hasScheduledForDeletion = false;
 
     for (const contentItem of contentState) {
       const itemGenName = contentItem.generalTopicName;
@@ -25,9 +35,37 @@ export const LandingScreenProvider = ({
           title: itemGenName,
           youtubeId,
         });
+      } else if (
+        !contentItem?.origin &&
+        !generalNamesArr.some((item) => item.title === itemGenName)
+      ) {
+        const subsections = contentState.filter(
+          (contentItem) => itemGenName === contentItem.generalTopicName,
+        );
+        nonMediaGeneralNamesArr.push({
+          title: itemGenName,
+          subSections: subsections.map((contentNested) => {
+            const squashedSentences = contentNested.content.filter(
+              (i) => wordsToReviewGivenOriginalContextId[i.id],
+            );
+            if (!hasScheduledForDeletion && squashedSentences.length === 0) {
+              hasScheduledForDeletion = true;
+            }
+
+            return {
+              id: contentNested.id,
+              title: contentNested.title,
+              squashedSentences,
+            };
+          }),
+        });
       }
     }
-    return generalNamesArr;
+    return {
+      generalTopicDisplayNameMemoized: generalNamesArr,
+      nonMediaGeneralTopicDisplayNameMemoized: nonMediaGeneralNamesArr,
+      hasScheduledForDeletion,
+    };
   }, [contentState]);
 
   const squashedSentenceIdsViaContentMemoized = useMemo(() => {
@@ -105,7 +143,9 @@ export const LandingScreenProvider = ({
     <LandingScreenContext.Provider
       value={{
         generalTopicDisplayNameMemoized,
+        nonMediaGeneralTopicDisplayNameMemoized,
         getTopicStatus,
+        hasScheduledForDeletion,
       }}
     >
       {children}

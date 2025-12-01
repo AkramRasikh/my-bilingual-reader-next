@@ -58,6 +58,17 @@ export function contentReducer(state, action) {
           : topic,
       );
 
+    case 'deleteContent': {
+      // 1. Remove the topic with the matching id
+      const filtered = state.filter((topic) => topic.id !== action.id);
+
+      // 2. Reindex all remaining topics
+      return filtered.map((topic, newIndex) => ({
+        ...topic,
+        contentIndex: newIndex,
+      }));
+    }
+
     default:
       return state;
   }
