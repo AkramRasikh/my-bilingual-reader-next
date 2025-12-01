@@ -1,9 +1,6 @@
 export async function POST(req: Request) {
   const body = await req.json();
-  // const url = process.env.NEXT_PUBLIC_DELETE_WORD_URL as string;
-
-  const url =
-    'http://127.0.0.1:5001/language-content-storage/us-central1/deleteContent';
+  const url = process.env.NEXT_PUBLIC_DELETE_CONTENT_URL as string;
 
   const response = await fetch(url, {
     method: 'POST',
