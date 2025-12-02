@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import clsx from 'clsx';
 import { Loader2, SaveIcon } from 'lucide-react';
 
-function highlightApprox(
+export function highlightApprox(
   fullText,
   slicedText,
   isLoadingSaveSnippetState,
