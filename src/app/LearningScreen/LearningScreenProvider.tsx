@@ -111,7 +111,7 @@ export const LearningScreenProvider = ({
 
   const content = selectedContentStateMemoized?.content;
   const contentIndex = selectedContentStateMemoized?.contentIndex;
-  const contentId = selectedContentStateMemoized.id;
+  const contentId = selectedContentStateMemoized?.id;
 
   const getGeneralContentMetaData = () => {
     if (!generalTopicDisplayNameSelectedState) {
