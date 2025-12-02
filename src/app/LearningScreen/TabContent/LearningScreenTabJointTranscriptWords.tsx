@@ -6,9 +6,7 @@ import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './LearningScreenTabTranscriptNestedWordsReview';
-import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
-import { Button } from '@/components/ui/button';
-import { PauseIcon, PlayIcon, RabbitIcon } from 'lucide-react';
+import LearningScreenSnippetReview from '../experimental/LearningScreenSnippetReview';
 
 function highlightFocusedText(fullText: string, focusedText: string) {
   if (!focusedText) return fullText;
@@ -220,43 +218,16 @@ const LearningScreenTabJointTranscriptWords = () => {
       {postSnippetsState?.length > 0 ? (
         <div className='flex flex-col gap-2 mb-2'>
           {postSnippetsState.map((item, index) => {
-            const thisIsPlaying =
-              isVideoPlaying && threeSecondLoopState === item.time;
             return (
-              <div key={index} className='rounded border text-center py-2 px-1'>
-                <div className='flex mb-2 gap-1'>
-                  <div className='flex flex-col gap-2'>
-                    <Button
-                      className={clsx(
-                        'h-7 w-7',
-                        thisIsPlaying ? 'bg-amber-300' : '',
-                      )}
-                      onClick={() =>
-                        handleLoopHere({
-                          time: item.time,
-                          isContracted: item.isContracted,
-                        })
-                      }
-                    >
-                      {thisIsPlaying ? <PauseIcon /> : <PlayIcon />}
-                    </Button>
-                    {item?.isPreSnippet && (
-                      <RabbitIcon className='fill-amber-300 rounded m-auto' />
-                    )}
-                  </div>
-                  <p>
-                    {highlightFocusedText(
-                      item?.targetLang,
-                      item?.focusedText || item?.suggestedFocusText,
-                    )}
-                  </p>
-                </div>
-                <ReviewSRSToggles
-                  isSnippet
-                  contentItem={item}
-                  handleReviewFunc={handleReviewSnippets}
-                />
-              </div>
+              <LearningScreenSnippetReview
+                key={index}
+                item={item}
+                handleLoopHere={handleLoopHere}
+                isVideoPlaying={isVideoPlaying}
+                threeSecondLoopState={threeSecondLoopState}
+                highlightFocusedText={highlightFocusedText}
+                handleReviewSnippets={handleReviewSnippets}
+              />
             );
           })}
         </div>
