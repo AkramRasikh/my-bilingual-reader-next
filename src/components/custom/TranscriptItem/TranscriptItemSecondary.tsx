@@ -3,6 +3,7 @@ import FormattedSentence from '../FormattedSentence';
 import useLearningScreen from '../../../app/LearningScreen/useLearningScreen';
 import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
+import clsx from 'clsx';
 
 const TranscriptItemSecondary = ({ contentItem }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
@@ -37,8 +38,21 @@ const TranscriptItemSecondary = ({ contentItem }) => {
     }
   };
 
+  const hasBeenReviewed = contentItem?.reviewData?.due;
+
+  const dueStatus = contentItem?.dueStatus;
+
   return (
-    <div className='rounded border-2 p-2 mt-2 flex flex-col gap-2'>
+    <div
+      className={clsx(
+        'rounded-2xl border-2 p-2 mt-2 flex flex-col gap-2',
+        dueStatus === 'now'
+          ? 'border-red-500'
+          : hasBeenReviewed
+          ? 'border-amber-500'
+          : 'border-blue-200',
+      )}
+    >
       <FormattedSentence
         targetLangformatted={targetLangformatted}
         handleMouseLeave={handleMouseLeave}
