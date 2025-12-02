@@ -50,7 +50,7 @@ const LearningScreenSnippetReview = ({
   const { htmlText, textMatch } = useMemo(() => {
     return highlightApprox(
       item.targetLang,
-      item.suggestedFocusText,
+      item.focusedText || item.suggestedFocusText,
       isLoadingSaveSnippetState,
       startIndexKeyState,
       endIndexKeyState,
@@ -63,11 +63,15 @@ const LearningScreenSnippetReview = ({
     }
     try {
       setIsLoadingSaveSnippetState(true);
-      await handleUpdateSnippet({
+      const boolSuccess = await handleUpdateSnippet({
         id: item.id,
         isPreSnippet: false,
         focusedText: textMatch,
       });
+      if (boolSuccess) {
+        console.log('## Success, change state?');
+        onReset(); // because of flow in map
+      }
     } catch (error) {
       console.log('## onUpdateSnippet error', error);
     } finally {

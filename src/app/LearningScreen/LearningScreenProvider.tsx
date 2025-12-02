@@ -427,7 +427,7 @@ export const LearningScreenProvider = ({
       contentId,
       contentIndex,
     });
-    console.log('## handleUpdateSnippet boolReturn', boolReturn);
+    return boolReturn;
   };
 
   const handleSaveSnippet = async (snippetArgs) => {

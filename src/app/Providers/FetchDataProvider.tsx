@@ -221,13 +221,14 @@ export function FetchDataProvider({ children }) {
       });
 
       if (resObj) {
+        setToastMessageState('Updated content data ✅!');
         dispatchContent({
           type: 'updateMetaData',
           contentIndex,
           fieldToUpdate, // shouldn't really be like this
         });
+        return true;
       }
-      setToastMessageState('Updated content data ✅!');
     } catch (error) {
       console.log('## updateContentMetaData', { error });
       setToastMessageState('Error updating content data ❌');
