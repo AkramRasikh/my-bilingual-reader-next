@@ -111,7 +111,7 @@ export const LearningScreenProvider = ({
 
   const content = selectedContentStateMemoized?.content;
   const contentIndex = selectedContentStateMemoized?.contentIndex;
-  const id = selectedContentStateMemoized?.id;
+  const contentId = selectedContentStateMemoized.id;
 
   const getGeneralContentMetaData = () => {
     if (!generalTopicDisplayNameSelectedState) {
@@ -395,7 +395,7 @@ export const LearningScreenProvider = ({
         fieldToUpdate: {
           snippets: [...contentSnippets, finalSnippetObject],
         },
-        indexKey: id,
+        contentId,
         contentIndex,
       });
     } catch (error) {
@@ -405,6 +405,29 @@ export const LearningScreenProvider = ({
         prev.filter((item) => !overlappingIds.includes(item)),
       );
     }
+  };
+
+  const handleUpdateSnippet = async (snippetToUpdate) => {
+    const contentSnippets = selectedContentStateMemoized.snippets;
+    const updatedSnippetArray = contentSnippets.map((item) => {
+      if (snippetToUpdate.id === item.id) {
+        return {
+          ...item,
+          ...snippetToUpdate,
+        };
+      }
+
+      return item;
+    });
+
+    const boolReturn = await updateContentMetaData({
+      fieldToUpdate: {
+        snippets: updatedSnippetArray,
+      },
+      contentId,
+      contentIndex,
+    });
+    console.log('## handleUpdateSnippet boolReturn', boolReturn);
   };
 
   const handleSaveSnippet = async (snippetArgs) => {
@@ -437,7 +460,7 @@ export const LearningScreenProvider = ({
           },
         ],
       },
-      indexKey: id,
+      contentId,
       contentIndex,
     });
     setThreeSecondLoopState(null);
@@ -453,16 +476,16 @@ export const LearningScreenProvider = ({
         snippets: [...updatedSnippets],
       },
       contentIndex,
-      indexKey: id,
+      contentId,
     });
   };
 
   const handleUpdateSnippetReview = async (snippetArgs) => {
-    const id = snippetArgs.id;
+    const snippetId = snippetArgs.id;
     const fieldToUpdate = snippetArgs.fieldToUpdate;
     const updatedSnippets = selectedContentStateMemoized.snippets.map(
       (item) => {
-        if (item.id === id) {
+        if (item.id === snippetId) {
           return {
             ...item,
             ...fieldToUpdate,
@@ -477,7 +500,7 @@ export const LearningScreenProvider = ({
         snippets: [...updatedSnippets],
       },
       contentIndex,
-      indexKey: id,
+      contentId,
     });
   };
 
@@ -1393,6 +1416,7 @@ export const LearningScreenProvider = ({
         contentSnippets: selectedContentStateMemoized?.snippets || [],
         sentenceMapMemoized,
         handleQuickSaveSnippet,
+        handleUpdateSnippet,
       }}
     >
       {children}

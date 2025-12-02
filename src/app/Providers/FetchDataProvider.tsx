@@ -211,13 +211,13 @@ export function FetchDataProvider({ children }) {
   const updateContentMetaData = async ({
     fieldToUpdate,
     contentIndex,
-    indexKey,
+    contentId,
   }) => {
     try {
       const resObj = await updateContentMetaDataAPI({
         fieldToUpdate,
         language: languageSelectedState,
-        indexKey,
+        contentId,
       });
 
       if (resObj) {

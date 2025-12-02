@@ -13,7 +13,7 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
   const url = selectedContentState?.url;
   const reviewHistory = selectedContentState?.reviewHistory;
   const contentIndex = selectedContentState?.contentIndex;
-  const id = selectedContentState.id;
+  const contentId = selectedContentState.id;
 
   const hasBeenReviewed = reviewHistory?.length > 0;
 
@@ -37,7 +37,7 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
       if (hasBeenReviewed) {
         await updateContentMetaData({
           contentIndex,
-          indexKey: id,
+          contentId,
           fieldToUpdate: {
             reviewHistory: [],
             nextReview: null,
@@ -54,7 +54,7 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
         await updateContentMetaData({
           contentIndex,
           fieldToUpdate,
-          indexKey: id,
+          contentId,
         });
       }
     } catch (error) {

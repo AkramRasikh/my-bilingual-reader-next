@@ -13,6 +13,7 @@ import {
   Undo2Icon,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import useLearningScreen from '../useLearningScreen';
 
 const LearningScreenSnippetReview = ({
   item,
@@ -27,8 +28,9 @@ const LearningScreenSnippetReview = ({
   const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
     useState(false);
   const thisIsPlaying = isVideoPlaying && threeSecondLoopState === item.time;
-
   const isPreSnippet = item?.isPreSnippet;
+
+  const { handleUpdateSnippet } = useLearningScreen();
 
   const onMoveLeft = () => {
     setStartIndexKeyState(startIndexKeyState - 1);
@@ -45,17 +47,7 @@ const LearningScreenSnippetReview = ({
     setEndIndexKeyState(0);
   };
 
-  const handleUpdateSnippet = () => {
-    try {
-      setIsLoadingSaveSnippetState(true);
-    } catch (error) {
-      console.log('## handleUpdateSnippet error', error);
-    } finally {
-      setIsLoadingSaveSnippetState(false);
-    }
-  };
-
-  const { htmlText } = useMemo(() => {
+  const { htmlText, textMatch } = useMemo(() => {
     return highlightApprox(
       item.targetLang,
       item.suggestedFocusText,
@@ -64,6 +56,24 @@ const LearningScreenSnippetReview = ({
       endIndexKeyState,
     );
   }, [item, isLoadingSaveSnippetState, startIndexKeyState, endIndexKeyState]);
+
+  const onUpdateSnippet = async () => {
+    if (!textMatch) {
+      return;
+    }
+    try {
+      setIsLoadingSaveSnippetState(true);
+      await handleUpdateSnippet({
+        id: item.id,
+        isPreSnippet: false,
+        focusedText: textMatch,
+      });
+    } catch (error) {
+      console.log('## onUpdateSnippet error', error);
+    } finally {
+      setIsLoadingSaveSnippetState(false);
+    }
+  };
 
   const indexHasChanged = endIndexKeyState !== 0 || startIndexKeyState !== 0;
 
@@ -131,8 +141,8 @@ const LearningScreenSnippetReview = ({
             <div>
               <Button
                 variant={'outline'}
-                disabled={indexHasChanged || isLoadingSaveSnippetState}
-                onClick={handleUpdateSnippet}
+                disabled={!indexHasChanged || isLoadingSaveSnippetState}
+                onClick={onUpdateSnippet}
                 className={clsx(
                   indexHasChanged ? 'animate-pulse bg-amber-300' : 'opacity-25',
                 )}
