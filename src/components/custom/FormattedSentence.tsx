@@ -1,5 +1,6 @@
 import { arabic } from '@/app/languages';
 import HoverWordCard from '@/components/custom/HoverWordCard';
+import clsx from 'clsx';
 
 const FormattedSentence = ({
   ref,
@@ -12,6 +13,8 @@ const FormattedSentence = ({
   handleDeleteWordDataProvider,
   wordsFromSentence,
   languageSelectedState,
+  matchStartKey,
+  matchEndKey,
 }) => {
   const isArabic = languageSelectedState === arabic;
 
@@ -20,6 +23,9 @@ const FormattedSentence = ({
       {targetLangformatted?.map((item, indexNested) => {
         const isUnderlined = item?.style?.textDecorationLine;
         const text = item?.text;
+        const hasHighlightedBackground =
+          indexNested >= matchStartKey && indexNested <= matchEndKey;
+
         if (isUnderlined) {
           return (
             <HoverWordCard
@@ -30,9 +36,13 @@ const FormattedSentence = ({
               wordsForSelectedTopic={wordsForSelectedTopic}
               handleDeleteWordDataProvider={handleDeleteWordDataProvider}
               wordsFromSentence={wordsFromSentence}
+              hasHighlightedBackground={hasHighlightedBackground}
+              originalText={item?.originalText}
             />
           );
         }
+
+        // bg-yellow-200 shadow-yellow-500 shadow-sm px-1 rounded ${opacityClass}
         return (
           <span
             key={indexNested}
@@ -43,6 +53,7 @@ const FormattedSentence = ({
             style={{
               textDecorationLine: isUnderlined ? 'underline' : 'none',
             }}
+            className={clsx(hasHighlightedBackground ? 'bg-yellow-200 ' : '')}
           >
             {text}
           </span>

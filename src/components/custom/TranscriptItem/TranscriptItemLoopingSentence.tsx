@@ -62,6 +62,8 @@ export function highlightApprox(
         ${after}
     `,
     textMatch: match,
+    matchStartKey: index + startIndexKeyState,
+    matchEndKey: index + endIndexKeyState + slicedText.length,
   };
 }
 

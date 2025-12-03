@@ -14,6 +14,8 @@ const HoverWordCard = ({
   wordsForSelectedTopic,
   handleDeleteWordDataProvider,
   wordsFromSentence,
+  hasHighlightedBackground,
+  originalText,
 }) => {
   const [isOriginalWordSettingState, setIsOriginalWordSettingState] =
     useState(false);
@@ -32,6 +34,11 @@ const HoverWordCard = ({
     const hoverTings = wordsFromSentence?.filter((item) => {
       const baseForm = item.baseForm;
       const surfaceForm = item.surfaceForm;
+      if (originalText) {
+        return (
+          originalText.includes(baseForm) || originalText.includes(surfaceForm)
+        );
+      }
       if (text.includes(baseForm) || text.includes(surfaceForm)) {
         return true;
       }
@@ -46,7 +53,11 @@ const HoverWordCard = ({
         asChild
         className={clsx(
           'p-0',
-          isOriginalWordSettingState ? 'bg-blue-50 rounded' : '',
+          hasHighlightedBackground
+            ? 'bg-yellow-200'
+            : isOriginalWordSettingState
+            ? 'bg-blue-50 rounded'
+            : '',
         )}
         style={{
           textDecorationLine: 'underline',
