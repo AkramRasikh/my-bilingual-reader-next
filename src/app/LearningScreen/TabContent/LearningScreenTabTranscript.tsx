@@ -6,7 +6,6 @@ import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './LearningScreenTabTranscriptNestedWordsReview';
-import WordCard from '@/components/custom/WordCard';
 import getBiggestOverlap from '@/components/custom/TranscriptItem/get-biggest-overlap';
 
 const LearningScreenTabTranscript = () => {
@@ -33,9 +32,7 @@ const LearningScreenTabTranscript = () => {
     transcriptRef,
     scrollToElState,
     wordsForSelectedTopic,
-    playFromThisContext,
     learnFormattedTranscript,
-    groupedByContextBySentence,
     sentencesForReviewMemoized,
     handleDeleteSnippet,
     savedSnippetsMemoized,
@@ -50,10 +47,6 @@ const LearningScreenTabTranscript = () => {
     wordsState,
     handleSaveWord,
     handleDeleteWordDataProvider,
-    updateWordDataProvider,
-    addWordToBasket,
-    isInBasket,
-    addImageDataProvider,
   } = useFetchData();
   const hasSentencesAndWordsInTandem = sentencesForReviewMemoized?.length > 0;
 
@@ -87,40 +80,8 @@ const LearningScreenTabTranscript = () => {
         ref={transcriptRef}
       >
         {learnFormattedTranscript.map((contentItem, index) => {
-          const isInReviewModeAndHasSentences =
-            isInReviewMode &&
-            groupedByContextBySentence?.[contentItem.id]?.length > 0;
-
           return (
             <div key={index}>
-              {isInReviewModeAndHasSentences && (
-                <div className='flex flex-col gap-1 mb-1'>
-                  {groupedByContextBySentence[contentItem.id].map(
-                    (thisWordItem, nestedIndex) => {
-                      return (
-                        <li key={thisWordItem.id} className='mx-auto'>
-                          <WordCard
-                            {...thisWordItem}
-                            indexNum={nestedIndex + 1}
-                            updateWordData={updateWordDataProvider}
-                            addWordToBasket={addWordToBasket}
-                            isInBasket={isInBasket}
-                            addImageDataProvider={addImageDataProvider}
-                            playFromThisContext={() =>
-                              playFromThisContext(contentItem.id)
-                            }
-                            languageSelectedState={languageSelectedState}
-                            wordContextIsPlaying={
-                              isVideoPlaying && masterPlay === contentItem.id
-                            }
-                            handlePause={handlePause}
-                          />
-                        </li>
-                      );
-                    },
-                  )}
-                </div>
-              )}
               <TranscriptItemProvider
                 indexNum={index}
                 threeSecondLoopState={threeSecondLoopState}

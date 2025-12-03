@@ -32,7 +32,7 @@ const LearningScreenLeftSideContainer = () => {
     handleSaveSnippet,
     overlappingTextMemoized,
   } = useLearningScreen();
-  const { languageSelectedState } = useFetchData();
+  const { languageSelectedState, handleSaveWord } = useFetchData();
   const hasUnifiedChapter = contentMetaMemoized?.length === 1;
 
   const isFullReview = selectedContentState?.isFullReview;
@@ -112,7 +112,10 @@ const LearningScreenLeftSideContainer = () => {
       ) : null}
       <LearningScreenActionBar />
       {masterPlayComprehensiveState && (
-        <TranscriptItemSecondary contentItem={masterPlayComprehensiveState} />
+        <TranscriptItemSecondary
+          contentItem={masterPlayComprehensiveState}
+          handleSaveWord={handleSaveWord}
+        />
       )}
       <KeyListener />
     </div>

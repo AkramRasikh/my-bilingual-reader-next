@@ -4,9 +4,11 @@ import useLearningScreen from '../../../app/LearningScreen/useLearningScreen';
 import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import clsx from 'clsx';
+import LoadingSpinner from '../LoadingSpinner';
 
-const TranscriptItemSecondary = ({ contentItem }) => {
+const TranscriptItemSecondary = ({ contentItem, handleSaveWord }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
+  const [isLoadingState, setIsLoadingState] = useState(false);
 
   const { wordsState, handleDeleteWordDataProvider } = useFetchData();
   const { wordsForSelectedTopic } = useLearningScreen();
@@ -17,6 +19,27 @@ const TranscriptItemSecondary = ({ contentItem }) => {
   const wordsFromSentence = contentItem?.wordsFromSentence;
   const baseLang = contentItem?.baseLang;
   const targetLangformatted = contentItem.targetLangformatted;
+
+  const handleSaveFunc = async (isGoogle, thisWord, thisWordMeaning) => {
+    if (!thisWord) {
+      return;
+    }
+    try {
+      setIsLoadingState(true);
+      await handleSaveWord({
+        highlightedWord: thisWord,
+        highlightedWordSentenceId: contentItem.id,
+        contextSentence: contentItem.targetLang,
+        meaning: thisWordMeaning,
+        isGoogle,
+      });
+    } catch (error) {
+    } finally {
+      // setHighlightedTextState('');
+      setWordPopUpState([]);
+      setIsLoadingState(false);
+    }
+  };
 
   const handleMouseEnter = (text) => {
     hoverTimerMasterRef.current = setTimeout(() => {
@@ -45,14 +68,21 @@ const TranscriptItemSecondary = ({ contentItem }) => {
   return (
     <div
       className={clsx(
-        'rounded-2xl border-2 p-2 mt-2 flex flex-col gap-2',
+        'rounded-2xl border-2 p-2 mt-2 flex flex-col gap-2 relative',
         dueStatus === 'now'
           ? 'border-red-500'
           : hasBeenReviewed
           ? 'border-amber-500'
           : 'border-blue-200',
+
+        isLoadingState ? 'opacity-75' : '',
       )}
     >
+      {isLoadingState && (
+        <div className='absolute inset-0 flex items-center justify-center bg-white/70 rounded'>
+          <LoadingSpinner />
+        </div>
+      )}
       <FormattedSentence
         targetLangformatted={targetLangformatted}
         handleMouseLeave={handleMouseLeave}
@@ -71,6 +101,7 @@ const TranscriptItemSecondary = ({ contentItem }) => {
             vocab={contentItem.vocab}
             meaning={contentItem.meaning}
             sentenceStructure={contentItem.sentenceStructure}
+            handleSaveFunc={handleSaveFunc}
           />
         </>
       )}

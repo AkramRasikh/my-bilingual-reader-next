@@ -153,15 +153,11 @@ const LearningScreenSnippetReview = ({
     }
     try {
       setIsLoadingSaveSnippetState(true);
-      const boolSuccess = await handleUpdateSnippet({
+      await handleUpdateSnippet({
         id: item.id,
         isPreSnippet: false,
         focusedText: textMatch,
       });
-      if (boolSuccess) {
-        console.log('## Success, change state?');
-        onReset(); // because of flow in map
-      }
     } catch (error) {
       console.log('## onUpdateSnippet error', error);
     } finally {
