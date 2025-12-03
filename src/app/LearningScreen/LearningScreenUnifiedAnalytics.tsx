@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import useLearningScreen from './useLearningScreen';
-import { HistoryIcon } from 'lucide-react';
+import { HistoryIcon, SaveAllIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { isDueCheck } from '@/utils/is-due-check';
 
@@ -12,11 +12,16 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
     numberOfSentencesPendingOrDueState,
     setSentenceRepsState,
     contentSnippets,
+    overlappedSentencesViableForReviewMemoized,
   } = useLearningScreen();
   const sentencesNeedReview = contentMetaMemoized[0]?.sentencesNeedReview;
 
   const handleClearReps = () => {
     setSentenceRepsState(0);
+  };
+
+  const handleBulkAddToReviews = async () => {
+    console.log('## handleBulkAddToReviews');
   };
 
   const numberOfDueSnippets = useMemo(() => {
@@ -26,6 +31,9 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
 
     return contentSnippets.filter((item) => isDueCheck(item, new Date()));
   }, [contentSnippets]).length;
+
+  const overlappedSentencesViableForReviewMemoizedKeyArray =
+    overlappedSentencesViableForReviewMemoized?.keyArray;
 
   return (
     <div>
@@ -39,6 +47,24 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
         Snippets Due: {numberOfDueSnippets}/{contentSnippets.length}
       </p>
       <hr className='my-1' />
+      <p className='flex gap-2 text-xs font-medium  w-fit m-auto'>
+        <span className='m-auto'>
+          Bulk Review:{' '}
+          {overlappedSentencesViableForReviewMemoizedKeyArray?.length}
+        </span>
+
+        <Button
+          className='w-5 h-5'
+          variant='outline'
+          onClick={handleBulkAddToReviews}
+          disabled={
+            !overlappedSentencesViableForReviewMemoizedKeyArray?.length ||
+            overlappedSentencesViableForReviewMemoizedKeyArray?.length === 0
+          }
+        >
+          <SaveAllIcon />
+        </Button>
+      </p>
       <p className='flex gap-2 text-xs font-medium  w-fit m-auto'>
         <span className='m-auto'>Reps: {sentenceRepsState}</span>
         {sentenceRepsState ? (

@@ -5,7 +5,7 @@ export const threeSecondLoopLogic = ({
   refSeconds,
   threeSecondLoopState,
   formattedTranscriptState,
-  realStartTime,
+  realStartTime = 0,
   setState,
   startTime,
   endTime,

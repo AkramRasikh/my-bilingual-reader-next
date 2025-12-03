@@ -249,6 +249,7 @@ export const LearningScreenProvider = ({
         prevSentence: prev ? prev.time : null,
         thisSentence: current.time,
         targetLang: current.targetLang,
+        isUpForReview: Boolean(current?.reviewData),
         baseLang: current.baseLang,
         nextSentence: next ? next.time : null,
       };
@@ -1344,6 +1345,106 @@ export const LearningScreenProvider = ({
     realStartTime,
   ]);
 
+  function accumulateSentenceOverlap(snippetsBySentence) {
+    const sentenceMap = {};
+
+    for (const snip of snippetsBySentence) {
+      const { id, percentageOverlap, startPoint } = snip;
+
+      const start = Math.max(0, startPoint);
+      const end = Math.min(100, startPoint + percentageOverlap);
+
+      if (!sentenceMap[id]) sentenceMap[id] = [];
+      sentenceMap[id].push([start, end]);
+    }
+
+    // Merge intervals for each sentence
+    const results = {};
+
+    for (const [sentenceId, intervals] of Object.entries(sentenceMap)) {
+      // Sort by start position
+      intervals.sort((a, b) => a[0] - b[0]);
+
+      const merged = [];
+      let [currStart, currEnd] = intervals[0];
+
+      for (let i = 1; i < intervals.length; i++) {
+        const [nextStart, nextEnd] = intervals[i];
+
+        if (nextStart <= currEnd) {
+          // Overlapping → extend
+          currEnd = Math.max(currEnd, nextEnd);
+        } else {
+          // No overlap → push previous
+          merged.push([currStart, currEnd]);
+          [currStart, currEnd] = [nextStart, nextEnd];
+        }
+      }
+      merged.push([currStart, currEnd]);
+
+      // Total coverage
+      const total = merged.reduce((sum, [s, e]) => sum + (e - s), 0);
+
+      if (total > 50) {
+        results[sentenceId] = {
+          mergedRanges: merged,
+          totalOverlap: total, // in %
+        };
+      }
+    }
+
+    return results;
+  }
+
+  const overlappedSentencesViableForReviewMemoized = useMemo(() => {
+    const contentSnippets = selectedContentStateMemoized?.snippets;
+    if (!contentSnippets || contentSnippets?.length === 0) {
+      return null;
+    }
+
+    const allSentenceIntervals = [];
+
+    contentSnippets.forEach((snippetEl) => {
+      const snippetTime = snippetEl.time;
+      const snippetIsContracted = snippetEl.isContracted;
+
+      const snippetStartTime = snippetTime - (snippetIsContracted ? 0.75 : 1.5);
+      const snippetEndTime = snippetTime + (snippetIsContracted ? 0.75 : 1.5);
+      const overlappingSentenceData = threeSecondLoopLogic({
+        refSeconds: { currentTime: null },
+        threeSecondLoopState: snippetTime,
+        formattedTranscriptState: formattedTranscriptMemoized,
+        startTime: snippetStartTime,
+        endTime: snippetEndTime,
+        setState: null,
+      });
+
+      overlappingSentenceData.forEach((item) => {
+        const sentenceIsUpForReview =
+          sentenceMapMemoized[item.id].isUpForReview;
+        if (!sentenceIsUpForReview) {
+          allSentenceIntervals.push(item);
+        }
+      });
+    });
+
+    if (allSentenceIntervals.length === 0) {
+      return null;
+    }
+
+    const allOverlappingDataReviewEligible =
+      accumulateSentenceOverlap(allSentenceIntervals);
+
+    return {
+      keyMap: allOverlappingDataReviewEligible,
+      keyArray: Object.keys(allOverlappingDataReviewEligible),
+    };
+  }, [
+    selectedContentStateMemoized,
+    sentenceMapMemoized,
+    formattedTranscriptMemoized,
+  ]);
+
   return (
     <LearningScreenContext.Provider
       value={{
@@ -1453,6 +1554,7 @@ export const LearningScreenProvider = ({
         handleQuickSaveSnippet,
         handleUpdateSnippet,
         getSentenceDataOfOverlappingWordsDuringSave,
+        overlappedSentencesViableForReviewMemoized,
       }}
     >
       {children}
