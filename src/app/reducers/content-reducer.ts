@@ -69,6 +69,20 @@ export function contentReducer(state, action) {
       }));
     }
 
+    case 'addContent': {
+      // 1. Remove the topic with the matching id
+      const newContentData = action.newContentData;
+      const newContentIndex = state.length;
+      return [
+        ...state,
+        {
+          ...newContentData,
+          generalTopicName: newContentData.title,
+          contentIndex: newContentIndex,
+        },
+      ];
+    }
+
     default:
       return state;
   }

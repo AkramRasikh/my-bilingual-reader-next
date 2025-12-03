@@ -29,18 +29,20 @@ export async function POST(req) {
     });
 
     const id = uuidv4();
+
+    const newContentData = {
+      id,
+      title,
+      hasAudio: audioUploaded,
+      origin: 'youtube',
+      content: transcript,
+      url,
+      createdAt: new Date().toISOString(),
+    };
     const resUploadContent = await addContentLogic({
       id,
       language,
-      content: {
-        id,
-        title,
-        hasAudio: audioUploaded,
-        origin: 'youtube',
-        content: transcript,
-        url,
-        createdAt: new Date().toISOString(),
-      },
+      content: newContentData,
     });
 
     contentUploaded = Boolean(resUploadContent);
@@ -49,6 +51,7 @@ export async function POST(req) {
       JSON.stringify({
         contentUploaded,
         audioUploaded,
+        newContentData: newContentData,
       }),
       {
         headers: { 'Content-Type': 'application/json' },

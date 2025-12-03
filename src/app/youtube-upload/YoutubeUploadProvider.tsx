@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import useMapTranscriptToSeconds from '../LearningScreen/hooks/useMapTranscriptToSeconds';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 const YoutubeUploadContext = createContext(null);
 
@@ -52,6 +53,8 @@ export function YoutubeUploadProvider({ children }) {
   );
 
   const numberOfBaseLangLessItems = transcriptItemsNoBaseLang?.length;
+
+  const { dispatchContent, setToastMessageState } = useFetchData();
 
   useMapTranscriptToSeconds({
     ref: youtubeMediaRef,
@@ -99,6 +102,14 @@ export function YoutubeUploadProvider({ children }) {
             data.audioUploaded ? 'Audio uploaded' : ''
           }`,
         );
+
+        if (res?.newContentData) {
+          dispatchContent({
+            type: 'addContent',
+            newContentData: res.newContentData,
+          });
+          setToastMessageState('New content added!');
+        }
       } else {
         setMessage(`Error: ${data.error}`);
       }
