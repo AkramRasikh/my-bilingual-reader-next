@@ -19,7 +19,11 @@ const FormattedSentence = ({
   const isArabic = languageSelectedState === arabic;
 
   return (
-    <span ref={ref} className='mt-auto mb-auto' dir={isArabic ? 'rtl' : 'ltr'}>
+    <span
+      ref={ref}
+      className={clsx(matchStartKey || matchEndKey ? 'm-0' : 'mt-auto mb-auto')}
+      dir={isArabic ? 'rtl' : 'ltr'}
+    >
       {targetLangformatted?.map((item, indexNested) => {
         const isUnderlined = item?.style?.textDecorationLine;
         const text = item?.text;
