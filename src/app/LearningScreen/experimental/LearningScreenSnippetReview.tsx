@@ -12,12 +12,13 @@ import {
   SaveIcon,
   Undo2Icon,
 } from 'lucide-react';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import useLearningScreen from '../useLearningScreen';
 import FormattedSentence from '@/components/custom/FormattedSentence';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
+import HighlightedText from '@/components/custom/HighlightedText';
 
 function expandWordsIntoChunks(words) {
   let globalIdx = 0;
@@ -56,14 +57,24 @@ const LearningScreenSnippetReview = ({
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
     useState(false);
+  const [highlightedTextState, setHighlightedTextState] = useState('');
+  const [isLoadingWordState, setIsLoadingWordState] = useState(false);
   const thisIsPlaying = isVideoPlaying && threeSecondLoopState === item.time;
   const isPreSnippet = item?.isPreSnippet;
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
+  const ulRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { handleUpdateSnippet, wordsForSelectedTopicMemoized } =
-    useLearningScreen();
-  const { pureWordsMemoized, languageSelectedState, wordsState } =
-    useFetchData();
+  const {
+    handleUpdateSnippet,
+    wordsForSelectedTopicMemoized,
+    getSentenceDataOfOverlappingWordsDuringSave,
+  } = useLearningScreen();
+  const {
+    pureWordsMemoized,
+    languageSelectedState,
+    wordsState,
+    handleSaveWord,
+  } = useFetchData();
 
   const onMoveLeft = () => {
     setStartIndexKeyState(startIndexKeyState - 1);
@@ -78,6 +89,32 @@ const LearningScreenSnippetReview = ({
   const onReset = () => {
     setStartIndexKeyState(0);
     setEndIndexKeyState(0);
+  };
+
+  const handleSaveFunc = async (isGoogle, thisWord, thisWordMeaning) => {
+    try {
+      setIsLoadingWordState(true);
+      const belongingSentenceId = getSentenceDataOfOverlappingWordsDuringSave(
+        item.time,
+        highlightedTextState,
+      );
+      if (belongingSentenceId) {
+        await handleSaveWord({
+          highlightedWord: highlightedTextState || thisWord,
+          highlightedWordSentenceId: belongingSentenceId,
+          contextSentence: item.targetLang, // maybe these two should match?
+          meaning: thisWordMeaning,
+          isGoogle,
+        });
+      } else {
+        console.log('## no belonding sentence found');
+      }
+    } catch (error) {
+    } finally {
+      setHighlightedTextState('');
+      setWordPopUpState([]);
+      setIsLoadingWordState(false);
+    }
   };
 
   const handleMouseEnter = (text) => {
@@ -131,6 +168,24 @@ const LearningScreenSnippetReview = ({
       setIsLoadingSaveSnippetState(false);
     }
   };
+  useEffect(() => {
+    const handleMouseUp = () => {
+      const selection = window.getSelection();
+      const selectedText = selection?.toString().trim();
+
+      const anchorNode = selection?.anchorNode;
+      if (!anchorNode || !ulRef.current?.contains(anchorNode)) return;
+
+      // setSentenceHighlightingState(contentItem.id);
+      setHighlightedTextState(selectedText || '');
+    };
+
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
 
   const { granularFormattedSentence, wordsFromSentence } = useMemo(() => {
     const targetLangformatted = underlineWordsInSentence(
@@ -177,19 +232,30 @@ const LearningScreenSnippetReview = ({
               <RabbitIcon className='fill-amber-300 rounded m-auto' />
             )}
           </div>
-          <FormattedSentence
-            targetLangformatted={granularFormattedSentence}
-            handleMouseLeave={handleMouseLeave}
-            handleMouseEnter={handleMouseEnter}
-            wordPopUpState={wordPopUpState}
-            setWordPopUpState={setWordPopUpState}
-            wordsForSelectedTopic={wordsForSelectedTopicMemoized}
-            handleDeleteWordDataProvider={() => {}}
-            wordsFromSentence={wordsFromSentence}
-            languageSelectedState={languageSelectedState}
-            matchStartKey={matchStartKey}
-            matchEndKey={matchEndKey}
-          />
+          <div>
+            <FormattedSentence
+              ref={ulRef}
+              targetLangformatted={granularFormattedSentence}
+              handleMouseLeave={handleMouseLeave}
+              handleMouseEnter={handleMouseEnter}
+              wordPopUpState={wordPopUpState}
+              setWordPopUpState={setWordPopUpState}
+              wordsForSelectedTopic={wordsForSelectedTopicMemoized}
+              handleDeleteWordDataProvider={() => {}}
+              wordsFromSentence={wordsFromSentence}
+              languageSelectedState={languageSelectedState}
+              matchStartKey={matchStartKey}
+              matchEndKey={matchEndKey}
+            />
+            {highlightedTextState && (
+              <HighlightedText
+                isLoadingState={isLoadingWordState || isLoadingSaveSnippetState}
+                handleSaveFunc={handleSaveFunc}
+                setHighlightedTextState={setHighlightedTextState}
+                highlightedTextState={highlightedTextState}
+              />
+            )}
+          </div>
         </div>
         {isPreSnippet && (
           <div className='flex flex-row px-2'>

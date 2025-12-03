@@ -327,6 +327,41 @@ export const LearningScreenProvider = ({
     setSelectedContentTitleState(thisContentTitle);
   };
 
+  const getSentenceDataOfOverlappingWordsDuringSave = (
+    thisSnippetsTime,
+    highlightedTextFromSnippet,
+  ) => {
+    const startTime = thisSnippetsTime - 1.5;
+    const endTime = thisSnippetsTime + 1.5;
+    const fauxRef = {
+      currentTime: null,
+    };
+
+    const idsOfOverlappingSentences = threeSecondLoopLogic({
+      refSeconds: fauxRef,
+      threeSecondLoopState: currentTime,
+      formattedTranscriptState: formattedTranscriptMemoized,
+      realStartTime,
+      startTime,
+      endTime,
+      setState: null,
+    })?.map((i) => i.id);
+
+    if (idsOfOverlappingSentences?.length === 0) {
+      return null;
+    }
+    if (idsOfOverlappingSentences?.length === 1) {
+      return idsOfOverlappingSentences[0];
+    }
+
+    const found = idsOfOverlappingSentences.find((sentenceId) => {
+      const sentence = sentenceMapMemoized[sentenceId];
+      return sentence.targetLang.includes(highlightedTextFromSnippet);
+    });
+
+    return found || idsOfOverlappingSentences[0];
+  };
+
   const handleQuickSaveSnippet = async () => {
     const contentSnippets = selectedContentStateMemoized?.snippets || [];
     const hasThisSnippet =
@@ -1417,6 +1452,7 @@ export const LearningScreenProvider = ({
         sentenceMapMemoized,
         handleQuickSaveSnippet,
         handleUpdateSnippet,
+        getSentenceDataOfOverlappingWordsDuringSave,
       }}
     >
       {children}
