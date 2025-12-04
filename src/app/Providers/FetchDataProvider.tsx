@@ -179,26 +179,24 @@ export function FetchDataProvider({ children }) {
   };
 
   const sentenceReviewBulk = async ({
-    fieldToUpdate,
-    topicName,
+    reviewData,
     contentIndex,
-    removeReview,
     sentenceIds,
+    contentId,
   }) => {
     try {
-      const updatedSentenceIds = await sentenceReviewBulkAPI({
-        title: topicName,
-        fieldToUpdate,
+      const resUpdatedSentenceIds = await sentenceReviewBulkAPI({
+        contentId,
         language: languageSelectedState,
-        removeReview,
+        reviewData,
         sentenceIds,
       });
-      if (updatedSentenceIds) {
+      if (resUpdatedSentenceIds) {
         dispatchContent({
           type: 'updateSentences',
           contentIndex,
-          sentenceIds: updatedSentenceIds,
-          fields: { ...fieldToUpdate },
+          sentenceIds: resUpdatedSentenceIds.updatedSentenceIds,
+          fields: { reviewData: resUpdatedSentenceIds.reviewData },
         });
       }
       setToastMessageState(`Bulk reviewed ${sentenceIds.length} sentences ✅`);

@@ -1,9 +1,8 @@
 export const sentenceReviewBulkAPI = async ({
-  title,
-  fieldToUpdate,
   language,
-  removeReview,
+  contentId,
   sentenceIds,
+  reviewData,
 }) => {
   try {
     const response = await fetch('/api/bulkSentenceReview', {
@@ -13,10 +12,9 @@ export const sentenceReviewBulkAPI = async ({
       },
       body: JSON.stringify({
         language,
-        title,
-        fieldToUpdate,
-        removeReview,
+        contentId,
         sentenceIds,
+        reviewData,
       }),
     });
 

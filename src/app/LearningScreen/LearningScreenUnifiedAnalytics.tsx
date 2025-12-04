@@ -1,10 +1,13 @@
 import { Button } from '@/components/ui/button';
 import useLearningScreen from './useLearningScreen';
 import { HistoryIcon, SaveAllIcon } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { isDueCheck } from '@/utils/is-due-check';
+import LoadingSpinner from '@/components/custom/LoadingSpinner';
+import clsx from 'clsx';
 
 const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
+  const [isLoadingBulkState, setIsLoadingBulkState] = useState(false);
   const {
     contentMetaMemoized,
     contentMetaWordMemoized,
@@ -13,15 +16,33 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
     setSentenceRepsState,
     contentSnippets,
     overlappedSentencesViableForReviewMemoized,
+    handleAddOverlappedSnippetsToReview,
   } = useLearningScreen();
   const sentencesNeedReview = contentMetaMemoized[0]?.sentencesNeedReview;
+
+  const overlappedSentencesViableForReviewMemoizedKeyArray =
+    overlappedSentencesViableForReviewMemoized?.keyArray;
 
   const handleClearReps = () => {
     setSentenceRepsState(0);
   };
 
   const handleBulkAddToReviews = async () => {
-    console.log('## handleBulkAddToReviews');
+    if (
+      !overlappedSentencesViableForReviewMemoizedKeyArray ||
+      overlappedSentencesViableForReviewMemoizedKeyArray?.length === 0
+    ) {
+      return;
+    }
+
+    try {
+      setIsLoadingBulkState(true);
+      await handleAddOverlappedSnippetsToReview();
+    } catch (error) {
+      console.log('## handleBulkAddToReviews');
+    } finally {
+      setIsLoadingBulkState(false);
+    }
   };
 
   const numberOfDueSnippets = useMemo(() => {
@@ -31,9 +52,6 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
 
     return contentSnippets.filter((item) => isDueCheck(item, new Date()));
   }, [contentSnippets]).length;
-
-  const overlappedSentencesViableForReviewMemoizedKeyArray =
-    overlappedSentencesViableForReviewMemoized?.keyArray;
 
   return (
     <div>
@@ -47,23 +65,33 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
         Snippets Due: {numberOfDueSnippets}/{contentSnippets.length}
       </p>
       <hr className='my-1' />
-      <p className='flex gap-2 text-xs font-medium  w-fit m-auto'>
-        <span className='m-auto'>
-          Bulk Review:{' '}
-          {overlappedSentencesViableForReviewMemoizedKeyArray?.length}
-        </span>
-
-        <Button
-          className='w-5 h-5'
-          variant='outline'
-          onClick={handleBulkAddToReviews}
-          disabled={
-            !overlappedSentencesViableForReviewMemoizedKeyArray?.length ||
-            overlappedSentencesViableForReviewMemoizedKeyArray?.length === 0
-          }
+      <p className='flex gap-2 text-xs font-medium w-fit m-auto py-2'>
+        <div
+          className={clsx('relative', isLoadingBulkState ? 'opacity-50' : '')}
         >
-          <SaveAllIcon />
-        </Button>
+          {isLoadingBulkState && (
+            <div className='absolute right-4/10 top-1/8'>
+              <LoadingSpinner />
+            </div>
+          )}
+          <span className='m-auto mr-2'>
+            Bulk Review:{' '}
+            {overlappedSentencesViableForReviewMemoizedKeyArray?.length}
+          </span>
+
+          <Button
+            className='w-5 h-5 align-sub bg-amber-300 border-amber-300'
+            variant='outline'
+            onClick={handleBulkAddToReviews}
+            disabled={
+              isLoadingBulkState ||
+              !overlappedSentencesViableForReviewMemoizedKeyArray?.length ||
+              overlappedSentencesViableForReviewMemoizedKeyArray?.length === 0
+            }
+          >
+            <SaveAllIcon />
+          </Button>
+        </div>
       </p>
       <p className='flex gap-2 text-xs font-medium  w-fit m-auto'>
         <span className='m-auto'>Reps: {sentenceRepsState}</span>

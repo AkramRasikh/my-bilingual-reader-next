@@ -782,47 +782,41 @@ export const LearningScreenProvider = ({
   }, [getSelectedTopicsWordsFunc, wordsState, selectedContentStateMemoized]);
 
   const handleBulkReviews = async () => {
-    const emptyCard = getEmptyCard();
-
-    const sentenceIdData =
-      loopTranscriptState.filter((item) => !item?.reviewData) || [];
-
-    const nextScheduledOptions = getNextScheduledOptions({
-      card: emptyCard,
-      contentType: srsRetentionKeyTypes.sentences,
-    });
-
-    const hasContentToReview = content?.some(
-      (sentenceWidget) => sentenceWidget?.reviewData,
-    );
-
-    const nextDueCard = nextScheduledOptions['2'].card;
-
-    if (sentenceIdData.length === 0) {
-      console.log('## no sentenceIds');
-      return;
-    }
-
-    const sentenceIds = sentenceIdData.map((item) => item.id);
-
-    try {
-      setIsGenericItemLoadingState((prev) => [...prev, ...sentenceIds]);
-      await sentenceReviewBulk({
-        topicName: selectedContentStateMemoized.title,
-        fieldToUpdate: {
-          reviewData: nextDueCard,
-        },
-        contentIndex,
-        removeReview: hasContentToReview,
-        sentenceIds,
-      });
-      setSentenceRepsState((prev) => prev + sentenceIds.length);
-    } catch (error) {
-    } finally {
-      setIsGenericItemLoadingState((prev) =>
-        prev.filter((item) => !sentenceIds.includes(item)),
-      );
-    }
+    // const emptyCard = getEmptyCard();
+    //
+    // const sentenceIdData =
+    //   loopTranscriptState.filter((item) => !item?.reviewData) || [];
+    // const nextScheduledOptions = getNextScheduledOptions({
+    //   card: emptyCard,
+    //   contentType: srsRetentionKeyTypes.sentences,
+    // });
+    // const hasContentToReview = content?.some(
+    //   (sentenceWidget) => sentenceWidget?.reviewData,
+    // );
+    // const nextDueCard = nextScheduledOptions['2'].card;
+    // if (sentenceIdData.length === 0) {
+    //   console.log('## no sentenceIds');
+    //   return;
+    // }
+    // const sentenceIds = sentenceIdData.map((item) => item.id);
+    // try {
+    //   setIsGenericItemLoadingState((prev) => [...prev, ...sentenceIds]);
+    //   await sentenceReviewBulk({
+    //     topicName: selectedContentStateMemoized.title,
+    //     fieldToUpdate: {
+    //       reviewData: nextDueCard,
+    //     },
+    //     contentIndex,
+    //     removeReview: hasContentToReview,
+    //     sentenceIds,
+    //   });
+    //   setSentenceRepsState((prev) => prev + sentenceIds.length);
+    // } catch (error) {
+    // } finally {
+    //   setIsGenericItemLoadingState((prev) =>
+    //     prev.filter((item) => !sentenceIds.includes(item)),
+    //   );
+    // }
   };
 
   const handleReviewFunc = async ({ sentenceId, isRemoveReview, nextDue }) => {
@@ -1445,6 +1439,48 @@ export const LearningScreenProvider = ({
     formattedTranscriptMemoized,
   ]);
 
+  const handleAddOverlappedSnippetsToReview = async () => {
+    console.log(
+      '## handleAddOverlappedSnippetsToReview 1',
+      overlappedSentencesViableForReviewMemoized,
+    );
+
+    const emptyCard = getEmptyCard();
+
+    const nextScheduledOptions = getNextScheduledOptions({
+      card: emptyCard,
+      contentType: srsRetentionKeyTypes.sentences,
+    });
+
+    const nextDueCard = nextScheduledOptions['2'].card;
+
+    if (
+      !overlappedSentencesViableForReviewMemoized?.keyArray ||
+      overlappedSentencesViableForReviewMemoized?.keyArray?.length === 0
+    ) {
+      return null;
+    }
+    console.log('## handleAddOverlappedSnippetsToReview 2');
+
+    const sentenceIds = overlappedSentencesViableForReviewMemoized.keyArray;
+    try {
+      setIsGenericItemLoadingState((prev) => [...prev, ...sentenceIds]);
+      await sentenceReviewBulk({
+        contentId,
+        reviewData: nextDueCard,
+        contentIndex,
+        sentenceIds: overlappedSentencesViableForReviewMemoized.keyArray,
+      });
+      setSentenceRepsState((prev) => prev + sentenceIds.length);
+    } catch (error) {
+      console.log('## handleAddOverlappedSnippetsToReview error', error);
+    } finally {
+      setIsGenericItemLoadingState((prev) =>
+        prev.filter((item) => !sentenceIds.includes(item)),
+      );
+    }
+  };
+
   return (
     <LearningScreenContext.Provider
       value={{
@@ -1555,6 +1591,7 @@ export const LearningScreenProvider = ({
         handleUpdateSnippet,
         getSentenceDataOfOverlappingWordsDuringSave,
         overlappedSentencesViableForReviewMemoized,
+        handleAddOverlappedSnippetsToReview,
       }}
     >
       {children}
