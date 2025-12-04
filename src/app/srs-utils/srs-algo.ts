@@ -64,10 +64,10 @@ export const srsCalculationAndText = ({ reviewData, contentType, timeNow }) => {
 // grade = [1,2,3,4]
 export const srsRetentionKey = {
   vocab: 0.98,
-  snippet: 0.99,
   sentences: 0.97,
   topic: 0.95,
   media: 0.93,
+  snippet: 0.93,
 };
 export const srsRetentionKeyTypes = {
   vocab: 'vocab',
