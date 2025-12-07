@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { Check, WholeWordIcon } from 'lucide-react';
+import { Check, ScissorsIcon, WholeWordIcon } from 'lucide-react';
 
 const LandingUIContentSelectionItemImage = ({ youtubeId }) => (
   <div className='relative h-20 w-5/6 m-auto'>
@@ -47,6 +47,7 @@ const LandingScreenContentSelectionItem = ({
   const isThisNew = youtubeMetaData?.isThisNew;
   const hasAllBeenReviewed = youtubeMetaData?.hasAllBeenReviewed;
   const numberOfDueWords = youtubeMetaData?.numberOfDueWords;
+  const snippetsDue = youtubeMetaData.snippetsDue;
 
   return (
     <div className='rounded-2xl border flex flex-col gap-1 p-2 relative'>
@@ -74,16 +75,22 @@ const LandingScreenContentSelectionItem = ({
         isThisNew={isThisNew}
       />
 
+      {snippetsDue > 0 && (
+        <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-200 rounded-xl p-1 top-1 left-0 z-10'>
+          <ScissorsIcon className='h-3 w-3 m-auto' />
+          <span className='text-xs font-light'>{snippetsDue}</span>
+        </div>
+      )}
       {isThisDue > 0 && (
         <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-200 rounded-xl p-1 -bottom-3 left-0 z-10'>
           <WholeWordIcon className='h-3 w-3 m-auto' />
-          <span className='text-xs font-light'>{isThisDue}</span>{' '}
+          <span className='text-xs font-light'>{isThisDue}</span>
         </div>
       )}
       {numberOfDueWords > 0 && (
         <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-100 rounded-xl p-1 -bottom-3 right-0 z-10'>
           <WholeWordIcon className='h-3 w-3 m-auto' />
-          <span className='text-xs font-light'>{numberOfDueWords}</span>{' '}
+          <span className='text-xs font-light'>{numberOfDueWords}</span>
         </div>
       )}
     </div>

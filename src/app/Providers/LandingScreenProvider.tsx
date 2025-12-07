@@ -95,22 +95,32 @@ export const LandingScreenProvider = ({
       (el) => el.generalTopicName === genTop,
     );
 
-    if (allTheseTopics.length === 0) {
-      return {
-        isThisDue: null,
-        isThisNew: null,
-        hasAllBeenReviewed: null,
-      };
-    }
-
     let isThisDue = 0;
+    let snippetsDue = 0;
     let isThisNew = true;
     let hasAllBeenReviewed = true;
+
+    if (allTheseTopics.length === 0) {
+      return {
+        isThisDue,
+        isThisNew,
+        hasAllBeenReviewed,
+        snippetsDue,
+      };
+    }
 
     const collectiveSentenceIds = [];
 
     for (const contentEl of allTheseTopics) {
       // --- Check for due items
+      const contentSnippets = contentEl?.snippets;
+      if (contentSnippets) {
+        for (const snippetEl of contentSnippets) {
+          if (isDueCheck(snippetEl, todayDateObj)) {
+            snippetsDue = snippetsDue + 1;
+          }
+        }
+      }
       if (contentEl.content) {
         for (const transcriptEl of contentEl.content) {
           collectiveSentenceIds.push(transcriptEl.id);
@@ -134,7 +144,13 @@ export const LandingScreenProvider = ({
       ),
     ).length;
 
-    return { isThisDue, isThisNew, hasAllBeenReviewed, numberOfDueWords };
+    return {
+      isThisDue,
+      isThisNew,
+      hasAllBeenReviewed,
+      numberOfDueWords,
+      snippetsDue,
+    };
   };
 
   return (

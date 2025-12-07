@@ -15,8 +15,13 @@ const LandingUIContentSelection = ({ generalTopicDisplayNameMemoized }) => {
     const today = new Date();
     const comprehensiveState = generalTopicDisplayNameMemoized.map(
       ({ youtubeId, title }) => {
-        const { isThisDue, isThisNew, hasAllBeenReviewed, numberOfDueWords } =
-          getTopicStatus(title, today);
+        const {
+          isThisDue,
+          isThisNew,
+          hasAllBeenReviewed,
+          numberOfDueWords,
+          snippetsDue,
+        } = getTopicStatus(title, today);
 
         return {
           title,
@@ -25,6 +30,7 @@ const LandingUIContentSelection = ({ generalTopicDisplayNameMemoized }) => {
           isThisNew,
           hasAllBeenReviewed,
           numberOfDueWords,
+          snippetsDue,
         };
       },
     );
