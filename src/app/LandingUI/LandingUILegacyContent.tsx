@@ -1,8 +1,8 @@
-import { useFetchData } from '../Providers/FetchDataProvider';
+import { useLandingScreen } from '../Providers/LandingScreenProvider';
 import LandingUICheckLiveStatus from './LandingUICheckLiveStatus';
 
 const LandingUILegacyContent = () => {
-  const { nonMediaGeneralTopicDisplayNameMemoized } = useFetchData();
+  const { nonMediaGeneralTopicDisplayNameMemoized } = useLandingScreen();
   return (
     <div>
       <ul>
