@@ -1,4 +1,9 @@
-export const deleteContentAPI = async ({ contentId, title, language }) => {
+export const deleteContentAPI = async ({
+  contentId,
+  title,
+  language,
+  wordIds,
+}) => {
   try {
     const response = await fetch('/api/deleteContent', {
       method: 'POST',
@@ -9,6 +14,7 @@ export const deleteContentAPI = async ({ contentId, title, language }) => {
         language,
         id: contentId,
         title,
+        wordIds,
       }),
     });
 

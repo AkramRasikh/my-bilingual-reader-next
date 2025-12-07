@@ -16,6 +16,9 @@ export function wordsReducer(state, action) {
     case 'removeWord':
       return state.filter((item) => item.id !== action.wordId);
 
+    case 'removeWords':
+      return state.filter((item) => !action.ids.includes(item.id));
+
     case 'updateWord':
       return state.map((item) => {
         if (item.id === action.wordId) {

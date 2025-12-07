@@ -31,6 +31,7 @@ import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
 import { getAudioURL } from '@/utils/get-media-url';
 import useFetchInitData from './useFetchInitData';
 import { deleteContentAPI } from '../client-api/delete-content';
+import { useRouter } from 'next/navigation';
 
 const FetchDataContext = createContext(null);
 
@@ -46,6 +47,7 @@ export function FetchDataProvider({ children }) {
   const [wordBasketState, setWordBasketState] = useState([]);
   const [toastMessageState, setToastMessageState] = useState('');
   const [story, setStory] = useState();
+  const router = useRouter();
 
   useLanguageSelector({
     languageSelectedState,
@@ -364,18 +366,27 @@ export function FetchDataProvider({ children }) {
     }
   };
 
-  const deleteContent = async ({ contentId, title }) => {
+  const deleteContent = async ({ contentId, title, wordIds }) => {
     try {
       const deleteSuccess = await deleteContentAPI({
         contentId,
         title,
         language: languageSelectedState,
+        wordIds,
       });
       if (deleteSuccess) {
+        router.push('/');
         dispatchContent({
           type: 'deleteContent',
           id: contentId,
         });
+        if (wordIds?.length > 0) {
+          dispatchWords({
+            type: 'removeWords',
+            ids: wordIds,
+          });
+        }
+        setToastMessageState(`Content deleted!`);
       }
     } catch (error) {
       console.log('## deleteContent', { error });

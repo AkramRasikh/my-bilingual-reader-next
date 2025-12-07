@@ -6,12 +6,18 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { TabsContent } from '@/components/ui/tabs';
 import useLearningScreen from '../useLearningScreen';
+// import ClickAndConfirm from '@/components/custom/ClickAndConfirm';
+import { useFetchData } from '@/app/Providers/FetchDataProvider';
 
 const LearningScreenTabMeta = ({ updateContentMetaData }) => {
-  const { selectedContentState } = useLearningScreen();
+  // const [showConfirm, setShowConfirm] = useState(false);
+  const { deleteContent } = useFetchData();
+
+  const { selectedContentState, wordsForSelectedTopic } = useLearningScreen();
 
   const url = selectedContentState?.url;
   const reviewHistory = selectedContentState?.reviewHistory;
+  const title = selectedContentState?.title;
   const contentIndex = selectedContentState?.contentIndex;
   const contentId = selectedContentState.id;
 
@@ -64,9 +70,23 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
     }
   };
 
+  const deleteThisContent = async () => {
+    try {
+      setIsLoading(true);
+      await deleteContent({
+        contentId,
+        title,
+        wordIds: wordsForSelectedTopic?.map((item) => item.id),
+      });
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <TabsContent value='meta' className={'p-1 max-h-150 overflow-y-auto'}>
-      <div className='flex flex-col items-start gap-2  my-2'>
+      <div className='flex flex-col items-start gap-2 my-2'>
         {isLoading && (
           <div className='m-auto'>
             <LoadingSpinner />
@@ -91,6 +111,15 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
             {url}
           </a>
         </div>
+        {/* <div>
+          <ClickAndConfirm
+            showConfirm={showConfirm}
+            setShowConfirm={setShowConfirm}
+            onClick={deleteThisContent}
+            isLoadingState={isLoading}
+          />
+        </div>
+        should be conditional if you want words too */}
       </div>
     </TabsContent>
   );
