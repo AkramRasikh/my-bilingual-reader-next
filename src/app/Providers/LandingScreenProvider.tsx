@@ -103,7 +103,7 @@ export const LandingScreenProvider = ({
       };
     }
 
-    let isThisDue = false;
+    let isThisDue = 0;
     let isThisNew = true;
     let hasAllBeenReviewed = true;
 
@@ -111,13 +111,11 @@ export const LandingScreenProvider = ({
 
     for (const contentEl of allTheseTopics) {
       // --- Check for due items
-      if (!isThisDue && contentEl.content) {
+      if (contentEl.content) {
         for (const transcriptEl of contentEl.content) {
           collectiveSentenceIds.push(transcriptEl.id);
-          if (transcriptEl?.reviewData?.due && !isThisDue) {
-            if (isDueCheck(transcriptEl, todayDateObj)) {
-              isThisDue = true;
-            }
+          if (isDueCheck(transcriptEl, todayDateObj)) {
+            isThisDue = isThisDue + 1;
           }
         }
       }
