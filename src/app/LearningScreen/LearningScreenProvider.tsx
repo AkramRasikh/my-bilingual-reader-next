@@ -152,7 +152,7 @@ export const LearningScreenProvider = ({
         hasBeenReviewed: reviewHistory,
         sentencesNeedReview,
         title,
-        isSelected: selectedContentStateMemoized.title === title,
+        isSelected: selectedContentStateMemoized?.title === title,
         dueOrPending,
       };
     });
