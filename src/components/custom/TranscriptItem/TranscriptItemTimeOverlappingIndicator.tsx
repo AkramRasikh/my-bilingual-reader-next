@@ -35,7 +35,7 @@ export const TranscriptItemTimeOverlappingIndicatorMulti = ({
   };
 
   return (
-    <div className='relative h-3'>
+    <div className='relative flex flex-col gap-1'>
       {thisHasSavedSnippetOverlap.map((item, index) => {
         const snippetId = item.snippetId;
         const isPreSnippet = item?.isPreSnippet;
@@ -44,7 +44,7 @@ export const TranscriptItemTimeOverlappingIndicatorMulti = ({
           <div
             key={index}
             className={clsx(
-              'absolute opacity-50 rounded flex justify-around',
+              'h-3 opacity-50 rounded flex justify-around',
               isPreSnippet ? 'bg-amber-300' : 'bg-blue-700',
               transcriptItemLoadingState
                 ? 'animate-pulse bg-red-700 opacity-100'
@@ -52,7 +52,7 @@ export const TranscriptItemTimeOverlappingIndicatorMulti = ({
             )}
             style={{
               width: `${item.percentageOverlap}%`,
-              left: `${item.startPoint}%`,
+              marginLeft: `${item.startPoint}%`,
               height: '100%',
             }}
           >
