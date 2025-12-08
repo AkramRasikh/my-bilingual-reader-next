@@ -259,8 +259,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
   const wordsForReviewMemoized = useMemo((): WordTypes[] => {
     const dateNow = new Date();
     const wordsForReview = wordsState.filter((item) => {
-      const isLegacyWordWithNoReview = !item?.reviewData;
-      if (isLegacyWordWithNoReview || isDueCheck(item, dateNow)) {
+      if (isDueCheck(item, dateNow)) {
         return true;
       }
     });
