@@ -7,6 +7,8 @@ import {
   useEffect,
   useReducer,
   useMemo,
+  SetStateAction,
+  Dispatch,
 } from 'react';
 import useLanguageSelector from './useLanguageSelector';
 import {
@@ -107,6 +109,12 @@ interface DeleteContentCallTypes {
   wordIds?: WordTypes['id'][];
 }
 
+interface WordBasketTypes {
+  id: WordTypes['id'];
+  word: WordTypes['baseForm'];
+  definition: WordTypes['definition'];
+}
+
 interface FetchDataContextTypes {
   languageSelectedState: LanguageEnum;
   setLanguageSelectedState: (lang: LanguageEnum) => void;
@@ -140,6 +148,8 @@ interface FetchDataContextTypes {
   addImageDataProvider: (params: AddImageDataProviderCallTypes) => void;
   wordsToReviewGivenOriginalContextId: Record<WordTypes['id'], WordTypes>;
   deleteContent: (params: DeleteContentCallTypes) => void;
+  wordBasketState: WordBasketTypes[];
+  setWordBasketState: Dispatch<SetStateAction<WordBasketTypes[]>>;
 }
 
 const FetchDataContext = createContext<FetchDataContextTypes>({
@@ -173,6 +183,8 @@ const FetchDataContext = createContext<FetchDataContextTypes>({
   toastMessageState: '',
   hasFetchedDataState: false,
   pureWordsMemoized: [],
+  wordBasketState: [],
+  setWordBasketState: () => {},
 });
 
 type FetchDataProviderProps = {
@@ -189,7 +201,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
   const [wordsState, dispatchWords] = useReducer(wordsReducer, []);
   const [wordsToReviewOnMountState, setWordsToReviewOnMountState] =
     useState(null);
-  const [wordBasketState, setWordBasketState] = useState([]);
+  const [wordBasketState, setWordBasketState] = useState<WordBasketTypes[]>([]);
   const [toastMessageState, setToastMessageState] = useState('');
   const [story, setStory] = useState();
   const router = useRouter();
@@ -244,7 +256,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     return pureWordsUnique;
   }, [wordsState, sentencesState]);
 
-  const wordsForReviewMemoized = useMemo(() => {
+  const wordsForReviewMemoized = useMemo((): WordTypes[] => {
     const dateNow = new Date();
     const wordsForReview = wordsState.filter((item) => {
       const isLegacyWordWithNoReview = !item?.reviewData;
@@ -384,7 +396,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     sentenceId,
     fieldToUpdate,
     isRemoveReview,
-  }) => {
+  }: UpdateAdhocSentenceDataCallTypes) => {
     try {
       const updatedFieldFromDB = await updateAdhocSentenceAPI({
         sentenceId,
@@ -429,7 +441,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     contentIndex,
     isRemoveReview,
     indexKey,
-  }) => {
+  }: UpdateSentenceDataCallTypes) => {
     try {
       const updatedFieldFromDB = await updateSentenceDataAPI({
         indexKey,
@@ -471,7 +483,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     wordId,
     fieldToUpdate,
     isRemoveReview,
-  }) => {
+  }: UpdateWordDataProviderCallTypes) => {
     try {
       if (isRemoveReview) {
         const res = await fetch('/api/deleteWord', {
@@ -548,7 +560,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     contextSentence,
     meaning,
     isGoogle,
-  }) => {
+  }: HandleSaveWordCallTypes) => {
     try {
       const cardDataRelativeToNow = getEmptyCard();
       const nextScheduledOptions = getNextScheduledOptions({
@@ -580,7 +592,10 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     }
   };
 
-  const addImageDataProvider = async ({ wordId, formData }) => {
+  const addImageDataProvider = async ({
+    wordId,
+    formData,
+  }: AddImageDataProviderCallTypes) => {
     try {
       formData.append('language', languageSelectedState);
       const res = await fetch('/api/addWordImage', {
