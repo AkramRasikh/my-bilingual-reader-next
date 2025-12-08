@@ -510,7 +510,11 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     }
   };
 
-  const deleteContent = async ({ contentId, title, wordIds }) => {
+  const deleteContent = async ({
+    contentId,
+    title,
+    wordIds,
+  }: DeleteContentCallTypes) => {
     try {
       const deleteSuccess = await deleteContentAPI({
         contentId,
@@ -524,7 +528,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
           type: 'deleteContent',
           id: contentId,
         });
-        if (wordIds?.length > 0) {
+        if (wordIds) {
           dispatchWords({
             type: 'removeWords',
             ids: wordIds,
