@@ -1,5 +1,6 @@
 'use client';
 import {
+  ReactNode,
   createContext,
   useContext,
   useState,
@@ -9,7 +10,11 @@ import {
 } from 'react';
 import useLanguageSelector from './useLanguageSelector';
 import { sentencesReducer } from '../reducers/sentences-reducer';
-import { contentReducer } from '../reducers/content-reducer';
+import {
+  ContentAction,
+  contentReducer,
+  ContentStateTypes,
+} from '../reducers/content-reducer';
 import { wordsReducer } from '../reducers/words-reducer';
 import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
@@ -32,12 +37,58 @@ import { getAudioURL } from '@/utils/get-media-url';
 import useFetchInitData from './useFetchInitData';
 import { deleteContentAPI } from '../client-api/delete-content';
 import { useRouter } from 'next/navigation';
+import { LanguageEnum } from '../languages';
+import { SentenceTypes } from '../types/sentence-types';
+import { WordTypes } from '../types/word-types';
+
+interface FetchDataContextTypes {
+  languageSelectedState: LanguageEnum;
+  setLanguageSelectedState: (lang: LanguageEnum) => void;
+  languageOnMountState: LanguageEnum;
+  setLanguageOnMountState: (lang: LanguageEnum) => void;
+  pureWordsMemoized: string[];
+  contentState: ContentStateTypes[];
+  sentencesState: SentenceTypes[];
+  wordsState: WordTypes[];
+  hasFetchedDataState: boolean;
+  setHasFetchedDataState: (param: boolean) => void;
+  // dispatchSentences: React.Dispatch<Action>;
+  dispatchContent: React.Dispatch<ContentAction>;
+  // dispatchWords: React.Dispatch<Action>;
+}
+
+// wordsForReviewMemoized;
+// sentencesDueForReviewMemoized;
+// wordBasketState;
+// setWordBasketState;
+// breakdownSentence;
+// sentenceReviewBulk;
+// updateContentMetaData;
+// toastMessageState;
+// setToastMessageState;
+// story;
+// setStory;
+// updateAdhocSentenceData;
+// handleSaveWord;
+// handleDeleteWordDataProvider;
+// updateWordDataProvider;
+// updateSentenceData;
+// addGeneratedSentence;
+// addImageDataProvider;
+// wordsToReviewOnMountState;
+// wordsToReviewGivenOriginalContextId;
+// deleteContent;
 
 const FetchDataContext = createContext(null);
 
-export function FetchDataProvider({ children }) {
-  const [languageSelectedState, setLanguageSelectedState] = useState('');
-  const [languageOnMountState, setLanguageOnMountState] = useState('');
+type FetchDataProviderProps = {
+  children: ReactNode;
+};
+export function FetchDataProvider({ children }: FetchDataProviderProps) {
+  const [languageSelectedState, setLanguageSelectedState] =
+    useState<LanguageEnum>(LanguageEnum.None);
+  const [languageOnMountState, setLanguageOnMountState] =
+    useState<LanguageEnum>(LanguageEnum.None);
   const [hasFetchedDataState, setHasFetchedDataState] = useState(false);
   const [sentencesState, dispatchSentences] = useReducer(sentencesReducer, []);
   const [contentState, dispatchContent] = useReducer(contentReducer, []);
@@ -225,7 +276,7 @@ export function FetchDataProvider({ children }) {
         dispatchContent({
           type: 'updateMetaData',
           contentIndex,
-          fieldToUpdate, // shouldn't really be like this
+          fields: fieldToUpdate, // shouldn't really be like this
         });
         return true;
       }

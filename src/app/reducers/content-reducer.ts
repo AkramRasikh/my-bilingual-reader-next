@@ -1,12 +1,55 @@
-// Initial states
-// const initialContentState = [];
-// const initialSelectedContentState = null;
+import { ContentTranscriptTypes, ContentTypes } from '../types/content-types';
 
-// Reducer for contentState
-export function contentReducer(state, action) {
+export interface ContentStateTypes extends ContentTypes {
+  contentIndex: number;
+  generalTopicName: string;
+}
+
+export type ContentAction =
+  | {
+      content: ContentStateTypes[];
+      type: 'initContent';
+    }
+  | {
+      type: 'updateSentence';
+      contentIndex: ContentStateTypes['contentIndex'];
+      sentenceId: ContentTranscriptTypes['id'];
+      fields: ContentTranscriptTypes['reviewData'];
+    }
+  | {
+      fields: ContentTranscriptTypes['reviewData'];
+      sentenceIds: ContentTranscriptTypes['id'][];
+      contentIndex: ContentStateTypes['contentIndex'];
+      type: 'updateSentences';
+    }
+  | {
+      sentenceId: ContentTranscriptTypes['id'];
+      contentIndex: ContentStateTypes['contentIndex'];
+      type: 'removeReview';
+    }
+  | {
+      fields:
+        | ContentStateTypes['nextReview']
+        | ContentStateTypes['reviewHistory']
+        | ContentStateTypes['snippets'];
+      contentIndex: ContentStateTypes['contentIndex'];
+      type: 'updateMetaData';
+    }
+  | {
+      id: ContentStateTypes['id'];
+      type: 'deleteContent';
+    }
+  | {
+      newContentData: ContentTypes;
+      type: 'addContent';
+    };
+
+export function contentReducer(
+  state: ContentStateTypes[],
+  action: ContentAction,
+): ContentStateTypes[] {
   switch (action.type) {
     case 'initContent':
-      // for your first useEffect initialization
       return action.content;
 
     case 'updateSentence':
@@ -53,7 +96,7 @@ export function contentReducer(state, action) {
         idx === action.contentIndex
           ? {
               ...topic,
-              ...action.fieldToUpdate,
+              ...action.fields,
             }
           : topic,
       );
@@ -87,19 +130,3 @@ export function contentReducer(state, action) {
       return state;
   }
 }
-
-// const removeReviewFromContentStateFunc = ({ sentenceId, contentIndex }) => {
-//   setContentState((prev) => {
-//     const newContent = [...prev]; // clone top-level array
-
-//     const topic = { ...newContent[contentIndex] }; // clone topic object
-//     const updatedContent = topic.content.map((s) =>
-//       s.id === sentenceId ? (({ reviewData, ...rest }) => rest)(s) : s,
-//     );
-
-//     topic.content = updatedContent;
-//     newContent[contentIndex] = topic;
-
-//     return newContent;
-//   });
-// };
