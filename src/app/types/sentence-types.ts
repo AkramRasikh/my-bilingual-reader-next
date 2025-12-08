@@ -4,11 +4,11 @@ export interface SentenceTypes {
   id: string;
   baseLang: string;
   hasAudio: boolean;
+  targetLang: string;
+  topic: Topic; // think this one through
   matchedWordsId?: string[];
   matchedWordsSurface?: string[];
   reviewData?: ReviewDataTypes;
-  targetLang: string;
-  topic: Topic; // think this one through
   baseSentence?: string;
   context?: string;
   isGrammar?: boolean;
