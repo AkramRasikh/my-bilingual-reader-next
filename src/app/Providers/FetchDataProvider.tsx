@@ -316,7 +316,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     sentenceId,
     targetLang,
     contentIndex,
-  }) => {
+  }: BreakDownSentenceCallTypes) => {
     try {
       const resObj = await breakdownSentenceAPI({
         indexKey,
@@ -344,7 +344,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     contentIndex,
     sentenceIds,
     contentId,
-  }) => {
+  }: SentenceReviewBulkCallTypes) => {
     try {
       const resUpdatedSentenceIds = await sentenceReviewBulkAPI({
         contentId,
@@ -371,7 +371,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     fieldToUpdate,
     contentIndex,
     contentId,
-  }) => {
+  }: UpdateContentMetaDataCallTypes) => {
     try {
       const resObj = await updateContentMetaDataAPI({
         fieldToUpdate,
