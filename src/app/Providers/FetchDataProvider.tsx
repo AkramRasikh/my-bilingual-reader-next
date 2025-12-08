@@ -146,7 +146,7 @@ interface FetchDataContextTypes {
   wordsToReviewOnMountState: null | number;
   setWordsToReviewOnMountState: (param: number) => void;
   addImageDataProvider: (params: AddImageDataProviderCallTypes) => void;
-  wordsToReviewGivenOriginalContextId: Record<WordTypes['id'], WordTypes>;
+  wordsToReviewGivenOriginalContextId: Record<WordTypes['id'], WordTypes[]>;
   deleteContent: (params: DeleteContentCallTypes) => void;
   wordBasketState: WordBasketTypes[];
   setWordBasketState: Dispatch<SetStateAction<WordBasketTypes[]>>;
@@ -267,15 +267,20 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     return wordsForReview;
   }, [wordsState]);
 
-  const wordsToReviewGivenOriginalContextId = useMemo(() => {
-    return wordsForReviewMemoized.reduce((acc, obj) => {
-      const key = obj.contexts[0];
-      if (!acc[key]) {
-        acc[key] = [];
-      }
-      acc[key].push(obj);
-      return acc;
-    }, {});
+  const wordsToReviewGivenOriginalContextId = useMemo<
+    Record<WordTypes['id'], WordTypes[]>
+  >(() => {
+    return wordsForReviewMemoized.reduce<Record<WordTypes['id'], WordTypes[]>>(
+      (acc, obj) => {
+        const key = obj.contexts[0];
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(obj);
+        return acc;
+      },
+      {},
+    );
   }, [wordsForReviewMemoized]);
 
   useEffect(() => {
