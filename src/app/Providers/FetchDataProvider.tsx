@@ -112,7 +112,7 @@ interface FetchDataContextTypes {
   setLanguageSelectedState: (lang: LanguageEnum) => void;
   languageOnMountState: LanguageEnum;
   setLanguageOnMountState: (lang: LanguageEnum) => void;
-  pureWordsMemoized?: string[];
+  pureWordsMemoized: string[];
   contentState: ContentStateTypes[];
   sentencesState: SentenceTypes[];
   wordsState: WordTypes[];
@@ -172,6 +172,7 @@ const FetchDataContext = createContext<FetchDataContextTypes>({
   sentencesDueForReviewMemoized: [],
   toastMessageState: '',
   hasFetchedDataState: false,
+  pureWordsMemoized: [],
 });
 
 type FetchDataProviderProps = {
@@ -218,8 +219,8 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     hasFetchedDataState,
   });
 
-  const pureWordsMemoized = useMemo(() => {
-    const pureWords = [] as string[];
+  const pureWordsMemoized = useMemo((): string[] => {
+    const pureWords: string[] = [];
     wordsState?.forEach((wordData) => {
       if (wordData?.baseForm) {
         pureWords.push(wordData.baseForm);

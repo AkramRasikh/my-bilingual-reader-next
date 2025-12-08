@@ -1,4 +1,4 @@
-export const makeWordArrayUnique = (array) => {
+export const makeWordArrayUnique = (array: string[]) => {
   if (array.length === 0) {
     return [];
   }
