@@ -1,6 +1,6 @@
 import { readJsonFromFile, saveJsonToFile } from '@/utils/setup-mock-data';
 import { NextResponse } from 'next/server';
-import { getFormattedData } from './utils';
+import { getFormattedData } from './on-load-data-formatted';
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -17,8 +17,8 @@ export async function POST(req: Request) {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        Accept: 'application/json', //<----
-        'Content-Type': 'application/json', //<---
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         language,
