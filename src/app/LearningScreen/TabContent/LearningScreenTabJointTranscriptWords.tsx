@@ -209,12 +209,6 @@ const LearningScreenTabJointTranscriptWords = () => {
         words: {postWordsState?.length} / sentences:{' '}
         {postSentencesState?.length} / snippets : {postSnippetsState?.length}
       </h1>
-      {postWordsState?.length > 0 && (
-        <LearningScreenTabTranscriptNestedWordsReview
-          sentencesForReviewMemoized={postWordsState}
-          withToggle={false}
-        />
-      )}
       {postSnippetsState?.length > 0 ? (
         <div className='flex flex-col gap-2 mb-2'>
           {postSnippetsState.map((item, index) => {
@@ -232,6 +226,13 @@ const LearningScreenTabJointTranscriptWords = () => {
           })}
         </div>
       ) : null}
+      {postWordsState?.length > 0 && (
+        <LearningScreenTabTranscriptNestedWordsReview
+          sentencesForReviewMemoized={postWordsState}
+          withToggle={false}
+        />
+      )}
+
       <ul
         className={clsx(
           'gap-1',
