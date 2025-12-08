@@ -9,6 +9,7 @@ import {
   useMemo,
   SetStateAction,
   Dispatch,
+  useRef,
 } from 'react';
 import useLanguageSelector from './useLanguageSelector';
 import {
@@ -23,7 +24,6 @@ import {
 import { WordActions, wordsReducer } from '../reducers/words-reducer';
 import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
-import { isNumber } from '@/utils/is-number';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { breakdownSentenceAPI } from '../client-api/breakdown-sentence';
@@ -143,8 +143,8 @@ interface FetchDataContextTypes {
   ) => void;
   updateWordDataProvider: (params: UpdateWordDataProviderCallTypes) => void;
   updateSentenceData: (params: UpdateSentenceDataCallTypes) => void;
-  wordsToReviewOnMountState: null | number;
-  setWordsToReviewOnMountState: (param: number) => void;
+  wordsToReviewOnMountState: number;
+  setWordsToReviewOnMountState: Dispatch<SetStateAction<number>>;
   addImageDataProvider: (params: AddImageDataProviderCallTypes) => void;
   wordsToReviewGivenOriginalContextId: Record<WordTypes['id'], WordTypes[]>;
   deleteContent: (params: DeleteContentCallTypes) => void;
@@ -172,7 +172,6 @@ const FetchDataContext = createContext<FetchDataContextTypes>({
   handleDeleteWordDataProvider: () => {},
   addImageDataProvider: () => {},
   wordsToReviewGivenOriginalContextId: {},
-  wordsToReviewOnMountState: null,
   languageSelectedState: LanguageEnum.None,
   languageOnMountState: LanguageEnum.None,
   contentState: [],
@@ -185,6 +184,7 @@ const FetchDataContext = createContext<FetchDataContextTypes>({
   pureWordsMemoized: [],
   wordBasketState: [],
   setWordBasketState: () => {},
+  wordsToReviewOnMountState: 0,
 });
 
 type FetchDataProviderProps = {
@@ -199,11 +199,11 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
   const [sentencesState, dispatchSentences] = useReducer(sentencesReducer, []);
   const [contentState, dispatchContent] = useReducer(contentReducer, []);
   const [wordsState, dispatchWords] = useReducer(wordsReducer, []);
-  const [wordsToReviewOnMountState, setWordsToReviewOnMountState] =
-    useState(null);
+  const [wordsToReviewOnMountState, setWordsToReviewOnMountState] = useState(0);
   const [wordBasketState, setWordBasketState] = useState<WordBasketTypes[]>([]);
   const [toastMessageState, setToastMessageState] = useState('');
   const [story, setStory] = useState();
+  const isSetOneTime = useRef(true);
   const router = useRouter();
 
   useLanguageSelector({
@@ -284,11 +284,9 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
   }, [wordsForReviewMemoized]);
 
   useEffect(() => {
-    if (
-      !isNumber(wordsToReviewOnMountState) &&
-      wordsForReviewMemoized.length !== 0
-    ) {
+    if (isSetOneTime.current && wordsForReviewMemoized.length > 0) {
       setWordsToReviewOnMountState(wordsForReviewMemoized.length);
+      isSetOneTime.current = false;
     }
   }, [wordsForReviewMemoized]);
 
