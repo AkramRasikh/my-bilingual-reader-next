@@ -289,7 +289,7 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const getFormattedData = () => {
+  const getFormattedTranscriptContentData = () => {
     const now = new Date();
     let latestIsDueEl = '';
     let latestIsDueElIndex;
@@ -658,7 +658,7 @@ export const LearningScreenProvider = ({
 
   useEffect(() => {
     if (content) {
-      getFormattedData();
+      getFormattedTranscriptContentData();
     }
   }, [pureWordsMemoized, content]);
 
