@@ -6,7 +6,7 @@ export const words = 'words';
 export const adhocSentences = 'adhocSentences';
 export const sentences = 'sentences';
 
-const formatContentData = (targetLanguageLoadedContent) =>
+const addContentIndexAndGeneralTopicName = (targetLanguageLoadedContent) =>
   targetLanguageLoadedContent.map((contentWidget, contentIndex) => {
     const generalTopicName = !stringEndsWithNumber(contentWidget.title)
       ? contentWidget.title
@@ -38,7 +38,9 @@ export const getFormattedData = (loadedData) => {
     getNestedObjectData(sentences)?.sentences || [];
 
   const data = {
-    contentData: formatContentData(targetLanguageLoadedContent),
+    contentData: addContentIndexAndGeneralTopicName(
+      targetLanguageLoadedContent,
+    ),
     wordsData: targetLanguageLoadedWords,
     sentencesData: targetLanguageLoadedSentences,
   };
