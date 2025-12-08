@@ -1,16 +1,36 @@
 // Initial states
 // const initialSentencesState = [];
 
-// Reducer for sentencesState
-export function sentencesReducer(state, action) {
+import { isDueCheck } from '@/utils/is-due-check';
+import { SentenceTypes } from '../types/sentence-types';
+
+export type SentenceActions =
+  | {
+      type: 'initSentences';
+      sentences: SentenceTypes[];
+    }
+  | {
+      type: 'addSentence';
+      sentence: SentenceTypes;
+    }
+  | {
+      type: 'updateSentence';
+      sentenceId: SentenceTypes['id'];
+      isRemoveReview?: boolean;
+      updatedFieldFromDB?: Partial<SentenceTypes>;
+    };
+
+export function sentencesReducer(
+  state: SentenceTypes[],
+  action: SentenceActions,
+) {
   switch (action.type) {
     case 'initSentences':
       return action.sentences;
     case 'addSentence':
       return [...state, action.sentence];
     case 'updateSentence': {
-      const { sentenceId, isRemoveReview, updatedFieldFromDB, isDueCheck } =
-        action;
+      const { sentenceId, isRemoveReview, updatedFieldFromDB } = action;
       const dateNow = new Date();
 
       const updatedSentences = state

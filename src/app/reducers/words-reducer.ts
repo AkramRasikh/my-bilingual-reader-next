@@ -1,8 +1,34 @@
-// Initial states
-// const initialWordsState = [];
+import { WordTypes } from '../types/word-types';
 
-// Reducer for wordsState
-export function wordsReducer(state, action) {
+export type WordActions =
+  | {
+      type: 'initWords';
+      words: WordTypes[];
+    }
+  | {
+      type: 'addWord';
+      word: WordTypes;
+    }
+  | {
+      type: 'removeWord';
+      wordId: WordTypes['id'];
+    }
+  | {
+      type: 'removeWords';
+      ids: WordTypes['id'][];
+    }
+  | {
+      type: 'updateWord';
+      wordId: WordTypes['id'];
+      data: { reviewData: WordTypes['reviewData'] }; // maybe needs review
+    }
+  | {
+      type: 'updateWordData';
+      wordId: WordTypes['id'];
+      fields: Partial<WordTypes>;
+    };
+
+export function wordsReducer(state: WordTypes[], action: WordActions) {
   switch (action.type) {
     case 'initWords':
       // for your first useEffect initialization
@@ -22,7 +48,7 @@ export function wordsReducer(state, action) {
     case 'updateWord':
       return state.map((item) => {
         if (item.id === action.wordId) {
-          const isDue = action.data?.reviewData?.due < new Date();
+          const isDue = action?.data?.reviewData?.due < new Date();
           return {
             ...item,
             ...action.data,

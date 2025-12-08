@@ -9,13 +9,16 @@ import {
   useMemo,
 } from 'react';
 import useLanguageSelector from './useLanguageSelector';
-import { sentencesReducer } from '../reducers/sentences-reducer';
+import {
+  SentenceActions,
+  sentencesReducer,
+} from '../reducers/sentences-reducer';
 import {
   ContentAction,
   contentReducer,
   ContentStateTypes,
 } from '../reducers/content-reducer';
-import { wordsReducer } from '../reducers/words-reducer';
+import { WordActions, wordsReducer } from '../reducers/words-reducer';
 import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { isNumber } from '@/utils/is-number';
@@ -40,46 +43,136 @@ import { useRouter } from 'next/navigation';
 import { LanguageEnum } from '../languages';
 import { SentenceTypes } from '../types/sentence-types';
 import { WordTypes } from '../types/word-types';
+import { ContentTranscriptTypes } from '../types/content-types';
+import { ReviewDataTypes } from '../types/shared-types';
+
+interface BreakDownSentenceCallTypes {
+  indexKey: ContentStateTypes['id'];
+  sentenceId: ContentTranscriptTypes['id'];
+  targetLang: ContentTranscriptTypes['targetLang'];
+  contentIndex: ContentStateTypes['contentIndex'];
+}
+interface SentenceReviewBulkCallTypes {
+  reviewData: ReviewDataTypes;
+  sentenceIds: ContentTranscriptTypes['id'][];
+  contentId: ContentStateTypes['id'];
+  contentIndex: ContentStateTypes['contentIndex'];
+}
+interface UpdateContentMetaDataCallTypes {
+  fieldToUpdate:
+    | ContentStateTypes['nextReview']
+    | ContentStateTypes['reviewHistory']
+    | ContentStateTypes['snippets'];
+  contentId: ContentStateTypes['id'];
+  contentIndex: ContentStateTypes['contentIndex'];
+}
+
+interface UpdateAdhocSentenceDataCallTypes {
+  fieldToUpdate: Partial<SentenceTypes>;
+  sentenceId: SentenceTypes['id'];
+  isRemoveReview?: boolean;
+}
+interface HandleSaveWordCallTypes {
+  highlightedWord: string;
+  highlightedWordSentenceId: SentenceTypes['id'] | ContentStateTypes['id'];
+  contextSentence?: string;
+  meaning?: string;
+  isGoogle?: boolean;
+}
+interface HandleDeleteWordDataProviderCallTypes {
+  wordId: WordTypes['id'];
+}
+interface UpdateWordDataProviderCallTypes {
+  wordId: WordTypes['id'];
+  fieldToUpdate: Partial<WordTypes>;
+  isRemoveReview?: boolean; /// why would this be needed?
+}
+
+interface UpdateSentenceDataCallTypes {
+  sentenceId: ContentTranscriptTypes['id'];
+  fieldToUpdate: Partial<ContentTranscriptTypes>;
+  contentIndex: ContentStateTypes['contentIndex'];
+  indexKey: ContentStateTypes['id'];
+  isRemoveReview?: boolean;
+}
+
+interface AddImageDataProviderCallTypes {
+  wordId: WordTypes['id'];
+  formData: FormData;
+}
+
+interface DeleteContentCallTypes {
+  contentId: ContentStateTypes['id'];
+  title: ContentStateTypes['title'];
+  wordIds?: WordTypes['id'][];
+}
 
 interface FetchDataContextTypes {
   languageSelectedState: LanguageEnum;
   setLanguageSelectedState: (lang: LanguageEnum) => void;
   languageOnMountState: LanguageEnum;
   setLanguageOnMountState: (lang: LanguageEnum) => void;
-  pureWordsMemoized: string[];
+  pureWordsMemoized?: string[];
   contentState: ContentStateTypes[];
   sentencesState: SentenceTypes[];
   wordsState: WordTypes[];
   hasFetchedDataState: boolean;
   setHasFetchedDataState: (param: boolean) => void;
-  // dispatchSentences: React.Dispatch<Action>;
+  dispatchSentences: React.Dispatch<SentenceActions>;
   dispatchContent: React.Dispatch<ContentAction>;
-  // dispatchWords: React.Dispatch<Action>;
+  dispatchWords: React.Dispatch<WordActions>;
+  wordsForReviewMemoized: [] | WordTypes[];
+  sentencesDueForReviewMemoized: [] | SentenceTypes[]; // extend for formattedLang
+  breakdownSentence: (params: BreakDownSentenceCallTypes) => void;
+  sentenceReviewBulk: (params: SentenceReviewBulkCallTypes) => void;
+  updateContentMetaData: (params: UpdateContentMetaDataCallTypes) => void;
+  toastMessageState: string;
+  setToastMessageState: (param: string) => void;
+  updateAdhocSentenceData: (params: UpdateAdhocSentenceDataCallTypes) => void;
+  handleSaveWord: (params: HandleSaveWordCallTypes) => void;
+  handleDeleteWordDataProvider: (
+    params: HandleDeleteWordDataProviderCallTypes,
+  ) => void;
+  updateWordDataProvider: (params: UpdateWordDataProviderCallTypes) => void;
+  updateSentenceData: (params: UpdateSentenceDataCallTypes) => void;
+  wordsToReviewOnMountState: null | number;
+  setWordsToReviewOnMountState: (param: number) => void;
+  addImageDataProvider: (params: AddImageDataProviderCallTypes) => void;
+  wordsToReviewGivenOriginalContextId: Record<WordTypes['id'], WordTypes>;
+  deleteContent: (params: DeleteContentCallTypes) => void;
 }
 
-// wordsForReviewMemoized;
-// sentencesDueForReviewMemoized;
-// wordBasketState;
-// setWordBasketState;
-// breakdownSentence;
-// sentenceReviewBulk;
-// updateContentMetaData;
-// toastMessageState;
-// setToastMessageState;
-// story;
-// setStory;
-// updateAdhocSentenceData;
-// handleSaveWord;
-// handleDeleteWordDataProvider;
-// updateWordDataProvider;
-// updateSentenceData;
-// addGeneratedSentence;
-// addImageDataProvider;
-// wordsToReviewOnMountState;
-// wordsToReviewGivenOriginalContextId;
-// deleteContent;
-
-const FetchDataContext = createContext(null);
+const FetchDataContext = createContext<FetchDataContextTypes>({
+  updateAdhocSentenceData: () => {},
+  handleSaveWord: () => {},
+  updateWordDataProvider: () => {},
+  updateSentenceData: () => {},
+  deleteContent: () => {},
+  setLanguageSelectedState: () => {},
+  setWordsToReviewOnMountState: () => {},
+  setLanguageOnMountState: () => {},
+  setHasFetchedDataState: () => {},
+  dispatchSentences: () => {},
+  dispatchContent: () => {},
+  dispatchWords: () => {},
+  breakdownSentence: () => {},
+  sentenceReviewBulk: () => {},
+  updateContentMetaData: () => {},
+  setToastMessageState: () => {},
+  handleDeleteWordDataProvider: () => {},
+  addImageDataProvider: () => {},
+  wordsToReviewGivenOriginalContextId: {},
+  wordsToReviewOnMountState: null,
+  languageSelectedState: LanguageEnum.None,
+  languageOnMountState: LanguageEnum.None,
+  contentState: [],
+  sentencesState: [],
+  wordsState: [],
+  wordsForReviewMemoized: [],
+  sentencesDueForReviewMemoized: [],
+  toastMessageState: '',
+  hasFetchedDataState: false,
+});
 
 type FetchDataProviderProps = {
   children: ReactNode;
@@ -126,7 +219,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
   });
 
   const pureWordsMemoized = useMemo(() => {
-    const pureWords = [];
+    const pureWords = [] as string[];
     wordsState?.forEach((wordData) => {
       if (wordData?.baseForm) {
         pureWords.push(wordData.baseForm);
@@ -304,7 +397,6 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
           sentenceId,
           isRemoveReview,
           updatedFieldFromDB,
-          isDueCheck,
         });
 
         setToastMessageState(
