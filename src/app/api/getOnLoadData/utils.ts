@@ -1,6 +1,3 @@
-import { getGeneralTopicName } from '@/utils/get-general-topic-name';
-import { stringEndsWithNumber } from '@/utils/string-ends-with-number';
-
 export const content = 'content';
 export const words = 'words';
 export const adhocSentences = 'adhocSentences';
@@ -8,14 +5,10 @@ export const sentences = 'sentences';
 
 const addContentIndexAndGeneralTopicName = (targetLanguageLoadedContent) =>
   targetLanguageLoadedContent.map((contentWidget, contentIndex) => {
-    const generalTopicName = !stringEndsWithNumber(contentWidget.title)
-      ? contentWidget.title
-      : getGeneralTopicName(contentWidget.title);
-
     return {
       ...contentWidget,
       contentIndex,
-      generalTopicName,
+      generalTopicName: contentWidget.title,
     };
   });
 
