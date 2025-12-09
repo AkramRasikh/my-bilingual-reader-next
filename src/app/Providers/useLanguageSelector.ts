@@ -1,16 +1,26 @@
-import { useEffect } from 'react';
-import { japanese } from '../languages';
+import { useEffect, useState } from 'react';
+import { LanguageEnum } from '../languages';
+import { FetchDataContextTypes } from './FetchDataProvider';
+
+interface UseLanguageSelectorTypes {
+  languageSelectedState: FetchDataContextTypes['languageSelectedState'];
+  setLanguageSelectedState: FetchDataContextTypes['setLanguageSelectedState'];
+}
 
 const useLanguageSelector = ({
   languageSelectedState,
-  setLanguageOnMountState,
-  languageOnMountState,
   setLanguageSelectedState,
-}) => {
+}: UseLanguageSelectorTypes) => {
+  const [languageOnMountState, setLanguageOnMountState] =
+    useState<LanguageEnum>(LanguageEnum.None);
+
   useEffect(() => {
-    const selectedLanguage = localStorage.getItem('selectedLanguage');
-    setLanguageSelectedState(selectedLanguage || japanese);
+    const selectedLanguage = localStorage.getItem(
+      'selectedLanguage',
+    ) as LanguageEnum | null;
+    setLanguageSelectedState(selectedLanguage ?? LanguageEnum.Japanese);
   }, []);
+
   useEffect(() => {
     if (languageSelectedState) {
       localStorage.setItem('selectedLanguage', languageSelectedState);

@@ -126,7 +126,7 @@ interface AddGeneratedSentenceCallTypes {
   notes?: StoryTypeStateTypes['notes'];
 }
 
-interface FetchDataContextTypes {
+export interface FetchDataContextTypes {
   languageSelectedState: LanguageEnum;
   setLanguageSelectedState: (lang: LanguageEnum) => void;
   pureWordsMemoized: string[];
@@ -201,8 +201,7 @@ type FetchDataProviderProps = {
 export function FetchDataProvider({ children }: FetchDataProviderProps) {
   const [languageSelectedState, setLanguageSelectedState] =
     useState<LanguageEnum>(LanguageEnum.None);
-  const [languageOnMountState, setLanguageOnMountState] =
-    useState<LanguageEnum>(LanguageEnum.None);
+
   const [hasFetchedDataState, setHasFetchedDataState] = useState(false);
   const [sentencesState, dispatchSentences] = useReducer(sentencesReducer, []);
   const [contentState, dispatchContent] = useReducer(contentReducer, []);
@@ -216,8 +215,6 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
 
   useLanguageSelector({
     languageSelectedState,
-    setLanguageOnMountState,
-    languageOnMountState,
     setLanguageSelectedState,
   });
 
