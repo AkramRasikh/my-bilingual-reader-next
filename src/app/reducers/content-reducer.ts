@@ -14,10 +14,10 @@ export type ContentAction =
       type: 'updateSentence';
       contentIndex: ContentStateTypes['contentIndex'];
       sentenceId: ContentTranscriptTypes['id'];
-      fields: ContentTranscriptTypes['reviewData'];
+      fields: { reviewData: ContentTranscriptTypes['reviewData'] };
     }
   | {
-      fields: ContentTranscriptTypes['reviewData'];
+      fields: { reviewData: ContentTranscriptTypes['reviewData'] };
       sentenceIds: ContentTranscriptTypes['id'][];
       contentIndex: ContentStateTypes['contentIndex'];
       type: 'updateSentences';
@@ -84,7 +84,8 @@ export function contentReducer(
               ...topic,
               content: topic.content.map((s) =>
                 s.id === action.sentenceId
-                  ? (({ reviewData, ...rest }) => rest)(s)
+                  ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    (({ reviewData, ...rest }) => rest)(s)
                   : s,
               ),
             }
