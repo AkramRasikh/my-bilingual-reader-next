@@ -430,7 +430,9 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
       setToastMessageState('Error updating adhoc-sentence sentence ❌');
     }
   };
-  const handleDeleteWordDataProvider = async ({ wordId }) => {
+  const handleDeleteWordDataProvider = async ({
+    wordId,
+  }: HandleDeleteWordDataProviderCallTypes) => {
     try {
       await deleteWordAPI({ wordId, language: languageSelectedState });
       dispatchWords({ type: 'removeWord', wordId });

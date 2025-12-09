@@ -1,6 +1,15 @@
 import { useEffect } from 'react';
+import { FetchDataContextTypes } from './FetchDataProvider';
 
 const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
+
+interface UseDataSaveToLocalStorageTypes {
+  languageSelectedState: FetchDataContextTypes['languageSelectedState'];
+  wordsState: FetchDataContextTypes['wordsState'];
+  sentencesState: FetchDataContextTypes['sentencesState'];
+  contentState: FetchDataContextTypes['contentState'];
+  hasFetchedDataState: FetchDataContextTypes['hasFetchedDataState'];
+}
 
 const useDataSaveToLocalStorage = ({
   languageSelectedState,
@@ -8,7 +17,7 @@ const useDataSaveToLocalStorage = ({
   sentencesState,
   contentState,
   hasFetchedDataState,
-}) => {
+}: UseDataSaveToLocalStorageTypes) => {
   useEffect(() => {
     if (!hasFetchedDataState) {
       return;

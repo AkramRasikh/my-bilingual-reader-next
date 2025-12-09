@@ -1,7 +1,6 @@
 'use client';
 import { useEffect } from 'react';
 import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
-import { toast } from 'sonner';
 import MockFlag from '../../components/custom/MockFlag';
 import LearningScreenBreadCrumbHeader from '../LearningScreen/LearningScreenBreadCrumbHeader';
 import { useFetchData } from '../Providers/FetchDataProvider';

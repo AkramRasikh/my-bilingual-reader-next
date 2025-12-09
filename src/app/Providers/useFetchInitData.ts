@@ -1,9 +1,20 @@
-import { useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import {
   content,
   sentences,
   words,
 } from '../api/getOnLoadData/on-load-data-formatted';
+import { FetchDataContextTypes } from './FetchDataProvider';
+
+interface UseFetchInitDataTypes {
+  hasFetchedDataState: FetchDataContextTypes['hasFetchedDataState'];
+  languageSelectedState: FetchDataContextTypes['languageSelectedState'];
+  setHasFetchedDataState: Dispatch<SetStateAction<boolean>>;
+  dispatchWords: FetchDataContextTypes['dispatchWords'];
+  dispatchContent: FetchDataContextTypes['dispatchContent'];
+  dispatchSentences: FetchDataContextTypes['dispatchSentences'];
+  setToastMessageState: FetchDataContextTypes['setToastMessageState'];
+}
 
 const useFetchInitData = ({
   hasFetchedDataState,
@@ -13,7 +24,7 @@ const useFetchInitData = ({
   dispatchContent,
   dispatchSentences,
   setToastMessageState,
-}) => {
+}: UseFetchInitDataTypes) => {
   useEffect(() => {
     if (!hasFetchedDataState && languageSelectedState) {
       const wordsState = JSON.parse(
