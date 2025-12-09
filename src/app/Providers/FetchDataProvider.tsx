@@ -26,7 +26,6 @@ import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
-import { updateContentMetaDataAPI } from '../client-api/update-content-meta-data';
 import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
 import {
   getEmptyCard,
@@ -389,19 +388,22 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     contentId,
   }: UpdateContentMetaDataCallTypes) => {
     try {
-      const resObj = await updateContentMetaDataAPI({
-        fieldToUpdate,
-        language: languageSelectedState,
-        contentId,
+      const resObj = await apiRequestWrapper({
+        url: '/api/updateContentMetaData',
+        body: {
+          fieldToUpdate,
+          language: languageSelectedState,
+          contentId,
+        },
       });
 
       if (resObj) {
-        setToastMessageState('Updated content data ✅!');
         dispatchContent({
           type: 'updateMetaData',
           contentIndex,
           fields: fieldToUpdate, // shouldn't really be like this
         });
+        setToastMessageState('Updated content data ✅!');
         return true;
       }
     } catch (error) {
