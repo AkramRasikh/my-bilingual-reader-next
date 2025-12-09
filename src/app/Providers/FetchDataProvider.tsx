@@ -37,7 +37,6 @@ import {
 } from '../srs-utils/srs-algo';
 import saveWordAPI from '../client-api/save-word';
 import { deleteWordAPI } from '../client-api/delete-word';
-import { updateSentenceDataAPI } from '../client-api/update-sentence-api';
 import { getAudioURL } from '@/utils/get-media-url';
 import useFetchInitData from './useFetchInitData';
 import { deleteContentAPI } from '../client-api/delete-content';
@@ -48,6 +47,7 @@ import { WordTypes } from '../types/word-types';
 import { ContentTranscriptTypes } from '../types/content-types';
 import { ReviewDataTypes } from '../types/shared-types';
 import { StoryTypes } from '../types/story-types';
+import { apiRequestWrapper } from '@/lib/api-request-wrapper';
 
 interface BreakDownSentenceCallTypes {
   indexKey: ContentStateTypes['id'];
@@ -452,11 +452,14 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     indexKey,
   }: UpdateSentenceDataCallTypes) => {
     try {
-      const updatedFieldFromDB = await updateSentenceDataAPI({
-        indexKey,
-        sentenceId,
-        fieldToUpdate,
-        language: languageSelectedState,
+      const updatedFieldFromDB = await apiRequestWrapper({
+        url: '/api/updateSentence',
+        body: {
+          language: languageSelectedState,
+          indexKey,
+          id: sentenceId,
+          fieldToUpdate,
+        },
       });
 
       if (isRemoveReview) {
@@ -466,7 +469,8 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
           sentenceId,
         });
       } else {
-        const { reviewData } = updatedFieldFromDB;
+        const { reviewData } =
+          updatedFieldFromDB as Partial<ContentTranscriptTypes>;
         dispatchContent({
           type: 'updateSentence',
           contentIndex,
@@ -480,7 +484,6 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
           ? 'Successful learned sentence ✅'
           : 'Sentence reviewed ✅',
       );
-      return updatedFieldFromDB?.reviewData;
     } catch (error) {
       console.log('## updateSentenceData', { error });
       setToastMessageState('Error updating sentence ❌');
