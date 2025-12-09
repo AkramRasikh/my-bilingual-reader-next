@@ -26,7 +26,6 @@ import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
-import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 import { updateContentMetaDataAPI } from '../client-api/update-content-meta-data';
 import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
 import {
@@ -60,6 +59,12 @@ interface SentenceReviewBulkCallTypes {
   contentId: ContentStateTypes['id'];
   contentIndex: ContentStateTypes['contentIndex'];
 }
+
+interface SentenceReviewBulkAPIResponseCallTypes {
+  updatedSentenceIds: ContentTranscriptTypes['id'][];
+  reviewData: ReviewDataTypes;
+}
+
 interface UpdateContentMetaDataCallTypes {
   fieldToUpdate:
     | ContentStateTypes['nextReview']
@@ -353,12 +358,16 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     contentId,
   }: SentenceReviewBulkCallTypes) => {
     try {
-      const resUpdatedSentenceIds = await sentenceReviewBulkAPI({
-        contentId,
-        language: languageSelectedState,
-        reviewData,
-        sentenceIds,
-      });
+      const resUpdatedSentenceIds = (await apiRequestWrapper({
+        url: '/api/bulkSentenceReview',
+        body: {
+          contentId,
+          language: languageSelectedState,
+          reviewData,
+          sentenceIds,
+        },
+      })) as SentenceReviewBulkAPIResponseCallTypes;
+
       if (resUpdatedSentenceIds) {
         dispatchContent({
           type: 'updateSentences',
