@@ -47,6 +47,7 @@ import { SentenceTypes } from '../types/sentence-types';
 import { WordTypes } from '../types/word-types';
 import { ContentTranscriptTypes } from '../types/content-types';
 import { ReviewDataTypes } from '../types/shared-types';
+import { StoryTypes } from '../types/story-types';
 
 interface BreakDownSentenceCallTypes {
   indexKey: ContentStateTypes['id'];
@@ -67,6 +68,10 @@ interface UpdateContentMetaDataCallTypes {
     | ContentStateTypes['snippets'];
   contentId: ContentStateTypes['id'];
   contentIndex: ContentStateTypes['contentIndex'];
+}
+
+interface StoryTypeStateTypes extends StoryTypes {
+  isSaved?: boolean;
 }
 
 interface UpdateAdhocSentenceDataCallTypes {
@@ -115,17 +120,20 @@ interface WordBasketTypes {
   definition: WordTypes['definition'];
 }
 
+interface AddGeneratedSentenceCallTypes {
+  targetLang: StoryTypeStateTypes['targetLang'];
+  baseLang: StoryTypeStateTypes['baseLang'];
+  notes?: StoryTypeStateTypes['notes'];
+}
+
 interface FetchDataContextTypes {
   languageSelectedState: LanguageEnum;
   setLanguageSelectedState: (lang: LanguageEnum) => void;
-  languageOnMountState: LanguageEnum;
-  setLanguageOnMountState: (lang: LanguageEnum) => void;
   pureWordsMemoized: string[];
   contentState: ContentStateTypes[];
   sentencesState: SentenceTypes[];
   wordsState: WordTypes[];
   hasFetchedDataState: boolean;
-  setHasFetchedDataState: (param: boolean) => void;
   dispatchSentences: React.Dispatch<SentenceActions>;
   dispatchContent: React.Dispatch<ContentAction>;
   dispatchWords: React.Dispatch<WordActions>;
@@ -144,12 +152,14 @@ interface FetchDataContextTypes {
   updateWordDataProvider: (params: UpdateWordDataProviderCallTypes) => void;
   updateSentenceData: (params: UpdateSentenceDataCallTypes) => void;
   wordsToReviewOnMountState: number;
-  setWordsToReviewOnMountState: Dispatch<SetStateAction<number>>;
   addImageDataProvider: (params: AddImageDataProviderCallTypes) => void;
   wordsToReviewGivenOriginalContextId: Record<WordTypes['id'], WordTypes[]>;
   deleteContent: (params: DeleteContentCallTypes) => void;
   wordBasketState: WordBasketTypes[];
   setWordBasketState: Dispatch<SetStateAction<WordBasketTypes[]>>;
+  story?: StoryTypeStateTypes;
+  setStory: Dispatch<SetStateAction<StoryTypeStateTypes | undefined>>;
+  addGeneratedSentence: (params: AddGeneratedSentenceCallTypes) => void;
 }
 
 const FetchDataContext = createContext<FetchDataContextTypes>({
@@ -159,9 +169,6 @@ const FetchDataContext = createContext<FetchDataContextTypes>({
   updateSentenceData: () => {},
   deleteContent: () => {},
   setLanguageSelectedState: () => {},
-  setWordsToReviewOnMountState: () => {},
-  setLanguageOnMountState: () => {},
-  setHasFetchedDataState: () => {},
   dispatchSentences: () => {},
   dispatchContent: () => {},
   dispatchWords: () => {},
@@ -171,9 +178,9 @@ const FetchDataContext = createContext<FetchDataContextTypes>({
   setToastMessageState: () => {},
   handleDeleteWordDataProvider: () => {},
   addImageDataProvider: () => {},
+  addGeneratedSentence: () => {},
   wordsToReviewGivenOriginalContextId: {},
   languageSelectedState: LanguageEnum.None,
-  languageOnMountState: LanguageEnum.None,
   contentState: [],
   sentencesState: [],
   wordsState: [],
@@ -184,6 +191,7 @@ const FetchDataContext = createContext<FetchDataContextTypes>({
   pureWordsMemoized: [],
   wordBasketState: [],
   setWordBasketState: () => {},
+  setStory: () => {},
   wordsToReviewOnMountState: 0,
 });
 
@@ -202,7 +210,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
   const [wordsToReviewOnMountState, setWordsToReviewOnMountState] = useState(0);
   const [wordBasketState, setWordBasketState] = useState<WordBasketTypes[]>([]);
   const [toastMessageState, setToastMessageState] = useState('');
-  const [story, setStory] = useState();
+  const [story, setStory] = useState<StoryTypeStateTypes>();
   const isSetOneTime = useRef(true);
   const router = useRouter();
 
@@ -619,9 +627,15 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     }
   };
 
-  const addGeneratedSentence = async ({ targetLang, baseLang, notes }) => {
+  const addGeneratedSentence = async ({
+    targetLang,
+    baseLang,
+    notes,
+  }: AddGeneratedSentenceCallTypes) => {
     try {
-      console.log('## addGeneratedSentence', targetLang, baseLang);
+      if (!story) {
+        return;
+      }
       const res = await fetch('/api/addSentence', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
