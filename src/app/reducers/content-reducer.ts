@@ -50,7 +50,7 @@ export function contentReducer(
 ): ContentStateTypes[] {
   switch (action.type) {
     case 'initContent':
-      return action.content;
+      return action.content || [];
 
     case 'updateSentence':
       return state.map((topic, idx) =>

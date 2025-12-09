@@ -1,6 +1,6 @@
 import { readJsonFromFile, saveJsonToFile } from '@/utils/setup-mock-data';
 import { NextResponse } from 'next/server';
-import { getFormattedData } from './on-load-data-formatted';
+import { ContentTypes } from '@/app/types/content-types';
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -30,8 +30,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ exists: false }, { status: 400 });
     }
 
-    const [jsonData] = await response.json(); // not sure why it is an array
-    const data = getFormattedData(jsonData);
+    const [contentData, wordsData, sentenceData] = await response.json(); // not sure why it is an array
+
+    const data = {
+      contentData: contentData?.content.map(
+        (contentWidget: ContentTypes, contentIndex: number) => {
+          return {
+            ...contentWidget,
+            contentIndex,
+            generalTopicName: contentWidget.title,
+          };
+        },
+      ),
+      wordsData: wordsData?.words,
+      sentencesData: sentenceData?.sentences,
+    };
     await saveJsonToFile(data);
 
     return NextResponse.json(data, { status: 200 });

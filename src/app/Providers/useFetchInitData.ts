@@ -1,10 +1,9 @@
 import { Dispatch, SetStateAction, useEffect } from 'react';
-import {
-  content,
-  sentences,
-  words,
-} from '../api/getOnLoadData/on-load-data-formatted';
 import { FetchDataContextTypes } from './FetchDataProvider';
+
+export const content = 'content';
+export const words = 'words';
+export const sentences = 'sentences';
 
 interface UseFetchInitDataTypes {
   hasFetchedDataState: FetchDataContextTypes['hasFetchedDataState'];

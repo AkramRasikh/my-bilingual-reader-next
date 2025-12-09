@@ -26,7 +26,7 @@ export function sentencesReducer(
 ) {
   switch (action.type) {
     case 'initSentences':
-      return action.sentences;
+      return action.sentences || [];
     case 'addSentence':
       return [...state, action.sentence];
     case 'updateSentence': {

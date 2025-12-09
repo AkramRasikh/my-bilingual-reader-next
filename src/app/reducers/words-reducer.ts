@@ -32,7 +32,7 @@ export function wordsReducer(state: WordTypes[], action: WordActions) {
   switch (action.type) {
     case 'initWords':
       // for your first useEffect initialization
-      return action.words;
+      return action.words || [];
 
     case 'addWord':
       // Add one or multiple words to the state
