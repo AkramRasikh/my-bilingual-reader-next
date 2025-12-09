@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ exists: false }, { status: 400 });
     }
 
-    const jsonData = await response.json();
+    const [jsonData] = await response.json(); // not sure why it is an array
     const data = getFormattedData(jsonData);
     await saveJsonToFile(data);
 
