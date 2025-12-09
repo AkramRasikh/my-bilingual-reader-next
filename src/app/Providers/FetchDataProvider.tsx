@@ -31,8 +31,6 @@ import {
   getNextScheduledOptions,
   srsRetentionKeyTypes,
 } from '../srs-utils/srs-algo';
-import saveWordAPI from '../client-api/save-word';
-import { deleteWordAPI } from '../client-api/delete-word';
 import { getAudioURL } from '@/utils/get-media-url';
 import useFetchInitData from './useFetchInitData';
 import { useRouter } from 'next/navigation';
@@ -86,6 +84,10 @@ interface HandleSaveWordCallTypes {
   contextSentence?: string;
   meaning?: string;
   isGoogle?: boolean;
+}
+
+interface HandleSaveWordResponseCallTypes {
+  word: WordTypes;
 }
 interface HandleDeleteWordDataProviderCallTypes {
   wordId: WordTypes['id'];
@@ -618,23 +620,28 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         contentType: srsRetentionKeyTypes.vocab,
       });
 
-      const savedWord = await saveWordAPI({
-        highlightedWord,
-        highlightedWordSentenceId,
-        contextSentence,
-        reviewData: nextScheduledOptions['1'].card,
-        meaning,
-        isGoogle,
-        language: languageSelectedState,
-      });
+      const savedWordResponse = (await apiRequestWrapper({
+        url: '/api/saveWord',
+        body: {
+          language: languageSelectedState,
+          word: highlightedWord,
+          context: highlightedWordSentenceId,
+          contextSentence,
+          reviewData: nextScheduledOptions['1'].card,
+          meaning,
+          isGoogle,
+        },
+      })) as HandleSaveWordResponseCallTypes;
 
-      if (savedWord) {
+      const wordToSave = savedWordResponse.word;
+
+      if (wordToSave) {
         dispatchWords({
           type: 'addWord',
-          word: savedWord, // can be one or multiple
+          word: wordToSave, // can be one or multiple
         });
         setToastMessageState(`${highlightedWord} saved!`);
-        return savedWord;
+        return wordToSave;
       }
     } catch (error) {
       console.log('## handleSaveWord', { error });
