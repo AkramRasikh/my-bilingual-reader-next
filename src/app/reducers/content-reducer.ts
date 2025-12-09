@@ -14,7 +14,7 @@ export type ContentAction =
       type: 'updateSentence';
       contentIndex: ContentStateTypes['contentIndex'];
       sentenceId: ContentTranscriptTypes['id'];
-      fields: { reviewData: ContentTranscriptTypes['reviewData'] };
+      fields: Partial<ContentTranscriptTypes>;
     }
   | {
       fields: { reviewData: ContentTranscriptTypes['reviewData'] };

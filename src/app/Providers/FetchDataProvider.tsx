@@ -26,7 +26,6 @@ import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
-import { breakdownSentenceAPI } from '../client-api/breakdown-sentence';
 import { sentenceReviewBulkAPI } from '../client-api/bulk-sentence-review';
 import { updateContentMetaDataAPI } from '../client-api/update-content-meta-data';
 import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
@@ -323,18 +322,21 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     contentIndex,
   }: BreakDownSentenceCallTypes) => {
     try {
-      const resObj = await breakdownSentenceAPI({
-        indexKey,
-        sentenceId,
-        targetLang,
-        language: languageSelectedState,
-      });
+      const sentenceBreakdownRes = (await apiRequestWrapper({
+        url: '/api/breakdownSentence',
+        body: {
+          id: sentenceId,
+          indexKey,
+          targetLang,
+          language: languageSelectedState,
+        },
+      })) as Partial<ContentTranscriptTypes>;
 
       dispatchContent({
         type: 'updateSentence',
         contentIndex,
         sentenceId,
-        fields: { ...resObj },
+        fields: { ...sentenceBreakdownRes },
       });
       setToastMessageState('Sentence broken down 🧱🔨!');
       return true;
