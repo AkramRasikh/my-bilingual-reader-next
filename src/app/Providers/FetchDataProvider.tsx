@@ -26,7 +26,6 @@ import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
-import { updateAdhocSentenceAPI } from '../client-api/update-adhoc-sentence';
 import {
   getEmptyCard,
   getNextScheduledOptions,
@@ -418,10 +417,13 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     isRemoveReview,
   }: UpdateAdhocSentenceDataCallTypes) => {
     try {
-      const updatedFieldFromDB = await updateAdhocSentenceAPI({
-        sentenceId,
-        fieldToUpdate,
-        language: languageSelectedState,
+      const updatedFieldFromDB = await apiRequestWrapper({
+        url: '/api/updateAdhocSentence',
+        body: {
+          id: sentenceId,
+          fieldToUpdate,
+          language: languageSelectedState,
+        },
       });
 
       if (updatedFieldFromDB) {
