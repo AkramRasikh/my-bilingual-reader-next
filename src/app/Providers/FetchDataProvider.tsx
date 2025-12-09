@@ -35,7 +35,6 @@ import saveWordAPI from '../client-api/save-word';
 import { deleteWordAPI } from '../client-api/delete-word';
 import { getAudioURL } from '@/utils/get-media-url';
 import useFetchInitData from './useFetchInitData';
-import { deleteContentAPI } from '../client-api/delete-content';
 import { useRouter } from 'next/navigation';
 import { LanguageEnum } from '../languages';
 import { SentenceTypes } from '../types/sentence-types';
@@ -114,6 +113,15 @@ interface DeleteContentCallTypes {
   contentId: ContentStateTypes['id'];
   title: ContentStateTypes['title'];
   wordIds?: WordTypes['id'][];
+}
+
+interface DeleteContentResponseCallTypes {
+  id: ContentStateTypes['id'];
+  deletedWordsIds?: WordTypes['id'][];
+}
+
+interface DeleteWordResponseTypes {
+  id: WordTypes['id'];
 }
 
 interface WordBasketTypes {
@@ -449,8 +457,16 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     wordId,
   }: HandleDeleteWordDataProviderCallTypes) => {
     try {
-      await deleteWordAPI({ wordId, language: languageSelectedState });
-      dispatchWords({ type: 'removeWord', wordId });
+      const deleteWordResponse = (await apiRequestWrapper({
+        url: '/api/deleteWord',
+        body: {
+          id: wordId,
+          language: languageSelectedState,
+        },
+      })) as DeleteWordResponseTypes;
+
+      const deletedWordId = deleteWordResponse.id;
+      dispatchWords({ type: 'removeWord', wordId: deletedWordId });
       setToastMessageState('Word deleted!');
       return true;
     } catch (error) {
@@ -555,22 +571,29 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     wordIds,
   }: DeleteContentCallTypes) => {
     try {
-      const deleteSuccess = await deleteContentAPI({
-        contentId,
-        title,
-        language: languageSelectedState,
-        wordIds,
-      });
-      if (deleteSuccess) {
+      const deletedContentResponse = (await apiRequestWrapper({
+        url: '/api/deleteContent',
+        body: {
+          id: contentId,
+          title,
+          language: languageSelectedState,
+          wordIds,
+        },
+      })) as DeleteContentResponseCallTypes;
+
+      const deletedContentId = deletedContentResponse.id;
+      const deletedContentWordsId = deletedContentResponse?.deletedWordsIds;
+
+      if (deletedContentId) {
         router.push('/');
         dispatchContent({
           type: 'deleteContent',
           id: contentId,
         });
-        if (wordIds) {
+        if (deletedContentWordsId) {
           dispatchWords({
             type: 'removeWords',
-            ids: wordIds,
+            ids: deletedContentWordsId,
           });
         }
         setToastMessageState(`Content deleted!`);
