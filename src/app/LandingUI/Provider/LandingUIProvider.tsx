@@ -63,7 +63,7 @@ export const LandingUIProvider = ({ children }: LandingUIProviderProps) => {
             isDueCheck(snippetItem, timeNow),
           ).length || 0,
         numberOfDueWords,
-        isThisNew: Boolean(
+        isThisNew: !Boolean(
           contentItem.reviewHistory && contentItem.reviewHistory.length > 0,
         ),
       });
