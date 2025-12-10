@@ -2,8 +2,13 @@ import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Check, ScissorsIcon, WholeWordIcon } from 'lucide-react';
+import { LandingScreenComprehensiveType } from './LandingUIContentSelection';
 
-const LandingUIContentSelectionItemImage = ({ youtubeId }) => (
+const LandingUIContentSelectionItemImage = ({
+  youtubeId,
+}: {
+  youtubeId: LandingScreenComprehensiveType['youtubeId'];
+}) => (
   <div className='relative h-20 w-5/6 m-auto'>
     <Image
       src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
@@ -17,6 +22,9 @@ const LandingUIContentSelectionItemImage = ({ youtubeId }) => (
 const LandingUIContentSelectionItemTags = ({
   hasAllBeenReviewed,
   isThisNew,
+}: {
+  hasAllBeenReviewed: LandingScreenComprehensiveType['hasAllBeenReviewed'];
+  isThisNew: LandingScreenComprehensiveType['isThisNew'];
 }) => {
   return hasAllBeenReviewed ? (
     <Check
@@ -40,6 +48,11 @@ const LandingUIContentSelectionItemTags = ({
 const LandingScreenContentSelectionItem = ({
   youtubeMetaData,
   handleSelectInitialTopic,
+}: {
+  youtubeMetaData: LandingScreenComprehensiveType;
+  handleSelectInitialTopic: (
+    params: LandingScreenComprehensiveType['title'],
+  ) => void;
 }) => {
   const title = youtubeMetaData.title;
   const youtubeId = youtubeMetaData.youtubeId;

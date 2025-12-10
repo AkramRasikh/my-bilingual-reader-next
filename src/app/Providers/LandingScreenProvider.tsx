@@ -5,20 +5,36 @@ import { useFetchData } from './FetchDataProvider';
 import { ContentStateTypes } from '../reducers/content-reducer';
 import { ContentTranscriptTypes } from '../types/content-types';
 
+export interface GetTopicStatusReturnTypes {
+  isThisDue: number;
+  snippetsDue: number;
+  numberOfDueWords: number;
+  isThisNew: boolean;
+  hasAllBeenReviewed: boolean;
+}
+
+export interface LandingScreenYoutubeWidgetTypes {
+  title: ContentStateTypes['title'];
+  youtubeId: string;
+}
+
 export interface LandingScreenProviderTypes {
-  generalTopicDisplayNameMemoized: {
-    title: ContentStateTypes['title'];
-    youtubeId: string;
-  }[];
+  generalTopicDisplayNameMemoized: LandingScreenYoutubeWidgetTypes[];
   getTopicStatus: (
     genTop: ContentStateTypes['title'],
     todayDateObj: Date,
-  ) => void;
+  ) => GetTopicStatusReturnTypes;
 }
 
 export const LandingScreenContext = createContext<LandingScreenProviderTypes>({
   generalTopicDisplayNameMemoized: [],
-  getTopicStatus: () => {},
+  getTopicStatus: () => ({
+    isThisDue: 0,
+    snippetsDue: 0,
+    numberOfDueWords: 0,
+    isThisNew: true,
+    hasAllBeenReviewed: true,
+  }),
 });
 
 type LandingScreenProviderProps = {
@@ -63,13 +79,14 @@ export const LandingScreenProvider = ({
   const getTopicStatus = (
     genTop: ContentStateTypes['title'],
     todayDateObj: Date,
-  ) => {
+  ): GetTopicStatusReturnTypes => {
     const allTheseTopics = contentState.filter(
       (el) => el.generalTopicName === genTop,
     );
 
     let isThisDue = 0;
     let snippetsDue = 0;
+    let numberOfDueWords = 0;
     let isThisNew = true;
     let hasAllBeenReviewed = true;
 
@@ -79,6 +96,7 @@ export const LandingScreenProvider = ({
         isThisNew,
         hasAllBeenReviewed,
         snippetsDue,
+        numberOfDueWords,
       };
     }
 
@@ -111,7 +129,7 @@ export const LandingScreenProvider = ({
       }
     }
 
-    const numberOfDueWords = wordsForReviewMemoized.filter((wordObj) =>
+    numberOfDueWords = wordsForReviewMemoized.filter((wordObj) =>
       squashedSentenceIdsViaContentMemoized[genTop]?.includes(
         wordObj?.contexts?.[0],
       ),

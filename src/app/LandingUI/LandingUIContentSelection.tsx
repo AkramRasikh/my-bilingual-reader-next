@@ -1,13 +1,27 @@
 import LandingUIContentSelectionItem from './LandingUIContentSelectionItem';
 import { useMemo } from 'react';
-import { useLandingScreen } from '../Providers/LandingScreenProvider';
+import {
+  GetTopicStatusReturnTypes,
+  LandingScreenProviderTypes,
+  LandingScreenYoutubeWidgetTypes,
+  useLandingScreen,
+} from '../Providers/LandingScreenProvider';
 import { useRouter } from 'next/navigation';
+import { ContentStateTypes } from '../reducers/content-reducer';
 
-const LandingUIContentSelection = ({ generalTopicDisplayNameMemoized }) => {
+export interface LandingScreenComprehensiveType
+  extends LandingScreenYoutubeWidgetTypes,
+    GetTopicStatusReturnTypes {}
+
+const LandingUIContentSelection = ({
+  generalTopicDisplayNameMemoized,
+}: {
+  generalTopicDisplayNameMemoized: LandingScreenProviderTypes['generalTopicDisplayNameMemoized'];
+}) => {
   const router = useRouter();
   const { getTopicStatus } = useLandingScreen();
 
-  const handleSelectInitialTopic = (topicName) => {
+  const handleSelectInitialTopic = (topicName: ContentStateTypes['title']) => {
     router.push(`/content?topic=${topicName}`);
   };
 
@@ -36,10 +50,13 @@ const LandingUIContentSelection = ({ generalTopicDisplayNameMemoized }) => {
     );
 
     const sortedComprehensiveState = comprehensiveState.sort((a, b) => {
-      const rank = (obj) =>
-        obj.isThisDue === true
+      const rank = ({
+        isThisDue,
+        hasAllBeenReviewed,
+      }: LandingScreenComprehensiveType) =>
+        isThisDue
           ? 0 // highest priority
-          : obj.hasAllBeenReviewed
+          : hasAllBeenReviewed
           ? 1
           : 2; // lowest
 
