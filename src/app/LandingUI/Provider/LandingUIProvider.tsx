@@ -9,10 +9,10 @@ import { ContentTranscriptTypes } from '../../types/content-types';
 export interface LandingUIComprehensiveType {
   title: ContentStateTypes['title'];
   youtubeId: string;
-  isThisDue: number;
-  snippetsDue: number;
-  numberOfDueWords: number;
-  isThisNew: boolean;
+  dueSentences: number;
+  dueSnippets: number;
+  dueWords: number;
+  contentHasBeenReviews: boolean;
 }
 
 export interface LandingUIProviderTypes {
@@ -48,28 +48,28 @@ export const LandingUIProvider = ({ children }: LandingUIProviderProps) => {
       );
       squashedSentenceIdsViaContentMemoized[title] = mappedSentenceIds;
 
-      const numberOfDueWords = wordsForReviewMemoized.filter((wordObj) =>
+      const dueWords = wordsForReviewMemoized.filter((wordObj) =>
         mappedSentenceIds.includes(wordObj?.contexts?.[0]),
       ).length;
 
       contentMetaData.push({
         youtubeId,
         title,
-        isThisDue: thisContentTranscripts.filter((transcriptItem) =>
+        dueSentences: thisContentTranscripts.filter((transcriptItem) =>
           isDueCheck(transcriptItem, timeNow),
         ).length,
-        snippetsDue:
+        dueSnippets:
           thisContentSnippets?.filter((snippetItem) =>
             isDueCheck(snippetItem, timeNow),
           ).length || 0,
-        numberOfDueWords,
-        isThisNew: !Boolean(
+        dueWords,
+        contentHasBeenReviews: Boolean(
           contentItem.reviewHistory && contentItem.reviewHistory.length > 0,
         ),
       });
     });
 
-    return contentMetaData;
+    return contentMetaData.sort((a, b) => b.dueSentences - a.dueSentences);
   }, [contentState]);
 
   return (

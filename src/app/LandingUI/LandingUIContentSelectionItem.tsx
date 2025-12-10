@@ -27,11 +27,11 @@ const LandingUIContentSelectionItemImage = ({
 );
 
 const LandingUIContentSelectionItemTags = ({
-  isThisNew,
+  contentHasBeenReviews,
 }: {
-  isThisNew: LandingUIComprehensiveType['isThisNew'];
+  contentHasBeenReviews: LandingUIComprehensiveType['contentHasBeenReviews'];
 }) => {
-  return isThisNew ? (
+  return !contentHasBeenReviews ? (
     <span
       className='absolute top-2 right-3'
       style={{
@@ -53,10 +53,10 @@ const LandingUIContentSelectionItemTags = ({
 const LandingUIContentSelectionItem = ({
   title,
   youtubeId,
-  isThisDue,
-  isThisNew,
-  numberOfDueWords,
-  snippetsDue,
+  dueSentences,
+  contentHasBeenReviews,
+  dueWords,
+  dueSnippets,
 }: LandingUIComprehensiveType) => {
   const router = useRouter();
 
@@ -72,7 +72,7 @@ const LandingUIContentSelectionItem = ({
         onClick={() => handleSelectInitialTopic(title)}
         className={clsx(
           'pb-1 rounded w-full relative',
-          isThisDue > 0 ? 'bg-amber-300' : '',
+          dueSentences > 0 ? 'bg-amber-300' : '',
         )}
       >
         <span
@@ -85,24 +85,26 @@ const LandingUIContentSelectionItem = ({
           {title}
         </span>
       </Button>
-      <LandingUIContentSelectionItemTags isThisNew={isThisNew} />
+      <LandingUIContentSelectionItemTags
+        contentHasBeenReviews={contentHasBeenReviews}
+      />
 
-      {snippetsDue > 0 && (
+      {dueSnippets > 0 && (
         <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-200 rounded-xl p-1 top-1 left-0 z-10'>
           <ScissorsIcon className='h-3 w-3 m-auto' />
-          <span className='text-xs font-light'>{snippetsDue}</span>
+          <span className='text-xs font-light'>{dueSnippets}</span>
         </div>
       )}
-      {isThisDue > 0 && (
+      {dueSentences > 0 && (
         <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-200 rounded-xl p-1 -bottom-3 left-0 z-10'>
           <ScrollTextIcon className='h-3 w-3 m-auto' />
-          <span className='text-xs font-light'>{isThisDue}</span>
+          <span className='text-xs font-light'>{dueSentences}</span>
         </div>
       )}
-      {numberOfDueWords > 0 && (
+      {dueWords > 0 && (
         <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-100 rounded-xl p-1 -bottom-3 right-0 z-10'>
           <WholeWordIcon className='h-3 w-3 m-auto' />
-          <span className='text-xs font-light'>{numberOfDueWords}</span>
+          <span className='text-xs font-light'>{dueWords}</span>
         </div>
       )}
     </div>
