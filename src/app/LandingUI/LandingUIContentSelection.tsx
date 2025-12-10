@@ -1,11 +1,11 @@
 import LandingUIContentSelectionItem from './LandingUIContentSelectionItem';
-import { useLandingScreen } from '../Providers/LandingScreenProvider';
+import { useLandingUI } from './Provider/LandingUIProvider';
 
 const LandingUIContentSelection = () => {
-  const { generalTopicDisplayNameMemoized } = useLandingScreen();
+  const { generalTopicDisplayNameMemoized } = useLandingUI();
 
   return (
-    <ul className='flex flex-wrap gap-2'>
+    <ul className='flex flex-wrap gap-4'>
       {generalTopicDisplayNameMemoized.map((youtubeMetaData, index) => {
         return (
           <li key={index}>

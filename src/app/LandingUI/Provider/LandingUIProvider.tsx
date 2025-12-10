@@ -1,12 +1,12 @@
 'use client';
 import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { isDueCheck } from '@/utils/is-due-check';
-import { useFetchData } from './FetchDataProvider';
-import { ContentStateTypes } from '../reducers/content-reducer';
+import { useFetchData } from '../../Providers/FetchDataProvider';
+import { ContentStateTypes } from '../../reducers/content-reducer';
 
-import { ContentTranscriptTypes } from '../types/content-types';
+import { ContentTranscriptTypes } from '../../types/content-types';
 
-export interface LandingScreenComprehensiveType {
+export interface LandingUIComprehensiveType {
   title: ContentStateTypes['title'];
   youtubeId: string;
   isThisDue: number;
@@ -15,25 +15,23 @@ export interface LandingScreenComprehensiveType {
   isThisNew: boolean;
 }
 
-export interface LandingScreenProviderTypes {
-  generalTopicDisplayNameMemoized: LandingScreenComprehensiveType[];
+export interface LandingUIProviderTypes {
+  generalTopicDisplayNameMemoized: LandingUIComprehensiveType[];
 }
 
-export const LandingScreenContext = createContext<LandingScreenProviderTypes>({
+export const LandingUIContext = createContext<LandingUIProviderTypes>({
   generalTopicDisplayNameMemoized: [],
 });
 
-type LandingScreenProviderProps = {
+type LandingUIProviderProps = {
   children: ReactNode;
 };
 
-export const LandingScreenProvider = ({
-  children,
-}: LandingScreenProviderProps) => {
+export const LandingUIProvider = ({ children }: LandingUIProviderProps) => {
   const { contentState, wordsForReviewMemoized } = useFetchData();
 
   const generalTopicDisplayNameMemoized = useMemo(() => {
-    const contentMetaData: LandingScreenComprehensiveType[] = [];
+    const contentMetaData: LandingUIComprehensiveType[] = [];
     const squashedSentenceIdsViaContentMemoized = {} as Record<
       ContentStateTypes['id'],
       ContentTranscriptTypes['id'][]
@@ -75,23 +73,21 @@ export const LandingScreenProvider = ({
   }, [contentState]);
 
   return (
-    <LandingScreenContext.Provider
+    <LandingUIContext.Provider
       value={{
         generalTopicDisplayNameMemoized,
       }}
     >
       {children}
-    </LandingScreenContext.Provider>
+    </LandingUIContext.Provider>
   );
 };
 
-export const useLandingScreen = () => {
-  const context = useContext(LandingScreenContext);
+export const useLandingUI = () => {
+  const context = useContext(LandingUIContext);
 
   if (!context)
-    throw new Error(
-      'useLandingScreen must be used within a LandingScreenProvider',
-    );
+    throw new Error('useLandingUI must be used within a LandingUIProvider');
 
   return context;
 };

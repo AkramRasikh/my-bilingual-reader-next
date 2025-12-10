@@ -2,16 +2,21 @@ import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Check, ScissorsIcon, WholeWordIcon } from 'lucide-react';
+import {
+  Check,
+  ScissorsIcon,
+  ScrollTextIcon,
+  WholeWordIcon,
+} from 'lucide-react';
 import { ContentStateTypes } from '../reducers/content-reducer';
-import { LandingScreenComprehensiveType } from '../Providers/LandingScreenProvider';
+import { LandingUIComprehensiveType } from './Provider/LandingUIProvider';
 
 const LandingUIContentSelectionItemImage = ({
   youtubeId,
 }: {
-  youtubeId: LandingScreenComprehensiveType['youtubeId'];
+  youtubeId: LandingUIComprehensiveType['youtubeId'];
 }) => (
-  <div className='relative h-20 w-5/6 m-auto'>
+  <div className='relative h-30 w-9/10 m-auto'>
     <Image
       src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
       alt={youtubeId || 'youtubeId'}
@@ -24,7 +29,7 @@ const LandingUIContentSelectionItemImage = ({
 const LandingUIContentSelectionItemTags = ({
   isThisNew,
 }: {
-  isThisNew: LandingScreenComprehensiveType['isThisNew'];
+  isThisNew: LandingUIComprehensiveType['isThisNew'];
 }) => {
   return isThisNew ? (
     <span
@@ -45,14 +50,14 @@ const LandingUIContentSelectionItemTags = ({
   );
 };
 
-const LandingScreenContentSelectionItem = ({
+const LandingUIContentSelectionItem = ({
   title,
   youtubeId,
   isThisDue,
   isThisNew,
   numberOfDueWords,
   snippetsDue,
-}: LandingScreenComprehensiveType) => {
+}: LandingUIComprehensiveType) => {
   const router = useRouter();
 
   const handleSelectInitialTopic = (topicName: ContentStateTypes['title']) => {
@@ -90,7 +95,7 @@ const LandingScreenContentSelectionItem = ({
       )}
       {isThisDue > 0 && (
         <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-200 rounded-xl p-1 -bottom-3 left-0 z-10'>
-          <WholeWordIcon className='h-3 w-3 m-auto' />
+          <ScrollTextIcon className='h-3 w-3 m-auto' />
           <span className='text-xs font-light'>{isThisDue}</span>
         </div>
       )}
@@ -104,4 +109,4 @@ const LandingScreenContentSelectionItem = ({
   );
 };
 
-export default LandingScreenContentSelectionItem;
+export default LandingUIContentSelectionItem;

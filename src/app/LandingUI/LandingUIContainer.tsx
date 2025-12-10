@@ -4,8 +4,8 @@ import LoadingSpinner from '@/components/custom/LoadingSpinner';
 
 import { useFetchData } from '../Providers/FetchDataProvider';
 import LandingUI from '.';
-import { LandingScreenProvider } from '../Providers/LandingScreenProvider';
 import PageContainer from '@/components/custom/PageContainer';
+import { LandingUIProvider } from './Provider/LandingUIProvider';
 
 const LandingUIContainer = () => {
   const {
@@ -32,9 +32,9 @@ const LandingUIContainer = () => {
       toastMessageState={toastMessageState}
       setToastMessageState={setToastMessageState}
     >
-      <LandingScreenProvider>
+      <LandingUIProvider>
         <LandingUI />
-      </LandingScreenProvider>
+      </LandingUIProvider>
     </PageContainer>
   );
 };
