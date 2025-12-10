@@ -1,8 +1,10 @@
 import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Check, ScissorsIcon, WholeWordIcon } from 'lucide-react';
-import { LandingScreenComprehensiveType } from './LandingUIContentSelection';
+import { ContentStateTypes } from '../reducers/content-reducer';
+import { LandingScreenComprehensiveType } from '../Providers/LandingScreenProvider';
 
 const LandingUIContentSelectionItemImage = ({
   youtubeId,
@@ -20,20 +22,11 @@ const LandingUIContentSelectionItemImage = ({
 );
 
 const LandingUIContentSelectionItemTags = ({
-  hasAllBeenReviewed,
   isThisNew,
 }: {
-  hasAllBeenReviewed: LandingScreenComprehensiveType['hasAllBeenReviewed'];
   isThisNew: LandingScreenComprehensiveType['isThisNew'];
 }) => {
-  return hasAllBeenReviewed ? (
-    <Check
-      className='absolute top-2 right-3 bg-green-400 rounded p-0.5 border h-4 w-4'
-      style={{
-        fontSize: 5,
-      }}
-    />
-  ) : isThisNew ? (
+  return isThisNew ? (
     <span
       className='absolute top-2 right-3'
       style={{
@@ -42,25 +35,29 @@ const LandingUIContentSelectionItemTags = ({
     >
       🆕
     </span>
-  ) : null;
+  ) : (
+    <Check
+      className='absolute top-2 right-3 bg-green-400 rounded p-0.5 border h-4 w-4'
+      style={{
+        fontSize: 5,
+      }}
+    />
+  );
 };
 
 const LandingScreenContentSelectionItem = ({
-  youtubeMetaData,
-  handleSelectInitialTopic,
-}: {
-  youtubeMetaData: LandingScreenComprehensiveType;
-  handleSelectInitialTopic: (
-    params: LandingScreenComprehensiveType['title'],
-  ) => void;
-}) => {
-  const title = youtubeMetaData.title;
-  const youtubeId = youtubeMetaData.youtubeId;
-  const isThisDue = youtubeMetaData.isThisDue;
-  const isThisNew = youtubeMetaData?.isThisNew;
-  const hasAllBeenReviewed = youtubeMetaData?.hasAllBeenReviewed;
-  const numberOfDueWords = youtubeMetaData?.numberOfDueWords;
-  const snippetsDue = youtubeMetaData.snippetsDue;
+  title,
+  youtubeId,
+  isThisDue,
+  isThisNew,
+  numberOfDueWords,
+  snippetsDue,
+}: LandingScreenComprehensiveType) => {
+  const router = useRouter();
+
+  const handleSelectInitialTopic = (topicName: ContentStateTypes['title']) => {
+    router.push(`/content?topic=${topicName}`);
+  };
 
   return (
     <div className='rounded-2xl border flex flex-col gap-1 p-2 relative'>
@@ -83,10 +80,7 @@ const LandingScreenContentSelectionItem = ({
           {title}
         </span>
       </Button>
-      <LandingUIContentSelectionItemTags
-        hasAllBeenReviewed={hasAllBeenReviewed}
-        isThisNew={isThisNew}
-      />
+      <LandingUIContentSelectionItemTags isThisNew={isThisNew} />
 
       {snippetsDue > 0 && (
         <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-200 rounded-xl p-1 top-1 left-0 z-10'>
