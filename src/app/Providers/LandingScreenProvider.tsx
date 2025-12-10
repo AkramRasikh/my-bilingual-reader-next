@@ -2,8 +2,24 @@
 import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { isDueCheck } from '@/utils/is-due-check';
 import { useFetchData } from './FetchDataProvider';
+import { ContentStateTypes } from '../reducers/content-reducer';
+import { ContentTranscriptTypes } from '../types/content-types';
 
-export const LandingScreenContext = createContext(null);
+export interface LandingScreenProviderTypes {
+  generalTopicDisplayNameMemoized: {
+    title: ContentStateTypes['title'];
+    youtubeId: string;
+  }[];
+  getTopicStatus: (
+    genTop: ContentStateTypes['title'],
+    todayDateObj: Date,
+  ) => void;
+}
+
+export const LandingScreenContext = createContext<LandingScreenProviderTypes>({
+  generalTopicDisplayNameMemoized: [],
+  getTopicStatus: () => {},
+});
 
 type LandingScreenProviderProps = {
   children: ReactNode;
@@ -24,19 +40,18 @@ export const LandingScreenProvider = ({
   }, [contentState]);
 
   const squashedSentenceIdsViaContentMemoized = useMemo(() => {
-    const generalTopicsObject = generalTopicDisplayNameMemoized.reduce(
-      (acc, key) => {
-        acc[key?.title] = [];
-        return acc;
-      },
-      {},
-    );
+    const generalTopicsObject = generalTopicDisplayNameMemoized.reduce<
+      Record<ContentStateTypes['title'], ContentTranscriptTypes['id'][]>
+    >((acc, key) => {
+      acc[key.title] = [];
+      return acc;
+    }, {});
 
     contentState.forEach((contentEl) => {
       const isInGeneralTopicObject =
-        generalTopicsObject[contentEl?.generalTopicName];
+        generalTopicsObject[contentEl.generalTopicName];
       if (isInGeneralTopicObject) {
-        generalTopicsObject[contentEl?.generalTopicName].push(
+        generalTopicsObject[contentEl.generalTopicName].push(
           ...contentEl.content.map((transcriptItem) => transcriptItem.id),
         );
       }
@@ -45,7 +60,10 @@ export const LandingScreenProvider = ({
     return generalTopicsObject;
   }, [generalTopicDisplayNameMemoized]);
 
-  const getTopicStatus = (genTop, todayDateObj) => {
+  const getTopicStatus = (
+    genTop: ContentStateTypes['title'],
+    todayDateObj: Date,
+  ) => {
     const allTheseTopics = contentState.filter(
       (el) => el.generalTopicName === genTop,
     );
