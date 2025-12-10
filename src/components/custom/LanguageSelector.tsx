@@ -8,12 +8,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { arabic, chinese, japanese } from '@/app/languages';
+import { arabic, chinese, japanese, LanguageEnum } from '@/app/languages';
 
-// Props interface
 interface LanguageSelectorProps {
-  defaultValue: 'chinese' | 'japanese' | 'arabic';
-  onChange?: (value: string) => void;
+  defaultValue: LanguageEnum;
+  onChange?: (value: LanguageEnum) => void;
 }
 
 const languageOptions = [
@@ -28,7 +27,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
 }) => {
   const [selected, setSelected] = React.useState(defaultValue);
 
-  const handleChange = (value: string) => {
+  const handleChange = (value: LanguageEnum) => {
     setSelected(value);
     onChange?.(value);
   };
