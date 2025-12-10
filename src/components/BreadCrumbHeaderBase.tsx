@@ -8,6 +8,16 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { JSX } from 'react';
+
+interface BreadCrumbHeaderBase {
+  onClick: () => void;
+  heading: string;
+  subHeading?: string;
+  navigationButtons?: () => JSX.Element[];
+  progressHeaderComponent?: () => JSX.Element;
+  withBasket?: boolean;
+}
 
 const BreadCrumbHeaderBase = ({
   onClick,
@@ -16,7 +26,7 @@ const BreadCrumbHeaderBase = ({
   navigationButtons,
   progressHeaderComponent,
   withBasket = true,
-}) => (
+}: BreadCrumbHeaderBase) => (
   <div className='flex justify-between w-full'>
     <Breadcrumb className='my-auto mx-1'>
       <BreadcrumbList>

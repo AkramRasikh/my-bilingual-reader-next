@@ -1,14 +1,20 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
+import type { VariantProps } from 'class-variance-authority';
 import { useEffect, useState } from 'react';
-
 import { useRouter } from 'next/navigation';
 
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LanguageSelector from '@/components/custom/LanguageSelector';
 import BreadCrumbHeaderBase from '@/components/BreadCrumbHeaderBase';
 
+interface NavgationButtonsType {
+  onClick: () => void;
+  variant?: VariantProps<typeof buttonVariants>['variant'];
+  text: string;
+  disabled?: boolean;
+}
 const LandingUIBreadCrumb = () => {
   const [showBasketState, setShowBasketState] = useState(false);
 
@@ -50,7 +56,7 @@ const LandingUIBreadCrumb = () => {
       variant: 'link',
       text: 'Content',
     },
-  ];
+  ] as NavgationButtonsType[];
 
   return (
     <div className='flex justify-between'>
