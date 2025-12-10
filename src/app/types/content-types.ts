@@ -6,7 +6,7 @@ export interface ContentTypes {
   createdAt: Date;
   hasAudio: boolean;
   title: string;
-  url?: string;
+  url: string;
   origin?: string;
   nextReview?: Date;
   reviewHistory?: Date[];

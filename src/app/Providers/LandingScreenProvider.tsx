@@ -1,71 +1,26 @@
 'use client';
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { isDueCheck } from '@/utils/is-due-check';
 import { useFetchData } from './FetchDataProvider';
 
 export const LandingScreenContext = createContext(null);
 
+type LandingScreenProviderProps = {
+  children: ReactNode;
+};
+
 export const LandingScreenProvider = ({
   children,
-}: PropsWithChildren<object>) => {
-  const {
-    contentState,
-    wordsForReviewMemoized,
-    wordsToReviewGivenOriginalContextId,
-  } = useFetchData();
+}: LandingScreenProviderProps) => {
+  const { contentState, wordsForReviewMemoized } = useFetchData();
 
-  const {
-    generalTopicDisplayNameMemoized,
-    nonMediaGeneralTopicDisplayNameMemoized,
-    hasScheduledForDeletion,
-  } = useMemo(() => {
-    const generalNamesArr = [];
-    const nonMediaGeneralNamesArr = [];
-    let hasScheduledForDeletion = false;
-
-    for (const contentItem of contentState) {
-      const itemGenName = contentItem.generalTopicName;
-      const isMedia = contentItem?.origin === 'youtube';
-      if (
-        isMedia &&
-        !generalNamesArr.some((item) => item.title === itemGenName)
-      ) {
-        const youtubeId = contentItem?.url?.split('=')[1];
-        generalNamesArr.push({
-          title: itemGenName,
-          youtubeId,
-        });
-      } else if (
-        !contentItem?.origin &&
-        !generalNamesArr.some((item) => item.title === itemGenName)
-      ) {
-        const subsections = contentState.filter(
-          (contentItem) => itemGenName === contentItem.generalTopicName,
-        );
-        nonMediaGeneralNamesArr.push({
-          title: itemGenName,
-          subSections: subsections.map((contentNested) => {
-            const squashedSentences = contentNested.content.filter(
-              (i) => wordsToReviewGivenOriginalContextId[i.id],
-            );
-            if (!hasScheduledForDeletion && squashedSentences.length === 0) {
-              hasScheduledForDeletion = true;
-            }
-
-            return {
-              id: contentNested.id,
-              title: contentNested.title,
-              squashedSentences,
-            };
-          }),
-        });
-      }
-    }
-    return {
-      generalTopicDisplayNameMemoized: generalNamesArr,
-      nonMediaGeneralTopicDisplayNameMemoized: nonMediaGeneralNamesArr,
-      hasScheduledForDeletion,
-    };
+  const generalTopicDisplayNameMemoized = useMemo(() => {
+    return contentState.map((contentItem) => {
+      return {
+        youtubeId: contentItem.url.split('=')[1],
+        title: contentItem.title,
+      };
+    });
   }, [contentState]);
 
   const squashedSentenceIdsViaContentMemoized = useMemo(() => {
@@ -157,9 +112,7 @@ export const LandingScreenProvider = ({
     <LandingScreenContext.Provider
       value={{
         generalTopicDisplayNameMemoized,
-        nonMediaGeneralTopicDisplayNameMemoized,
         getTopicStatus,
-        hasScheduledForDeletion,
       }}
     >
       {children}
