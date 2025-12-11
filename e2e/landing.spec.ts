@@ -100,6 +100,7 @@ test('breadcrumb navigation displays correct counts', async ({ page }) => {
     name: /Sentence \(\d+\)/,
   });
   await expect(sentencesButton).toBeVisible();
+  await expect(sentencesButton).toHaveText('Sentence (1)');
 
   // Check Content button exists
   const contentButton = page.getByRole('button', { name: 'Content' });
