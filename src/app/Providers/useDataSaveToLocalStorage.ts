@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { FetchDataContextTypes } from './FetchDataProvider';
+import { isE2EMode } from '@/utils/is-e2e-mode';
 
 const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
 
@@ -19,7 +20,7 @@ const useDataSaveToLocalStorage = ({
   hasFetchedDataState,
 }: UseDataSaveToLocalStorageTypes) => {
   useEffect(() => {
-    if (!hasFetchedDataState) {
+    if (!hasFetchedDataState || isE2EMode()) {
       return;
     }
 
@@ -33,7 +34,7 @@ const useDataSaveToLocalStorage = ({
   }, [wordsState, hasFetchedDataState]);
 
   useEffect(() => {
-    if (!hasFetchedDataState) {
+    if (!hasFetchedDataState || isE2EMode()) {
       return;
     }
 
@@ -47,7 +48,7 @@ const useDataSaveToLocalStorage = ({
   }, [sentencesState, hasFetchedDataState]);
 
   useEffect(() => {
-    if (!hasFetchedDataState) {
+    if (!hasFetchedDataState || isE2EMode()) {
       return;
     }
 

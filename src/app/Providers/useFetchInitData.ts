@@ -1,16 +1,10 @@
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { FetchDataContextTypes } from './FetchDataProvider';
+import { isE2EMode } from '@/utils/is-e2e-mode';
 
 export const content = 'content';
 export const words = 'words';
 export const sentences = 'sentences';
-
-const isE2EMode = () => {
-  return (
-    typeof window !== 'undefined' &&
-    window.localStorage.getItem('e2e-testing') === 'true'
-  );
-};
 
 const getLocalStorageData = (language: string) => {
   if (isE2EMode()) {
