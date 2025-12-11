@@ -3,14 +3,14 @@
 import { Button, buttonVariants } from '@/components/ui/button';
 import type { VariantProps } from 'class-variance-authority';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LanguageSelector from '@/components/custom/LanguageSelector';
 import BreadCrumbHeaderBase from '@/components/BreadCrumbHeaderBase';
 
 interface NavgationButtonsType {
-  onClick: () => void;
+  href: string;
   variant?: VariantProps<typeof buttonVariants>['variant'];
   text: string;
   disabled?: boolean;
@@ -26,8 +26,6 @@ const LandingUIBreadCrumb = () => {
     sentencesDueForReviewMemoized,
   } = useFetchData();
 
-  const router = useRouter();
-
   useEffect(() => {
     if (wordBasketState.length === 0 && showBasketState) {
       setShowBasketState(false);
@@ -40,19 +38,19 @@ const LandingUIBreadCrumb = () => {
 
   const buttonsArr = [
     {
-      onClick: () => router.push('/sentences'),
+      href: '/sentences',
       disabled: !(numberOfSentences > 0),
       variant: 'link',
       text: `Sentence (${numberOfSentences})`,
     },
     {
-      onClick: () => router.push('/words'),
+      href: '/words',
       disabled: !(wordsForReviewMemoized.length > 0),
       variant: 'link',
       text: `Words (${wordsForReviewMemoized.length})`,
     },
     {
-      onClick: () => router.push('/youtube-upload'),
+      href: '/youtube-upload',
       variant: 'link',
       text: 'Content',
     },
@@ -65,15 +63,23 @@ const LandingUIBreadCrumb = () => {
         onClick={() => {}}
         navigationButtons={() =>
           buttonsArr.map((item, index) => {
-            return (
+            return item.disabled ? (
               <Button
                 key={index}
                 className='m-1.5'
-                onClick={item.onClick}
-                disabled={item.disabled}
+                disabled={true}
                 variant={item.variant}
               >
                 {item.text}
+              </Button>
+            ) : (
+              <Button
+                key={index}
+                className='m-1.5'
+                variant={item.variant}
+                asChild
+              >
+                <Link href={item.href}>{item.text}</Link>
               </Button>
             );
           })

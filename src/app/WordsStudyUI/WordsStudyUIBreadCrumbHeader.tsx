@@ -1,13 +1,11 @@
 import BreadCrumbHeaderBase from '@/components/BreadCrumbHeaderBase';
 import ProgressHeader from '@/components/custom/ProgressHeader';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import { useFetchData } from '../Providers/FetchDataProvider';
 
 const WordsStudyUIBreadCrumbHeader = () => {
-  const router = useRouter();
-
   const { wordsToReviewOnMountState, wordsForReviewMemoized } = useFetchData();
   const { progressState } = useWordsStudyUIScreen();
 
@@ -16,10 +14,8 @@ const WordsStudyUIBreadCrumbHeader = () => {
 
   const progressText = `${numberOfStudiedWords}/${wordsToReviewOnMountState}`;
 
-  const handleHomeClick = () => router.push('/');
-
   const addContent = {
-    onClick: () => router.push('/youtube-upload'),
+    href: '/youtube-upload',
     variant: 'link',
     text: 'Content',
   };
@@ -28,18 +24,18 @@ const WordsStudyUIBreadCrumbHeader = () => {
   return (
     <BreadCrumbHeaderBase
       heading={'Home'}
-      onClick={handleHomeClick}
+      onClick={() => {}}
+      href='/'
       navigationButtons={() =>
         navigationButtons.map((item, index) => {
           return (
             <Button
               key={index}
               className='m-1.5'
-              onClick={item.onClick}
-              disabled={item.disabled}
               variant={item.variant}
+              asChild
             >
-              {item.text}
+              <Link href={item.href}>{item.text}</Link>
             </Button>
           );
         })

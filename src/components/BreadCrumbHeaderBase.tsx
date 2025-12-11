@@ -8,10 +8,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import Link from 'next/link';
 import { JSX } from 'react';
 
 interface BreadCrumbHeaderBase {
   onClick: () => void;
+  href?: string;
   heading: string;
   subHeading?: string;
   navigationButtons?: () => JSX.Element[];
@@ -21,6 +23,7 @@ interface BreadCrumbHeaderBase {
 
 const BreadCrumbHeaderBase = ({
   onClick,
+  href,
   heading,
   subHeading,
   navigationButtons,
@@ -31,9 +34,15 @@ const BreadCrumbHeaderBase = ({
     <Breadcrumb className='my-auto mx-1'>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink onClick={onClick} className='cursor-pointer'>
-            {heading}
-          </BreadcrumbLink>
+          {href ? (
+            <BreadcrumbLink asChild>
+              <Link href={href}>{heading}</Link>
+            </BreadcrumbLink>
+          ) : (
+            <BreadcrumbLink onClick={onClick} className='cursor-pointer'>
+              {heading}
+            </BreadcrumbLink>
+          )}
         </BreadcrumbItem>
         {subHeading && (
           <>

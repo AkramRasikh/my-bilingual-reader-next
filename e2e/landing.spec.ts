@@ -88,21 +88,50 @@ test('breadcrumb navigation displays correct counts', async ({ page }) => {
   await page.goto('/');
   await page.waitForLoadState('networkidle');
 
-  // Check Words button with count
-  const wordsButton = page.getByRole('button', { name: /Words \(\d+\)/ });
-  await expect(wordsButton).toBeVisible();
+  // Check Words link with count
+  const wordsLink = page.getByRole('link', { name: /Words \(\d+\)/ });
+  await expect(wordsLink).toBeVisible();
 
   // Verify it shows Words (149) specifically
-  await expect(wordsButton).toHaveText('Words (149)');
+  await expect(wordsLink).toHaveText('Words (149)');
 
-  // Check Sentence button with count
-  const sentencesButton = page.getByRole('button', {
+  // Check Sentence button with count (disabled, so still a button)
+  const sentencesButton = page.getByRole('link', {
     name: /Sentence \(\d+\)/,
   });
   await expect(sentencesButton).toBeVisible();
   await expect(sentencesButton).toHaveText('Sentence (1)');
 
-  // Check Content button exists
-  const contentButton = page.getByRole('button', { name: 'Content' });
-  await expect(contentButton).toBeVisible();
+  // Check Content link exists
+  const contentLink = page.getByRole('link', { name: 'Content' });
+  await expect(contentLink).toBeVisible();
+
+  // Click Words link and verify navigation
+  await wordsLink.click();
+  await page.waitForURL('**/words');
+  expect(page.url()).toContain('/words');
+
+  // Click Home to return
+  const homeLink = page.getByRole('link', { name: 'Home' });
+  await homeLink.click();
+  await page.waitForURL('http://localhost:3000/');
+  expect(page.url()).toBe('http://localhost:3000/');
+
+  // Click Sentence link and verify navigation
+  await sentencesButton.click();
+  await page.waitForURL('**/sentences');
+  expect(page.url()).toContain('/sentences');
+
+  // Click Home to return again
+  await homeLink.click();
+  await page.waitForURL('http://localhost:3000/');
+  expect(page.url()).toBe('http://localhost:3000/');
 });
+// await sentencesButton.click();
+// await page.waitForLoadState('networkidle');
+// expect(page.url()).toContain('/sentences');
+
+// // Click Home to return again
+// await homeButton.click();
+// await page.waitForLoadState('networkidle');
+// expect(page.url()).toBe('http://localhost:3000/');
