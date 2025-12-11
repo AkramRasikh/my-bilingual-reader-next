@@ -250,26 +250,36 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
 
   const pureWordsMemoized = useMemo((): string[] => {
     const pureWords: string[] = [];
-    wordsState?.forEach((wordData) => {
-      if (wordData?.baseForm) {
+    if (wordsState.length === 0) {
+      return [];
+    }
+
+    wordsState.forEach((wordData) => {
+      if (wordData.baseForm) {
         pureWords.push(wordData.baseForm);
       }
-      if (wordData?.surfaceForm) {
+      if (wordData.surfaceForm) {
         pureWords.push(wordData.surfaceForm);
       }
     });
 
-    sentencesState?.forEach((sentence) => {
+    if (sentencesState.length === 0) {
+      return makeWordArrayUnique(pureWords);
+    }
+
+    sentencesState.forEach((sentence) => {
       if (sentence?.matchedWordsSurface) {
-        sentence?.matchedWordsSurface.forEach((item) => {
-          if (item && !pureWords.includes(item)) {
-            pureWords.push(item);
+        sentence?.matchedWordsSurface.forEach((matchedWordsWordItem) => {
+          if (
+            matchedWordsWordItem &&
+            !pureWords.includes(matchedWordsWordItem)
+          ) {
+            pureWords.push(matchedWordsWordItem);
           }
         });
       }
     });
-    const pureWordsUnique =
-      pureWords?.length > 0 ? makeWordArrayUnique(pureWords) : [];
+    const pureWordsUnique = makeWordArrayUnique(pureWords);
     return pureWordsUnique;
   }, [wordsState, sentencesState]);
 

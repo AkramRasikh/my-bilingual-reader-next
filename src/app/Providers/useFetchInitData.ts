@@ -6,7 +6,10 @@ export const words = 'words';
 export const sentences = 'sentences';
 
 const isE2EMode = () => {
-  return typeof window !== 'undefined' && window.localStorage.getItem('e2e-testing') === 'true';
+  return (
+    typeof window !== 'undefined' &&
+    window.localStorage.getItem('e2e-testing') === 'true'
+  );
 };
 
 const getLocalStorageData = (language: string) => {
@@ -15,9 +18,15 @@ const getLocalStorageData = (language: string) => {
   }
 
   return {
-    wordsState: JSON.parse(localStorage.getItem(`${language}-wordsState`) as string),
-    sentencesState: JSON.parse(localStorage.getItem(`${language}-sentencesState`) as string),
-    contentState: JSON.parse(localStorage.getItem(`${language}-contentState`) as string),
+    wordsState: JSON.parse(
+      localStorage.getItem(`${language}-wordsState`) as string,
+    ),
+    sentencesState: JSON.parse(
+      localStorage.getItem(`${language}-sentencesState`) as string,
+    ),
+    contentState: JSON.parse(
+      localStorage.getItem(`${language}-contentState`) as string,
+    ),
   };
 };
 
@@ -42,7 +51,9 @@ const useFetchInitData = ({
 }: UseFetchInitDataTypes) => {
   useEffect(() => {
     if (!hasFetchedDataState && languageSelectedState) {
-      const { wordsState, sentencesState, contentState } = getLocalStorageData(languageSelectedState);
+      const { wordsState, sentencesState, contentState } = getLocalStorageData(
+        languageSelectedState,
+      );
       const contentStateExist = contentState?.length >= 0;
 
       if (contentStateExist) {
