@@ -318,16 +318,6 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const getNextTranscript = (isNext) => {
-    const nextIndex =
-      selectedContentStateMemoized.contentIndex + (isNext ? +1 : -1);
-
-    const thisContentTitle = contentState.find(
-      (item) => item?.title === contentState[nextIndex]?.title,
-    )?.title;
-    setSelectedContentTitleState(thisContentTitle);
-  };
-
   const getSentenceDataOfOverlappingWordsDuringSave = (
     thisSnippetsTime,
     highlightedTextFromSnippet,
@@ -1545,7 +1535,6 @@ export const LearningScreenProvider = ({
         handleScrollToMasterView,
         scrollToElState,
         handleSelectedContent,
-        getNextTranscript,
         generalTopicDisplayNameSelectedState,
         checkHowManyOfTopicNeedsReview,
         getGeneralContentMetaData,

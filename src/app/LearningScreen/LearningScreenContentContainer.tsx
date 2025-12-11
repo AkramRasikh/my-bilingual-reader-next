@@ -1,7 +1,6 @@
 import { Tabs } from '@/components/ui/tabs';
 import LearningScreenTabMeta from './TabContent/LearningScreenTabMeta';
 import LearningScreenTabSelection from './TabContent/LearningScreenTabSelection';
-import LearningScreenChapterToggleWrapper from './LearningScreenChapterToggleWrapper';
 import useLearningScreen from './useLearningScreen';
 import LearningScreenTabTranscript from './TabContent/LearningScreenTabTranscript';
 import LearningScreenTabWords from './TabContent/LearningScreenTabWords';
@@ -10,22 +9,14 @@ import LearningScreenTabJointTranscriptWords from './TabContent/LearningScreenTa
 
 const LearningScreenContentContainer = () => {
   const { updateContentMetaData } = useFetchData();
-  const { getNextTranscript, selectedContentState, isInReviewMode } =
-    useLearningScreen();
+  const { selectedContentState, isInReviewMode } = useLearningScreen();
 
   const isFullReview = selectedContentState?.isFullReview;
-
-  const hasPreviousVideo = !selectedContentState.isFirst;
-  const hasFollowingVideo = selectedContentState.hasFollowingVideo;
 
   const topicName = !isFullReview && selectedContentState?.title;
 
   return (
-    <LearningScreenChapterToggleWrapper
-      hasPreviousVideo={hasPreviousVideo}
-      hasFollowingVideo={hasFollowingVideo}
-      getNextTranscript={getNextTranscript}
-    >
+    <div className='flex-1 w-xl'>
       <Tabs defaultValue='transcript'>
         <LearningScreenTabSelection topicName={topicName} />
         <LearningScreenTabTranscript />
@@ -37,7 +28,7 @@ const LearningScreenContentContainer = () => {
           />
         )}
       </Tabs>
-    </LearningScreenChapterToggleWrapper>
+    </div>
   );
 };
 
