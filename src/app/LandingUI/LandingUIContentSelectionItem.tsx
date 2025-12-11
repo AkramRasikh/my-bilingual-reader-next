@@ -92,19 +92,28 @@ const LandingUIContentSelectionItem = ({
       />
 
       {dueSnippets > 0 && (
-        <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-200 rounded-xl p-1 top-1 left-0 z-10' data-testid={`due-snippets-${title}`}>
+        <div
+          className='absolute flex flex-row gap-0.5 m-auto bg-amber-200 rounded-xl p-1 top-1 left-0 z-10'
+          data-testid={`due-snippets-${title}`}
+        >
           <ScissorsIcon className='h-3 w-3 m-auto' />
           <span className='text-xs font-light'>{dueSnippets}</span>
         </div>
       )}
       {dueSentences > 0 && (
-        <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-200 rounded-xl p-1 -bottom-3 left-0 z-10' data-testid={`due-sentences-${title}`}>
+        <div
+          className='absolute flex flex-row gap-0.5 m-auto bg-amber-200 rounded-xl p-1 -bottom-3 left-0 z-10'
+          data-testid={`due-sentences-${title}`}
+        >
           <ScrollTextIcon className='h-3 w-3 m-auto' />
           <span className='text-xs font-light'>{dueSentences}</span>
         </div>
       )}
       {dueWords > 0 && (
-        <div className='absolute flex flex-row gap-0.5 m-auto bg-amber-100 rounded-xl p-1 -bottom-3 right-0 z-10' data-testid={`due-words-${title}`}>
+        <div
+          className='absolute flex flex-row gap-0.5 m-auto bg-amber-100 rounded-xl p-1 -bottom-3 right-0 z-10'
+          data-testid={`due-words-${title}`}
+        >
           <WholeWordIcon className='h-3 w-3 m-auto' />
           <span className='text-xs font-light'>{dueWords}</span>
         </div>
