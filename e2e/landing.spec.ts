@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { setupApiMocks } from './helpers/mock-api';
+import { landingMetaData } from './helpers/landing-meta-data';
 
 test.beforeEach(async ({ page }) => {
   // Setup API mocking for all tests
@@ -29,50 +30,57 @@ test('displays content items with correct titles and widgets', async ({
   await page.goto('/');
   await page.waitForLoadState('networkidle');
 
-  // Test specific content items exist with their titles
-  const expectedTitles = [
-    'Toru-Miyamoto-Takaichis-risky-remarks-Taiwan-emergency',
-    'Toru-Miyamoto-Japanese-communist-youth',
-    'Takasugi-Shinsaku-destroying-feudal-society',
-    'coten-radio-mental-health-part-two',
-    'koten-radio-saicho-kukai-enlighten-men',
-    'jaru-jaru-push-pull-door',
-    'easy-linguistics-radio-sign-lang-island',
-  ];
+  // Test each content item from landing meta data
+  for (const contentItem of landingMetaData) {
+    const {
+      title,
+      dueSnippets,
+      dueSentences,
+      dueWords,
+      contentHasBeenReviews,
+    } = contentItem;
 
-  for (const title of expectedTitles) {
     // Use data-testid to find the button (more reliable than truncated text)
     const contentButton = page.getByTestId(`content-item-${title}`);
     await expect(contentButton).toBeVisible();
 
-    // Get the parent container for this content item
+    // Check for specific due widgets based on meta data
+    const snippetsWidget = page.getByTestId(`due-snippets-${title}`);
+    if (dueSnippets > 0) {
+      await expect(snippetsWidget).toBeVisible();
+      await expect(snippetsWidget).toContainText(dueSnippets.toString());
+    } else {
+      await expect(snippetsWidget).not.toBeVisible();
+    }
+
+    const sentencesWidget = page.getByTestId(`due-sentences-${title}`);
+    if (dueSentences > 0) {
+      await expect(sentencesWidget).toBeVisible();
+      await expect(sentencesWidget).toContainText(dueSentences.toString());
+    } else {
+      await expect(sentencesWidget).not.toBeVisible();
+    }
+
+    const wordsWidget = page.getByTestId(`due-words-${title}`);
+    if (dueWords > 0) {
+      await expect(wordsWidget).toBeVisible();
+      await expect(wordsWidget).toContainText(dueWords.toString());
+    } else {
+      await expect(wordsWidget).not.toBeVisible();
+    }
+
+    // Check review status indicator
     const contentCard = contentButton.locator('../..');
+    const checkmark = contentCard.locator('svg.lucide-check');
+    const newTag = contentCard.locator('span:text("🆕")');
 
-    // Check for due widgets (these may or may not be visible depending on mock data)
-    // Snippets widget (scissors icon)
-    const snippetsWidget = contentCard.locator('div:has(svg.lucide-scissors)');
-
-    // Sentences widget (scroll icon)
-    const sentencesWidget = contentCard.locator(
-      'div:has(svg.lucide-scroll-text)',
-    );
-
-    // Words widget (word icon)
-    const wordsWidget = contentCard.locator('div:has(svg.lucide-whole-word)');
-
-    // Verify at least one widget indicator exists or content is marked as reviewed
-    const hasSnippets = (await snippetsWidget.count()) > 0;
-    const hasSentences = (await sentencesWidget.count()) > 0;
-    const hasWords = (await wordsWidget.count()) > 0;
-    const hasNewTag =
-      (await contentCard.locator('span:text("🆕")').count()) > 0;
-    const hasCheckmark =
-      (await contentCard.locator('svg.lucide-check').count()) > 0;
-
-    // Should have either review indicators or status tags
-    expect(
-      hasSnippets || hasSentences || hasWords || hasNewTag || hasCheckmark,
-    ).toBeTruthy();
+    if (contentHasBeenReviews) {
+      await expect(checkmark).toBeVisible();
+      await expect(newTag).not.toBeVisible();
+    } else {
+      await expect(newTag).toBeVisible();
+      await expect(checkmark).not.toBeVisible();
+    }
   }
 });
 
@@ -97,16 +105,3 @@ test('breadcrumb navigation displays correct counts', async ({ page }) => {
   const contentButton = page.getByRole('button', { name: 'Content' });
   await expect(contentButton).toBeVisible();
 });
-
-// test('content item has youtube thumbnail', async ({ page }) => {
-//   await page.goto('/');
-//   await page.waitForLoadState('networkidle');
-
-//   const title = 'Toru-Miyamoto-Takaichis-risky-remarks-Taiwan-emergency';
-//   const contentButton = page.locator(`button:has-text("${title}")`);
-//   const contentCard = contentButton.locator('..');
-
-//   // Check for YouTube thumbnail image
-//   const thumbnail = contentCard.locator('img[alt*="youtube"]');
-//   await expect(thumbnail).toBeVisible();
-// });
