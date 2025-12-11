@@ -34,15 +34,19 @@ test('displays content items with correct titles and widgets', async ({
     'Toru-Miyamoto-Takaichis-risky-remarks-Taiwan-emergency',
     'Toru-Miyamoto-Japanese-communist-youth',
     'Takasugi-Shinsaku-destroying-feudal-society',
+    'coten-radio-mental-health-part-two',
+    'koten-radio-saicho-kukai-enlighten-men',
+    'jaru-jaru-push-pull-door',
+    'easy-linguistics-radio-sign-lang-island',
   ];
 
   for (const title of expectedTitles) {
-    // Check that the content item button exists
-    const contentButton = page.locator(`button:has-text("${title}")`);
+    // Use data-testid to find the button (more reliable than truncated text)
+    const contentButton = page.getByTestId(`content-item-${title}`);
     await expect(contentButton).toBeVisible();
 
     // Get the parent container for this content item
-    const contentCard = contentButton.locator('..');
+    const contentCard = contentButton.locator('../..');
 
     // Check for due widgets (these may or may not be visible depending on mock data)
     // Snippets widget (scissors icon)
@@ -70,6 +74,28 @@ test('displays content items with correct titles and widgets', async ({
       hasSnippets || hasSentences || hasWords || hasNewTag || hasCheckmark,
     ).toBeTruthy();
   }
+});
+
+test('breadcrumb navigation displays correct counts', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
+  // Check Words button with count
+  const wordsButton = page.getByRole('button', { name: /Words \(\d+\)/ });
+  await expect(wordsButton).toBeVisible();
+
+  // Verify it shows Words (149) specifically
+  await expect(wordsButton).toHaveText('Words (149)');
+
+  // Check Sentence button with count
+  const sentencesButton = page.getByRole('button', {
+    name: /Sentence \(\d+\)/,
+  });
+  await expect(sentencesButton).toBeVisible();
+
+  // Check Content button exists
+  const contentButton = page.getByRole('button', { name: 'Content' });
+  await expect(contentButton).toBeVisible();
 });
 
 // test('content item has youtube thumbnail', async ({ page }) => {

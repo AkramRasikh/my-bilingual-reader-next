@@ -74,6 +74,8 @@ const LandingUIContentSelectionItem = ({
           'pb-1 rounded w-full relative',
           dueSentences > 0 ? 'bg-amber-300' : '',
         )}
+        title={title}
+        data-testid={`content-item-${title}`}
       >
         <span
           className='text-ellipsis'
