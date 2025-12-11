@@ -1,3 +1,12 @@
-export const isDueCheck = (item, todayDateObj) =>
-  (item?.nextReview && item.nextReview < todayDateObj) ||
-  new Date(item?.reviewData?.due) < todayDateObj;
+import { ReviewDataTypes } from '@/app/types/shared-types';
+
+interface HasReviewData {
+  reviewData?: ReviewDataTypes;
+}
+
+export const isDueCheck = (item: HasReviewData, todayDateObj: Date) => {
+  if (!item?.reviewData?.due) {
+    return false;
+  }
+  return new Date(item.reviewData.due) < todayDateObj;
+};
