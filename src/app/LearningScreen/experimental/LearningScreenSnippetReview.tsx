@@ -183,23 +183,36 @@ const LearningScreenSnippetReview = ({
     };
   }, []);
 
-  const { granularFormattedSentence, wordsFromSentence } = useMemo(() => {
-    const targetLangformatted = underlineWordsInSentence(
-      item.targetLang,
-      pureWordsMemoized,
-    );
-    const granularFormattedSentence =
-      expandWordsIntoChunks(targetLangformatted);
-    const wordsFromSentence = findAllInstancesOfWordsInSentence(
-      item.targetLang,
-      wordsState,
-    );
+  const { granularFormattedSentence, wordsFromSentence, wordsInSuggestedText } =
+    useMemo(() => {
+      const targetLangformatted = underlineWordsInSentence(
+        item.targetLang,
+        pureWordsMemoized,
+      );
+      const wordsInSuggestedText = findAllInstancesOfWordsInSentence(
+        item.focusedText || item.suggestedFocusText,
+        wordsState,
+      );
+      const granularFormattedSentence =
+        expandWordsIntoChunks(targetLangformatted);
+      const wordsFromSentence = findAllInstancesOfWordsInSentence(
+        item.targetLang,
+        wordsState,
+      );
 
-    return {
-      granularFormattedSentence,
-      wordsFromSentence,
-    };
-  }, [item, pureWordsMemoized, wordsState]);
+      return {
+        granularFormattedSentence,
+        wordsFromSentence,
+        wordsInSuggestedText,
+      };
+    }, [item, pureWordsMemoized, wordsState]);
+
+  const handleReviewSnippetsFinal = async (args) => {
+    await handleReviewSnippets({
+      ...args,
+      wordsFromSentence: wordsInSuggestedText.length > 0,
+    });
+  };
 
   const indexHasChanged = endIndexKeyState !== 0 || startIndexKeyState !== 0;
 
@@ -295,7 +308,7 @@ const LearningScreenSnippetReview = ({
         <ReviewSRSToggles
           isSnippet
           contentItem={item}
-          handleReviewFunc={handleReviewSnippets}
+          handleReviewFunc={handleReviewSnippetsFinal}
         />
       </div>
     </div>

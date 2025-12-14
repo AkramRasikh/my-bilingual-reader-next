@@ -480,10 +480,21 @@ export const LearningScreenProvider = ({
     setContractThreeSecondLoopState(false);
   };
 
-  const handleDeleteSnippet = async (snippetId) => {
-    const updatedSnippets = selectedContentStateMemoized.snippets.filter(
-      (item) => item.id !== snippetId,
-    );
+  const handleDeleteSnippet = async (snippetId, wordsFromSentence) => {
+    let updatedSnippets = [];
+    if (wordsFromSentence) {
+      updatedSnippets = selectedContentStateMemoized.snippets.map((item) => {
+        if (item.id !== snippetId) {
+          return item;
+        }
+        const updatedObject = { ...item, reviewData: undefined };
+        return updatedObject;
+      });
+    } else {
+      updatedSnippets = selectedContentStateMemoized.snippets.filter(
+        (item) => item.id !== snippetId,
+      );
+    }
     await updateContentMetaData({
       fieldToUpdate: {
         snippets: [...updatedSnippets],

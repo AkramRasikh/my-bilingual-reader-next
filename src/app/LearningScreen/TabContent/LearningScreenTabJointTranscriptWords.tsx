@@ -164,7 +164,7 @@ const LearningScreenTabJointTranscriptWords = () => {
   const handleReviewSnippets = async (args) => {
     const isRemoveReview = args?.isRemoveReview;
     if (isRemoveReview) {
-      await finalDeleteSnippet(args.id);
+      await finalDeleteSnippet(args.id, args?.wordsFromSentence);
       return;
     }
     setThreeSecondLoopState(null);
@@ -172,8 +172,8 @@ const LearningScreenTabJointTranscriptWords = () => {
     await handleUpdateSnippetReview(args);
   };
 
-  const finalDeleteSnippet = async (snippetId) => {
-    await handleDeleteSnippet(snippetId);
+  const finalDeleteSnippet = async (snippetId, wordsFromSentence) => {
+    await handleDeleteSnippet(snippetId, wordsFromSentence);
     setThreeSecondLoopState(null);
     setContractThreeSecondLoopState();
   };
