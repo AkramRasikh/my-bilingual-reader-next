@@ -25,10 +25,13 @@ const LearningScreenWordCard = ({ word, indexNum }) => {
   } = useFetchData();
 
   const wordHasOverlappingSnippetTime = useMemo(() => {
+    // maybe not getting the most optimal one
     const overlappedWord = contentSnippets.find(
       (item) =>
         item?.focusedText?.includes(word.surfaceForm) ||
-        item?.focusedText?.includes(word.baseForm),
+        item?.focusedText?.includes(word.baseForm) ||
+        item?.suggestedFocusText?.includes(word.surfaceForm) ||
+        item?.suggestedFocusText?.includes(word.baseForm),
     );
     if (overlappedWord) {
       const time = overlappedWord.time;
