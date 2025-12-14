@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
 import MockFlag from '../../components/custom/MockFlag';
 import LearningScreenBreadCrumbHeader from '../LearningScreen/LearningScreenBreadCrumbHeader';
@@ -21,22 +21,13 @@ const ContentScreenContainer = () => {
     languageSelectedState,
   } = useFetchData();
 
-  const {
-    selectedContentTitleState,
-    setSelectedContentTitleState,
-    setGeneralTopicDisplayNameSelectedState,
-  } = useLearningScreen();
+  const { selectedContentTitleState } = useLearningScreen();
 
   const searchParams = useSearchParams();
   const topicValue = searchParams.get('topic');
 
   useEffect(() => {
     if (topicValue && !selectedContentTitleState && contentState?.length > 0) {
-      const thisSelectedTopicViaParam = contentState.find(
-        (item) => item.generalTopicName === topicValue,
-      )?.title;
-      setGeneralTopicDisplayNameSelectedState(topicValue);
-      setSelectedContentTitleState(thisSelectedTopicViaParam);
     }
   }, [topicValue, selectedContentTitleState, contentState]);
 
@@ -56,10 +47,36 @@ const ContentScreenContainer = () => {
   );
 };
 
-const ContentScreen = () => (
-  <LearningScreenProvider>
-    <ContentScreenContainer />
-  </LearningScreenProvider>
-);
+const ContentScreen = () => {
+  const searchParams = useSearchParams();
+  const titleParam = searchParams.get('topic');
+
+  const { contentState, hasFetchedDataState, languageSelectedState } =
+    useFetchData();
+
+  const selectedContentStateMemoized = useMemo(() => {
+    const thisContent = contentState.find((item) => item.title === titleParam);
+    if (thisContent) {
+      return thisContent;
+    }
+    return null;
+  }, [contentState, titleParam]);
+
+  if (
+    !hasFetchedDataState ||
+    !contentState?.length ||
+    !languageSelectedState ||
+    !selectedContentStateMemoized
+  ) {
+    return <LoadingSpinner big />;
+  }
+  return (
+    <LearningScreenProvider
+      selectedContentStateMemoized={selectedContentStateMemoized}
+    >
+      <ContentScreenContainer />
+    </LearningScreenProvider>
+  );
+};
 
 export default ContentScreen;

@@ -26,6 +26,7 @@ export const LearningScreenContext = createContext(null);
 // type time
 
 export const LearningScreenProvider = ({
+  selectedContentStateMemoized,
   children,
 }: PropsWithChildren<object>) => {
   const ref = useRef<HTMLVideoElement>(null);
@@ -50,15 +51,12 @@ export const LearningScreenProvider = ({
   });
   const [numberOfSentenceDueOnMountState, setNumberOfSentenceDueOnMountState] =
     useState<number | null>(null);
-  const [
-    generalTopicDisplayNameSelectedState,
-    setGeneralTopicDisplayNameSelectedState,
-  ] = useState('');
+
   const [scrollToElState, setScrollToElState] = useState('');
   const [sentenceRepsState, setSentenceRepsState] = useState(0);
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState(null);
-  const [selectedContentTitleState, setSelectedContentTitleState] =
-    useState('');
+  // const [selectedContentTitleState, setSelectedContentTitleState] =
+  //   useState('');
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
   );
@@ -95,23 +93,12 @@ export const LearningScreenProvider = ({
     updateContentMetaData,
   } = useFetchData();
 
-  const selectedContentStateMemoized = useMemo(() => {
-    if (!selectedContentTitleState) {
-      return null;
-    }
+  const generalTopicDisplayNameSelectedState =
+    selectedContentStateMemoized.title;
 
-    const thisContent = contentState.find(
-      (item) => item?.title === selectedContentTitleState,
-    );
-    if (thisContent) {
-      return thisContent;
-    }
-    return null;
-  }, [contentState, selectedContentTitleState]);
-
-  const content = selectedContentStateMemoized?.content;
-  const contentIndex = selectedContentStateMemoized?.contentIndex;
-  const contentId = selectedContentStateMemoized?.id;
+  const content = selectedContentStateMemoized.content;
+  const contentIndex = selectedContentStateMemoized.contentIndex;
+  const contentId = selectedContentStateMemoized.id;
 
   const getGeneralContentMetaData = () => {
     if (!generalTopicDisplayNameSelectedState) {
@@ -152,7 +139,7 @@ export const LearningScreenProvider = ({
         hasBeenReviewed: reviewHistory,
         sentencesNeedReview,
         title,
-        isSelected: selectedContentStateMemoized?.title === title,
+        isSelected: selectedContentStateMemoized.title === title,
         dueOrPending,
       };
     });
@@ -622,10 +609,6 @@ export const LearningScreenProvider = ({
     return sentencesNeedReview;
   };
 
-  const handleSelectedContent = (thisYoutubeTitle) => {
-    setSelectedContentTitleState(thisYoutubeTitle);
-  };
-
   const handleJumpToFirstElInReviewTranscript = (isSecondIndex) => {
     if (!isNumber(firstDueIndexMemoized) || !sentenceMapMemoized) {
       return;
@@ -668,11 +651,11 @@ export const LearningScreenProvider = ({
   });
 
   const secondsStateMemoized = useMemo(() => {
-    if (!ref.current?.duration || !selectedContentStateMemoized?.content) {
+    if (!ref.current?.duration) {
       return [];
     }
     const arrOfSeconds = mapSentenceIdsToSeconds({
-      content: selectedContentStateMemoized?.content,
+      content: selectedContentStateMemoized.content,
       duration: ref.current?.duration,
       isVideoModeState: true,
       realStartTime,
@@ -1534,7 +1517,6 @@ export const LearningScreenProvider = ({
         transcriptRef,
         handleScrollToMasterView,
         scrollToElState,
-        handleSelectedContent,
         generalTopicDisplayNameSelectedState,
         checkHowManyOfTopicNeedsReview,
         getGeneralContentMetaData,
@@ -1552,9 +1534,7 @@ export const LearningScreenProvider = ({
         numberOfSentenceDueOnMountState,
         errorVideoState,
         setErrorVideoState,
-        setSelectedContentTitleState,
-        selectedContentTitleState,
-        setGeneralTopicDisplayNameSelectedState,
+        selectedContentTitleState: selectedContentStateMemoized.title,
         handleJumpToFirstElInReviewTranscript,
         learnFormattedTranscript,
         groupedByContextBySentence,
