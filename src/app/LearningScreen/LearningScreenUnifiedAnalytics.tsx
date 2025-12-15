@@ -45,13 +45,16 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
     }
   };
 
-  const numberOfDueSnippets = useMemo(() => {
+  const [numberOfDueSnippets, numberOfReviewDataSnippets] = useMemo(() => {
     if (contentSnippets.length === 0) {
       return [];
     }
 
-    return contentSnippets.filter((item) => isDueCheck(item, new Date()));
-  }, [contentSnippets]).length;
+    return [
+      contentSnippets.filter((item) => isDueCheck(item, new Date())).length,
+      contentSnippets.filter((item) => item?.reviewData).length,
+    ];
+  }, [contentSnippets]);
 
   return (
     <div>
@@ -62,7 +65,8 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
         Words Due: {contentMetaWordMemoized[0].length}
       </p>
       <p className='text-xs font-medium m-auto w-fit'>
-        Snippets Due: {numberOfDueSnippets}/{contentSnippets.length}
+        Snippets Due: {numberOfDueSnippets}/{numberOfReviewDataSnippets}/
+        {contentSnippets.length}
       </p>
       <hr className='my-1' />
       <p className='flex gap-2 text-xs font-medium w-fit m-auto py-2'>
