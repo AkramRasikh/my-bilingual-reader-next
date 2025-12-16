@@ -56,7 +56,6 @@ test('transcript item menu interactions and review', async ({ page }) => {
   // Verify initial sentence count and reps
   const sentencesCount = page.getByTestId('analytics-sentences-count');
   await expect(sentencesCount).toBeVisible();
-  const initialSentencesText = await sentencesCount.textContent();
 
   const repsCount = page.getByTestId('analytics-reps-count');
   await expect(repsCount).toBeVisible();
@@ -91,13 +90,30 @@ test('transcript item menu interactions and review', async ({ page }) => {
 
   // Verify sentence count increased by 1 in the denominator
   const finalSentencesText = await sentencesCount.textContent();
-  const initialMatch = initialSentencesText?.match(/Sentences: (\d+)\/(\d+)/);
-  const finalMatch = finalSentencesText?.match(/Sentences: (\d+)\/(\d+)/);
+  expect(finalSentencesText).toContain('/201');
 
-  if (initialMatch && finalMatch) {
-    const initialTotal = parseInt(initialMatch[2]);
-    const finalTotal = parseInt(finalMatch[2]);
-    expect(finalTotal).toBe(initialTotal + 1);
-  }
-  //
+  // Click the menu toggle again to reopen the menu
+  await firstMenuToggle.click();
+  // Click review button again to remove the review
+  const reviewButtonSecond = page
+    .getByTestId(/transcript-menu-review-/)
+    .first();
+  await reviewButtonSecond.click();
+
+  // Verify loading spinner appears again
+  await expect(loadingSpinner).toBeVisible();
+
+  // Verify toast message appears for learning sentence
+  const toastMessageLearned = page.getByText('Successful learned sentence ✅');
+  await expect(toastMessageLearned).toBeVisible({ timeout: 3000 });
+
+  // Wait for the loading to complete
+  await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+  // Verify reps count increased to 2
+  await expect(repsCount).toContainText('Reps: 2');
+
+  // Verify sentence count reverted back to original
+  const revertedSentencesText = await sentencesCount.textContent();
+  expect(revertedSentencesText).toContain('/200');
 });
