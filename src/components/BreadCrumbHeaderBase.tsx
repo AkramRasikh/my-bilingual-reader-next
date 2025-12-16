@@ -48,7 +48,10 @@ const BreadCrumbHeaderBase = ({
           <>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage className='font-medium text-gray-500'>
+              <BreadcrumbPage 
+                className='font-medium text-gray-500'
+                data-testid='breadcrumb-subheading'
+              >
                 {subHeading}
               </BreadcrumbPage>
             </BreadcrumbItem>

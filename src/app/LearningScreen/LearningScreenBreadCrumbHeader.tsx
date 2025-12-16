@@ -57,7 +57,7 @@ const LearningScreenBreadCrumbHeader = () => {
   const progressText = `${numberOfStudiedSentencesUpdated}/${updatedNumberOfSentencesDue}`;
 
   const numberOfSentences = sentencesDueForReviewMemoized.length;
-  const generalTopicName = selectedContentState?.generalTopicName;
+  const generalTopicName = selectedContentState.title;
 
   const firstHeader = 'Home';
 

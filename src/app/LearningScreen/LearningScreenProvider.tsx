@@ -93,29 +93,23 @@ export const LearningScreenProvider = ({
     updateContentMetaData,
   } = useFetchData();
 
-  const generalTopicDisplayNameSelectedState =
-    selectedContentStateMemoized.title;
+  const thisContentTitle = selectedContentStateMemoized.title;
 
   const content = selectedContentStateMemoized.content;
   const contentIndex = selectedContentStateMemoized.contentIndex;
   const contentId = selectedContentStateMemoized.id;
 
-  const getGeneralContentMetaData = () => {
-    if (!generalTopicDisplayNameSelectedState) {
-      return null;
-    }
-
+  const contentMetaMemoized = useMemo(() => {
     const todayDateObj = new Date();
 
     const contentOfGeneralTopic = contentState.filter(
-      (contentEl) =>
-        contentEl.generalTopicName === generalTopicDisplayNameSelectedState,
+      (contentEl) => contentEl.generalTopicName === thisContentTitle,
     );
     let numberOfPendingDue = 0;
 
     const contentOfGenTopic = contentOfGeneralTopic.map((thisContentEl) => {
       const title = thisContentEl.title;
-      const reviewHistory = thisContentEl.reviewHistory?.length > 0;
+      const reviewHistory = thisContentEl?.reviewHistory?.length > 0;
       const chapter = title.split('-');
       const chapterNum = chapter[chapter.length - 1];
 
@@ -146,16 +140,7 @@ export const LearningScreenProvider = ({
 
     setNumberOfSentencesPendingOrDueState(numberOfPendingDue);
     return contentOfGenTopic;
-  };
-
-  const contentMetaMemoized = useMemo(() => {
-    if (!generalTopicDisplayNameSelectedState) return null;
-    return getGeneralContentMetaData();
-  }, [
-    generalTopicDisplayNameSelectedState,
-    wordsState,
-    selectedContentStateMemoized,
-  ]);
+  }, [thisContentTitle, wordsState, selectedContentStateMemoized]);
 
   const hasUnifiedChapter = contentMetaMemoized?.length === 1;
   const defaultToMultipleLevelMediaFile = !hasUnifiedChapter && errorVideoState;
@@ -565,61 +550,6 @@ export const LearningScreenProvider = ({
     return thisTopicsWordsArr;
   };
 
-  const getGeneralContentWordData = () => {
-    if (!generalTopicDisplayNameSelectedState) {
-      return null;
-    }
-
-    const contentOfGeneralTopic = contentState.filter(
-      (contentEl) =>
-        contentEl.generalTopicName === generalTopicDisplayNameSelectedState,
-    );
-
-    const allContentDueWords = contentOfGeneralTopic.map((i) =>
-      getSelectedTopicsWordsFunc(i.content, true),
-    );
-
-    return allContentDueWords;
-  };
-
-  const checkHowManyOfTopicNeedsReview = () => {
-    if (!generalTopicDisplayNameSelectedState) {
-      return null;
-    }
-
-    const todayDateObj = new Date();
-
-    const sentencesNeedReview = [];
-    contentState.forEach((contentEl) => {
-      if (contentEl.generalTopicName !== generalTopicDisplayNameSelectedState) {
-        return;
-      }
-
-      const thisStartTime = contentEl.realStartTime;
-      const contentIndexEl = contentEl.contentIndex;
-      const transcript = contentEl.content;
-      const generalTopicName = contentEl.generalTopicName;
-      const title = contentEl.title;
-
-      transcript.forEach((transcriptEl) => {
-        if (!transcriptEl?.reviewData?.due) {
-          return;
-        }
-        if (isDueCheck(transcriptEl, todayDateObj)) {
-          sentencesNeedReview.push({
-            ...transcriptEl,
-            time: thisStartTime + transcriptEl.time,
-            contentIndex: contentIndexEl,
-            title,
-            generalTopicName,
-          });
-        }
-      });
-    });
-
-    return sentencesNeedReview;
-  };
-
   const handleJumpToFirstElInReviewTranscript = (isSecondIndex) => {
     if (!isNumber(firstDueIndexMemoized) || !sentenceMapMemoized) {
       return;
@@ -750,20 +680,49 @@ export const LearningScreenProvider = ({
     setTimeout(() => setScrollToElState(''), 300);
   };
 
-  const wordsForSelectedTopicMemoized = useMemo(() => {
-    if (selectedContentStateMemoized && wordsState?.length > 0) {
+  const { contentMetaWordMemoized, wordsForSelectedTopicMemoized } =
+    useMemo(() => {
+      if (wordsState.length === 0) {
+        return {
+          contentMetaWordMemoized: [],
+          wordsForSelectedTopicMemoized: [],
+        };
+      }
+
       const dateNow = new Date();
-      const wordsForThisTopic = getSelectedTopicsWordsFunc(
-        selectedContentStateMemoized.content,
-      );
-      const sortedWordsForThisTopic = wordsForThisTopic?.sort(
+      const thisTopicsSentenceIds = content.map((i) => i.id);
+
+      const allWords = [];
+      const dueWords = [];
+
+      wordsState.forEach((word) => {
+        const originalContextId = word.contexts[0];
+        if (!thisTopicsSentenceIds.includes(originalContextId)) {
+          return;
+        }
+
+        const time = content.find(
+          (item) => item.id === word?.contexts?.[0],
+        ).time;
+        const isDue = !word?.reviewData || isDueCheck(word, dateNow);
+        const wordWithMeta = { ...word, time, isDue };
+
+        allWords.push(wordWithMeta);
+        if (isDue) {
+          dueWords.push(wordWithMeta);
+        }
+      });
+
+      // Sort all words by due status
+      const sortedAllWords = allWords.sort(
         (a, b) => isDueCheck(b, dateNow) - isDueCheck(a, dateNow),
       );
-      return sortedWordsForThisTopic;
-    }
 
-    return [];
-  }, [getSelectedTopicsWordsFunc, wordsState, selectedContentStateMemoized]);
+      return {
+        contentMetaWordMemoized: dueWords,
+        wordsForSelectedTopicMemoized: sortedAllWords,
+      };
+    }, [thisContentTitle, wordsState, content]);
 
   const handleBulkReviews = async () => {
     // const emptyCard = getEmptyCard();
@@ -1046,15 +1005,6 @@ export const LearningScreenProvider = ({
       contentIndex,
     });
   };
-
-  const contentMetaWordMemoized = useMemo(() => {
-    if (!generalTopicDisplayNameSelectedState) return null;
-    return getGeneralContentWordData();
-  }, [
-    generalTopicDisplayNameSelectedState,
-    wordsState,
-    selectedContentStateMemoized,
-  ]);
 
   useEffect(() => {
     const sentencesNeedReview = contentMetaMemoized?.[0]?.sentencesNeedReview;
@@ -1424,11 +1374,6 @@ export const LearningScreenProvider = ({
   ]);
 
   const handleAddOverlappedSnippetsToReview = async () => {
-    console.log(
-      '## handleAddOverlappedSnippetsToReview 1',
-      overlappedSentencesViableForReviewMemoized,
-    );
-
     const emptyCard = getEmptyCard();
 
     const nextScheduledOptions = getNextScheduledOptions({
@@ -1444,7 +1389,6 @@ export const LearningScreenProvider = ({
     ) {
       return null;
     }
-    console.log('## handleAddOverlappedSnippetsToReview 2');
 
     const sentenceIds = overlappedSentencesViableForReviewMemoized.keyArray;
     try {
@@ -1528,10 +1472,7 @@ export const LearningScreenProvider = ({
         transcriptRef,
         handleScrollToMasterView,
         scrollToElState,
-        generalTopicDisplayNameSelectedState,
-        checkHowManyOfTopicNeedsReview,
-        getGeneralContentMetaData,
-        getGeneralContentWordData,
+        thisContentTitle,
         wordsForSelectedTopic: wordsForSelectedTopicMemoized,
         selectedContentState: selectedContentStateMemoized,
         sentenceRepsState,

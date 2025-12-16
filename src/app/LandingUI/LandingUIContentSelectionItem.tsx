@@ -60,6 +60,7 @@ const LandingUIContentSelectionItem = ({
 }: LandingUIComprehensiveType) => {
   const router = useRouter();
 
+  //
   const handleSelectInitialTopic = (topicName: ContentStateTypes['title']) => {
     router.push(`/content?topic=${topicName}`);
   };
