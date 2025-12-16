@@ -28,7 +28,6 @@ const TranscriptItemMenuSection = () => {
         sentenceId: contentItem.id,
         isRemoveReview: hasBeenReviewed,
       });
-    } catch (error) {
     } finally {
       setShowMenuState(false);
     }
