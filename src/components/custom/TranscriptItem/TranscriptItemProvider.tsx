@@ -7,8 +7,6 @@ export const TranscriptItemContext = createContext(null);
 export const TranscriptItemProvider = ({
   threeSecondLoopState,
   overlappingSnippetDataState,
-  setSentenceHighlightingState,
-  sentenceHighlightingState,
   contentItem,
   breakdownSentencesArrState,
   setBreakdownSentencesArrState,
@@ -45,7 +43,7 @@ export const TranscriptItemProvider = ({
   handleSaveSnippet,
   children,
 }) => {
-  const ulRef = useRef<HTMLUListElement>(null);
+  const targetLangRef = useRef(null);
   const transcriptItemContainerRef = useRef(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [showSentenceBreakdownState, setShowSentenceBreakdownState] =
@@ -114,17 +112,17 @@ export const TranscriptItemProvider = ({
 
   useEffect(() => {
     if (
-      (ulRef.current &&
+      (transcriptItemContainerRef.current &&
         latestDueIdState?.triggerScroll &&
         latestDueIdState?.id === contentItem.id) ||
-      (ulRef.current && scrollToElState === contentItem.id)
+      (transcriptItemContainerRef.current && scrollToElState === contentItem.id)
     ) {
-      ulRef.current?.scrollIntoView({
+      transcriptItemContainerRef.current?.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       });
     }
-  }, [ulRef.current, latestDueIdState, scrollToElState]);
+  }, [transcriptItemContainerRef.current, latestDueIdState, scrollToElState]);
 
   const thisSnippetOverlapMemoized = useMemo(() => {
     if (!threeSecondLoopState || overlappingSnippetDataState.length === 0) {
@@ -148,11 +146,10 @@ export const TranscriptItemProvider = ({
 
   useEffect(() => {
     function handleClickOutside(event) {
-      // Only act if highlight mode is on
       if (
         highlightedTextState &&
-        transcriptItemContainerRef.current &&
-        !transcriptItemContainerRef.current.contains(event.target)
+        targetLangRef.current &&
+        !targetLangRef.current.contains(event.target)
       ) {
         setHighlightedTextState(''); // or whatever action you need
       }
@@ -160,7 +157,7 @@ export const TranscriptItemProvider = ({
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [transcriptItemContainerRef, highlightedTextState]);
+  }, [targetLangRef, highlightedTextState]);
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -168,9 +165,8 @@ export const TranscriptItemProvider = ({
       const selectedText = selection?.toString().trim();
 
       const anchorNode = selection?.anchorNode;
-      if (!anchorNode || !ulRef.current?.contains(anchorNode)) return;
+      if (!anchorNode || !targetLangRef.current?.contains(anchorNode)) return;
 
-      setSentenceHighlightingState(contentItem.id);
       setHighlightedTextState(selectedText || '');
     };
 
@@ -296,7 +292,6 @@ export const TranscriptItemProvider = ({
     <TranscriptItemContext.Provider
       value={{
         contentItem,
-        ulRef,
         hoverTimer,
         highlightedTextState,
         setHighlightedTextState,
@@ -354,6 +349,7 @@ export const TranscriptItemProvider = ({
         overlappingTextMemoized,
         handleSaveSnippet,
         thisSnippetOverlapMemoized,
+        targetLangRef,
       }}
     >
       {children}

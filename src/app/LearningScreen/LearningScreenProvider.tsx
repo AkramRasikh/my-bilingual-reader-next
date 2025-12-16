@@ -43,8 +43,6 @@ export const LearningScreenProvider = ({
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
   const [showOnVideoTranscriptState, setShowOnVideoTranscriptState] =
     useState(true);
-  const [sentenceHighlightingState, setSentenceHighlightingState] =
-    useState('');
   const [latestDueIdState, setLatestDueIdState] = useState({
     id: '',
     triggerScroll: false,
@@ -1375,8 +1373,6 @@ export const LearningScreenProvider = ({
         setIsVideoPlaying,
         isInReviewMode,
         setIsInReviewMode,
-        sentenceHighlightingState,
-        setSentenceHighlightingState,
         isGenericItemLoadingState,
         setIsGenericItemLoadingState,
         breakdownSentencesArrState,

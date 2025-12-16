@@ -11,7 +11,6 @@ const TranscriptItemContent = () => {
     showThisSentenceBreakdownPreviewState,
     wordPopUpState,
     setWordPopUpState,
-    ulRef,
     contentItem,
     handleMouseEnter,
     handleMouseLeave,
@@ -20,7 +19,7 @@ const TranscriptItemContent = () => {
     onlyShowEngState,
     wordsForSelectedTopic,
     languageSelectedState,
-    handleDeleteWordTranscript,
+    targetLangRef,
   } = useTranscriptItem();
 
   const { handleDeleteWordDataProvider } = useFetchData(); // must be moved!!
@@ -56,9 +55,11 @@ const TranscriptItemContent = () => {
         />
       ) : (
         <>
-          <p className={clsx('flex gap-2', isArabic ? 'justify-end' : '')}>
+          <p
+            ref={targetLangRef}
+            className={clsx('flex gap-2', isArabic ? 'justify-end' : '')}
+          >
             <FormattedSentence
-              ref={ulRef}
               targetLangformatted={targetLangformatted}
               handleMouseLeave={handleMouseLeave}
               handleMouseEnter={handleMouseEnter}

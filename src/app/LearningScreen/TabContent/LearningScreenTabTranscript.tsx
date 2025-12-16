@@ -12,8 +12,6 @@ const LearningScreenTabTranscript = () => {
   const {
     threeSecondLoopState,
     overlappingSnippetDataState,
-    setSentenceHighlightingState,
-    sentenceHighlightingState,
     breakdownSentencesArrState,
     masterPlay,
     isGenericItemLoadingState,
@@ -86,8 +84,6 @@ const LearningScreenTabTranscript = () => {
                 indexNum={index}
                 threeSecondLoopState={threeSecondLoopState}
                 overlappingSnippetDataState={overlappingSnippetDataState}
-                setSentenceHighlightingState={setSentenceHighlightingState}
-                sentenceHighlightingState={sentenceHighlightingState}
                 contentItem={contentItem}
                 breakdownSentencesArrState={breakdownSentencesArrState}
                 masterPlay={masterPlay}
