@@ -96,6 +96,36 @@ export async function setupApiMocks(page: Page) {
       }),
     });
   });
+
+  // Intercept breakdownSentence API call
+  await page.route('**/api/breakdownSentence', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        vocab: [
+          {
+            surfaceForm: 'ゆる',
+            meaning: 'loose or relaxed',
+          },
+          {
+            surfaceForm: '言語学',
+            meaning: 'linguistics',
+          },
+          {
+            surfaceForm: 'ラジオ',
+            meaning: 'radio',
+          },
+        ],
+        sentenceStructure:
+          'ゆる (loose) + 言語学 (linguistics) + ラジオ (radio)',
+        meaning: 'Loose Linguistics Radio',
+      }),
+    });
+  });
 }
 
 /**

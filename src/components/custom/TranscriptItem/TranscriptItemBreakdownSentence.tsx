@@ -14,8 +14,9 @@ const TranscriptItemBreakdownSentence = () => {
       {!contentItem?.sentenceStructure && !isBreakdownSentenceLoadingState && (
         <Button
           id='breakdown-sentence'
+          data-testid={`transcript-breakdown-button-${contentItem.id}`}
           variant='ghost'
-          onDoubleClick={handleBreakdownSentenceTranscriptItem}
+          onClick={handleBreakdownSentenceTranscriptItem}
           className={
             'border rounded-sm transition active:scale-95 cursor-pointer h-6 w-6'
           }

@@ -945,12 +945,19 @@ export const LearningScreenProvider = ({
   };
 
   const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {
-    await breakdownSentence({
-      indexKey: selectedContentStateMemoized.id,
-      sentenceId,
-      targetLang,
-      contentIndex,
-    });
+    try {
+      setIsBreakingDownSentenceArrState((prev) => [...prev, sentenceId]);
+      await breakdownSentence({
+        indexKey: selectedContentStateMemoized.id,
+        sentenceId,
+        targetLang,
+        contentIndex,
+      });
+    } finally {
+      setIsBreakingDownSentenceArrState((prev) =>
+        prev.filter((item) => item !== sentenceId),
+      );
+    }
   };
 
   useEffect(() => {

@@ -118,7 +118,7 @@ test('transcript item menu interactions and review', async ({ page }) => {
   expect(revertedSentencesText).toContain('/200');
 });
 
-test.only('transcript item review error handling', async ({ page }) => {
+test('transcript item review error handling', async ({ page }) => {
   // Setup API mocking with error response for updateSentence
   await page.route('**/api/updateSentence', async (route) => {
     // Wait 1 second to make loading spinner visible
@@ -184,4 +184,61 @@ test.only('transcript item review error handling', async ({ page }) => {
   const finalSentencesText = await sentencesCount.textContent();
   expect(finalSentencesText).toContain('/200');
   expect(finalSentencesText).toBe(initialSentencesText);
+});
+
+test('transcript item sentence breakdown', async ({ page }) => {
+  await page.goto('/');
+
+  // Wait for page to be loaded
+  await page.waitForLoadState('networkidle');
+
+  // Navigate to content screen
+  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+  await contentButton.click();
+
+  // Wait for navigation to complete
+  await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+  // Wait for the content to load
+  await page.waitForLoadState('networkidle');
+
+  // Open the menu
+  const firstMenuToggle = page.getByTestId(/transcript-menu-toggle-/).first();
+  await expect(firstMenuToggle).toBeVisible();
+  await firstMenuToggle.click();
+
+  // Verify menu is open
+  const menuOptions = page.getByTestId(/transcript-menu-options-/).first();
+  // await expect(menuOptions).toBeVisible();
+
+  // Click the breakdown sentence button (hammer icon)
+  const breakdownButton = page
+    .getByTestId(/transcript-breakdown-button-/)
+    .first();
+  // await expect(breakdownButton).toBeVisible();
+  await breakdownButton.click();
+
+  // Verify loading hammer icon appears
+  const loadingHammer = page
+    .getByTestId(/transcript-breakdown-loading-/)
+    .first();
+  await expect(loadingHammer).toBeVisible();
+
+  // Verify toast message appears
+  const toastMessage = page.getByText('Sentence broken down 🧱🔨!');
+  await expect(toastMessage).toBeVisible({ timeout: 3000 });
+
+  // Wait for loading to complete
+  await expect(loadingHammer).not.toBeVisible({ timeout: 5000 });
+
+  // Verify menu closes after breakdown
+  await expect(menuOptions).not.toBeVisible();
+
+  // Verify brick emoji appears indicating sentence is broken down
+  const brickEmoji = page.getByTestId(/transcript-breakdown-complete-/).first();
+  await expect(brickEmoji).toBeVisible();
+  await expect(brickEmoji).toContainText('🧱');
+
+  // Verify breakdown button is no longer visible
+  await expect(breakdownButton).not.toBeVisible();
 });

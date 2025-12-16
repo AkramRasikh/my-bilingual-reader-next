@@ -66,13 +66,20 @@ const TranscriptItemActionBar = () => {
       </Button>
 
       {hasSentenceBreakdown ? (
-        <button id='show-breakdown' onClick={handleBreakdownClick}>
+        <button
+          id='show-breakdown'
+          data-testid={`transcript-breakdown-complete-${contentItem.id}`}
+          onClick={handleBreakdownClick}
+        >
           <span className='m-auto'>
             {showSentenceBreakdownState ? '❌' : '🧱'}
           </span>
         </button>
       ) : isBreakdownSentenceLoadingState ? (
-        <div className='animate-pulse '>
+        <div
+          className='animate-pulse '
+          data-testid={`transcript-breakdown-loading-${contentItem.id}`}
+        >
           <LucideHammer
             color='brown'
             className='animate-bounce mx-auto fill-amber-700 rounded-4xl'

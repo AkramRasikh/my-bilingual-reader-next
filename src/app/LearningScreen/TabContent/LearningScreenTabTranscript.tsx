@@ -7,7 +7,6 @@ import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/Trans
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './LearningScreenTabTranscriptNestedWordsReview';
 import getBiggestOverlap from '@/components/custom/TranscriptItem/get-biggest-overlap';
-import { StarIcon } from 'lucide-react';
 
 const LearningScreenTabTranscript = () => {
   const {
