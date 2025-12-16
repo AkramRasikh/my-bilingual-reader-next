@@ -23,7 +23,6 @@ const LearningScreenLeftSideContainer = () => {
     handleTimeUpdate,
     showOnVideoTranscriptState,
     selectedContentState,
-    contentMetaMemoized,
     errorVideoState,
     setErrorVideoState,
     wordsForSelectedTopic,
@@ -33,7 +32,6 @@ const LearningScreenLeftSideContainer = () => {
     overlappingTextMemoized,
   } = useLearningScreen();
   const { languageSelectedState, handleSaveWord } = useFetchData();
-  const hasUnifiedChapter = contentMetaMemoized?.length === 1;
 
   const isFullReview = selectedContentState?.isFullReview;
 
@@ -43,10 +41,9 @@ const LearningScreenLeftSideContainer = () => {
   const videoUrl = getCloudflareVideoURL(generalTopic, languageSelectedState);
 
   useCheckVideoIsWorking(ref, setErrorVideoState);
-  const defaultToBrokenUpAudio = errorVideoState && !hasUnifiedChapter;
 
   const audioUrl = getAudioURL(
-    defaultToBrokenUpAudio ? selectedContentState.title : generalTopic,
+    selectedContentState.title,
     languageSelectedState,
   );
 

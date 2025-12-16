@@ -36,7 +36,7 @@ const LearningScreenBreadCrumbHeader = () => {
       setShowBasketState(false);
     }
   }, [wordBasketState, showBasketState]);
-  const sentencesNeedReview = contentMetaMemoized?.[0]?.sentencesNeedReview;
+  const sentencesNeedReview = contentMetaMemoized.sentencesNeedReview;
 
   const numberOfStudiedSentences =
     numberOfSentenceDueOnMountState - sentencesNeedReview;

@@ -2,21 +2,13 @@ import { TabsList, TabsTrigger } from '@/components/ui/tabs';
 import useLearningScreen from '../useLearningScreen';
 
 const LearningScreenTabs = ({ topicName }) => {
-  const {
-    wordsForSelectedTopic,
-    contentMetaMemoized,
-    contentMetaWordMemoized,
-    isInReviewMode,
-  } = useLearningScreen();
+  const { wordsForSelectedTopic, contentMetaWordMemoized, isInReviewMode } =
+    useLearningScreen();
   const thisTopicHasWords = wordsForSelectedTopic?.length > 0;
-
-  const hasUnifiedChapter = contentMetaMemoized?.length === 1;
 
   const WordsDue = contentMetaWordMemoized.length;
 
-  const wordsText = hasUnifiedChapter
-    ? `Words ${WordsDue}/${wordsForSelectedTopic.length}`
-    : 'Words';
+  const wordsText = `Words ${WordsDue}/${wordsForSelectedTopic.length}`;
 
   return (
     <TabsList>

@@ -12,13 +12,13 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
     contentMetaMemoized,
     contentMetaWordMemoized,
     sentenceRepsState,
-    numberOfSentencesPendingOrDueState,
     setSentenceRepsState,
     contentSnippets,
     overlappedSentencesViableForReviewMemoized,
     handleAddOverlappedSnippetsToReview,
   } = useLearningScreen();
-  const sentencesNeedReview = contentMetaMemoized[0]?.sentencesNeedReview;
+  const sentencesNeedReview = contentMetaMemoized.sentencesNeedReview;
+  const numberOfPendingDue = contentMetaMemoized.numberOfPendingDue;
 
   const overlappedSentencesViableForReviewMemoizedKeyArray =
     overlappedSentencesViableForReviewMemoized?.keyArray;
@@ -59,7 +59,7 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
   return (
     <div>
       <p className='text-xs font-medium m-auto w-fit'>
-        Sentences: {sentencesNeedReview}/{numberOfSentencesPendingOrDueState}
+        Sentences: {sentencesNeedReview}/{numberOfPendingDue}
       </p>
       <p className='text-xs font-medium m-auto w-fit'>
         Words Due: {contentMetaWordMemoized.length}

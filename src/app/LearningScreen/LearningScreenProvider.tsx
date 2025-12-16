@@ -76,17 +76,12 @@ export const LearningScreenProvider = ({
   const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
     useState(false);
 
-  const [
-    numberOfSentencesPendingOrDueState,
-    setNumberOfSentencesPendingOrDueState,
-  ] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [errorVideoState, setErrorVideoState] = useState(false);
 
   const {
     pureWordsMemoized,
     wordsState,
-    contentState,
     breakdownSentence,
     sentenceReviewBulk,
     updateSentenceData,
@@ -102,45 +97,19 @@ export const LearningScreenProvider = ({
   const contentMetaMemoized = useMemo(() => {
     const todayDateObj = new Date();
 
-    const contentOfGeneralTopic = contentState.filter(
-      (contentEl) => contentEl.generalTopicName === thisContentTitle,
-    );
+    let sentencesNeedReview = 0;
     let numberOfPendingDue = 0;
 
-    const contentOfGenTopic = contentOfGeneralTopic.map((thisContentEl) => {
-      const title = thisContentEl.title;
-      const reviewHistory = thisContentEl?.reviewHistory?.length > 0;
-      const chapter = title.split('-');
-      const chapterNum = chapter[chapter.length - 1];
-
-      let sentencesNeedReview = 0;
-      const transcript = thisContentEl.content;
-
-      const dueOrPending = transcript.filter(
-        (item) => item.reviewData?.due,
-      ).length;
-      numberOfPendingDue = numberOfPendingDue + dueOrPending;
-      sentencesNeedReview = transcript.filter((transcriptEl) => {
-        if (!transcriptEl?.reviewData?.due) {
-          return;
-        }
-        if (isDueCheck(transcriptEl, todayDateObj)) {
-          return true;
-        }
-      }).length;
-      return {
-        chapterNum,
-        hasBeenReviewed: reviewHistory,
-        sentencesNeedReview,
-        title,
-        isSelected: selectedContentStateMemoized.title === title,
-        dueOrPending,
-      };
+    content.forEach((transcriptEl) => {
+      if (!transcriptEl?.reviewData?.due) {
+        numberOfPendingDue += 1;
+      }
+      if (isDueCheck(transcriptEl, todayDateObj)) {
+        sentencesNeedReview += 1;
+      }
     });
-
-    setNumberOfSentencesPendingOrDueState(numberOfPendingDue);
-    return contentOfGenTopic;
-  }, [thisContentTitle, wordsState, selectedContentStateMemoized]);
+    return { sentencesNeedReview, numberOfPendingDue };
+  }, [content]);
 
   const hasUnifiedChapter = contentMetaMemoized?.length === 1;
   const defaultToMultipleLevelMediaFile = !hasUnifiedChapter && errorVideoState;
@@ -1007,7 +976,7 @@ export const LearningScreenProvider = ({
   };
 
   useEffect(() => {
-    const sentencesNeedReview = contentMetaMemoized?.[0]?.sentencesNeedReview;
+    const sentencesNeedReview = contentMetaMemoized.sentencesNeedReview;
 
     if (!isNumber(numberOfSentenceDueOnMountState) && sentencesNeedReview > 0) {
       setNumberOfSentenceDueOnMountState(sentencesNeedReview);
@@ -1479,7 +1448,6 @@ export const LearningScreenProvider = ({
         elapsed,
         setElapsed,
         playFromThisContext,
-        numberOfSentencesPendingOrDueState,
         setSentenceRepsState,
         contentMetaMemoized,
         contentMetaWordMemoized,
