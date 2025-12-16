@@ -86,7 +86,7 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
           <Button
             className='w-5 h-5 align-sub bg-amber-300 border-amber-300'
             variant='outline'
-            onClick={handleBulkAddToReviews}
+            onDoubleClick={handleBulkAddToReviews}
             disabled={
               isLoadingBulkState ||
               !overlappedSentencesViableForReviewMemoizedKeyArray?.length ||
