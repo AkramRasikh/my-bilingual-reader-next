@@ -26,7 +26,10 @@ const ClickAndConfirm = ({
         )}
       >
         {isLoadingState && (
-          <div className='absolute inset-0 flex items-center justify-center bg-white/70 rounded'>
+          <div
+            data-testid='click-and-confirm-loading'
+            className='absolute inset-0 flex items-center justify-center bg-white/70 rounded'
+          >
             <LoadingSpinner />
           </div>
         )}

@@ -360,6 +360,21 @@ test('save word from transcript item', async ({ page }) => {
       }),
     });
   });
+
+  // Setup API mocking for deleteWord
+  await page.route('**/api/deleteWord', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: '83b75769-a67d-4f8a-9baa-9716bdd78219',
+      }),
+    });
+  });
+
   await page.goto('/');
 
   // Wait for page to be loaded
@@ -522,4 +537,50 @@ test('save word from transcript item', async ({ page }) => {
   const deleteButton = page.getByTestId('delete-button');
   await expect(deleteButton).toBeVisible();
   await expect(deleteButton).toContainText('Delete');
+
+  // Click the Delete button
+  await deleteButton.click();
+
+  // Verify "Confirm Delete" button appears
+  const confirmDeleteButton = page.getByRole('button', {
+    name: 'Confirm Delete',
+  });
+  await expect(confirmDeleteButton).toBeVisible();
+
+  // Click "Confirm Delete"
+  await confirmDeleteButton.click();
+
+  // Verify loading spinner appears in the ClickAndConfirm component
+  const clickAndConfirmLoading = page.getByTestId('click-and-confirm-loading');
+  await expect(clickAndConfirmLoading).toBeVisible();
+
+  // Verify toast message appears
+  const deleteToastMessage = page.getByText('Word deleted!');
+  await expect(deleteToastMessage).toBeVisible({ timeout: 3000 });
+
+  // Verify loading spinner disappears after delete
+  await expect(clickAndConfirmLoading).not.toBeVisible({ timeout: 5000 });
+
+  // Verify Words count went back to 55/84
+  await expect(wordsTabTrigger).toContainText('Words 55/84');
+
+  // Verify the word is no longer underlined
+  // The underlined word should not be visible anymore
+  const underlinedWordAfterDelete = transcriptTargetLang
+    .locator('span')
+    .filter({ hasText: '語' })
+    .first();
+  // Check that it's either not visible or doesn't have underline styling
+  // Since the word text will still be there, we can check that the hover card doesn't appear
+  const boundingBoxAfter = await underlinedWordAfterDelete.boundingBox();
+  if (boundingBoxAfter) {
+    await page.mouse.move(
+      boundingBoxAfter.x + boundingBoxAfter.width / 2,
+      boundingBoxAfter.y + boundingBoxAfter.height / 2,
+    );
+  }
+  await page.waitForTimeout(1000);
+
+  // Verify hover card is no longer visible
+  await expect(hoverWordInfo).not.toBeVisible();
 });
