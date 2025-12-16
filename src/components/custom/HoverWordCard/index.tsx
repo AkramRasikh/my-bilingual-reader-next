@@ -64,7 +64,7 @@ const HoverWordCard = ({
         }}
         onMouseEnter={onHoverTrigger}
       >
-        <span>{text}</span>
+        <span data-testid={`underlined-word-${text}`}>{text}</span>
       </HoverCardTrigger>
       <HoverCardContent className='w-80'>
         <div className='flex justify-between gap-4'>

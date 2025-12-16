@@ -16,7 +16,7 @@ const LearningScreenTabs = ({ topicName }) => {
       <TabsTrigger value='comprehensive' disabled={!isInReviewMode}>
         Comprehensive
       </TabsTrigger>
-      <TabsTrigger value='words' disabled={!thisTopicHasWords}>
+      <TabsTrigger value='words' disabled={!thisTopicHasWords} data-testid='words-tab-trigger'>
         {wordsText}
       </TabsTrigger>
       {topicName && <TabsTrigger value='meta'>Meta</TabsTrigger>}

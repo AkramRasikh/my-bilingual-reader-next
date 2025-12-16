@@ -1,4 +1,5 @@
 import LoadingSpinner from './LoadingSpinner';
+import clsx from 'clsx';
 
 const ClickAndConfirm = ({
   showConfirm,
@@ -6,32 +7,42 @@ const ClickAndConfirm = ({
   onClick,
   isLoadingState,
 }) => {
-  return !showConfirm ? (
-    <button
-      onClick={() => setShowConfirm(true)}
-      className='bg-red-500 text-white px-3 py-1 rounded w-fit my-1 text-xs'
-    >
-      Delete
-    </button>
-  ) : (
-    <div className='flex gap-2 my-1'>
-      {isLoadingState && (
-        <div className='absolute inset-0 flex items-center justify-center bg-white/70 rounded'>
-          <LoadingSpinner />
-        </div>
-      )}
+  return (
+    <div className='min-w-[180px]'>
       <button
-        onClick={onClick}
-        className='bg-red-600 text-white px-3 py-1 rounded text-xs'
+        data-testid='delete-button'
+        onClick={() => setShowConfirm(true)}
+        className={clsx(
+          'bg-red-500 text-white px-3 py-1 rounded w-fit my-1 text-xs',
+          showConfirm ? 'hidden' : 'block',
+        )}
       >
-        Confirm Delete
+        Delete
       </button>
-      <button
-        onClick={() => setShowConfirm(false)}
-        className='bg-gray-300 text-black px-3 py-1 rounded text-xs'
+      <div
+        className={clsx(
+          'flex gap-2 my-1',
+          showConfirm ? 'block' : 'hidden',
+        )}
       >
-        Cancel
-      </button>
+        {isLoadingState && (
+          <div className='absolute inset-0 flex items-center justify-center bg-white/70 rounded'>
+            <LoadingSpinner />
+          </div>
+        )}
+        <button
+          onClick={onClick}
+          className='bg-red-600 text-white px-3 py-1 rounded text-xs'
+        >
+          Confirm Delete
+        </button>
+        <button
+          onClick={() => setShowConfirm(false)}
+          className='bg-gray-300 text-black px-3 py-1 rounded text-xs'
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   );
 };

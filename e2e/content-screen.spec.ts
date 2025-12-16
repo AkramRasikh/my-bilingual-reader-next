@@ -378,6 +378,11 @@ test('save word from transcript item', async ({ page }) => {
   // Use specific content ID for reliable targeting
   const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
 
+  // Verify initial Words count
+  const wordsTabTrigger = page.getByTestId('words-tab-trigger');
+  await expect(wordsTabTrigger).toBeVisible();
+  await expect(wordsTabTrigger).toContainText('Words 55/84');
+
   // Find the transcript item with text "ゆる言語学ラジオ"
   const transcriptTargetLang = page.getByTestId(
     `transcript-target-lang-${contentId}`,
@@ -482,4 +487,39 @@ test('save word from transcript item', async ({ page }) => {
   // Verify highlighted text is cleared (buttons should disappear)
   await expect(openaiButton).not.toBeVisible();
   await expect(googleButton).not.toBeVisible();
+
+  // Verify Words count increased from 55/84 to 55/85
+  await expect(wordsTabTrigger).toContainText('Words 55/85');
+
+  // Now hover over the saved word to verify it shows in hover card
+  // The word should now be underlined in the transcript
+  // Find an underlined span within the transcript (using CSS selector for underline style)
+  const underlinedWord = transcriptTargetLang
+    .locator('span')
+    .filter({ hasText: '語' })
+    .first();
+  await expect(underlinedWord).toBeVisible();
+
+  // Move mouse to trigger hover - use mouse.move for more reliable hovering
+  const boundingBox = await underlinedWord.boundingBox();
+  if (boundingBox) {
+    await page.mouse.move(
+      boundingBox.x + boundingBox.width / 2,
+      boundingBox.y + boundingBox.height / 2,
+    );
+  }
+
+  // Wait for hover card to appear
+  await page.waitForTimeout(1000);
+
+  // Verify hover card shows the word info
+  const hoverWordInfo = page.getByTestId('hover-word-info');
+  await expect(hoverWordInfo).toBeVisible();
+  await expect(hoverWordInfo).toContainText('言語学, 言語学, linguistics');
+  await expect(hoverWordInfo).toContainText('げんごがく, gengogaku');
+
+  // Verify Delete button is present
+  const deleteButton = page.getByTestId('delete-button');
+  await expect(deleteButton).toBeVisible();
+  await expect(deleteButton).toContainText('Delete');
 });

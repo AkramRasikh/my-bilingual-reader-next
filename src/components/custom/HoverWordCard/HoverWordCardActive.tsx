@@ -21,7 +21,7 @@ const HoverWordCardActive = ({ word, handleDeleteWordDataProvider }) => {
     <>
       <div className='flex justify-between gap-4'>
         <div className='space-y-1'>
-          <p className='text-sm'>
+          <p className='text-sm' data-testid='hover-word-info'>
             {word.baseForm}, {word.surfaceForm}, {word.definition},{' '}
             {word.phonetic}, {word?.transliteration}
           </p>
