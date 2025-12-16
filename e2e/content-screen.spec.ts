@@ -36,3 +36,37 @@ test('landing screen -> learning content screen navigation', async ({
   await expect(subHeading).toBeVisible();
   await expect(subHeading).toContainText(contentTitle);
 });
+
+test.only('transcript item menu interactions and review', async ({ page }) => {
+  await page.goto('/');
+
+  // Wait for page to be loaded
+  await page.waitForLoadState('networkidle');
+
+  // Navigate to content screen
+  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+  await contentButton.click();
+
+  // Wait for navigation to complete
+  await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+  // Wait for the content to load and find the first transcript item
+  await page.waitForLoadState('networkidle');
+
+  const firstMenuToggle = page.getByTestId(/transcript-menu-toggle-/).first();
+  await expect(firstMenuToggle).toBeVisible();
+  await firstMenuToggle.click();
+  const menuOptions = page.getByTestId(/transcript-menu-options-/).first();
+  const reviewButton = page.getByTestId(/transcript-menu-review-/).first();
+  await reviewButton.click();
+
+  // Verify loading spinner appears in the action bar
+  const loadingSpinner = page.getByTestId(/transcript-action-loading-/).first();
+  await expect(loadingSpinner).toBeVisible();
+
+  // Wait for the loading to complete and menu to close
+  await expect(menuOptions).not.toBeVisible({ timeout: 5000 });
+
+  // Verify loading spinner is no longer visible
+  await expect(loadingSpinner).not.toBeVisible();
+});

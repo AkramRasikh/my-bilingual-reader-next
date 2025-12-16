@@ -1,3 +1,4 @@
+import { ContentTypes } from '@/app/types/content-types';
 import { Page } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -50,9 +51,48 @@ export async function setupApiMocks(page: Page) {
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
-        contentData: contentData.content,
+        contentData: contentData?.content.map(
+          (contentWidget: ContentTypes, contentIndex: number) => {
+            return {
+              ...contentWidget,
+              contentIndex,
+              generalTopicName: contentWidget.title,
+            };
+          },
+        ),
         wordsData: wordsData.words,
         sentencesData: sentencesData?.sentences,
+      }),
+    });
+  });
+
+  // Intercept updateSentence API call
+  await page.route('**/api/updateSentence', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Use the fixed date as the last_review time
+    const lastReviewTime = new Date(E2E_FIXED_DATE);
+    // Add one minute (60000 milliseconds) for the due time
+    const dueTime = new Date(lastReviewTime.getTime() + 60000);
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        reviewData: {
+          due: dueTime.toISOString(),
+          stability: 0.40255,
+          difficulty: 7.1949,
+          elapsed_days: 0,
+          scheduled_days: 0,
+          reps: 1,
+          lapses: 0,
+          state: 1,
+          last_review: lastReviewTime.toISOString(),
+          ease: 2.5,
+          interval: 0,
+        },
       }),
     });
   });

@@ -725,22 +725,17 @@ export const LearningScreenProvider = ({
       card: cardDataRelativeToNow,
       contentType: srsRetentionKeyTypes.sentences,
     });
-    const isFullReview = selectedContentStateMemoized?.isFullReview;
 
     try {
       await updateSentenceData({
-        topicName: isFullReview
-          ? getThisSentenceInfo(sentenceId).title
-          : selectedContentStateMemoized.title,
+        topicName: thisContentTitle,
         sentenceId,
         fieldToUpdate: isRemoveReview
           ? { removeReview: true }
           : {
               reviewData: nextDue || nextScheduledOptions['1'].card,
             },
-        contentIndex: isFullReview
-          ? getThisSentenceInfo(sentenceId).contentIndex
-          : contentIndex,
+        contentIndex: contentIndex,
         isRemoveReview,
         indexKey: selectedContentStateMemoized.id,
       });

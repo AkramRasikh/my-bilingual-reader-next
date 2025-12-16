@@ -22,18 +22,23 @@ const TranscriptItemMenuSection = () => {
     }
   };
 
-  const handleReview = () =>
+  const handleReview = () => {
     handleReviewTranscriptItem({
       sentenceId: contentItem.id,
       isRemoveReview: hasBeenReviewed,
     });
+  };
 
   return (
     <>
       {showMenuState ? (
-        <AnimationWrapper className='flex flex-col gap-1'>
+        <AnimationWrapper
+          className='flex flex-col gap-1'
+          data-testid={`transcript-menu-options-${contentItem.id}`}
+        >
           <Button
             id='show-menu'
+            data-testid={`transcript-menu-toggle-${contentItem.id}`}
             variant='secondary'
             className='rounded transparent h-6 w-6'
             onClick={() => setShowMenuState(!showMenuState)}
@@ -42,6 +47,7 @@ const TranscriptItemMenuSection = () => {
           </Button>
           <Button
             id='copy'
+            data-testid={`transcript-menu-copy-${contentItem.id}`}
             variant='ghost'
             className='border rounded-sm p-0.5 transition-transform duration-150 active:scale-75 h-6 w-6'
             onClick={handleCopy}
@@ -50,6 +56,7 @@ const TranscriptItemMenuSection = () => {
           </Button>
           <Button
             id='review'
+            data-testid={`transcript-menu-review-${contentItem.id}`}
             variant='ghost'
             className='border rounded-sm p-0.5 transition active:scale-95 cursor-pointer h-6 w-6'
             onClick={handleReview}
@@ -61,6 +68,7 @@ const TranscriptItemMenuSection = () => {
       ) : (
         <Button
           id='show-menu'
+          data-testid={`transcript-menu-toggle-${contentItem.id}`}
           className='mt-0 rounded border h-6 w-6'
           variant='ghost'
           size='icon'

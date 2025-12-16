@@ -92,7 +92,7 @@ const TranscriptItemActionBar = () => {
       )}
 
       {(isGenericallyDoingAsyncAction || isLoadingState) && (
-        <div className='m-auto'>
+        <div className='m-auto' data-testid={`transcript-action-loading-${contentItem.id}`}>
           <LoadingSpinner />
         </div>
       )}
