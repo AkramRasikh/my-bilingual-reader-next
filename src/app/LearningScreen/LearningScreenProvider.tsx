@@ -111,12 +111,6 @@ export const LearningScreenProvider = ({
     return { sentencesNeedReview, numberOfPendingDue };
   }, [content]);
 
-  const hasUnifiedChapter = contentMetaMemoized?.length === 1;
-  const defaultToMultipleLevelMediaFile = !hasUnifiedChapter && errorVideoState;
-  const realStartTime = defaultToMultipleLevelMediaFile
-    ? 0
-    : selectedContentStateMemoized?.realStartTime || 0;
-
   const {
     latestDueIdMemoized,
     firstDueIndexMemoized,
@@ -212,13 +206,9 @@ export const LearningScreenProvider = ({
   }, [pureWordsMemoized, content]);
 
   const handlePlayFromHere = (time: number) => {
-    const scaledTimeSet = defaultToMultipleLevelMediaFile
-      ? time - realStartTime
-      : time;
-
     // hasUnifiedChapter ? generalTopic
     if (ref.current) {
-      ref.current.currentTime = scaledTimeSet;
+      ref.current.currentTime = time;
       ref.current.play();
     }
   };
@@ -273,7 +263,7 @@ export const LearningScreenProvider = ({
       refSeconds: fauxRef,
       threeSecondLoopState: currentTime,
       formattedTranscriptState: formattedTranscriptMemoized,
-      realStartTime,
+      realStartTime: 0,
       startTime,
       endTime,
       setState: null,
@@ -326,7 +316,7 @@ export const LearningScreenProvider = ({
       refSeconds: fauxRef,
       threeSecondLoopState: currentTime,
       formattedTranscriptState: formattedTranscriptMemoized,
-      realStartTime,
+      realStartTime: 0,
       startTime,
       endTime,
       setState: null,
@@ -555,7 +545,7 @@ export const LearningScreenProvider = ({
     threeSecondLoopState,
     contractThreeSecondLoopState,
     formattedTranscriptState: formattedTranscriptMemoized,
-    realStartTime,
+    realStartTime: 0,
     setOverlappingSnippetDataState,
     overlappingSnippetDataState,
   });
@@ -568,11 +558,11 @@ export const LearningScreenProvider = ({
       content: selectedContentStateMemoized.content,
       duration: ref.current?.duration,
       isVideoModeState: true,
-      realStartTime,
+      realStartTime: 0,
     });
 
     return arrOfSeconds;
-  }, [ref.current?.duration, realStartTime, selectedContentStateMemoized]);
+  }, [ref.current?.duration, selectedContentStateMemoized]);
 
   const masterPlay =
     currentTime && loopSecondsState.length > 0
@@ -608,9 +598,7 @@ export const LearningScreenProvider = ({
       return null;
     }
 
-    const thisStartTime = realStartTime + time;
-
-    handlePlayFromHere(thisStartTime);
+    handlePlayFromHere(time);
   };
   const handlePause = () => ref.current.pause();
 
@@ -802,14 +790,12 @@ export const LearningScreenProvider = ({
     setLoopTranscriptState([
       {
         ...masterItem,
-        time: realStartTime + masterItem.time,
         nextTime:
-          realStartTime +
-          (thisIndex === formattedTranscriptMemoized.length - 1
+          thisIndex === formattedTranscriptMemoized.length - 1
             ? ref.current.duration - 0.05
             : thisIndex === 0
-            ? realStartTime
-            : formattedTranscriptMemoized[thisIndex - 1].time),
+            ? 0
+            : formattedTranscriptMemoized[thisIndex - 1].time,
       },
     ]);
   };
@@ -827,12 +813,7 @@ export const LearningScreenProvider = ({
 
       const thisItemData = formattedTranscriptMemoized[lastSentenceIdIndex + 1];
 
-      const nextElToAddToLoop = {
-        ...thisItemData,
-        time: realStartTime + thisItemData.time,
-      };
-
-      setLoopTranscriptState((prev) => [...prev, nextElToAddToLoop]);
+      setLoopTranscriptState((prev) => [...prev, thisItemData]);
     } else {
       setLoopTranscriptState((prev) => prev.slice(0, -1));
     }
@@ -1220,7 +1201,7 @@ export const LearningScreenProvider = ({
         refSeconds: loopDataRef,
         threeSecondLoopState: snippetData.time,
         formattedTranscriptState: formattedTranscriptMemoized,
-        realStartTime,
+        realStartTime: 0,
         startTime,
         endTime,
         setState: null,
@@ -1236,11 +1217,7 @@ export const LearningScreenProvider = ({
       );
     });
     return allRes;
-  }, [
-    selectedContentStateMemoized,
-    formattedTranscriptMemoized,
-    realStartTime,
-  ]);
+  }, [selectedContentStateMemoized, formattedTranscriptMemoized]);
 
   function accumulateSentenceOverlap(snippetsBySentence) {
     const sentenceMap = {};
