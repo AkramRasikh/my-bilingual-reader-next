@@ -21,7 +21,6 @@ const TranscriptItemContent = () => {
     onlyShowEngState,
     wordsForSelectedTopic,
     languageSelectedState,
-    targetLangRef,
   } = useTranscriptItem();
 
   const { handleDeleteWordDataProvider } = useFetchData(); // must be moved!!
@@ -63,7 +62,6 @@ const TranscriptItemContent = () => {
       ) : (
         <>
           <p
-            ref={targetLangRef}
             data-testid={`transcript-target-lang-${contentItem.id}`}
             className={clsx('flex gap-2', isArabic ? 'justify-end' : '')}
           >
