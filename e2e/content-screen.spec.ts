@@ -202,26 +202,29 @@ test('transcript item sentence breakdown', async ({ page }) => {
   // Wait for the content to load
   await page.waitForLoadState('networkidle');
 
+  // Use specific content ID for reliable targeting
+  const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+
   // Open the menu
-  const firstMenuToggle = page.getByTestId(/transcript-menu-toggle-/).first();
-  await expect(firstMenuToggle).toBeVisible();
-  await firstMenuToggle.click();
+  const menuToggle = page.getByTestId(`transcript-menu-toggle-${contentId}`);
+  await expect(menuToggle).toBeVisible();
+  await menuToggle.click();
 
   // Verify menu is open
-  const menuOptions = page.getByTestId(/transcript-menu-options-/).first();
+  const menuOptions = page.getByTestId(`transcript-menu-options-${contentId}`);
   // await expect(menuOptions).toBeVisible();
 
   // Click the breakdown sentence button (hammer icon)
-  const breakdownButton = page
-    .getByTestId(/transcript-breakdown-button-/)
-    .first();
+  const breakdownButton = page.getByTestId(
+    `transcript-breakdown-button-${contentId}`,
+  );
   // await expect(breakdownButton).toBeVisible();
   await breakdownButton.click();
 
   // Verify loading hammer icon appears
-  const loadingHammer = page
-    .getByTestId(/transcript-breakdown-loading-/)
-    .first();
+  const loadingHammer = page.getByTestId(
+    `transcript-breakdown-loading-${contentId}`,
+  );
   await expect(loadingHammer).toBeVisible();
 
   // Verify toast message appears
@@ -235,10 +238,87 @@ test('transcript item sentence breakdown', async ({ page }) => {
   await expect(menuOptions).not.toBeVisible();
 
   // Verify brick emoji appears indicating sentence is broken down
-  const brickEmoji = page.getByTestId(/transcript-breakdown-complete-/).first();
+  const brickEmoji = page.getByTestId(
+    `transcript-breakdown-complete-${contentId}`,
+  );
   await expect(brickEmoji).toBeVisible();
   await expect(brickEmoji).toContainText('🧱');
 
   // Verify breakdown button is no longer visible
   await expect(breakdownButton).not.toBeVisible();
+});
+
+test('transcript item sentence breakdown error handling', async ({ page }) => {
+  // Setup API mocking with error response for breakdownSentence
+  await page.route('**/api/breakdownSentence', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        error: 'Internal server error',
+      }),
+    });
+  });
+
+  await page.goto('/');
+
+  // Wait for page to be loaded
+  await page.waitForLoadState('networkidle');
+
+  // Navigate to content screen
+  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+  await contentButton.click();
+
+  // Wait for navigation to complete
+  await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+  // Wait for the content to load
+  await page.waitForLoadState('networkidle');
+
+  // Use specific content ID for reliable targeting
+  const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+
+  // Open the menu
+  const menuToggle = page.getByTestId(`transcript-menu-toggle-${contentId}`);
+  await expect(menuToggle).toBeVisible();
+  await menuToggle.click();
+
+  // Verify menu is open
+  const menuOptions = page.getByTestId(`transcript-menu-options-${contentId}`);
+  // await expect(menuOptions).toBeVisible();
+
+  // Click the breakdown sentence button (hammer icon)
+  const breakdownButton = page.getByTestId(
+    `transcript-breakdown-button-${contentId}`,
+  );
+  await expect(breakdownButton).toBeVisible();
+  await breakdownButton.click();
+
+  // Verify loading hammer icon appears
+  const loadingHammer = page.getByTestId(
+    `transcript-breakdown-loading-${contentId}`,
+  );
+  await expect(loadingHammer).toBeVisible();
+
+  // Verify error toast message appears
+  const errorToastMessage = page.getByText('Sentence breakdown error 🧱🔨❌');
+  await expect(errorToastMessage).toBeVisible({ timeout: 3000 });
+
+  // Verify loading hammer disappears after error
+  await expect(loadingHammer).not.toBeVisible({ timeout: 5000 });
+
+  // Verify menu closes even after error
+  await expect(menuOptions).not.toBeVisible();
+
+  // Verify breakdown button is still visible (since breakdown failed)
+  await expect(breakdownButton).toBeVisible();
+
+  // Verify brick emoji does NOT appear (since breakdown failed)
+  const brickEmoji = page.getByTestId(
+    `transcript-breakdown-complete-${contentId}`,
+  );
+  await expect(brickEmoji).not.toBeVisible();
 });
