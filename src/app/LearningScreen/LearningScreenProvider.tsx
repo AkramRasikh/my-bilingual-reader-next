@@ -101,7 +101,7 @@ export const LearningScreenProvider = ({
     let numberOfPendingDue = 0;
 
     content.forEach((transcriptEl) => {
-      if (!transcriptEl?.reviewData?.due) {
+      if (transcriptEl?.reviewData?.due) {
         numberOfPendingDue += 1;
       }
       if (isDueCheck(transcriptEl, todayDateObj)) {
