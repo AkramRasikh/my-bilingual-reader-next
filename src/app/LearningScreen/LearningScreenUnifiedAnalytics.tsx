@@ -58,7 +58,10 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
 
   return (
     <div>
-      <p className='text-xs font-medium m-auto w-fit'>
+      <p
+        className='text-xs font-medium m-auto w-fit'
+        data-testid='analytics-sentences-count'
+      >
         Sentences: {sentencesNeedReview}/{numberOfPendingDue}
       </p>
       <p className='text-xs font-medium m-auto w-fit'>
@@ -98,7 +101,9 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
         </div>
       </p>
       <p className='flex gap-2 text-xs font-medium  w-fit m-auto'>
-        <span className='m-auto'>Reps: {sentenceRepsState}</span>
+        <span className='m-auto' data-testid='analytics-reps-count'>
+          Reps: {sentenceRepsState}
+        </span>
         {sentenceRepsState ? (
           <Button
             className='w-5 h-5'

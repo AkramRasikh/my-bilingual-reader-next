@@ -37,7 +37,7 @@ test('landing screen -> learning content screen navigation', async ({
   await expect(subHeading).toContainText(contentTitle);
 });
 
-test.only('transcript item menu interactions and review', async ({ page }) => {
+test('transcript item menu interactions and review', async ({ page }) => {
   await page.goto('/');
 
   // Wait for page to be loaded
@@ -53,6 +53,15 @@ test.only('transcript item menu interactions and review', async ({ page }) => {
   // Wait for the content to load and find the first transcript item
   await page.waitForLoadState('networkidle');
 
+  // Verify initial sentence count and reps
+  const sentencesCount = page.getByTestId('analytics-sentences-count');
+  await expect(sentencesCount).toBeVisible();
+  const initialSentencesText = await sentencesCount.textContent();
+
+  const repsCount = page.getByTestId('analytics-reps-count');
+  await expect(repsCount).toBeVisible();
+  await expect(repsCount).toContainText('Reps: 0');
+
   const firstMenuToggle = page.getByTestId(/transcript-menu-toggle-/).first();
   await expect(firstMenuToggle).toBeVisible();
   await firstMenuToggle.click();
@@ -64,6 +73,10 @@ test.only('transcript item menu interactions and review', async ({ page }) => {
   const loadingSpinner = page.getByTestId(/transcript-action-loading-/).first();
   await expect(loadingSpinner).toBeVisible();
 
+  // Verify toast message appears
+  const toastMessage = page.getByText('Sentence reviewed ✅');
+  await expect(toastMessage).toBeVisible({ timeout: 3000 });
+
   // Wait for the loading to complete and menu to close
   await expect(menuOptions).not.toBeVisible({ timeout: 5000 });
 
@@ -72,4 +85,19 @@ test.only('transcript item menu interactions and review', async ({ page }) => {
 
   // Verify review button is no longer visible since menu collapsed
   await expect(reviewButton).not.toBeVisible();
+
+  // Verify reps count increased to 1
+  await expect(repsCount).toContainText('Reps: 1');
+
+  // Verify sentence count increased by 1 in the denominator
+  const finalSentencesText = await sentencesCount.textContent();
+  const initialMatch = initialSentencesText?.match(/Sentences: (\d+)\/(\d+)/);
+  const finalMatch = finalSentencesText?.match(/Sentences: (\d+)\/(\d+)/);
+
+  if (initialMatch && finalMatch) {
+    const initialTotal = parseInt(initialMatch[2]);
+    const finalTotal = parseInt(finalMatch[2]);
+    expect(finalTotal).toBe(initialTotal + 1);
+  }
+  //
 });
