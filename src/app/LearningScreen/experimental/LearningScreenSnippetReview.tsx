@@ -20,7 +20,7 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
 import HighlightedText from '@/components/custom/HighlightedText';
 
-function expandWordsIntoChunks(words) {
+export function expandWordsIntoChunks(words) {
   let globalIdx = 0;
 
   return words.flatMap((word) => {

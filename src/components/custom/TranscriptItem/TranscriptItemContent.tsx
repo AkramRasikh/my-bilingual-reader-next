@@ -4,6 +4,8 @@ import useTranscriptItem from './useTranscriptItem';
 import SentenceBreakdown from '../SentenceBreakdown';
 import { arabic } from '@/app/languages';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
+import { expandWordsIntoChunks } from '@/app/LearningScreen/experimental/LearningScreenSnippetReview';
+import { useMemo } from 'react';
 
 const TranscriptItemContent = () => {
   const {
@@ -38,6 +40,11 @@ const TranscriptItemContent = () => {
   const isArabic = languageSelectedState === arabic;
   const hasSentenceBreakdown = contentItem?.sentenceStructure;
 
+  const granularFormattedSentence = useMemo(
+    () => expandWordsIntoChunks(targetLangformatted),
+    [targetLangformatted],
+  );
+
   const showBreakdownBool =
     (showSentenceBreakdownState && hasSentenceBreakdown) ||
     showThisSentenceBreakdownPreviewState;
@@ -60,7 +67,7 @@ const TranscriptItemContent = () => {
             className={clsx('flex gap-2', isArabic ? 'justify-end' : '')}
           >
             <FormattedSentence
-              targetLangformatted={targetLangformatted}
+              targetLangformatted={granularFormattedSentence}
               handleMouseLeave={handleMouseLeave}
               handleMouseEnter={handleMouseEnter}
               wordPopUpState={wordPopUpState}
