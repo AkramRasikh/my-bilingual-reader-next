@@ -9,7 +9,10 @@ const HighlightedText = ({
   setHighlightedTextState,
   highlightedTextState,
 }) => (
-  <AnimationWrapper className='m-auto mt-1.5 flex gap-2.5 justify-end'>
+  <AnimationWrapper
+    data-testid="highlighted-text-container"
+    className='m-auto mt-1.5 flex gap-2.5 justify-end'
+  >
     <HighlightedTextFocus
       highlightedTextState={highlightedTextState}
       isLoadingState={isLoadingState}

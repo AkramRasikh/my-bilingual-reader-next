@@ -322,3 +322,108 @@ test('transcript item sentence breakdown error handling', async ({ page }) => {
   );
   await expect(brickEmoji).not.toBeVisible();
 });
+
+test('save word from transcript item', async ({ page }) => {
+  await page.goto('/');
+
+  // Wait for page to be loaded
+  await page.waitForLoadState('networkidle');
+
+  // Navigate to content screen
+  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+  await contentButton.click();
+
+  // Wait for navigation to complete
+  await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+  // Wait for the content to load
+  await page.waitForLoadState('networkidle');
+
+  // Use specific content ID for reliable targeting
+  const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+
+  // Find the transcript item with text "ゆる言語学ラジオ"
+  const transcriptTargetLang = page.getByTestId(
+    `transcript-target-lang-${contentId}`,
+  );
+  await expect(transcriptTargetLang).toBeVisible();
+
+  // Get the text content to verify it contains "言語学"
+  const transcriptText = await transcriptTargetLang.textContent();
+  expect(transcriptText).toContain('言語学');
+
+  // Select/highlight the text "言語学" using page.evaluate
+  // Since text is split into individual character spans, we need to select across multiple elements
+  const selectionSuccess = await page.evaluate((id) => {
+    const container = document.querySelector(
+      `[data-testid="transcript-target-lang-${id}"]`,
+    );
+    if (!container) {
+      console.log('Container not found');
+      return false;
+    }
+
+    // Get all span elements (each contains one character)
+    const spans = Array.from(container.querySelectorAll('span'));
+    const targetChars = ['言', '語', '学'];
+
+    // Find the spans containing our target characters in sequence
+    let startSpan = null;
+    let endSpan = null;
+
+    for (let i = 0; i < spans.length - 2; i++) {
+      if (
+        spans[i].textContent === targetChars[0] &&
+        spans[i + 1].textContent === targetChars[1] &&
+        spans[i + 2].textContent === targetChars[2]
+      ) {
+        startSpan = spans[i];
+        endSpan = spans[i + 2];
+        break;
+      }
+    }
+
+    if (!startSpan || !endSpan) {
+      return false;
+    }
+
+    // Create a range spanning from start of first span to end of last span
+    const range = document.createRange();
+    const startTextNode = startSpan.firstChild || startSpan;
+    const endTextNode = endSpan.firstChild || endSpan;
+
+    range.setStart(startTextNode, 0);
+    range.setEnd(endTextNode, endTextNode.textContent?.length || 1);
+
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+
+    // Trigger mouseup event to trigger the selection handler
+    const mouseUpEvent = new MouseEvent('mouseup', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    });
+    document.dispatchEvent(mouseUpEvent);
+
+    return true;
+  }, contentId);
+
+  console.log('Selection success:', selectionSuccess);
+
+  // Wait for the state to update
+  await page.waitForTimeout(1000);
+
+  // Verify that HighlightedText component is rendered by checking for save buttons
+  const openaiButton = page.getByTestId('save-word-openai-button');
+  await expect(openaiButton).toBeVisible();
+
+  const googleButton = page.getByTestId('save-word-google-button');
+  await expect(googleButton).toBeVisible();
+
+  // Verify that the highlighted text displays "言語学"
+  const highlightedTextFocus = page.getByTestId('highlighted-text-focus');
+  await expect(highlightedTextFocus).toBeVisible();
+  await expect(highlightedTextFocus).toContainText('言語学');
+});

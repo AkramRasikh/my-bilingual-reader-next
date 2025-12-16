@@ -64,6 +64,7 @@ const TranscriptItemContent = () => {
         <>
           <p
             ref={targetLangRef}
+            data-testid={`transcript-target-lang-${contentItem.id}`}
             className={clsx('flex gap-2', isArabic ? 'justify-end' : '')}
           >
             <FormattedSentence

@@ -9,6 +9,7 @@ const HighlightedTextActions = ({
 }) => (
   <div className={'flex gap-1.5 m-auto'}>
     <Button
+      data-testid='save-word-openai-button'
       className='border bg-transparent hover:bg-white'
       disabled={isLoadingState}
       size={'icon'}
@@ -17,6 +18,7 @@ const HighlightedTextActions = ({
       <Image src='/openai.png' alt='Openai logo' height={25} width={25} />
     </Button>
     <Button
+      data-testid='save-word-google-button'
       className='border bg-transparent hover:bg-white'
       disabled={isLoadingState}
       size={'icon'}
