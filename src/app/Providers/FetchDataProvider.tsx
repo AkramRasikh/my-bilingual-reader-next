@@ -527,9 +527,10 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
           ? 'Successful learned sentence ✅'
           : 'Sentence reviewed ✅',
       );
+      return true;
     } catch (error) {
       console.log('## updateSentenceData', { error });
-      setToastMessageState('Error updating sentence ❌');
+      setToastMessageState('Error updating sentence review ❌');
     }
   };
 

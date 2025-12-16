@@ -727,7 +727,7 @@ export const LearningScreenProvider = ({
     });
 
     try {
-      await updateSentenceData({
+      const result = await updateSentenceData({
         topicName: thisContentTitle,
         sentenceId,
         fieldToUpdate: isRemoveReview
@@ -739,7 +739,9 @@ export const LearningScreenProvider = ({
         isRemoveReview,
         indexKey: selectedContentStateMemoized.id,
       });
-      setSentenceRepsState(sentenceRepsState + 1);
+      if (result) {
+        setSentenceRepsState(sentenceRepsState + 1);
+      }
     } catch (error) {
       console.log('## handleReviewFunc error', error);
     }

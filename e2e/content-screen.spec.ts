@@ -117,3 +117,71 @@ test('transcript item menu interactions and review', async ({ page }) => {
   const revertedSentencesText = await sentencesCount.textContent();
   expect(revertedSentencesText).toContain('/200');
 });
+
+test.only('transcript item review error handling', async ({ page }) => {
+  // Setup API mocking with error response for updateSentence
+  await page.route('**/api/updateSentence', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        error: 'Internal server error',
+      }),
+    });
+  });
+
+  await page.goto('/');
+
+  // Wait for page to be loaded
+  await page.waitForLoadState('networkidle');
+
+  // Navigate to content screen
+  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+  await contentButton.click();
+
+  // Wait for navigation to complete
+  await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+  // Wait for the content to load
+  await page.waitForLoadState('networkidle');
+
+  // Verify initial sentence count and reps
+  const sentencesCount = page.getByTestId('analytics-sentences-count');
+  await expect(sentencesCount).toBeVisible();
+  const initialSentencesText = await sentencesCount.textContent();
+  expect(initialSentencesText).toContain('/200');
+
+  const repsCount = page.getByTestId('analytics-reps-count');
+  await expect(repsCount).toBeVisible();
+  await expect(repsCount).toContainText('Reps: 0');
+
+  // Open menu and click review button
+  const firstMenuToggle = page.getByTestId(/transcript-menu-toggle-/).first();
+  await expect(firstMenuToggle).toBeVisible();
+  await firstMenuToggle.click();
+
+  const reviewButton = page.getByTestId(/transcript-menu-review-/).first();
+  await reviewButton.click();
+
+  // Verify loading spinner appears in the action bar
+  const loadingSpinner = page.getByTestId(/transcript-action-loading-/).first();
+  await expect(loadingSpinner).toBeVisible();
+
+  // Verify error toast message appears
+  const errorToastMessage = page.getByText('Error updating sentence review ❌');
+  await expect(errorToastMessage).toBeVisible({ timeout: 3000 });
+
+  // Verify loading spinner disappears after error
+  await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+  // Verify reps count remained at 0 (no increment due to error)
+  await expect(repsCount).toContainText('Reps: 0');
+
+  // Verify sentence count remained unchanged
+  const finalSentencesText = await sentencesCount.textContent();
+  expect(finalSentencesText).toContain('/200');
+  expect(finalSentencesText).toBe(initialSentencesText);
+});
