@@ -324,6 +324,42 @@ test('transcript item sentence breakdown error handling', async ({ page }) => {
 });
 
 test('save word from transcript item', async ({ page }) => {
+  // Setup API mocking for saveWord
+  await page.route('**/api/saveWord', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        word: {
+          id: '83b75769-a67d-4f8a-9baa-9716bdd78219',
+          contexts: ['f378ec1d-c885-4e6a-9821-405b0ff9aa24'],
+          surfaceForm: '言語学',
+          definition: 'linguistics',
+          transliteration: 'gengogaku',
+          baseForm: '言語学',
+          phonetic: 'げんごがく',
+          notes:
+            '言語学 (gengogaku) specifically refers to the scientific study of language, encompassing various aspects such as syntax, semantics, and phonetics. In the context of ゆる言語学ラジオ, it suggests a more relaxed or informal approach to discussing topics related to linguistics.',
+          reviewData: {
+            due: '2025-12-16T20:17:44.113Z',
+            stability: 0.40255,
+            difficulty: 7.1949,
+            elapsed_days: 0,
+            scheduled_days: 0,
+            reps: 1,
+            lapses: 0,
+            state: 1,
+            last_review: '2025-12-16T20:16:44.113Z',
+            ease: 2.5,
+            interval: 0,
+          },
+        },
+      }),
+    });
+  });
   await page.goto('/');
 
   // Wait for page to be loaded
@@ -426,4 +462,24 @@ test('save word from transcript item', async ({ page }) => {
   const highlightedTextFocus = page.getByTestId('highlighted-text-focus');
   await expect(highlightedTextFocus).toBeVisible();
   await expect(highlightedTextFocus).toContainText('言語学');
+
+  // Click the OpenAI save button
+  await openaiButton.click();
+
+  // Verify loading spinner appears in the action bar
+  const loadingSpinner = page.getByTestId(
+    `transcript-action-loading-${contentId}`,
+  );
+  await expect(loadingSpinner).toBeVisible();
+
+  // Verify toast message appears
+  const toastMessage = page.getByText('言語学 saved!');
+  await expect(toastMessage).toBeVisible({ timeout: 3000 });
+
+  // Verify loading spinner disappears after save
+  await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+  // Verify highlighted text is cleared (buttons should disappear)
+  await expect(openaiButton).not.toBeVisible();
+  await expect(googleButton).not.toBeVisible();
 });
