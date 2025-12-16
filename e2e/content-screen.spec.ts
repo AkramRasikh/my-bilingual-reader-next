@@ -69,4 +69,7 @@ test.only('transcript item menu interactions and review', async ({ page }) => {
 
   // Verify loading spinner is no longer visible
   await expect(loadingSpinner).not.toBeVisible();
+
+  // Verify review button is no longer visible since menu collapsed
+  await expect(reviewButton).not.toBeVisible();
 });

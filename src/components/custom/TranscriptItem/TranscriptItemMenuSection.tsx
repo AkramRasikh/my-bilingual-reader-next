@@ -22,11 +22,16 @@ const TranscriptItemMenuSection = () => {
     }
   };
 
-  const handleReview = () => {
-    handleReviewTranscriptItem({
-      sentenceId: contentItem.id,
-      isRemoveReview: hasBeenReviewed,
-    });
+  const handleReview = async () => {
+    try {
+      await handleReviewTranscriptItem({
+        sentenceId: contentItem.id,
+        isRemoveReview: hasBeenReviewed,
+      });
+    } catch (error) {
+    } finally {
+      setShowMenuState(false);
+    }
   };
 
   return (
