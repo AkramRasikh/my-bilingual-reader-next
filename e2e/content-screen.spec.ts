@@ -1151,3 +1151,66 @@ test('transcript item sentence breakdown error handling', async ({ page }) => {
   );
   await expect(brickEmoji).not.toBeVisible();
 });
+
+test.only('checkpoint button scrolls to last reviewed sentence', async ({
+  page,
+}) => {
+  await page.goto('/');
+
+  // Wait for page to be loaded
+  await page.waitForLoadState('networkidle');
+
+  // Navigate to content screen
+  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+  await contentButton.click();
+
+  // Wait for navigation to complete
+  await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+  // Wait for the content to load
+  await page.waitForLoadState('networkidle');
+
+  // The checkpoint text from the last reviewed sentence
+  const checkpointText =
+    'Hori/In the meantime, we look forward to everyone continuing to subscribe, like, and leave comments with their thoughts, so please feel free to send in whatever you think. Wed/Yes.';
+
+  // Find the checkpoint element by text
+  const checkpointElement = page.getByText(checkpointText);
+
+  // Verify checkpoint element is NOT in viewport initially
+  const checkpointNotVisibleInitially = await checkpointElement.evaluate(
+    (el) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
+    },
+  );
+  expect(checkpointNotVisibleInitially).toBe(false);
+
+  // Click checkpoint button
+  const checkpointButton = page.getByTestId('checkpoint-button');
+  await expect(checkpointButton).toBeVisible();
+  await checkpointButton.click();
+
+  // Wait for scroll animation to complete
+  await page.waitForTimeout(1000);
+
+  // Verify checkpoint text is now in viewport
+  const checkpointVisible = await checkpointElement.evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <=
+        (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  });
+  expect(checkpointVisible).toBe(true);
+});

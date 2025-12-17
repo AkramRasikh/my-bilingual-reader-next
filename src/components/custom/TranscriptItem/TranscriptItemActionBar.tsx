@@ -51,6 +51,7 @@ const TranscriptItemActionBar = () => {
   return (
     <div className='flex flex-col gap-1 h-fit'>
       <Button
+        data-testid={`transcript-play-button-${contentItem.id}`}
         className={clsx(
           'bg-gray-300 h-7 w-7',
           thisSentenceIsPlaying && isVideoPlaying && 'bg-yellow-200',

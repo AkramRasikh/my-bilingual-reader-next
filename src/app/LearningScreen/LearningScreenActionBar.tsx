@@ -55,11 +55,19 @@ const LearningScreenActionBar = () => {
             <div className='w-px h-8 my-auto bg-gray-400' />
           </>
         )}
-        <Button variant={'link'} onClick={handleScrollToMasterView}>
+        <Button
+          data-testid='current-button'
+          variant={'link'}
+          onClick={handleScrollToMasterView}
+        >
           Current
         </Button>
         {!isInReviewMode && (
-          <Button variant='link' onClick={scrollToLastLeftOff}>
+          <Button
+            data-testid='checkpoint-button'
+            variant='link'
+            onClick={scrollToLastLeftOff}
+          >
             Checkpoint
           </Button>
         )}
