@@ -1277,4 +1277,37 @@ test('checkpoint button scrolls to last reviewed sentence', async ({
     );
   });
   expect(checkpointNotVisibleNow).toBe(false);
+
+  // Click checkpoint button again to scroll back to checkpoint
+  await checkpointButton.click();
+  await page.waitForTimeout(1000);
+
+  // Verify checkpoint is visible in viewport
+  const checkpointVisibleAgain = await checkpointElement.evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <=
+        (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  });
+  expect(checkpointVisibleAgain).toBe(true);
+
+  // Verify first transcript container is NOT visible in viewport
+  const firstContainerNotVisibleAgain = await firstTranscriptContainer.evaluate(
+    (el) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
+    },
+  );
+  expect(firstContainerNotVisibleAgain).toBe(false);
 });
