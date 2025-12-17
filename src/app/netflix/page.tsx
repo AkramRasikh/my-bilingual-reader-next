@@ -180,6 +180,25 @@ export default function NetflixPage() {
     setIsVideoPlaying(false);
   };
 
+  const handleTimeUpdate = () => {
+    if (videoRef.current && formattedData.length > 0) {
+      const currentTime = videoRef.current.currentTime;
+      
+      // Find the current transcript item based on video time
+      // Find the last item whose time is <= currentTime
+      let currentItem = formattedData[0];
+      for (let i = 0; i < formattedData.length; i++) {
+        if (formattedData[i].time <= currentTime) {
+          currentItem = formattedData[i];
+        } else {
+          break;
+        }
+      }
+      
+      setCurrentPlayingId(currentItem.id);
+    }
+  };
+
   return (
     <div className='min-h-screen p-8'>
       <h1 className='text-3xl font-bold mb-8'>Netflix Upload</h1>
@@ -213,6 +232,7 @@ export default function NetflixPage() {
                     className='w-full rounded-md border'
                     onPlay={handleVideoPlay}
                     onPause={handleVideoPause}
+                    onTimeUpdate={handleTimeUpdate}
                   >
                     <source
                       src={videoUrl}
