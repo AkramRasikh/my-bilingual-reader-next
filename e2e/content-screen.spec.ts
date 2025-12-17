@@ -1199,7 +1199,7 @@ test('checkpoint button scrolls to last reviewed sentence', async ({
   await checkpointButton.click();
 
   // Wait for scroll animation to complete
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(1500);
 
   // Verify checkpoint text is now in viewport
   const checkpointVisible = await checkpointElement.evaluate((el) => {
