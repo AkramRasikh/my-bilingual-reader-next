@@ -820,7 +820,44 @@ test('save word from transcript item', async ({ page }) => {
   await expect(hoverWordInfo).not.toBeVisible();
 });
 
-test.only('transcript item sentence breakdown', async ({ page }) => {
+test('transcript item sentence breakdown', async ({ page }) => {
+  // Setup API mocking for saveWord
+  await page.route('**/api/saveWord', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        word: {
+          id: '83b75769-a67d-4f8a-9baa-9716bdd78219',
+          contexts: ['f378ec1d-c885-4e6a-9821-405b0ff9aa24'],
+          surfaceForm: '言語学',
+          definition: 'linguistics',
+          transliteration: 'gengogaku',
+          baseForm: '言語学',
+          phonetic: 'げんごがく',
+          notes:
+            '言語学 (gengogaku) specifically refers to the scientific study of language, encompassing various aspects such as syntax, semantics, and phonetics. In the context of ゆる言語学ラジオ, it suggests a more relaxed or informal approach to discussing topics related to linguistics.',
+          reviewData: {
+            due: '2025-12-16T20:17:44.113Z',
+            stability: 0.40255,
+            difficulty: 7.1949,
+            elapsed_days: 0,
+            scheduled_days: 0,
+            reps: 1,
+            lapses: 0,
+            state: 1,
+            last_review: '2025-12-16T20:16:44.113Z',
+            ease: 2.5,
+            interval: 0,
+          },
+        },
+      }),
+    });
+  });
+
   await page.goto('/');
 
   // Wait for page to be loaded
@@ -843,7 +880,9 @@ test.only('transcript item sentence breakdown', async ({ page }) => {
   const transcriptTab = page.locator('[role="tabpanel"][data-state="active"]');
 
   // Open the menu
-  const menuToggle = transcriptTab.getByTestId(`transcript-menu-toggle-${contentId}`);
+  const menuToggle = transcriptTab.getByTestId(
+    `transcript-menu-toggle-${contentId}`,
+  );
   await expect(menuToggle).toBeVisible();
   await menuToggle.click();
 
@@ -949,6 +988,86 @@ test.only('transcript item sentence breakdown', async ({ page }) => {
 
   // Verify brick emoji is showing again (not close icon)
   await expect(brickEmoji).toContainText('🧱');
+
+  // Re-open breakdown view to test hover interaction
+  await brickEmoji.click();
+  await page.waitForTimeout(500);
+  await expect(sentenceBreakdownContainer).toBeVisible();
+
+  // Hover over the word 言語学 in the breakdown view
+  const vocabWord = sentenceBreakdownTargetLang
+    .locator('span')
+    .filter({ hasText: '言語学' })
+    .first();
+  await expect(vocabWord).toBeVisible();
+
+  // Move mouse to the vocab word
+  const vocabBoundingBox = await vocabWord.boundingBox();
+  if (vocabBoundingBox) {
+    await page.mouse.move(
+      vocabBoundingBox.x + vocabBoundingBox.width / 2,
+      vocabBoundingBox.y + vocabBoundingBox.height / 2,
+    );
+  }
+
+  // Wait for hover card to appear
+  await page.waitForTimeout(500);
+
+  // Verify SentenceBreakdownHover content is visible
+  const breakdownHoverContent = page.getByTestId(
+    'sentence-breakdown-hover-content',
+  );
+  await expect(breakdownHoverContent).toBeVisible();
+
+  // Verify the save buttons are visible
+  const deepseekButton = page.getByTestId(
+    'breakdown-save-word-deepseek-button',
+  );
+  const googleButton = page.getByTestId('breakdown-save-word-google-button');
+  await expect(deepseekButton).toBeVisible();
+  await expect(googleButton).toBeVisible();
+
+  // Click the Deepseek save button
+  await deepseekButton.click();
+
+  // Verify loading spinner appears in the action bar
+  const loadingSpinner = transcriptTab.getByTestId(
+    `transcript-action-loading-${contentId}`,
+  );
+  await expect(loadingSpinner).toBeVisible();
+
+  // Verify toast message appears
+  const saveToastMessage = page.getByText('言語学 saved!');
+  await expect(saveToastMessage).toBeVisible({ timeout: 3000 });
+
+  // Verify loading spinner disappears after save
+  await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+  // Verify the hover card is no longer visible after save
+  await expect(breakdownHoverContent).not.toBeVisible();
+
+  // Now verify the word is underlined (saved words are rendered differently)
+  // The word should now be rendered by SentenceBreakdownTargetLangWord with underline
+  const underlinedVocabWord = sentenceBreakdownTargetLang
+    .locator('span')
+    .filter({ hasText: '言語学' })
+    .first();
+  await expect(underlinedVocabWord).toBeVisible();
+
+  // Hover over the saved word again
+  const savedVocabBoundingBox = await underlinedVocabWord.boundingBox();
+  if (savedVocabBoundingBox) {
+    await page.mouse.move(
+      savedVocabBoundingBox.x + savedVocabBoundingBox.width / 2,
+      savedVocabBoundingBox.y + savedVocabBoundingBox.height / 2,
+    );
+  }
+
+  // Wait to see if hover card appears
+  await page.waitForTimeout(1000);
+
+  // Verify that the hover card does NOT appear (saved words don't show hover card)
+  await expect(breakdownHoverContent).not.toBeVisible();
 });
 
 test('transcript item sentence breakdown error handling', async ({ page }) => {
