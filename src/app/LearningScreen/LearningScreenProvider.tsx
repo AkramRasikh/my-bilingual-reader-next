@@ -98,8 +98,7 @@ export const LearningScreenProvider = ({
     let sentencesNeedReview = 0;
     let sentencesPendingOrDue = 0;
 
-    // Step 1: Create formatted transcript (base processing)
-    const formattedTranscript = content.map((item, index) => {
+    const formattedTranscriptMemoized = content.map((item, index) => {
       const hasBeenReviewed = item?.reviewData?.due;
       if (hasBeenReviewed) {
         sentencesPendingOrDue += 1;
@@ -127,22 +126,25 @@ export const LearningScreenProvider = ({
         wordsState,
       );
 
+      // Check if next item is due
+      const nextItem = content[index + 1];
+      const nextHasBeenReviewed = nextItem?.reviewData?.due;
+      const nextIsDueNow = new Date(nextHasBeenReviewed) < now;
+      const nextDueStatus = !nextHasBeenReviewed
+        ? ''
+        : nextIsDueNow
+        ? 'now'
+        : 'pending';
+      const helperReviewSentence = index > 0 && nextDueStatus === 'now';
+
       return {
         ...item,
         dueStatus,
         targetLangformatted,
         wordsFromSentence,
+        ...(helperReviewSentence && { helperReviewSentence: true }),
       };
     });
-
-    const formattedTranscriptMemoized = formattedTranscript.map(
-      (item, index, arr) => {
-        if (index > 0 && arr[index + 1]?.dueStatus === 'now') {
-          return { ...item, helperReviewSentence: true };
-        }
-        return item;
-      },
-    );
 
     // Step 3: Build prev/next lookup map
     const sentenceMapMemoized = {};
