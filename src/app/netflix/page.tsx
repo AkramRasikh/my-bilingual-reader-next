@@ -186,7 +186,7 @@ export default function NetflixPage() {
     if (videoRef.current && formattedData.length > 0) {
       // Subtract offset from video time to match transcript time
       const currentTime = videoRef.current.currentTime - videoOffset;
-      
+
       // Find the current transcript item based on adjusted video time
       // Find the last item whose time is <= currentTime
       let currentItem = formattedData[0];
@@ -197,7 +197,7 @@ export default function NetflixPage() {
           break;
         }
       }
-      
+
       setCurrentPlayingId(currentItem.id);
     }
   };
@@ -275,18 +275,24 @@ export default function NetflixPage() {
                   </div>
 
                   <div className='bg-muted p-4 rounded-md'>
-                    <Label htmlFor='video-offset' className='font-semibold text-sm mb-2 block'>
+                    <Label
+                      htmlFor='video-offset'
+                      className='font-semibold text-sm mb-2 block'
+                    >
                       Video Offset (seconds)
                     </Label>
                     <p className='text-xs text-muted-foreground mb-2'>
-                      Adjust if video and subtitles are out of sync. Positive values start video later.
+                      Adjust if video and subtitles are out of sync. Positive
+                      values start video later.
                     </p>
                     <Input
                       id='video-offset'
                       type='number'
                       step='0.1'
                       value={videoOffset}
-                      onChange={(e) => setVideoOffset(parseFloat(e.target.value) || 0)}
+                      onChange={(e) =>
+                        setVideoOffset(parseFloat(e.target.value) || 0)
+                      }
                       className='w-32'
                       placeholder='0'
                     />
