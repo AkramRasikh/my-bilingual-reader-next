@@ -33,6 +33,7 @@ export default function NetflixPage() {
   >([]);
   const [currentPlayingId, setCurrentPlayingId] = useState<string | null>(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [videoOffset, setVideoOffset] = useState<number>(0);
 
   const parseTextContent = (text: string) => {
     // Split by newlines to get individual lines
@@ -74,7 +75,7 @@ export default function NetflixPage() {
       const totalSeconds = hours * 3600 + minutes * 60 + seconds;
 
       // Column 1 is targetLang (Japanese), Column 2 is baseLang (English)
-      // Trim and remove all extra whitespace from Japanese text
+      // Remove all whitespace from Japanese text
       const targetLang = (columns[1] || '').replace(/\s+/g, '');
       const baseLang = columns[2] || '';
 
@@ -153,7 +154,8 @@ export default function NetflixPage() {
   };
   const playFromHere = (time: number) => {
     if (videoRef.current) {
-      videoRef.current.currentTime = time;
+      // Apply offset: video time = transcript time + offset
+      videoRef.current.currentTime = time + videoOffset;
       videoRef.current.play();
       setIsVideoPlaying(true);
 
@@ -182,9 +184,10 @@ export default function NetflixPage() {
 
   const handleTimeUpdate = () => {
     if (videoRef.current && formattedData.length > 0) {
-      const currentTime = videoRef.current.currentTime;
+      // Subtract offset from video time to match transcript time
+      const currentTime = videoRef.current.currentTime - videoOffset;
       
-      // Find the current transcript item based on video time
+      // Find the current transcript item based on adjusted video time
       // Find the last item whose time is <= currentTime
       let currentItem = formattedData[0];
       for (let i = 0; i < formattedData.length; i++) {
@@ -244,27 +247,49 @@ export default function NetflixPage() {
               )}
 
               {videoFile && videoMetadata && (
-                <div className='mt-6 space-y-2 bg-muted p-4 rounded-md'>
-                  <h3 className='font-semibold text-sm mb-2'>
-                    Video Metadata:
-                  </h3>
-                  <div className='text-sm space-y-1'>
-                    <p className='text-muted-foreground'>
-                      <span className='font-medium text-foreground'>
-                        File Name:
-                      </span>{' '}
-                      {videoFile.name}
+                <div className='mt-6 space-y-4'>
+                  <div className='bg-muted p-4 rounded-md'>
+                    <h3 className='font-semibold text-sm mb-2'>
+                      Video Metadata:
+                    </h3>
+                    <div className='text-sm space-y-1'>
+                      <p className='text-muted-foreground'>
+                        <span className='font-medium text-foreground'>
+                          File Name:
+                        </span>{' '}
+                        {videoFile.name}
+                      </p>
+                      <p className='text-muted-foreground'>
+                        <span className='font-medium text-foreground'>
+                          Duration:
+                        </span>{' '}
+                        {formatDuration(videoMetadata.duration)}
+                      </p>
+                      <p className='text-muted-foreground'>
+                        <span className='font-medium text-foreground'>
+                          Size:
+                        </span>{' '}
+                        {videoMetadata.sizeInMB} MB
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className='bg-muted p-4 rounded-md'>
+                    <Label htmlFor='video-offset' className='font-semibold text-sm mb-2 block'>
+                      Video Offset (seconds)
+                    </Label>
+                    <p className='text-xs text-muted-foreground mb-2'>
+                      Adjust if video and subtitles are out of sync. Positive values start video later.
                     </p>
-                    <p className='text-muted-foreground'>
-                      <span className='font-medium text-foreground'>
-                        Duration:
-                      </span>{' '}
-                      {formatDuration(videoMetadata.duration)}
-                    </p>
-                    <p className='text-muted-foreground'>
-                      <span className='font-medium text-foreground'>Size:</span>{' '}
-                      {videoMetadata.sizeInMB} MB
-                    </p>
+                    <Input
+                      id='video-offset'
+                      type='number'
+                      step='0.1'
+                      value={videoOffset}
+                      onChange={(e) => setVideoOffset(parseFloat(e.target.value) || 0)}
+                      className='w-32'
+                      placeholder='0'
+                    />
                   </div>
                 </div>
               )}
