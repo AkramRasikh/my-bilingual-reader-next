@@ -17,6 +17,7 @@ const SentenceBreakdownTargetLang = ({
 
   return (
     <ul
+      data-testid='sentence-breakdown-target-lang'
       className={clsx('flex flex-wrap', isArabic ? 'text-right' : '')}
       dir={isArabic ? 'rtl' : 'ltr'}
     >

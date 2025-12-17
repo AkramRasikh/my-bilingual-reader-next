@@ -22,7 +22,7 @@ const SentenceBreakdown = ({
   };
 
   return (
-    <div>
+    <div data-testid='sentence-breakdown-container'>
       <SentenceBreakdownTargetLang
         vocab={vocab}
         thisSentencesSavedWords={thisSentencesSavedWords}
@@ -37,7 +37,7 @@ const SentenceBreakdown = ({
         hoveredXStates={hoveredXStates}
       />
       <hr className='m-1' />
-      <p>{meaning}</p>
+      <p data-testid='sentence-breakdown-meaning'>{meaning}</p>
     </div>
   );
 };

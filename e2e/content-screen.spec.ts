@@ -820,7 +820,7 @@ test('save word from transcript item', async ({ page }) => {
   await expect(hoverWordInfo).not.toBeVisible();
 });
 
-test('transcript item sentence breakdown', async ({ page }) => {
+test.only('transcript item sentence breakdown', async ({ page }) => {
   await page.goto('/');
 
   // Wait for page to be loaded
@@ -839,24 +839,29 @@ test('transcript item sentence breakdown', async ({ page }) => {
   // Use specific content ID for reliable targeting
   const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
 
+  // Scope to transcript tab to avoid confusion with TranscriptItemSecondary
+  const transcriptTab = page.locator('[role="tabpanel"][data-state="active"]');
+
   // Open the menu
-  const menuToggle = page.getByTestId(`transcript-menu-toggle-${contentId}`);
+  const menuToggle = transcriptTab.getByTestId(`transcript-menu-toggle-${contentId}`);
   await expect(menuToggle).toBeVisible();
   await menuToggle.click();
 
   // Verify menu is open
-  const menuOptions = page.getByTestId(`transcript-menu-options-${contentId}`);
+  const menuOptions = transcriptTab.getByTestId(
+    `transcript-menu-options-${contentId}`,
+  );
   // await expect(menuOptions).toBeVisible();
 
   // Click the breakdown sentence button (hammer icon)
-  const breakdownButton = page.getByTestId(
+  const breakdownButton = transcriptTab.getByTestId(
     `transcript-breakdown-button-${contentId}`,
   );
   // await expect(breakdownButton).toBeVisible();
   await breakdownButton.click();
 
   // Verify loading hammer icon appears
-  const loadingHammer = page.getByTestId(
+  const loadingHammer = transcriptTab.getByTestId(
     `transcript-breakdown-loading-${contentId}`,
   );
   await expect(loadingHammer).toBeVisible();
@@ -872,7 +877,7 @@ test('transcript item sentence breakdown', async ({ page }) => {
   await expect(menuOptions).not.toBeVisible();
 
   // Verify brick emoji appears indicating sentence is broken down
-  const brickEmoji = page.getByTestId(
+  const brickEmoji = transcriptTab.getByTestId(
     `transcript-breakdown-complete-${contentId}`,
   );
   await expect(brickEmoji).toBeVisible();
@@ -880,6 +885,70 @@ test('transcript item sentence breakdown', async ({ page }) => {
 
   // Verify breakdown button is no longer visible
   await expect(breakdownButton).not.toBeVisible();
+
+  // Now click the brick emoji to open the breakdown view
+  await brickEmoji.click();
+
+  // Wait for the breakdown view to render
+  await page.waitForTimeout(500);
+
+  // Verify SentenceBreakdown component is visible within transcript tab
+  const sentenceBreakdownContainer = transcriptTab.getByTestId(
+    'sentence-breakdown-container',
+  );
+  await expect(sentenceBreakdownContainer).toBeVisible();
+
+  // Verify the standard target language text is NOT visible (replaced by breakdown)
+  const transcriptTargetLang = transcriptTab.getByTestId(
+    `transcript-target-lang-${contentId}`,
+  );
+  await expect(transcriptTargetLang).not.toBeVisible();
+
+  // Verify SentenceBreakdownTargetLang shows vocab with spaces: "ゆる 言語学 ラジオ"
+  const sentenceBreakdownTargetLang = transcriptTab.getByTestId(
+    'sentence-breakdown-target-lang',
+  );
+  await expect(sentenceBreakdownTargetLang).toBeVisible();
+  const targetLangText = await sentenceBreakdownTargetLang.textContent();
+  // Should have vocab words: ゆる, 言語学, ラジオ (with spaces between)
+  expect(targetLangText).toContain('ゆる');
+  expect(targetLangText).toContain('言語学');
+  expect(targetLangText).toContain('ラジオ');
+
+  // Verify SentenceBreakdownSyntacticStructure shows meanings joined
+  const sentenceBreakdownStructure = transcriptTab.getByTestId(
+    'sentence-breakdown-structure',
+  );
+  await expect(sentenceBreakdownStructure).toBeVisible();
+  const structureText = await sentenceBreakdownStructure.textContent();
+  expect(structureText).toContain('loose or relaxed');
+  expect(structureText).toContain('linguistics');
+  expect(structureText).toContain('radio');
+
+  // Verify the bottom meaning shows "Loose Linguistics Radio"
+  const sentenceBreakdownMeaning = transcriptTab.getByTestId(
+    'sentence-breakdown-meaning',
+  );
+  await expect(sentenceBreakdownMeaning).toBeVisible();
+  await expect(sentenceBreakdownMeaning).toContainText(
+    'Loose Linguistics Radio',
+  );
+
+  // Verify the close icon ❌ is now showing instead of brick
+  await expect(brickEmoji).toContainText('❌');
+
+  // Click the close icon to close the breakdown view
+  await brickEmoji.click();
+  await page.waitForTimeout(500);
+
+  // Verify breakdown container is no longer visible
+  await expect(sentenceBreakdownContainer).not.toBeVisible();
+
+  // Verify standard target language text is visible again
+  await expect(transcriptTargetLang).toBeVisible();
+
+  // Verify brick emoji is showing again (not close icon)
+  await expect(brickEmoji).toContainText('🧱');
 });
 
 test('transcript item sentence breakdown error handling', async ({ page }) => {
@@ -915,24 +984,31 @@ test('transcript item sentence breakdown error handling', async ({ page }) => {
   // Use specific content ID for reliable targeting
   const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
 
-  // Open the menu
-  const menuToggle = page.getByTestId(`transcript-menu-toggle-${contentId}`);
+  // Scope to transcript tab to avoid confusion with TranscriptItemSecondary
+  const transcriptTab = page.locator('[role="tabpanel"][data-state="active"]');
+
+  // Open the menu within the transcript tab
+  const menuToggle = transcriptTab.getByTestId(
+    `transcript-menu-toggle-${contentId}`,
+  );
   await expect(menuToggle).toBeVisible();
   await menuToggle.click();
 
   // Verify menu is open
-  const menuOptions = page.getByTestId(`transcript-menu-options-${contentId}`);
+  const menuOptions = transcriptTab.getByTestId(
+    `transcript-menu-options-${contentId}`,
+  );
   // await expect(menuOptions).toBeVisible();
 
   // Click the breakdown sentence button (hammer icon)
-  const breakdownButton = page.getByTestId(
+  const breakdownButton = transcriptTab.getByTestId(
     `transcript-breakdown-button-${contentId}`,
   );
   await expect(breakdownButton).toBeVisible();
   await breakdownButton.click();
 
   // Verify loading hammer icon appears
-  const loadingHammer = page.getByTestId(
+  const loadingHammer = transcriptTab.getByTestId(
     `transcript-breakdown-loading-${contentId}`,
   );
   await expect(loadingHammer).toBeVisible();
@@ -951,7 +1027,7 @@ test('transcript item sentence breakdown error handling', async ({ page }) => {
   await expect(breakdownButton).toBeVisible();
 
   // Verify brick emoji does NOT appear (since breakdown failed)
-  const brickEmoji = page.getByTestId(
+  const brickEmoji = transcriptTab.getByTestId(
     `transcript-breakdown-complete-${contentId}`,
   );
   await expect(brickEmoji).not.toBeVisible();
