@@ -1,11 +1,21 @@
-import { uploadAudioCloudflare } from '@/app/shared-apis/upload-audio-cloudflare';
+import {
+  uploadAudioCloudflare,
+  uploadVideoCloudflare,
+} from '@/app/shared-apis/upload-audio-cloudflare';
 import { addContentLogic } from './uploadContentToFirebase';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req) {
   try {
-    const { url, title, language, publicAudioUrl, transcript } =
-      await req.json();
+    const {
+      url,
+      title,
+      language,
+      publicAudioUrl,
+      transcript,
+      origin,
+      uploadVideo,
+    } = await req.json();
 
     let contentUploaded = false;
     let audioUploaded = false;
@@ -28,13 +38,20 @@ export async function POST(req) {
       language,
     });
 
+    if (uploadVideo) {
+      await uploadVideoCloudflare({
+        localAudioPath: 'http://localhost:3000' + publicAudioUrl,
+        cloudFlareAudioName: title,
+        language,
+      });
+    }
+
     const id = uuidv4();
 
     const newContentData = {
       id,
       title,
-      hasAudio: audioUploaded,
-      origin: 'youtube',
+      origin: origin ?? 'youtube',
       content: transcript,
       url,
       createdAt: new Date().toISOString(),

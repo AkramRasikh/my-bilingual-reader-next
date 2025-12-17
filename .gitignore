@@ -34,6 +34,7 @@
 /public/audio/koten-radio-*
 /public/audio/thomas-piketty-*
 /public/youtube*
+/public/netflix*
 
 # debug
 npm-debug.log*

@@ -4,13 +4,14 @@ import { useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { v4 as uuidv4 } from 'uuid';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Download } from 'lucide-react';
 import NetflixTranscriptItem from './NetflixTranscriptItem';
 
 export default function NetflixPage() {
@@ -34,6 +35,16 @@ export default function NetflixPage() {
   const [currentPlayingId, setCurrentPlayingId] = useState<string | null>(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [videoOffset, setVideoOffset] = useState<number>(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [convertedFiles, setConvertedFiles] = useState<{
+    mp4?: { fileName: string; filePath: string };
+    mp3?: { fileName: string; filePath: string };
+  }>({});
+  const [videoTitle, setVideoTitle] = useState<string>('');
+  const [netflixUrl, setNetflixUrl] = useState<string>('');
+  const [language, setLanguage] = useState<string>('japanese');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   const parseTextContent = (text: string) => {
     // Split by newlines to get individual lines
@@ -202,9 +213,136 @@ export default function NetflixPage() {
     }
   };
 
+  const handleConvertVideo = async (format: 'mp3' | 'mp4') => {
+    if (!videoFile) return;
+
+    setIsProcessing(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', videoFile);
+      formData.append('offset', videoOffset.toString());
+      formData.append('format', format);
+      formData.append('title', videoTitle);
+
+      const response = await fetch('/api/processVideo', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to process video');
+      }
+
+      const result = await response.json();
+      
+      // Update converted files state
+      setConvertedFiles(prev => ({
+        ...prev,
+        [format]: {
+          fileName: result.fileName,
+          filePath: result.filePath,
+        },
+      }));
+    } catch (error) {
+      console.error('Error processing video:', error);
+      alert('Failed to process video. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleUploadToCloudflareAndFirebase = async () => {
+    if (!videoTitle || !netflixUrl || !convertedFiles.mp3 || formattedData.length === 0) {
+      alert('Please ensure title, URL, MP3 file, and transcript are available');
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const response = await fetch('/api/uploadYoutubeContent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: netflixUrl,
+          title: videoTitle,
+          language,
+          publicAudioUrl: convertedFiles.mp3.filePath,
+          transcript: formattedData,
+          origin: 'netflix',
+          uploadVideo: !!convertedFiles.mp4,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload content');
+      }
+
+      const result = await response.json();
+      console.log('Upload result:', result);
+      
+      if (result.contentUploaded && result.audioUploaded) {
+        setUploadSuccess(true);
+        alert('Content successfully uploaded to Cloudflare and Firebase!');
+      } else {
+        alert('Upload partially completed. Check console for details.');
+      }
+    } catch (error) {
+      console.error('Error uploading content:', error);
+      alert('Failed to upload content. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <div className='min-h-screen p-8'>
       <h1 className='text-3xl font-bold mb-8'>Netflix Upload</h1>
+
+      {/* Video Info Form */}
+      <Card className='mb-8'>
+        <CardHeader>
+          <CardTitle>Video Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div>
+              <Label htmlFor='video-title'>Title</Label>
+              <Input
+                id='video-title'
+                type='text'
+                placeholder='Enter video title'
+                value={videoTitle}
+                onChange={(e) => setVideoTitle(e.target.value)}
+                className='mt-2'
+              />
+            </div>
+            <div>
+              <Label htmlFor='netflix-url'>Netflix URL</Label>
+              <Input
+                id='netflix-url'
+                type='url'
+                placeholder='https://www.netflix.com/...'
+                value={netflixUrl}
+                onChange={(e) => setNetflixUrl(e.target.value)}
+                className='mt-2'
+              />
+            </div>
+            <div>
+              <Label htmlFor='language'>Language</Label>
+              <Input
+                id='language'
+                type='text'
+                placeholder='japanese'
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className='mt-2'
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
         {/* Left Side - Video Upload */}
@@ -297,6 +435,93 @@ export default function NetflixPage() {
                       placeholder='0'
                     />
                   </div>
+
+                  <div className='bg-muted p-4 rounded-md'>
+                    <h3 className='font-semibold text-sm mb-2'>
+                      Export with Offset
+                    </h3>
+                    <p className='text-xs text-muted-foreground mb-3'>
+                      Export trimmed video/audio starting from the offset time
+                    </p>
+                    <div className='flex gap-2'>
+                      <Button
+                        onClick={() => handleConvertVideo('mp4')}
+                        disabled={isProcessing || !!convertedFiles.mp4}
+                        size='sm'
+                        variant='outline'
+                      >
+                        <Download className='h-4 w-4 mr-2' />
+                        {isProcessing ? 'Processing...' : convertedFiles.mp4 ? 'MP4 Created' : 'Convert to MP4'}
+                      </Button>
+                      <Button
+                        onClick={() => handleConvertVideo('mp3')}
+                        disabled={isProcessing || !!convertedFiles.mp3}
+                        size='sm'
+                        variant='outline'
+                      >
+                        <Download className='h-4 w-4 mr-2' />
+                        {isProcessing ? 'Processing...' : convertedFiles.mp3 ? 'MP3 Created' : 'Convert to MP3'}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {(convertedFiles.mp4 || convertedFiles.mp3) && (
+                    <div className='bg-muted p-4 rounded-md'>
+                      <h3 className='font-semibold text-sm mb-2'>
+                        Converted Files
+                      </h3>
+                      <div className='space-y-2 text-sm'>
+                        {convertedFiles.mp4 && (
+                          <div className='flex items-center justify-between'>
+                            <span className='text-muted-foreground'>
+                              Video: {convertedFiles.mp4.fileName}
+                            </span>
+                            <a
+                              href={convertedFiles.mp4.filePath}
+                              download
+                              className='text-primary hover:underline'
+                            >
+                              Download
+                            </a>
+                          </div>
+                        )}
+                        {convertedFiles.mp3 && (
+                          <div className='flex items-center justify-between'>
+                            <span className='text-muted-foreground'>
+                              Audio: {convertedFiles.mp3.fileName}
+                            </span>
+                            <a
+                              href={convertedFiles.mp3.filePath}
+                              download
+                              className='text-primary hover:underline'
+                            >
+                              Download
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {convertedFiles.mp3 && formattedData.length > 0 && videoTitle && netflixUrl && (
+                    <div className='bg-muted p-4 rounded-md'>
+                      <h3 className='font-semibold text-sm mb-2'>
+                        Upload to Cloudflare & Firebase
+                      </h3>
+                      <p className='text-xs text-muted-foreground mb-3'>
+                        Upload audio, video (if available), and transcript data
+                      </p>
+                      <Button
+                        onClick={handleUploadToCloudflareAndFirebase}
+                        disabled={isUploading || uploadSuccess}
+                        size='sm'
+                        variant='default'
+                        className='w-full'
+                      >
+                        {isUploading ? 'Uploading...' : uploadSuccess ? 'Successfully Uploaded!' : 'Upload Content'}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
