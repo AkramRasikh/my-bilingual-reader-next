@@ -1,11 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { ChevronDown } from 'lucide-react';
+import NetflixTranscriptItem from './NetflixTranscriptItem';
 
 export default function NetflixPage() {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoMetadata, setVideoMetadata] = useState<{
@@ -14,6 +23,72 @@ export default function NetflixPage() {
   } | null>(null);
   const [textFile, setTextFile] = useState<File | null>(null);
   const [textContent, setTextContent] = useState<string>('');
+  const [formattedData, setFormattedData] = useState<
+    Array<{
+      id: string;
+      targetLang: string;
+      baseLang: string;
+      time: number;
+    }>
+  >([]);
+  const [currentPlayingId, setCurrentPlayingId] = useState<string | null>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
+  const parseTextContent = (text: string) => {
+    // Split by newlines to get individual lines
+    const lines = text.trim().split('\n');
+
+    console.log('## total lines', lines.length);
+
+    const parsed = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+
+      // Skip empty lines or header line
+      if (!line || line.startsWith('Time')) continue;
+
+      console.log('## processing line', i, line);
+
+      // Split by tabs to get columns: Time, Subtitle, Translation
+      const columns = line
+        .split('\t')
+        .map((col) => col.trim())
+        .filter((col) => col);
+
+      if (columns.length < 3) {
+        console.log('## skipping line - not enough columns', columns.length);
+        continue;
+      }
+
+      // Parse timestamp (format: HH:MM:SS)
+      const timeMatch = columns[0].match(/(\d{2}):(\d{2}):(\d{2})/);
+      if (!timeMatch) {
+        console.log('## skipping line - no time match', columns[0]);
+        continue;
+      }
+
+      const hours = parseInt(timeMatch[1]);
+      const minutes = parseInt(timeMatch[2]);
+      const seconds = parseInt(timeMatch[3]);
+      const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+
+      // Column 1 is targetLang (Japanese), Column 2 is baseLang (English)
+      // Trim and remove all extra whitespace from Japanese text
+      const targetLang = (columns[1] || '').replace(/\s+/g, '');
+      const baseLang = columns[2] || '';
+
+      parsed.push({
+        id: uuidv4(),
+        targetLang,
+        baseLang,
+        time: parseFloat(totalSeconds.toFixed(3)),
+      });
+    }
+
+    console.log('## parsed count', parsed.length);
+    return parsed;
+  };
 
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -54,8 +129,18 @@ export default function NetflixPage() {
     // Read the text file contents
     const reader = new FileReader();
     reader.onload = (e) => {
+      // console.log('## e.target', e.target);
+
       const text = e.target?.result as string;
+      // console.log('## text', text);
+
       setTextContent(text);
+
+      // Parse and format the data
+      const formatted = parseTextContent(text);
+      console.log('## formatted', formatted);
+
+      setFormattedData(formatted);
     };
     reader.readAsText(file);
     setTextFile(file);
@@ -65,6 +150,34 @@ export default function NetflixPage() {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+  const playFromHere = (time: number) => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = time;
+      videoRef.current.play();
+      setIsVideoPlaying(true);
+
+      // Find the item with this time and set it as currently playing
+      const item = formattedData.find((d) => d.time === time);
+      if (item) {
+        setCurrentPlayingId(item.id);
+      }
+    }
+  };
+
+  const handlePause = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      setIsVideoPlaying(false);
+    }
+  };
+
+  const handleVideoPlay = () => {
+    setIsVideoPlaying(true);
+  };
+
+  const handleVideoPause = () => {
+    setIsVideoPlaying(false);
   };
 
   return (
@@ -93,10 +206,13 @@ export default function NetflixPage() {
               {videoUrl && (
                 <div className='mt-4'>
                   <video
+                    ref={videoRef}
                     src={videoUrl}
                     controls
                     preload='metadata'
                     className='w-full rounded-md border'
+                    onPlay={handleVideoPlay}
+                    onPause={handleVideoPause}
                   >
                     <source
                       src={videoUrl}
@@ -182,13 +298,37 @@ export default function NetflixPage() {
                   </div>
 
                   {textContent && (
-                    <div className='bg-muted p-4 rounded-md'>
+                    <Collapsible>
+                      <CollapsibleTrigger className='flex items-center gap-2 w-full bg-muted p-4 rounded-md hover:bg-muted/80'>
+                        <ChevronDown className='h-4 w-4' />
+                        <h3 className='font-semibold text-sm'>File Contents</h3>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className='bg-muted p-4 rounded-md mt-2'>
+                        <pre className='text-xs text-muted-foreground whitespace-pre-wrap max-h-96 overflow-y-auto'>
+                          {textContent}
+                        </pre>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
+
+                  {formattedData.length > 0 && (
+                    <div className='space-y-2'>
                       <h3 className='font-semibold text-sm mb-2'>
-                        File Contents:
+                        Transcript ({formattedData.length} entries):
                       </h3>
-                      <pre className='text-xs text-muted-foreground whitespace-pre-wrap max-h-96 overflow-y-auto'>
-                        {textContent}
-                      </pre>
+                      <div className='flex flex-col space-y-2 max-h-96 overflow-y-auto pr-2'>
+                        {formattedData.map((item, index) => (
+                          <NetflixTranscriptItem
+                            key={item.id}
+                            item={item}
+                            index={index}
+                            thisIsPlaying={currentPlayingId === item.id}
+                            isVideoPlaying={isVideoPlaying}
+                            handlePause={handlePause}
+                            playFromHere={playFromHere}
+                          />
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
