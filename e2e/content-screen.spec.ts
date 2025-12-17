@@ -1310,4 +1310,39 @@ test('checkpoint button scrolls to last reviewed sentence', async ({
     },
   );
   expect(firstContainerNotVisibleAgain).toBe(false);
+
+  // Click current button to scroll back to currently playing item
+  const currentButton = page.getByTestId('current-button');
+  await expect(currentButton).toBeVisible();
+  await currentButton.click();
+  await page.waitForTimeout(1000);
+
+  // Verify first transcript container is visible in viewport
+  const firstContainerVisibleFinal = await firstTranscriptContainer.evaluate(
+    (el) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
+    },
+  );
+  expect(firstContainerVisibleFinal).toBe(true);
+
+  // Verify checkpoint is NOT visible in viewport
+  const checkpointNotVisibleFinal = await checkpointElement.evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <=
+        (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  });
+  expect(checkpointNotVisibleFinal).toBe(false);
 });
