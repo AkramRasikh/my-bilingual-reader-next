@@ -1152,7 +1152,7 @@ test('transcript item sentence breakdown error handling', async ({ page }) => {
   await expect(brickEmoji).not.toBeVisible();
 });
 
-test.only('checkpoint button scrolls to last reviewed sentence', async ({
+test('checkpoint button scrolls to last reviewed sentence', async ({
   page,
 }) => {
   await page.goto('/');
@@ -1213,4 +1213,68 @@ test.only('checkpoint button scrolls to last reviewed sentence', async ({
     );
   });
   expect(checkpointVisible).toBe(true);
+
+  // Scroll to the top of the page manually
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(1000);
+
+  // Define the first transcript container element
+  const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+  const firstTranscriptContainer = page.getByTestId(
+    `transcript-target-lang-${firstContentId}`,
+  );
+
+  // Verify first transcript container is NOT visible before clicking play
+  const firstContainerNotVisibleBeforePlay =
+    await firstTranscriptContainer.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
+    });
+  expect(firstContainerNotVisibleBeforePlay).toBe(false);
+
+  // Click play on the first transcript item
+  const playButton = page.getByTestId(
+    `transcript-play-button-${firstContentId}`,
+  );
+  await expect(playButton).toBeVisible();
+  await playButton.click();
+
+  // Wait for play action to register
+  await page.waitForTimeout(1000);
+
+  // Verify first transcript container is visible in viewport
+  const firstContainerVisible = await firstTranscriptContainer.evaluate(
+    (el) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
+    },
+  );
+  expect(firstContainerVisible).toBe(true);
+
+  // Verify checkpoint text is NOT visible in viewport
+  const checkpointNotVisibleNow = await checkpointElement.evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <=
+        (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  });
+  expect(checkpointNotVisibleNow).toBe(false);
 });
