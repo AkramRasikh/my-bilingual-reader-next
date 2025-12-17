@@ -104,7 +104,6 @@ export const LearningScreenProvider = ({
   }, [content]);
 
   const {
-    latestDueIdMemoized,
     firstDueIndexMemoized,
     formattedTranscriptMemoized,
     sentenceMapMemoized,
@@ -112,7 +111,6 @@ export const LearningScreenProvider = ({
     if (!content) {
       return {
         firstDueIndexMemoized: 0,
-        latestDueIdMemoized: { id: '', triggerScroll: false },
         formattedTranscriptMemoized: [],
         sentenceMapMemoized: {},
       };
@@ -183,14 +181,8 @@ export const LearningScreenProvider = ({
     }
 
     // Step 4: Capture latest due info
-    const latestDueIdMemoized = {
-      id: latestIsDueEl || '',
-      index: latestIsDueElIndex,
-      triggerScroll: false,
-    };
 
     return {
-      latestDueIdMemoized,
       firstDueIndexMemoized,
       formattedTranscriptMemoized,
       sentenceMapMemoized,
@@ -1335,7 +1327,6 @@ export const LearningScreenProvider = ({
         handleReviewFunc,
         handleBreakdownSentence,
         isBreakingDownSentenceArrState,
-        firstDueIndexMemoized,
         handleStudyFromHere,
         setStudyFromHereTimeState,
         studyFromHereTimeState,
