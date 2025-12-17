@@ -323,6 +323,380 @@ test('transcript item sentence breakdown error handling', async ({ page }) => {
   await expect(brickEmoji).not.toBeVisible();
 });
 
+test('save word from transcript item - error handling', async ({ page }) => {
+  // Setup API mocking for saveWord with error response
+  await page.route('**/api/saveWord', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        error: 'Internal server error',
+      }),
+    });
+  });
+
+  await page.goto('/');
+
+  // Wait for page to be loaded
+  await page.waitForLoadState('networkidle');
+
+  // Navigate to content screen
+  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+  await contentButton.click();
+
+  // Wait for navigation to complete
+  await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+  // Wait for the content to load
+  await page.waitForLoadState('networkidle');
+
+  // Use specific content ID for reliable targeting
+  const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+
+  // Verify initial Words count
+  const wordsTabTrigger = page.getByTestId('words-tab-trigger');
+  await expect(wordsTabTrigger).toBeVisible();
+  await expect(wordsTabTrigger).toContainText('Words 55/84');
+
+  // Find the transcript item
+  const transcriptTargetLang = page.getByTestId(
+    `transcript-target-lang-${contentId}`,
+  );
+  await expect(transcriptTargetLang).toBeVisible();
+
+  // Get the text content to verify it contains "言語学"
+  const transcriptText = await transcriptTargetLang.textContent();
+  expect(transcriptText).toContain('言語学');
+
+  // Select/highlight the text "言語学" using page.evaluate
+  const selectionSuccess = await page.evaluate((id) => {
+    const container = document.querySelector(
+      `[data-testid="transcript-target-lang-${id}"]`,
+    );
+    if (!container) {
+      return false;
+    }
+
+    const spans = Array.from(container.querySelectorAll('span'));
+    const targetChars = ['言', '語', '学'];
+
+    let startSpan = null;
+    let endSpan = null;
+
+    for (let i = 0; i < spans.length - 2; i++) {
+      if (
+        spans[i].textContent === targetChars[0] &&
+        spans[i + 1].textContent === targetChars[1] &&
+        spans[i + 2].textContent === targetChars[2]
+      ) {
+        startSpan = spans[i];
+        endSpan = spans[i + 2];
+        break;
+      }
+    }
+
+    if (!startSpan || !endSpan) {
+      return false;
+    }
+
+    const range = document.createRange();
+    const startTextNode = startSpan.firstChild || startSpan;
+    const endTextNode = endSpan.firstChild || endSpan;
+
+    range.setStart(startTextNode, 0);
+    range.setEnd(endTextNode, endTextNode.textContent?.length || 1);
+
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+
+    const mouseUpEvent = new MouseEvent('mouseup', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    });
+    document.dispatchEvent(mouseUpEvent);
+
+    return true;
+  }, contentId);
+
+  expect(selectionSuccess).toBe(true);
+
+  // Wait for the state to update
+  await page.waitForTimeout(1000);
+
+  // Verify that HighlightedText component is rendered
+  const openaiButton = page.getByTestId('save-word-openai-button');
+  await expect(openaiButton).toBeVisible();
+
+  // Click the OpenAI save button
+  await openaiButton.click();
+
+  // Verify loading spinner appears
+  const loadingSpinner = page.getByTestId(
+    `transcript-action-loading-${contentId}`,
+  );
+  await expect(loadingSpinner).toBeVisible();
+
+  // Verify error toast message appears
+  const errorToastMessage = page.getByText('Failed to save word 🫤❌');
+  await expect(errorToastMessage).toBeVisible({ timeout: 3000 });
+
+  // Verify loading spinner disappears after error
+  await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+  // Verify highlighted text is cleared (buttons should disappear)
+  await expect(openaiButton).not.toBeVisible();
+
+  // Verify Words count remained at 55/84 (no change due to error)
+  await expect(wordsTabTrigger).toContainText('Words 55/84');
+
+  // Verify the word is NOT underlined (since save failed)
+  const underlinedWord = transcriptTargetLang
+    .locator('span')
+    .filter({ hasText: '語' })
+    .first();
+
+  // Move mouse to the word location
+  const boundingBox = await underlinedWord.boundingBox();
+  if (boundingBox) {
+    await page.mouse.move(
+      boundingBox.x + boundingBox.width / 2,
+      boundingBox.y + boundingBox.height / 2,
+    );
+  }
+  await page.waitForTimeout(1000);
+
+  // Verify hover card does NOT appear (word was not saved)
+  const hoverWordInfo = page.getByTestId('hover-word-info');
+  await expect(hoverWordInfo).not.toBeVisible();
+});
+
+test.only('delete word from transcript item - error handling', async ({
+  page,
+}) => {
+  // Setup API mocking for saveWord (success)
+  await page.route('**/api/saveWord', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        word: {
+          id: '83b75769-a67d-4f8a-9baa-9716bdd78219',
+          contexts: ['f378ec1d-c885-4e6a-9821-405b0ff9aa24'],
+          surfaceForm: '言語学',
+          definition: 'linguistics',
+          transliteration: 'gengogaku',
+          baseForm: '言語学',
+          phonetic: 'げんごがく',
+          notes:
+            '言語学 (gengogaku) specifically refers to the scientific study of language, encompassing various aspects such as syntax, semantics, and phonetics. In the context of ゆる言語学ラジオ, it suggests a more relaxed or informal approach to discussing topics related to linguistics.',
+          reviewData: {
+            due: '2025-12-16T20:17:44.113Z',
+            stability: 0.40255,
+            difficulty: 7.1949,
+            elapsed_days: 0,
+            scheduled_days: 0,
+            reps: 1,
+            lapses: 0,
+            state: 1,
+            last_review: '2025-12-16T20:16:44.113Z',
+            ease: 2.5,
+            interval: 0,
+          },
+        },
+      }),
+    });
+  });
+
+  // Setup API mocking for deleteWord (error)
+  await page.route('**/api/deleteWord', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        error: 'Internal server error',
+      }),
+    });
+  });
+
+  await page.goto('/');
+
+  // Wait for page to be loaded
+  await page.waitForLoadState('networkidle');
+
+  // Navigate to content screen
+  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+  await contentButton.click();
+
+  // Wait for navigation to complete
+  await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+  // Wait for the content to load
+  await page.waitForLoadState('networkidle');
+
+  // Use specific content ID for reliable targeting
+  const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+
+  // Verify initial Words count
+  const wordsTabTrigger = page.getByTestId('words-tab-trigger');
+  await expect(wordsTabTrigger).toBeVisible();
+  await expect(wordsTabTrigger).toContainText('Words 55/84');
+
+  // Find the transcript item
+  const transcriptTargetLang = page.getByTestId(
+    `transcript-target-lang-${contentId}`,
+  );
+  await expect(transcriptTargetLang).toBeVisible();
+
+  // Select and save the word "言語学" (same as previous test)
+  const selectionSuccess = await page.evaluate((id) => {
+    const container = document.querySelector(
+      `[data-testid="transcript-target-lang-${id}"]`,
+    );
+    if (!container) {
+      return false;
+    }
+
+    const spans = Array.from(container.querySelectorAll('span'));
+    const targetChars = ['言', '語', '学'];
+
+    let startSpan = null;
+    let endSpan = null;
+
+    for (let i = 0; i < spans.length - 2; i++) {
+      if (
+        spans[i].textContent === targetChars[0] &&
+        spans[i + 1].textContent === targetChars[1] &&
+        spans[i + 2].textContent === targetChars[2]
+      ) {
+        startSpan = spans[i];
+        endSpan = spans[i + 2];
+        break;
+      }
+    }
+
+    if (!startSpan || !endSpan) {
+      return false;
+    }
+
+    const range = document.createRange();
+    const startTextNode = startSpan.firstChild || startSpan;
+    const endTextNode = endSpan.firstChild || endSpan;
+
+    range.setStart(startTextNode, 0);
+    range.setEnd(endTextNode, endTextNode.textContent?.length || 1);
+
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+
+    const mouseUpEvent = new MouseEvent('mouseup', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    });
+    document.dispatchEvent(mouseUpEvent);
+
+    return true;
+  }, contentId);
+
+  expect(selectionSuccess).toBe(true);
+  await page.waitForTimeout(1000);
+
+  // Click save button
+  const openaiButton = page.getByTestId('save-word-openai-button');
+  await expect(openaiButton).toBeVisible();
+  await openaiButton.click();
+
+  // Wait for save to complete
+  const loadingSpinner = page.getByTestId(
+    `transcript-action-loading-${contentId}`,
+  );
+  await expect(loadingSpinner).toBeVisible();
+  const toastMessage = page.getByText('言語学 saved!');
+  await expect(toastMessage).toBeVisible({ timeout: 3000 });
+  await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+  // Verify Words count increased to 55/85
+  await expect(wordsTabTrigger).toContainText('Words 55/85');
+
+  // Now hover over the saved word to open hover card
+  const underlinedWord = transcriptTargetLang
+    .locator('span')
+    .filter({ hasText: '語' })
+    .first();
+  await expect(underlinedWord).toBeVisible();
+
+  const boundingBox = await underlinedWord.boundingBox();
+  if (boundingBox) {
+    await page.mouse.move(
+      boundingBox.x + boundingBox.width / 2,
+      boundingBox.y + boundingBox.height / 2,
+    );
+  }
+
+  await page.waitForTimeout(1000);
+
+  // Verify hover card appears
+  const hoverWordInfo = page.getByTestId('hover-word-info');
+  await expect(hoverWordInfo).toBeVisible();
+
+  // Click Delete button
+  const deleteButton = page.getByTestId('delete-button');
+  await expect(deleteButton).toBeVisible();
+  await deleteButton.click();
+
+  // Click Confirm Delete
+  const confirmDeleteButton = page.getByRole('button', {
+    name: 'Confirm Delete',
+  });
+  await expect(confirmDeleteButton).toBeVisible();
+  await confirmDeleteButton.click();
+
+  // Verify loading spinner appears
+  const clickAndConfirmLoading = page.getByTestId('click-and-confirm-loading');
+  await expect(clickAndConfirmLoading).toBeVisible();
+
+  // Verify error toast message appears
+  const errorToastMessage = page.getByText('Error deleting word ❌');
+  await expect(errorToastMessage).toBeVisible({ timeout: 3000 });
+
+  // Verify loading spinner disappears after error
+  await expect(clickAndConfirmLoading).not.toBeVisible({ timeout: 5000 });
+
+  // Verify Words count remained at 55/85 (no change due to error)
+  await expect(wordsTabTrigger).toContainText('Words 55/85');
+
+  // Verify the word is still underlined (deletion failed)
+  // Move mouse away first to close hover card
+  await page.mouse.move(0, 0);
+  await page.waitForTimeout(500);
+
+  // Move mouse back to the word to verify it's still interactive
+  const boundingBoxAfter = await underlinedWord.boundingBox();
+  if (boundingBoxAfter) {
+    await page.mouse.move(
+      boundingBoxAfter.x + boundingBoxAfter.width / 2,
+      boundingBoxAfter.y + boundingBoxAfter.height / 2,
+    );
+  }
+  await page.waitForTimeout(1000);
+
+  // Verify hover card still appears (word was not deleted)
+  await expect(hoverWordInfo).toBeVisible();
+  await expect(hoverWordInfo).toContainText('言語学, 言語学, linguistics');
+});
+
 test('save word from transcript item', async ({ page }) => {
   // Setup API mocking for saveWord
   await page.route('**/api/saveWord', async (route) => {
