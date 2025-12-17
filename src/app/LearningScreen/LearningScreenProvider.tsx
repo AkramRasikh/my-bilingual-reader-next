@@ -108,14 +108,6 @@ export const LearningScreenProvider = ({
     formattedTranscriptMemoized,
     sentenceMapMemoized,
   } = useMemo(() => {
-    if (!content) {
-      return {
-        firstDueIndexMemoized: 0,
-        formattedTranscriptMemoized: [],
-        sentenceMapMemoized: {},
-      };
-    }
-
     const now = new Date();
     let latestIsDueEl = '';
     let latestIsDueElIndex;
@@ -552,11 +544,6 @@ export const LearningScreenProvider = ({
     if (nextTimeToFollow >= 0) {
       handleFromHere(nextTimeToFollow);
     }
-  };
-
-  const handleScrollToMasterView = () => {
-    setScrollToElState(masterPlay);
-    setTimeout(() => setScrollToElState(''), 300);
   };
 
   const { contentMetaWordMemoized, wordsForSelectedTopicMemoized } =
@@ -1331,7 +1318,6 @@ export const LearningScreenProvider = ({
         setStudyFromHereTimeState,
         studyFromHereTimeState,
         transcriptRef,
-        handleScrollToMasterView,
         scrollToElState,
         thisContentTitle,
         wordsForSelectedTopic: wordsForSelectedTopicMemoized,

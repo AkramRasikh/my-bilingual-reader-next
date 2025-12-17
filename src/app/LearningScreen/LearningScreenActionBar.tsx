@@ -9,13 +9,18 @@ const LearningScreenActionBar = () => {
     handleBulkReviews,
     handleStudyFromHere,
     studyFromHereTimeState,
-    handleScrollToMasterView,
+    masterPlay,
     setStudyFromHereTimeState,
     formattedTranscriptState,
     setScrollToElState,
   } = useLearningScreen();
 
   const isLooping = loopTranscriptState?.length > 0;
+
+  const handleScrollToMasterView = () => {
+    setScrollToElState(masterPlay);
+    setTimeout(() => setScrollToElState(''), 300);
+  };
 
   const scrollToLastLeftOff = () => {
     const lastStudiedEls = formattedTranscriptState.filter(
@@ -25,6 +30,7 @@ const LearningScreenActionBar = () => {
     const lastInArr = lastStudiedEls[lastStudiedEls.length - 1]?.id;
     if (lastInArr) {
       setScrollToElState(lastInArr);
+      setTimeout(() => setScrollToElState(''), 300);
     }
   };
 
