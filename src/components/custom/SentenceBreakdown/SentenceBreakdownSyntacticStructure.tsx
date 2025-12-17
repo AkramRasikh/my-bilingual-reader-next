@@ -2,7 +2,10 @@ import clsx from 'clsx';
 import getColorByIndex from '@/utils/get-color-by-index';
 
 const SentenceBreakdownSyntacticStructure = ({ vocab, hoveredXStates }) => (
-  <ul data-testid='sentence-breakdown-structure' className='flex flex-wrap gap-1'>
+  <ul
+    data-testid='sentence-breakdown-structure'
+    className='flex flex-wrap gap-1'
+  >
     {vocab.map(({ meaning }, index) => {
       const isInHoveredState = hoveredXStates === index;
 

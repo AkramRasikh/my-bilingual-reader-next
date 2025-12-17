@@ -29,7 +29,10 @@ const SentenceBreakdownHover = ({
           {surfaceForm}
         </span>
       </HoverCardTrigger>
-      <HoverCardContent className='w-fit p-2 flex gap-3' data-testid='sentence-breakdown-hover-content'>
+      <HoverCardContent
+        className='w-fit p-2 flex gap-3'
+        data-testid='sentence-breakdown-hover-content'
+      >
         <Button
           data-testid='breakdown-save-word-deepseek-button'
           variant='secondary'
