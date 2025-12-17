@@ -475,9 +475,7 @@ test('save word from transcript item - error handling', async ({ page }) => {
   await expect(hoverWordInfo).not.toBeVisible();
 });
 
-test.only('delete word from transcript item - error handling', async ({
-  page,
-}) => {
+test('delete word from transcript item - error handling', async ({ page }) => {
   // Setup API mocking for saveWord (success)
   await page.route('**/api/saveWord', async (route) => {
     // Wait 1 second to make loading spinner visible
