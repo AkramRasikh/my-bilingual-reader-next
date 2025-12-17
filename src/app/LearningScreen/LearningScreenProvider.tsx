@@ -100,7 +100,8 @@ export const LearningScreenProvider = ({
 
     // Step 1: Create formatted transcript (base processing)
     const formattedTranscript = content.map((item, index) => {
-      if (item?.reviewData?.due) {
+      const hasBeenReviewed = item?.reviewData?.due;
+      if (hasBeenReviewed) {
         sentencesPendingOrDue += 1;
       }
 
@@ -114,7 +115,6 @@ export const LearningScreenProvider = ({
         }
       }
 
-      const hasBeenReviewed = item?.reviewData?.due;
       const isDueNow = new Date(hasBeenReviewed) < now;
       const dueStatus = !hasBeenReviewed ? '' : isDueNow ? 'now' : 'pending';
 
