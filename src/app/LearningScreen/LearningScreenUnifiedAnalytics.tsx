@@ -9,7 +9,8 @@ import clsx from 'clsx';
 const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
   const [isLoadingBulkState, setIsLoadingBulkState] = useState(false);
   const {
-    contentMetaMemoized,
+    sentencesNeedReview,
+    sentencesPendingOrDue,
     contentMetaWordMemoized,
     sentenceRepsState,
     setSentenceRepsState,
@@ -17,8 +18,6 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
     overlappedSentencesViableForReviewMemoized,
     handleAddOverlappedSnippetsToReview,
   } = useLearningScreen();
-  const sentencesNeedReview = contentMetaMemoized.sentencesNeedReview;
-  const numberOfPendingDue = contentMetaMemoized.numberOfPendingDue;
 
   const overlappedSentencesViableForReviewMemoizedKeyArray =
     overlappedSentencesViableForReviewMemoized?.keyArray;
@@ -62,7 +61,7 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
         className='text-xs font-medium m-auto w-fit'
         data-testid='analytics-sentences-count'
       >
-        Sentences: {sentencesNeedReview}/{numberOfPendingDue}
+        Sentences: {sentencesNeedReview}/{sentencesPendingOrDue}
       </p>
       <p className='text-xs font-medium m-auto w-fit'>
         Words Due: {contentMetaWordMemoized.length}

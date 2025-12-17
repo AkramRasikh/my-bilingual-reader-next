@@ -19,7 +19,7 @@ const LearningScreenBreadCrumbHeader = () => {
   const {
     selectedContentState,
     numberOfSentenceDueOnMountState,
-    contentMetaMemoized,
+    sentencesNeedReview,
   } = useLearningScreen();
 
   const {
@@ -36,7 +36,6 @@ const LearningScreenBreadCrumbHeader = () => {
       setShowBasketState(false);
     }
   }, [wordBasketState, showBasketState]);
-  const sentencesNeedReview = contentMetaMemoized.sentencesNeedReview;
 
   const numberOfStudiedSentences =
     numberOfSentenceDueOnMountState - sentencesNeedReview;

@@ -86,38 +86,26 @@ export const LearningScreenProvider = ({
   const contentIndex = selectedContentStateMemoized.contentIndex;
   const contentId = selectedContentStateMemoized.id;
 
-  const contentMetaMemoized = useMemo(() => {
-    const todayDateObj = new Date();
-
-    let sentencesNeedReview = 0;
-    let numberOfPendingDue = 0;
-
-    content.forEach((transcriptEl) => {
-      if (transcriptEl?.reviewData?.due) {
-        numberOfPendingDue += 1;
-      }
-      if (isDueCheck(transcriptEl, todayDateObj)) {
-        sentencesNeedReview += 1;
-      }
-    });
-    return { sentencesNeedReview, numberOfPendingDue };
-  }, [content]);
-
   const {
     firstDueIndexMemoized,
     formattedTranscriptMemoized,
     sentenceMapMemoized,
+    sentencesNeedReview,
+    sentencesPendingOrDue,
   } = useMemo(() => {
     const now = new Date();
-    let latestIsDueEl = '';
-    let latestIsDueElIndex;
     let firstDueIndexMemoized;
+    let sentencesNeedReview = 0;
+    let sentencesPendingOrDue = 0;
 
     // Step 1: Create formatted transcript (base processing)
     const formattedTranscript = content.map((item, index) => {
-      if (item?.reviewData && isDueCheck(item, now)) {
-        latestIsDueEl = item.id;
-        latestIsDueElIndex = index;
+      if (item?.reviewData?.due) {
+        sentencesPendingOrDue += 1;
+      }
+
+      if (isDueCheck(item, now)) {
+        sentencesNeedReview += 1;
         if (!isNumber(firstDueIndexMemoized)) {
           firstDueIndexMemoized = index;
           if (firstDueIndexMemoized > 0) {
@@ -178,6 +166,8 @@ export const LearningScreenProvider = ({
       firstDueIndexMemoized,
       formattedTranscriptMemoized,
       sentenceMapMemoized,
+      sentencesNeedReview,
+      sentencesPendingOrDue,
     };
   }, [pureWordsMemoized, content]);
 
@@ -870,12 +860,10 @@ export const LearningScreenProvider = ({
   };
 
   useEffect(() => {
-    const sentencesNeedReview = contentMetaMemoized.sentencesNeedReview;
-
     if (!isNumber(numberOfSentenceDueOnMountState) && sentencesNeedReview > 0) {
       setNumberOfSentenceDueOnMountState(sentencesNeedReview);
     }
-  }, [contentMetaMemoized, numberOfSentenceDueOnMountState]);
+  }, [sentencesNeedReview, numberOfSentenceDueOnMountState]);
 
   const learnFormattedTranscript = studyFromHereTimeState
     ? formattedTranscriptMemoized.slice(studyFromHereTimeState)
@@ -1327,7 +1315,8 @@ export const LearningScreenProvider = ({
         setElapsed,
         playFromThisContext,
         setSentenceRepsState,
-        contentMetaMemoized,
+        sentencesNeedReview,
+        sentencesPendingOrDue,
         contentMetaWordMemoized,
         numberOfSentenceDueOnMountState,
         errorVideoState,
