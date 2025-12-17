@@ -21,8 +21,6 @@ const WordStudyUITranscriptItem = ({
     <TranscriptItemProvider
       threeSecondLoopState={[]}
       overlappingSnippetDataState={overlappingSnippetDataState}
-      setSentenceHighlightingState={() => {}}
-      sentenceHighlightingState={''}
       contentItem={transcriptItem}
       breakdownSentencesArrState={breakdownSentencesArrState}
       masterPlay={masterPlay}
@@ -41,7 +39,6 @@ const WordStudyUITranscriptItem = ({
       handleBreakdownSentence={() => {}}
       setBreakdownSentencesArrState={setBreakdownSentencesArrState}
       isBreakingDownSentenceArrState={[]}
-      latestDueIdState={false}
       scrollToElState={''}
       wordsForSelectedTopic={[]}
       isWordStudyMode={true}

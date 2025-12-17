@@ -51,7 +51,6 @@ const LearningScreenTabJointTranscriptWords = () => {
     handleFromHere,
     handleBreakdownSentence,
     setBreakdownSentencesArrState,
-    latestDueIdState,
     transcriptRef,
     scrollToElState,
     wordsForSelectedTopic,
@@ -267,7 +266,6 @@ const LearningScreenTabJointTranscriptWords = () => {
               handleBreakdownSentence={handleBreakdownSentence}
               setBreakdownSentencesArrState={setBreakdownSentencesArrState}
               isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
-              latestDueIdState={latestDueIdState}
               scrollToElState={scrollToElState}
               wordsForSelectedTopic={wordsForSelectedTopic}
               languageSelectedState={languageSelectedState}

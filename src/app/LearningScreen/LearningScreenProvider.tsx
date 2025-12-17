@@ -43,18 +43,12 @@ export const LearningScreenProvider = ({
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
   const [showOnVideoTranscriptState, setShowOnVideoTranscriptState] =
     useState(true);
-  const [latestDueIdState, setLatestDueIdState] = useState({
-    id: '',
-    triggerScroll: false,
-  });
   const [numberOfSentenceDueOnMountState, setNumberOfSentenceDueOnMountState] =
     useState<number | null>(null);
 
   const [scrollToElState, setScrollToElState] = useState('');
   const [sentenceRepsState, setSentenceRepsState] = useState(0);
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState(null);
-  // const [selectedContentTitleState, setSelectedContentTitleState] =
-  //   useState('');
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
   );
@@ -216,25 +210,6 @@ export const LearningScreenProvider = ({
     if (ref.current) {
       setCurrentTime(ref.current.currentTime);
     }
-  };
-
-  const getFormattedTranscriptContentData = () => {
-    const now = new Date();
-    let latestIsDueEl = '';
-    let latestIsDueElIndex;
-
-    content.forEach((item, index) => {
-      if (item?.reviewData && isDueCheck(item, now)) {
-        latestIsDueEl = item.id;
-        latestIsDueElIndex = index;
-      }
-    });
-
-    setLatestDueIdState({
-      id: latestIsDueEl,
-      index: latestIsDueElIndex,
-      triggerScroll: false,
-    });
   };
 
   const handleStudyFromHere = () => {
@@ -470,43 +445,6 @@ export const LearningScreenProvider = ({
     });
   };
 
-  const getSelectedTopicsWordsFunc = (content, isDueBool = false) => {
-    const todayDateObj = new Date();
-    const thisTopicsSentenceIds = content.map((i) => i.id);
-
-    const thisTopicsWordsArr = [];
-
-    wordsState.forEach((word) => {
-      const originalContextId = word.contexts[0];
-      const isDue = !word?.reviewData || isDueCheck(word, todayDateObj);
-      if (thisTopicsSentenceIds.includes(originalContextId)) {
-        if (!isDueBool) {
-          const time = content.find(
-            (item) => item.id === word?.contexts?.[0],
-          ).time;
-          thisTopicsWordsArr.push({
-            ...word,
-            time,
-            isDue,
-          });
-          return;
-        }
-        if (isDue) {
-          const time = content.find(
-            (item) => item.id === word?.contexts?.[0],
-          ).time;
-          thisTopicsWordsArr.push({
-            ...word,
-            time,
-            isDue,
-          });
-        }
-      }
-    });
-
-    return thisTopicsWordsArr;
-  };
-
   const handleJumpToFirstElInReviewTranscript = (isSecondIndex) => {
     if (!isNumber(firstDueIndexMemoized) || !sentenceMapMemoized) {
       return;
@@ -526,12 +464,6 @@ export const LearningScreenProvider = ({
       handleFromHere(latestestReviewSentenceTime);
     }
   };
-
-  useEffect(() => {
-    if (content) {
-      getFormattedTranscriptContentData();
-    }
-  }, [pureWordsMemoized, content]);
 
   useEffect(() => {
     if (isInReviewMode) {
@@ -966,15 +898,9 @@ export const LearningScreenProvider = ({
     }
   }, [contentMetaMemoized, numberOfSentenceDueOnMountState]);
 
-  const learnFormattedTranscript =
-    isInReviewMode && latestDueIdState?.id
-      ? formattedTranscriptMemoized.slice(
-          firstDueIndexMemoized,
-          latestDueIdState?.index + 1,
-        )
-      : studyFromHereTimeState
-      ? formattedTranscriptMemoized.slice(studyFromHereTimeState)
-      : formattedTranscriptMemoized;
+  const learnFormattedTranscript = studyFromHereTimeState
+    ? formattedTranscriptMemoized.slice(studyFromHereTimeState)
+    : formattedTranscriptMemoized;
 
   const sentencesForReviewMemoized = useMemo(() => {
     if (!isInReviewMode || wordsForSelectedTopicMemoized?.length === 0) {
@@ -1409,8 +1335,6 @@ export const LearningScreenProvider = ({
         handleReviewFunc,
         handleBreakdownSentence,
         isBreakingDownSentenceArrState,
-        latestDueIdState,
-        setLatestDueIdState,
         firstDueIndexMemoized,
         handleStudyFromHere,
         setStudyFromHereTimeState,
@@ -1458,6 +1382,7 @@ export const LearningScreenProvider = ({
         getSentenceDataOfOverlappingWordsDuringSave,
         overlappedSentencesViableForReviewMemoized,
         handleAddOverlappedSnippetsToReview,
+        setScrollToElState,
       }}
     >
       {children}

@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 const LearningScreenActionBar = () => {
   const {
     isInReviewMode,
-    setLatestDueIdState,
     loopTranscriptState,
     handleBulkReviews,
     handleStudyFromHere,
@@ -13,6 +12,7 @@ const LearningScreenActionBar = () => {
     handleScrollToMasterView,
     setStudyFromHereTimeState,
     formattedTranscriptState,
+    setScrollToElState,
   } = useLearningScreen();
 
   const isLooping = loopTranscriptState?.length > 0;
@@ -24,16 +24,7 @@ const LearningScreenActionBar = () => {
 
     const lastInArr = lastStudiedEls[lastStudiedEls.length - 1]?.id;
     if (lastInArr) {
-      setLatestDueIdState({ id: lastInArr, triggerScroll: true });
-    }
-  };
-  const scrollToLastReviewed = () => {
-    const lastStudiedDueNow = formattedTranscriptState.filter(
-      (el) => el?.dueStatus === 'now',
-    );
-    const lastInArr = lastStudiedDueNow[lastStudiedDueNow.length - 1]?.id;
-    if (lastInArr) {
-      setLatestDueIdState({ id: lastInArr, triggerScroll: true });
+      setScrollToElState(lastInArr);
     }
   };
 
@@ -61,11 +52,6 @@ const LearningScreenActionBar = () => {
         <Button variant={'link'} onClick={handleScrollToMasterView}>
           Current
         </Button>
-        {!isInReviewMode && (
-          <Button variant='link' onClick={scrollToLastReviewed}>
-            Latest due
-          </Button>
-        )}
         {!isInReviewMode && (
           <Button variant='link' onClick={scrollToLastLeftOff}>
             Checkpoint

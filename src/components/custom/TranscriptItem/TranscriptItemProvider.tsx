@@ -25,7 +25,6 @@ export const TranscriptItemProvider = ({
   handleFromHere,
   handleBreakdownSentence,
   isBreakingDownSentenceArrState,
-  latestDueIdState,
   scrollToElState,
   wordsForSelectedTopic,
   isWordStudyMode,
@@ -111,17 +110,15 @@ export const TranscriptItemProvider = ({
 
   useEffect(() => {
     if (
-      (transcriptItemContainerRef.current &&
-        latestDueIdState?.triggerScroll &&
-        latestDueIdState?.id === contentItem.id) ||
-      (transcriptItemContainerRef.current && scrollToElState === contentItem.id)
+      transcriptItemContainerRef.current &&
+      scrollToElState === contentItem.id
     ) {
       transcriptItemContainerRef.current?.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       });
     }
-  }, [transcriptItemContainerRef.current, latestDueIdState, scrollToElState]);
+  }, [transcriptItemContainerRef.current, scrollToElState]);
 
   const thisSnippetOverlapMemoized = useMemo(() => {
     if (!threeSecondLoopState || overlappingSnippetDataState.length === 0) {

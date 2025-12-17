@@ -199,8 +199,6 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
                 key={index}
                 threeSecondLoopState={[]}
                 overlappingSnippetDataState={overlappingSnippetDataState}
-                setSentenceHighlightingState={() => {}}
-                sentenceHighlightingState={''}
                 contentItem={transcriptItem}
                 breakdownSentencesArrState={[]}
                 masterPlay={masterPlay}
@@ -221,7 +219,6 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
                 }
                 setBreakdownSentencesArrState={() => {}}
                 isBreakingDownSentenceArrState={[]}
-                latestDueIdState={false}
                 scrollToElState={''}
                 wordsForSelectedTopic={[]}
                 isWordStudyMode={true}
