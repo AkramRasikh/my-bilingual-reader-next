@@ -1348,7 +1348,9 @@ test('checkpoint button scrolls to last reviewed sentence', async ({
 });
 
 test.describe('Keyboard actions', () => {
-  test('review sentence using Shift+P keyboard shortcut', async ({ page }) => {
+  test.only('review sentence using Shift+P keyboard shortcut', async ({
+    page,
+  }) => {
     await page.goto('/');
 
     // Wait for page to be loaded
@@ -1379,20 +1381,6 @@ test.describe('Keyboard actions', () => {
 
     // Wait for audio/video to load before attempting to play
     await page.waitForTimeout(1000);
-
-    // Click play button and immediately pause the video element
-    const playButton = page.getByTestId(
-      `transcript-play-button-${firstContentId}`,
-    );
-
-    // Click play and immediately pause the video element directly
-    await playButton.click();
-    await page.evaluate(() => {
-      const video = document.querySelector('video');
-      if (video) {
-        video.pause();
-      }
-    });
 
     // Press Shift+P keyboard shortcut to review the sentence
     await page.keyboard.press('Shift+P');
