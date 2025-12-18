@@ -1480,7 +1480,7 @@ test.describe('Keyboard actions', () => {
     await expect(brickEmoji).toContainText('🧱');
   });
 
-  test.only('sentence(s) loop using Shift+Down keyboard shortcut', async ({
+  test('sentence(s) loop using Shift+Down keyboard shortcut', async ({
     page,
   }) => {
     await page.goto('/');
@@ -1541,5 +1541,46 @@ test.describe('Keyboard actions', () => {
     const secondPauseIcon = secondPlayButton.locator('svg').first();
     await expect(secondPauseIcon).toBeVisible();
     // Pause icon should be LucidePauseCircle
+
+    // Press Shift+Down again to extend the loop to include more sentences
+    await page.keyboard.press('Shift+ArrowDown');
+    await page.waitForTimeout(500);
+
+    // Verify there are now two loop indicators visible
+    const loopIndicators = page.locator('#stop-loop');
+    await expect(loopIndicators).toHaveCount(2);
+
+    // Try to click play on the first transcript item
+    await firstPlayButton.click();
+    await page.waitForTimeout(500);
+
+    // Verify first item still shows play icon (not playing)
+    await expect(firstPlayIcon).toBeVisible();
+
+    // Try to click play on the fourth transcript item
+    const fourthContentId = '2cb4ff62-1826-4e76-adb4-f3bd2700c90b';
+    const fourthPlayButton = page.getByTestId(
+      `transcript-play-button-${fourthContentId}`,
+    );
+    await expect(fourthPlayButton).toBeVisible();
+    await fourthPlayButton.click();
+    await page.waitForTimeout(500);
+
+    // Verify fourth item still shows play icon (not playing)
+    const fourthPlayIcon = fourthPlayButton.locator('svg').first();
+    await expect(fourthPlayIcon).toBeVisible();
+
+    // Click play on the third transcript item (which is in the loop)
+    const thirdContentId = '814797e3-2a33-4654-a754-3cf3754592cc';
+    const thirdPlayButton = page.getByTestId(
+      `transcript-play-button-${thirdContentId}`,
+    );
+    // await expect(thirdPlayButton).toBeVisible();
+    await thirdPlayButton.click();
+    await page.waitForTimeout(500);
+
+    // Verify third item shows pause button (it is playing)
+    // When playing, the button has bg-yellow-200 class
+    await expect(thirdPlayButton).toHaveClass(/bg-yellow-200/);
   });
 });
