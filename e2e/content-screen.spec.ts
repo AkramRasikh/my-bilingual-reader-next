@@ -1426,4 +1426,57 @@ test.describe('Keyboard actions', () => {
     expect(revertedSentencesText).toContain('/200');
     //
   });
+
+  test('breakdown sentence using Shift+B keyboard shortcut', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    // Wait for page to be loaded
+    await page.waitForLoadState('networkidle');
+
+    // Navigate to content screen
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+    // Wait for the content to load
+    await page.waitForLoadState('networkidle');
+
+    // Use specific content ID for reliable targeting
+    const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+
+    // Scope to transcript tab to avoid confusion with TranscriptItemSecondary
+    const transcriptTab = page.locator(
+      '[role="tabpanel"][data-state="active"]',
+    );
+
+    // Verify brick emoji is NOT visible initially (sentence not broken down)
+    const brickEmoji = transcriptTab.getByTestId(
+      `transcript-breakdown-complete-${firstContentId}`,
+    );
+    await expect(brickEmoji).not.toBeVisible();
+
+    // Press Shift+B keyboard shortcut to breakdown the sentence
+    await page.keyboard.press('Shift+B');
+
+    // Verify loading hammer icon appears
+    const loadingHammer = transcriptTab.getByTestId(
+      `transcript-breakdown-loading-${firstContentId}`,
+    );
+    await expect(loadingHammer).toBeVisible();
+
+    // Verify toast message appears
+    const toastMessage = page.getByText('Sentence broken down 🧱🔨!');
+    await expect(toastMessage).toBeVisible({ timeout: 3000 });
+
+    // Wait for loading to complete
+    await expect(loadingHammer).not.toBeVisible({ timeout: 5000 });
+
+    // Verify brick emoji appears indicating sentence is broken down
+    await expect(brickEmoji).toBeVisible();
+    await expect(brickEmoji).toContainText('🧱');
+  });
 });
