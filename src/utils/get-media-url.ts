@@ -2,7 +2,7 @@ export const getCloudflareVideoURL = (
   mp3FileName: string,
   language: string,
 ) => {
-  const languageParam = `${language}-video%2F`;
+  const languageParam = `${language}-video/`;
   const baseURL = process.env.NEXT_PUBLIC_CLOUDFLARE_ASSETS_URL + languageParam;
   const url = `${baseURL}${mp3FileName}.mp4`;
   return url;
@@ -18,7 +18,7 @@ export const getCloudflareImageURL = (
 };
 
 export const getAudioURL = (mp3FileName: string, language: string) => {
-  const languageParam = `${language}-audio%2F`;
+  const languageParam = `${language}-audio/`;
   const baseURL = process.env.NEXT_PUBLIC_CLOUDFLARE_ASSETS_URL + languageParam;
   const url = `${baseURL}${mp3FileName}.mp3`;
   return url;
