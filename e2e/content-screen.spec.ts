@@ -1348,9 +1348,7 @@ test('checkpoint button scrolls to last reviewed sentence', async ({
 });
 
 test.describe('Keyboard actions', () => {
-  test.only('review sentence using Shift+P keyboard shortcut', async ({
-    page,
-  }) => {
+  test('review sentence using Shift+P keyboard shortcut', async ({ page }) => {
     await page.goto('/');
 
     // Wait for page to be loaded
@@ -1404,5 +1402,28 @@ test.describe('Keyboard actions', () => {
     // Verify sentence count increased by 1 in the denominator
     const finalSentencesText = await sentencesCount.textContent();
     expect(finalSentencesText).toContain('/201');
+
+    // Press Shift+P again to remove the review
+    await page.keyboard.press('Shift+P');
+
+    // Verify loading spinner appears again
+    await expect(loadingSpinner).toBeVisible();
+
+    // Verify toast message appears for learning sentence
+    const toastMessageLearned = page.getByText(
+      'Successful learned sentence ✅',
+    );
+    await expect(toastMessageLearned).toBeVisible({ timeout: 3000 });
+
+    // Wait for the loading to complete
+    await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+    // Verify reps count increased to 2
+    await expect(repsCount).toContainText('Reps: 2');
+
+    // Verify sentence count reverted back to original
+    const revertedSentencesText = await sentencesCount.textContent();
+    expect(revertedSentencesText).toContain('/200');
+    //
   });
 });
