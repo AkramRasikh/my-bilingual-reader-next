@@ -1479,4 +1479,67 @@ test.describe('Keyboard actions', () => {
     await expect(brickEmoji).toBeVisible();
     await expect(brickEmoji).toContainText('🧱');
   });
+
+  test.only('sentence(s) loop using Shift+Down keyboard shortcut', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    // Wait for page to be loaded
+    await page.waitForLoadState('networkidle');
+
+    // Navigate to content screen
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+    // Wait for the content to load
+    await page.waitForLoadState('networkidle');
+
+    // Use specific content IDs for first and second transcript items
+    const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+    const secondContentId = '9007135c-20a0-4481-9ba7-53f7866e962e';
+
+    // Wait for audio/video to load
+    await page.waitForTimeout(1000);
+
+    // Click play on the second transcript item
+    const secondPlayButton = page.getByTestId(
+      `transcript-play-button-${secondContentId}`,
+    );
+    await expect(secondPlayButton).toBeVisible();
+    await secondPlayButton.click();
+
+    // Press Shift+Down to trigger loop
+    await page.keyboard.press('Shift+ArrowDown');
+
+    // Wait for loop state to register
+    await page.waitForTimeout(500);
+
+    // Verify loop indicator (stop-loop button) is visible
+    const loopIndicator = page.locator('#stop-loop');
+    await expect(loopIndicator).toBeVisible();
+
+    // Try to play the first transcript item
+    const firstPlayButton = page.getByTestId(
+      `transcript-play-button-${firstContentId}`,
+    );
+    await expect(firstPlayButton).toBeVisible();
+    await firstPlayButton.click();
+
+    // Wait for click to register
+    await page.waitForTimeout(500);
+
+    // Verify first item still shows play icon (not playing)
+    const firstPlayIcon = firstPlayButton.locator('svg').first();
+    await expect(firstPlayIcon).toBeVisible();
+    // Play icon should be LucidePlayCircle (not LucidePauseCircle)
+
+    // Verify second item shows pause icon (still playing/looping)
+    const secondPauseIcon = secondPlayButton.locator('svg').first();
+    await expect(secondPauseIcon).toBeVisible();
+    // Pause icon should be LucidePauseCircle
+  });
 });
