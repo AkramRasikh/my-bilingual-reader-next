@@ -1346,3 +1346,75 @@ test('checkpoint button scrolls to last reviewed sentence', async ({
   });
   expect(checkpointNotVisibleFinal).toBe(false);
 });
+
+test.describe('Keyboard actions', () => {
+  test('review sentence using Shift+P keyboard shortcut', async ({ page }) => {
+    await page.goto('/');
+
+    // Wait for page to be loaded
+    await page.waitForLoadState('networkidle');
+
+    // Navigate to content screen
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+    // Wait for the content to load
+    await page.waitForLoadState('networkidle');
+
+    // Use specific content ID for reliable targeting
+    const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+
+    // Verify initial sentence count and reps are 0
+    const sentencesCount = page.getByTestId('analytics-sentences-count');
+    await expect(sentencesCount).toBeVisible();
+    const initialSentencesText = await sentencesCount.textContent();
+    expect(initialSentencesText).toContain('/200');
+
+    const repsCount = page.getByTestId('analytics-reps-count');
+    await expect(repsCount).toBeVisible();
+    await expect(repsCount).toContainText('Reps: 0');
+
+    // Wait for audio/video to load before attempting to play
+    await page.waitForTimeout(1000);
+
+    // Click play button and immediately pause the video element
+    const playButton = page.getByTestId(
+      `transcript-play-button-${firstContentId}`,
+    );
+
+    // Click play and immediately pause the video element directly
+    await playButton.click();
+    await page.evaluate(() => {
+      const video = document.querySelector('video');
+      if (video) {
+        video.pause();
+      }
+    });
+
+    // Press Shift+P keyboard shortcut to review the sentence
+    await page.keyboard.press('Shift+P');
+
+    // Verify loading spinner appears in the action bar
+    const loadingSpinner = page.getByTestId(
+      `transcript-action-loading-${firstContentId}`,
+    );
+    await expect(loadingSpinner).toBeVisible();
+
+    // Verify toast message appears
+    const toastMessage = page.getByText('Sentence reviewed ✅');
+    await expect(toastMessage).toBeVisible({ timeout: 3000 });
+
+    // Wait for the loading to complete
+    await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+    // Verify reps count increased to 1
+    await expect(repsCount).toContainText('Reps: 1');
+
+    // Verify sentence count increased by 1 in the denominator
+    const finalSentencesText = await sentencesCount.textContent();
+    expect(finalSentencesText).toContain('/201');
+  });
+});
