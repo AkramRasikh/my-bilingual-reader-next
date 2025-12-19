@@ -97,7 +97,7 @@ const TranscriptItemActionBar = () => {
             console.log('## clicked!!!');
             setLoopTranscriptState(null);
           }}
-          className={clsx(isVideoPlaying ? 'animate-spin' : '')}
+          // className={clsx(isVideoPlaying ? 'animate-spin' : '')}
         >
           <Repeat2 />
         </button>

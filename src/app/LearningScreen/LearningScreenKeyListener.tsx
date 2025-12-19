@@ -136,10 +136,16 @@ const LearningScreenKeyListener = () => {
         if (shiftKey && loopTranscriptState && !threeSecondLoopState) {
           if (e.key.toLowerCase() === 'arrowdown') {
             handleUpdateLoopedSentence(true);
+            console.log('## SHIFTING DOWN!');
+            return;
           } else if (e.key.toLowerCase() === 'arrowup') {
+            console.log('## SHIFTING UP!');
             handleUpdateLoopedSentence(false);
+            return;
           } else if (e.key.toLowerCase() === 'arrowright') {
+            console.log('## SHIFTING RIGHT!');
             handleShiftLoopSentence(true);
+            return;
           }
           //  else if (e.key.toLowerCase() === 'enter') {
           //   handleBulkReviews();
