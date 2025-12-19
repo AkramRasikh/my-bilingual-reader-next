@@ -1745,5 +1745,62 @@ test.describe('Keyboard actions', () => {
     // Verify text content is different from after comma but length is the same
     expect(textAfterPeriods).not.toBe(textAfterComma);
     expect(lengthAfterPeriods).toBe(lengthAfterComma);
+
+    // Test highlighting text in VideoPlayer to enable save button
+    // Find the p element containing overlappingTextMemoized text
+    const videoPlayerText = page
+      .locator('p.text-center.font-bold.text-xl.text-blue-700')
+      .first();
+    await expect(videoPlayerText).toBeVisible();
+
+    // Verify the save button in VideoPlayer is disabled before selection
+    // Reusing the saveButton from earlier in the test
+    await expect(saveButton).toBeDisabled();
+
+    // Select the text "目で見ること" using page.evaluate
+    const selectionSuccess = await page.evaluate(() => {
+      const targetText = '目で見ること';
+      const paragraphs = Array.from(
+        document.querySelectorAll('p.text-center.font-bold.text-xl'),
+      );
+
+      for (const p of paragraphs) {
+        const text = p.textContent || '';
+        const index = text.indexOf(targetText);
+
+        if (index !== -1) {
+          const range = document.createRange();
+          const textNode = p.firstChild;
+
+          if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+            range.setStart(textNode, index);
+            range.setEnd(textNode, index + targetText.length);
+
+            const selection = window.getSelection();
+            selection?.removeAllRanges();
+            selection?.addRange(range);
+
+            // Trigger mouseup event
+            const mouseUpEvent = new MouseEvent('mouseup', {
+              bubbles: true,
+              cancelable: true,
+              view: window,
+            });
+            document.dispatchEvent(mouseUpEvent);
+
+            return true;
+          }
+        }
+      }
+      return false;
+    });
+
+    expect(selectionSuccess).toBe(true);
+
+    // Wait for selection state to update
+    await page.waitForTimeout(500);
+
+    // Verify the save button is now enabled
+    await expect(saveButton).toBeEnabled();
   });
 });
