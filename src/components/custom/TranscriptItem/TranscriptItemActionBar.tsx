@@ -92,7 +92,11 @@ const TranscriptItemActionBar = () => {
       {isSentenceLooping && (
         <button
           id='stop-loop'
-          onClick={() => setLoopTranscriptState(null)}
+          data-testid={`stop-loop-${contentItem.id}`}
+          onClick={() => {
+            console.log('## clicked!!!');
+            setLoopTranscriptState(null);
+          }}
           className={clsx(isVideoPlaying ? 'animate-spin' : '')}
         >
           <Repeat2 />

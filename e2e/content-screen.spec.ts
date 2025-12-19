@@ -1550,6 +1550,13 @@ test.describe('Keyboard actions', () => {
     const loopIndicators = page.locator('#stop-loop');
     await expect(loopIndicators).toHaveCount(2);
 
+    // Press Shift+Down a third time to extend loop to fourth sentence
+    await page.keyboard.press('Shift+ArrowDown');
+    await page.waitForTimeout(500);
+
+    // Verify there are now three loop indicators visible (second, third, fourth sentences looping)
+    await expect(loopIndicators).toHaveCount(3);
+
     // Try to click play on the first transcript item
     await firstPlayButton.click();
     await page.waitForTimeout(500);
@@ -1582,5 +1589,50 @@ test.describe('Keyboard actions', () => {
     // Verify third item shows pause button (it is playing)
     // When playing, the button has bg-yellow-200 class
     await expect(thirdPlayButton).toHaveClass(/bg-yellow-200/);
+
+    // Press Shift+Right to remove the first element in the loop (second element)
+    await page.keyboard.press('Shift+ArrowRight');
+    await page.waitForTimeout(500);
+
+    // Verify second element no longer has loop indicator
+    const secondLoopIndicator = page.getByTestId(
+      `stop-loop-${secondContentId}`,
+    );
+    await expect(secondLoopIndicator).not.toBeVisible();
+
+    // Verify there are now 2 loop indicators (third and fourth)
+    await expect(loopIndicators).toHaveCount(2);
+    const thirdLoopIndicator = page.getByTestId(`stop-loop-${thirdContentId}`);
+    await expect(thirdLoopIndicator).toBeVisible();
+    // Press Shift+Up to remove the furthest down element in the loop (fourth element)
+    await page.keyboard.press('Shift+ArrowUp');
+    await page.waitForTimeout(500);
+
+    // Verify there is now only 1 loop indicator (third element only)
+    await expect(loopIndicators).toHaveCount(1);
+
+    // Click on the third element's loop indicator to remove it from loop state
+    // const thirdLoopIndicator = page.getByTestId(`stop-loop-${thirdContentId}`);
+    // await expect(thirdLoopIndicator).toBeVisible();
+    // await expect(thirdLoopIndicator).toContainText('🔁');
+
+    // Click to remove from loop
+    // const newthirdLoopIndicator = page.getByTestId(
+    //   `stop-loop-${thirdContentId}`,
+    // );
+    // await newthirdLoopIndicator.click();
+    // await page.waitForTimeout(500);
+
+    // // // Verify the last loop indicator is gone
+    // await expect(newthirdLoopIndicator).not.toBeVisible();
+    // // await expect(loopIndicators).toHaveCount(0);
+
+    // Click on the first element's play button
+    // await firstPlayButton.click();
+    // // await page.waitForTimeout(500);
+
+    // // Verify first element shows pause button (it is playing)
+    // await expect(firstPlayButton).toHaveClass(/bg-yellow-200/);
+    //
   });
 });
