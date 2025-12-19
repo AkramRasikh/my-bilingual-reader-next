@@ -1620,6 +1620,10 @@ test.describe('Keyboard actions', () => {
     );
     await expect(timeOverlapIndicator).not.toBeVisible();
 
+    // Verify transcript looping sentence is NOT visible initially
+    const loopingSentence = page.getByTestId('transcript-looping-sentence');
+    await expect(loopingSentence).not.toBeVisible();
+
     // Click play on the third transcript item
     const thirdPlayButton = page.getByTestId(
       `transcript-play-button-${thirdContentId}`,
@@ -1657,6 +1661,15 @@ test.describe('Keyboard actions', () => {
     // Verify transcript time overlap indicator is now visible
     await expect(timeOverlapIndicator).toBeVisible();
 
+    // Verify transcript looping sentence is now visible
+    await expect(loopingSentence).toBeVisible();
+
+    // Get the highlighted text length (yellow span) before contraction
+    const highlightedSpan = loopingSentence.locator('span.bg-yellow-200');
+    await expect(highlightedSpan).toBeVisible();
+    const highlightedTextBefore = await highlightedSpan.textContent();
+    const lengthBefore = highlightedTextBefore?.trim().length || 0;
+
     // Verify save button is visible but disabled (no text highlighted)
     const saveButton = page
       .locator('button')
@@ -1673,6 +1686,14 @@ test.describe('Keyboard actions', () => {
 
     // Verify loop button text changed to "(1.5)"
     await expect(loopButton).toContainText('(1.5)');
+
+    // Get the highlighted text length after contraction
+    const highlightedTextAfter = await highlightedSpan.textContent();
+    const lengthAfter = highlightedTextAfter?.trim().length || 0;
+
+    // Verify the highlighted text is shorter after contraction
+    expect(lengthAfter).toBeLessThan(lengthBefore);
+    expect(lengthAfter).toBeGreaterThan(0); // Still has some text
 
     // Verify save button is still disabled
     await expect(saveButton).toBeDisabled();

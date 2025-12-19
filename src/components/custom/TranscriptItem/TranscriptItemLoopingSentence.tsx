@@ -181,7 +181,11 @@ const TranscriptItemLoopingSentence = ({ overlappingTextMemoized }) => {
   }, [startIndexKeyState, endIndexKeyState, hasSnippetText]);
 
   return (
-    <div className='flex justify-between w-full' ref={masterTextRef}>
+    <div
+      className='flex justify-between w-full'
+      ref={masterTextRef}
+      data-testid='transcript-looping-sentence'
+    >
       <div>
         <p dangerouslySetInnerHTML={{ __html: htmlText }} />
         <p className={'italic font-medium'}>{baseLang}</p>
