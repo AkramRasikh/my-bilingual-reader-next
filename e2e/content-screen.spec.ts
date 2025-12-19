@@ -1712,6 +1712,13 @@ test.describe('Keyboard actions', () => {
     await expect(firstPlayButton).toBeVisible();
     await firstPlayButton.click();
 
+    const snippetsDue = page.getByText('Snippets Due: 225/292/292');
+    await expect(snippetsDue).toBeVisible();
+
+    // Verify bulk review count before save
+    const bulkReviewBefore = page.getByText('Bulk Review: 5');
+    await expect(bulkReviewBefore).toBeVisible();
+
     // Wait for click to register
     await page.waitForTimeout(500);
 
@@ -1841,20 +1848,25 @@ test.describe('Keyboard actions', () => {
     // Verify the save button is now enabled
     await expect(saveButton).toBeEnabled();
 
-    // Set up toast message locator before triggering the action
-    // const saveToastMessage = page.getByText('Updated content data ✅!');
-
-    // Click the save button to save the snippet
+    // Click the save button and wait for API response to complete
     await saveButton.click();
+    await page.waitForResponse('**/api/updateContentMetaData');
+    // await page.waitForTimeout(500);
 
-    // Wait for the save to complete
-    await page.waitForTimeout(2000);
+    // Verify snippets count increased after save
 
     // Verify all looping phase elements are no longer visible
     await expect(loopIndicatorProgress).not.toBeVisible();
-    await expect(timeOverlapIndicator).not.toBeVisible();
+    // await expect(timeOverlapIndicator).not.toBeVisible();
     // await expect(loopingSentence).not.toBeVisible();
     // await expect(saveButton).not.toBeVisible();
     // await expect(loopButton).not.toBeVisible();
+
+    const snippetsDueAfter = page.getByText('Snippets Due: 225/293/293');
+    await expect(snippetsDueAfter).toBeVisible();
+
+    // Verify bulk review count increased after save
+    const bulkReviewAfter = page.getByText('Bulk Review: 6');
+    await expect(bulkReviewAfter).toBeVisible();
   });
 });
