@@ -1581,4 +1581,65 @@ test.describe('Keyboard actions', () => {
     await expect(firstPlayButton).toHaveClass(/bg-yellow-200/);
     //
   });
+
+  test.only('3 second loop using Shift+" keyboard shortcut', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    // Wait for page to be loaded
+    await page.waitForLoadState('networkidle');
+
+    // Navigate to content screen
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+    // Wait for the content to load
+    await page.waitForLoadState('networkidle');
+
+    // Use specific content ID (third item with ~12 second duration)
+    const thirdContentId = '814797e3-2a33-4654-a754-3cf3754592cc';
+
+    // Wait for audio/video to load
+    await page.waitForTimeout(1000);
+
+    // Verify loop button is NOT visible initially
+    const loopButton = page.locator('#stop-loop');
+    await expect(loopButton).not.toBeVisible();
+
+    // Click play on the third transcript item
+    const thirdPlayButton = page.getByTestId(
+      `transcript-play-button-${thirdContentId}`,
+    );
+    await expect(thirdPlayButton).toBeVisible();
+    await thirdPlayButton.click();
+
+    // Wait for video to start playing
+    await page.waitForTimeout(500);
+
+    // Seek to 7.5 seconds by evaluating video element directly
+    await page.evaluate(() => {
+      const video = document.querySelector('video');
+      if (video) {
+        video.currentTime = 7.5;
+      }
+    });
+
+    // Wait for seek to complete
+    await page.waitForTimeout(500);
+
+    // Press Shift+" to trigger 3 second loop
+    await page.keyboard.press('Shift+"');
+
+    // Wait for loop state to register
+    await page.waitForTimeout(500);
+
+    // Verify loop button is now visible with text "(3)"
+    await expect(loopButton).toBeVisible();
+    await expect(loopButton).toContainText('(3)');
+  });
+  //
 });
