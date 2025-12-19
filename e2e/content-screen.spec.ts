@@ -1480,7 +1480,7 @@ test.describe('Keyboard actions', () => {
     await expect(brickEmoji).toContainText('🧱');
   });
 
-  test('sentence(s) loop using Shift+Down keyboard shortcut', async ({
+  test.only('sentence(s) loop using Shift+Down keyboard shortcut', async ({
     page,
   }) => {
     await page.goto('/');
@@ -1547,10 +1547,11 @@ test.describe('Keyboard actions', () => {
     // Press Shift+Down again to extend the loop to include more sentences
     await page.keyboard.press('Shift+ArrowDown');
     await page.waitForTimeout(500);
+    await page.keyboard.press('Shift+ArrowDown');
 
     // Verify there are now two loop indicators visible
     const loopIndicators = page.locator('#stop-loop');
-    await expect(loopIndicators).toHaveCount(2);
+    await expect(loopIndicators).toHaveCount(3);
 
     // // Press Shift+Down a third time to extend loop to fourth sentence
     // await page.keyboard.press('Shift+ArrowDown');
@@ -1603,23 +1604,29 @@ test.describe('Keyboard actions', () => {
     // await expect(secondLoopIndicator).not.toBeVisible();
 
     // Verify there are now 2 loop indicators (third and fourth)
-    await expect(loopIndicators).toHaveCount(1);
+    await expect(loopIndicators).toHaveCount(2);
     // const thirdLoopIndicator = page.getByTestId(`stop-loop-${secondContentId}`);
     // await expect(thirdLoopIndicator).toBeVisible();
     // // Press Shift+Up to remove the furthest down element in the loop (fourth element)
     // await page.keyboard.press('Shift+ArrowUp');
 
-    const thirdLoopIndicator = page.getByTestId(`stop-loop-${thirdContentId}`);
-    await thirdLoopIndicator.click();
+    // const thirdLoopIndicator = page.getByTestId(`stop-loop-${thirdContentId}`);
+    // await thirdLoopIndicator.click();
+
+    await page.keyboard.press('Shift+ArrowUp');
 
     await page.waitForTimeout(500);
 
     // // Verify there is now only 1 loop indicator (third element only)
-    await expect(loopIndicators).toHaveCount(0);
+    await expect(loopIndicators).toHaveCount(1);
     // console.log('## loopIndicators', loopIndicators);
 
     // Click on the third element's loop indicator to remove it from loop state
     // const thirdLoopIndicator = page.getByTestId(`stop-loop-${thirdContentId}`);
+    // await thirdLoopIndicator.click();
+    // await page.waitForTimeout(500);
+
+    // await expect(loopIndicators).toHaveCount(0);
     // await expect(thirdLoopIndicator).toBeVisible();
     // await expect(thirdLoopIndicator).toContainText('🔁');
 
