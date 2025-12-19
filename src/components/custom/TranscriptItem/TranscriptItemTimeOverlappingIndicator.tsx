@@ -20,6 +20,7 @@ export const TranscriptItemTimeOverlappingIndicatorMulti = ({
   thisHasSavedSnippetOverlap,
   handleDeleteSnippet,
   handleLoopHere,
+  contentItemId,
 }) => {
   const [transcriptItemLoadingState, setTranscriptItemLoadingState] =
     useState('');
@@ -35,7 +36,10 @@ export const TranscriptItemTimeOverlappingIndicatorMulti = ({
   };
 
   return (
-    <div className='relative flex flex-col gap-1'>
+    <div
+      className='relative flex flex-col gap-1'
+      data-testid={`transcript-time-overlap-indicator-multi-${contentItemId}`}
+    >
       {thisHasSavedSnippetOverlap.map((item, index) => {
         const snippetId = item.snippetId;
         const isPreSnippet = item?.isPreSnippet;

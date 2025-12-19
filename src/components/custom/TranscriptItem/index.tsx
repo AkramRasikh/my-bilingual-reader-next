@@ -74,6 +74,7 @@ const TranscriptItem = () => {
           thisHasSavedSnippetOverlap={thisHasSavedSnippetOverlap}
           handleDeleteSnippet={handleDeleteSnippet}
           handleLoopHere={handleLoopHere}
+          contentItemId={contentItem?.id}
         />
       )}
     </TranscriptItemWrapper>

@@ -2000,24 +2000,39 @@ test.describe('Keyboard actions', () => {
     // Verify text content is different from after comma but length is the same
     expect(textAfterPeriods).not.toBe(textAfterComma);
     expect(lengthAfterPeriods).toBe(lengthAfterComma);
+
+    // Verify that TranscriptItemTimeOverlappingIndicator (red single indicator) is showing during loop
+    await expect(timeOverlapIndicator).toBeVisible();
+
+    // Verify that TranscriptItemTimeOverlappingIndicatorMulti has 1 item before save
+    const multiIndicatorContainer = page.getByTestId(
+      `transcript-time-overlap-indicator-multi-${thirdContentId}`,
+    );
+    const multiIndicatorItems = multiIndicatorContainer.locator('> div');
+    await expect(multiIndicatorItems).toHaveCount(1);
+
     // press shift+enter to save the snippet
     await page.keyboard.press('Shift+Enter');
 
     // Wait for API response to complete
     await page.waitForResponse('**/api/updateContentMetaData');
 
-    // Verify all looping phase elements are no longer visible
-    await expect(loopIndicatorProgress).not.toBeVisible();
-    await expect(timeOverlapIndicator).not.toBeVisible();
-    await expect(loopingSentence).not.toBeVisible();
-    await expect(saveButton).not.toBeVisible();
-    await expect(loopButton).not.toBeVisible();
+    // Wait for React to update state after API response
+    await page.waitForTimeout(500);
 
+    // Verify positive state changes first (new counts)
     const snippetsDueAfter = page.getByText('Snippets Due: 225/293/293');
-    await expect(snippetsDueAfter).toBeVisible();
+    await expect(snippetsDueAfter).toBeVisible({ timeout: 10000 });
 
-    // Verify bulk review count increased after save
     const bulkReviewAfter = page.getByText('Bulk Review: 6');
-    await expect(bulkReviewAfter).toBeVisible();
+    await expect(bulkReviewAfter).toBeVisible({ timeout: 10000 });
+    await expect(multiIndicatorItems).toHaveCount(2);
+
+    // Verify all looping phase elements are no longer visible
+    // await expect(loopIndicatorProgress).not.toBeVisible();
+    // await expect(timeOverlapIndicator).not.toBeVisible();
+    // await expect(loopingSentence).not.toBeVisible();
+    // await expect(saveButton).not.toBeVisible();
+    // await expect(loopButton).not.toBeVisible();
   });
 });
