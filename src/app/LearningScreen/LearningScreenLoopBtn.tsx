@@ -21,6 +21,7 @@ const LearningScreenLoopBtn = () => {
   return (
     <Button
       id='stop-loop'
+      data-testid='stop-loop'
       onClick={() => setThreeSecondLoopState(null)}
       className={clsx(
         isVideoPlaying && 'animate-spin',

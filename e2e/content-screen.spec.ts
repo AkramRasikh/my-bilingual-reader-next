@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { setupApiMocks } from './helpers/mock-api';
 import { landingMetaData } from './helpers/landing-meta-data';
+import { mockEasyLinguisticsRadioSignLangIslandSnippets } from './mock-data/easy-linguistics-radio-sign-lang-island';
 
 const contentData = landingMetaData[0]; // Using the first content item for navigation test
 const contentTitle = contentData.title; // Using the first content item for navigation test
@@ -1585,6 +1586,46 @@ test.describe('Keyboard actions', () => {
   test.only('3 second loop using Shift+" keyboard shortcut', async ({
     page,
   }) => {
+    // Setup API mocking for updateContentMetaData
+    await page.route('**/api/updateContentMetaData', async (route) => {
+      // Wait 1 second to make loading spinner visible
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          snippets: [
+            ...mockEasyLinguisticsRadioSignLangIslandSnippets,
+            {
+              baseLang:
+                'Hori/Yes. Yes. Mizu/It\'s called "Let Me Speak with the Language of My Eyes." Here\'s the synopsis:',
+              focusedText: '目で見ること',
+              id: '38d3e884-b050-46d6-ab0d-3d5a751be335',
+              isContracted: true,
+              reviewData: {
+                difficulty: 7.1949,
+                due: new Date().toISOString(),
+                ease: 2.5,
+                elapsed_days: 0,
+                interval: 0,
+                lapses: 0,
+                last_review: new Date().toISOString(),
+                reps: 1,
+                scheduled_days: 0,
+                stability: 0.40255,
+                state: 1,
+              },
+              suggestedFocusText: 'とばで話をさせて』という',
+              targetLang:
+                '堀/はい。はい。水/『目で見ることばで話をさせて』という小説なんですけど、これあらすじを話しますと',
+              time: 8.785492,
+            },
+          ],
+        }),
+      });
+    });
+
     await page.goto('/');
 
     // Wait for page to be loaded
@@ -1607,7 +1648,7 @@ test.describe('Keyboard actions', () => {
     await page.waitForTimeout(1000);
 
     // Verify loop button is NOT visible initially
-    const loopButton = page.locator('#stop-loop');
+    const loopButton = page.getByTestId('stop-loop');
     await expect(loopButton).not.toBeVisible();
 
     // Verify loop indicator progress is NOT visible initially
@@ -1691,10 +1732,7 @@ test.describe('Keyboard actions', () => {
     const lengthBefore = highlightedTextBefore?.trim().length || 0;
 
     // Verify save button is visible but disabled (no text highlighted)
-    const saveButton = page
-      .locator('button')
-      .filter({ has: page.locator('svg') })
-      .nth(2); // SaveIcon button
+    const saveButton = page.getByTestId('save-snippet-button');
     await expect(saveButton).toBeVisible();
     await expect(saveButton).toBeDisabled();
 
@@ -1802,5 +1840,21 @@ test.describe('Keyboard actions', () => {
 
     // Verify the save button is now enabled
     await expect(saveButton).toBeEnabled();
+
+    // Set up toast message locator before triggering the action
+    // const saveToastMessage = page.getByText('Updated content data ✅!');
+
+    // Click the save button to save the snippet
+    await saveButton.click();
+
+    // Wait for the save to complete
+    await page.waitForTimeout(2000);
+
+    // Verify all looping phase elements are no longer visible
+    await expect(loopIndicatorProgress).not.toBeVisible();
+    await expect(timeOverlapIndicator).not.toBeVisible();
+    // await expect(loopingSentence).not.toBeVisible();
+    // await expect(saveButton).not.toBeVisible();
+    // await expect(loopButton).not.toBeVisible();
   });
 });

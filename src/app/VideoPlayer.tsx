@@ -117,6 +117,7 @@ const VideoPlayer = ({
         {threeSecondLoopState && <LearningScreenLoopBtn />}
         {handleSaveSnippet && threeSecondLoopState && (
           <Button
+            data-testid='save-snippet-button'
             size='icon'
             variant='outline'
             className={clsx(
