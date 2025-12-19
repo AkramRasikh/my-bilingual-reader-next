@@ -1807,9 +1807,7 @@ test.describe('Keyboard actions', () => {
     await expect(bulkReviewAfter).toBeVisible();
   });
 
-  test.only('3 second loop using Shift+" TranscriptItem keys', async ({
-    page,
-  }) => {
+  test('3 second loop using Shift+" TranscriptItem keys', async ({ page }) => {
     // Setup API mocking for updateContentMetaData
     await page.route('**/api/updateContentMetaData', async (route) => {
       // Wait 1 second to make loading spinner visible
