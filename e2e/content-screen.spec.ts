@@ -1480,7 +1480,7 @@ test.describe('Keyboard actions', () => {
     await expect(brickEmoji).toContainText('🧱');
   });
 
-  test.only('sentence(s) loop using Shift+Down keyboard shortcut', async ({
+  test('sentence(s) loop using Shift+Down keyboard shortcut', async ({
     page,
   }) => {
     await page.goto('/');
@@ -1502,7 +1502,6 @@ test.describe('Keyboard actions', () => {
     const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
     const secondContentId = '9007135c-20a0-4481-9ba7-53f7866e962e';
     const thirdContentId = '814797e3-2a33-4654-a754-3cf3754592cc';
-    // const fourthContentId = '2cb4ff62-1826-4e76-adb4-f3bd2700c90b';
 
     // Wait for audio/video to load
     await page.waitForTimeout(1000);
