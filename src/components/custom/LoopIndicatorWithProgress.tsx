@@ -36,7 +36,10 @@ const LoopIndicatorWithProgress = ({
   }, [threeSecondLoopState, contractThreeSecondLoopState]);
 
   return (
-    <div className='flex gap-3 justify-center my-1 animate-pulse'>
+    <div
+      data-testid='loop-indicator-progress'
+      className='flex gap-3 justify-center my-1 animate-pulse'
+    >
       <Progress value={progress} className='h-1 w-full [&>div]:bg-red-600' />
     </div>
   );

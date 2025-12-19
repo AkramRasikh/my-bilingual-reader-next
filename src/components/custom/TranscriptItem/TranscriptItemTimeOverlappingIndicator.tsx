@@ -4,7 +4,7 @@ import { useState } from 'react';
 const TranscriptItemTimeOverlappingIndicator = ({
   thisSnippetOverlapMemoized,
 }) => (
-  <div className='relative h-1'>
+  <div className='relative h-1' data-testid='transcript-time-overlap-indicator'>
     <div
       className='absolute bg-red-500 opacity-50 rounded'
       style={{

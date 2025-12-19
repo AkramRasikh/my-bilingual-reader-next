@@ -1610,6 +1610,16 @@ test.describe('Keyboard actions', () => {
     const loopButton = page.locator('#stop-loop');
     await expect(loopButton).not.toBeVisible();
 
+    // Verify loop indicator progress is NOT visible initially
+    const loopIndicatorProgress = page.getByTestId('loop-indicator-progress');
+    await expect(loopIndicatorProgress).not.toBeVisible();
+
+    // Verify transcript time overlap indicator is NOT visible initially
+    const timeOverlapIndicator = page.getByTestId(
+      'transcript-time-overlap-indicator',
+    );
+    await expect(timeOverlapIndicator).not.toBeVisible();
+
     // Click play on the third transcript item
     const thirdPlayButton = page.getByTestId(
       `transcript-play-button-${thirdContentId}`,
@@ -1640,6 +1650,31 @@ test.describe('Keyboard actions', () => {
     // Verify loop button is now visible with text "(3)"
     await expect(loopButton).toBeVisible();
     await expect(loopButton).toContainText('(3)');
+
+    // Verify loop indicator progress is now visible
+    await expect(loopIndicatorProgress).toBeVisible();
+
+    // Verify transcript time overlap indicator is now visible
+    await expect(timeOverlapIndicator).toBeVisible();
+
+    // Verify save button is visible but disabled (no text highlighted)
+    const saveButton = page
+      .locator('button')
+      .filter({ has: page.locator('svg') })
+      .nth(2); // SaveIcon button
+    await expect(saveButton).toBeVisible();
+    await expect(saveButton).toBeDisabled();
+
+    // Press ArrowUp to contract the loop to 1.5 seconds
+    await page.keyboard.press('ArrowUp');
+
+    // Wait for state to update
+    await page.waitForTimeout(500);
+
+    // Verify loop button text changed to "(1.5)"
+    await expect(loopButton).toContainText('(1.5)');
+
+    // Verify save button is still disabled
+    await expect(saveButton).toBeDisabled();
   });
-  //
 });
