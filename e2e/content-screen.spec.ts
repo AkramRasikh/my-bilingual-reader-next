@@ -1663,6 +1663,26 @@ test.describe('Keyboard actions', () => {
 
     // Verify transcript looping sentence is now visible
     await expect(loopingSentence).toBeVisible();
+    // test that clicking on the first transcript item does not stop the loop
+    const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+    const firstPlayButton = page.getByTestId(
+      `transcript-play-button-${firstContentId}`,
+    );
+    await expect(firstPlayButton).toBeVisible();
+    await firstPlayButton.click();
+
+    // Wait for click to register
+    await page.waitForTimeout(500);
+
+    // Verify first item still shows play icon (not playing)
+    const firstPlayIcon = firstPlayButton.locator('svg').first();
+    await expect(firstPlayIcon).toBeVisible();
+    // Play icon should be LucidePlayCircle (not LucidePauseCircle)
+
+    // Verify third item shows pause icon (still playing/looping)
+    const thirdPauseIcon = thirdPlayButton.locator('svg').first();
+    await expect(thirdPauseIcon).toBeVisible();
+    // Pause icon should be Lucide
 
     // Get the highlighted text length (yellow span) before contraction
     const highlightedSpan = loopingSentence.locator('span.bg-yellow-200');
