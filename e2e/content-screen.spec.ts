@@ -1697,5 +1697,33 @@ test.describe('Keyboard actions', () => {
 
     // Verify save button is still disabled
     await expect(saveButton).toBeDisabled();
+
+    // Test shifting the highlighted text block with "," key
+    const textBeforeComma = await highlightedSpan.textContent();
+    const lengthBeforeComma = textBeforeComma?.trim().length || 0;
+
+    // Press "," to shift the text block left
+    await page.keyboard.press(',');
+    await page.waitForTimeout(300);
+
+    const textAfterComma = await highlightedSpan.textContent();
+    const lengthAfterComma = textAfterComma?.trim().length || 0;
+
+    // Verify text content is different but length is the same
+    expect(textAfterComma).not.toBe(textBeforeComma);
+    expect(lengthAfterComma).toBe(lengthBeforeComma);
+
+    // Press "." twice to shift the text block right
+    await page.keyboard.press('.');
+    await page.waitForTimeout(300);
+    await page.keyboard.press('.');
+    await page.waitForTimeout(300);
+
+    const textAfterPeriods = await highlightedSpan.textContent();
+    const lengthAfterPeriods = textAfterPeriods?.trim().length || 0;
+
+    // Verify text content is different from after comma but length is the same
+    expect(textAfterPeriods).not.toBe(textAfterComma);
+    expect(lengthAfterPeriods).toBe(lengthAfterComma);
   });
 });
