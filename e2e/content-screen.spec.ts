@@ -6,6 +6,10 @@ import { mockEasyLinguisticsRadioSignLangIslandSnippets } from './mock-data/easy
 const contentData = landingMetaData[0]; // Using the first content item for navigation test
 const contentTitle = contentData.title; // Using the first content item for navigation test
 
+const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+const secondContentId = '9007135c-20a0-4481-9ba7-53f7866e962e';
+const thirdContentId = '814797e3-2a33-4654-a754-3cf3754592cc';
+
 test.beforeEach(async ({ page }) => {
   // Setup API mocking for all tests
   await setupApiMocks(page);
@@ -1220,7 +1224,6 @@ test('checkpoint button scrolls to last reviewed sentence', async ({
   await page.waitForTimeout(1000);
 
   // Define the first transcript container element
-  const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
   const firstTranscriptContainer = page.getByTestId(
     `transcript-target-lang-${firstContentId}`,
   );
@@ -1366,7 +1369,6 @@ test.describe('Keyboard actions', () => {
     await page.waitForLoadState('networkidle');
 
     // Use specific content ID for reliable targeting
-    const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
 
     // Verify initial sentence count and reps are 0
     const sentencesCount = page.getByTestId('analytics-sentences-count');
@@ -1447,7 +1449,6 @@ test.describe('Keyboard actions', () => {
     await page.waitForLoadState('networkidle');
 
     // Use specific content ID for reliable targeting
-    const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
 
     // Scope to transcript tab to avoid confusion with TranscriptItemSecondary
     const transcriptTab = page.locator(
@@ -1500,9 +1501,6 @@ test.describe('Keyboard actions', () => {
     await page.waitForLoadState('networkidle');
 
     // Use specific content IDs for first and second transcript items
-    const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
-    const secondContentId = '9007135c-20a0-4481-9ba7-53f7866e962e';
-    const thirdContentId = '814797e3-2a33-4654-a754-3cf3754592cc';
 
     // Wait for audio/video to load
     await page.waitForTimeout(1000);
@@ -1640,7 +1638,6 @@ test.describe('Keyboard actions', () => {
     await page.waitForLoadState('networkidle');
 
     // Use specific content ID (third item with ~12 second duration)
-    const thirdContentId = '814797e3-2a33-4654-a754-3cf3754592cc';
 
     // Wait for audio/video to load
     await page.waitForTimeout(1000);
@@ -1660,7 +1657,9 @@ test.describe('Keyboard actions', () => {
     await expect(timeOverlapIndicator).not.toBeVisible();
 
     // Verify transcript looping sentence is NOT visible initially
-    const loopingSentence = page.getByTestId('transcript-looping-sentence');
+    const loopingSentence = page.getByTestId(
+      `transcript-looping-sentence-${thirdContentId}`,
+    );
     await expect(loopingSentence).not.toBeVisible();
 
     // Click play on the third transcript item
@@ -1703,7 +1702,7 @@ test.describe('Keyboard actions', () => {
     // Verify transcript looping sentence is now visible
     await expect(loopingSentence).toBeVisible();
     // test that clicking on the first transcript item does not stop the loop
-    const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+    // const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
     const firstPlayButton = page.getByTestId(
       `transcript-play-button-${firstContentId}`,
     );
@@ -1864,7 +1863,6 @@ test.describe('Keyboard actions', () => {
     await page.waitForLoadState('networkidle');
 
     // Use specific content ID (third item with ~12 second duration)
-    const thirdContentId = '814797e3-2a33-4654-a754-3cf3754592cc';
 
     // Wait for audio/video to load
     await page.waitForTimeout(1000);
@@ -1927,7 +1925,7 @@ test.describe('Keyboard actions', () => {
     // Verify transcript looping sentence is now visible
     await expect(loopingSentence).toBeVisible();
     // test that clicking on the first transcript item does not stop the loop
-    const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+    // const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
     const firstPlayButton = page.getByTestId(
       `transcript-play-button-${firstContentId}`,
     );
@@ -2032,5 +2030,120 @@ test.describe('Keyboard actions', () => {
     // await expect(loopingSentence).not.toBeVisible();
     // await expect(saveButton).not.toBeVisible();
     // await expect(loopButton).not.toBeVisible();
+  });
+
+  test('3 second loop using Shift+" keyboard shortcut - multi sentences', async ({
+    page,
+  }) => {
+    // Setup API mocking for updateContentMetaData
+    await page.route('**/api/updateContentMetaData', async (route) => {
+      // Wait 1 second to make loading spinner visible
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          snippets: [
+            ...mockEasyLinguisticsRadioSignLangIslandSnippets,
+
+            {
+              baseLang:
+                'Hori/Yes. Yes. Mizu/It\'s called "Let Me Speak with the Language of My Eyes." Here\'s the synopsis:',
+              focusedText: 'だんですよ。堀/はい。はい。水/『目で見る',
+              id: '38d3e884-b050-46d6-ab0d-3d5a751be335',
+              isContracted: false,
+              reviewData: {
+                difficulty: 7.1949,
+                due: new Date().toISOString(),
+                ease: 2.5,
+                elapsed_days: 0,
+                interval: 0,
+                lapses: 0,
+                last_review: new Date().toISOString(),
+                reps: 1,
+                scheduled_days: 0,
+                stability: 0.40255,
+                state: 1,
+              },
+              suggestedFocusText: 'だんですよ。堀/はい。はい。水/『目で見る',
+              targetLang:
+                '堀/水/最近こんな小説を読んだんですよ。堀/はい。はい。水/『目で見ることばで話をさせて』という小説なんですけど、これあらすじを話しますと',
+              time: 6,
+            },
+          ],
+        }),
+      });
+    });
+
+    await page.goto('/');
+
+    // Wait for page to be loaded
+    await page.waitForLoadState('networkidle');
+    // Navigate to content screen
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+    // Wait for the content to load
+    await page.waitForLoadState('networkidle');
+
+    // Seek to 5 seconds by evaluating video element directly
+
+    const firstContentBtn = page.getByTestId(
+      `transcript-play-button-${firstContentId}`,
+    );
+    await firstContentBtn.click();
+    await page.evaluate(() => {
+      const video = document.querySelector('video');
+      if (video) {
+        video.currentTime = 6;
+      }
+    });
+    // Wait for audio/video to load before attempting to play
+
+    // Press Shift+P keyboard shortcut to review the sentence
+    await page.keyboard.press('Shift+"');
+
+    await expect(
+      page.getByTestId('transcript-time-overlap-indicator'),
+    ).toHaveCount(2);
+
+    // assert that only data-testid={`transcript-looping-sentence-${contentItemId}`} for secondContentId is visible And NOT thirdContentId
+    const secondLoopingSentence = page.getByTestId(
+      `transcript-looping-sentence-${secondContentId}`,
+    );
+    const thirdLoopingSentence = page.getByTestId(
+      `transcript-looping-sentence-${thirdContentId}`,
+    );
+    await expect(secondLoopingSentence).toBeVisible();
+    await expect(thirdLoopingSentence).not.toBeVisible();
+
+    // assert that transcript-time-overlap-indicator-multi-{contentItemId} has 0 items for secondContentId and 1 item for thirdContentId but 1 for thirdcontentId
+    const secondMultiIndicatorContainer = page.getByTestId(
+      `transcript-time-overlap-indicator-multi-${secondContentId}`,
+    );
+    const secondMultiIndicatorItems =
+      secondMultiIndicatorContainer.locator('> div');
+    await expect(secondMultiIndicatorItems).toHaveCount(0);
+
+    const thirdMultiIndicatorContainer = page.getByTestId(
+      `transcript-time-overlap-indicator-multi-${thirdContentId}`,
+    );
+    const thirdMultiIndicatorItems =
+      thirdMultiIndicatorContainer.locator('> div');
+    await expect(thirdMultiIndicatorItems).toHaveCount(1);
+
+    await page.keyboard.press('Shift+Enter');
+
+    // Wait for API response to complete
+    await page.waitForResponse('**/api/updateContentMetaData');
+    await expect(
+      page.getByTestId('transcript-time-overlap-indicator'),
+    ).toHaveCount(0);
+
+    await expect(secondMultiIndicatorItems).toHaveCount(1);
+    await expect(thirdMultiIndicatorItems).toHaveCount(2);
   });
 });

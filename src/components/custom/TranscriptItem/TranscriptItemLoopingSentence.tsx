@@ -67,7 +67,10 @@ export function highlightApprox(
   };
 }
 
-const TranscriptItemLoopingSentence = ({ overlappingTextMemoized }) => {
+const TranscriptItemLoopingSentence = ({
+  overlappingTextMemoized,
+  contentItemId,
+}) => {
   const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
     useState(false);
   const [highlightedTextFocusLoopState, setHighlightedTextFocusLoopState] =
@@ -184,7 +187,7 @@ const TranscriptItemLoopingSentence = ({ overlappingTextMemoized }) => {
     <div
       className='flex justify-between w-full'
       ref={masterTextRef}
-      data-testid='transcript-looping-sentence'
+      data-testid={`transcript-looping-sentence-${contentItemId}`}
     >
       <div>
         <p dangerouslySetInnerHTML={{ __html: htmlText }} />

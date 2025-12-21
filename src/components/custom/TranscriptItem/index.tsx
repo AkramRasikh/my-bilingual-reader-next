@@ -48,6 +48,7 @@ const TranscriptItem = () => {
           {thisIsOverlapping && overlappingTextMemoized ? (
             <TranscriptItemLoopingSentence
               overlappingTextMemoized={overlappingTextMemoized}
+              contentItemId={contentItem.id}
             />
           ) : (
             <TranscriptItemContent />
