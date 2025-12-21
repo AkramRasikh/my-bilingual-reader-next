@@ -1816,6 +1816,34 @@ test.describe('Keyboard actions', () => {
       const bulkReviewAfter = page.getByText('Bulk Review: 6');
       await expect(bulkReviewAfter).toBeVisible();
       await expect(thirdMultiIndicatorItems).toHaveCount(2);
+      // Setup route for delete operation
+      await page.route('**/api/updateContentMetaData', async (route) => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            snippets: mockEasyLinguisticsRadioSignLangIslandSnippets,
+          }),
+        });
+      });
+
+      // Get the second item in thirdMultiIndicatorItems
+      const secondIndicatorItem = thirdMultiIndicatorItems.nth(1);
+      await expect(secondIndicatorItem).toBeVisible();
+
+      // Find the ❌ button within the second item
+      const deleteButton = secondIndicatorItem.locator('button').last();
+      await expect(deleteButton).toBeVisible();
+
+      // Double-click the ❌ button to delete the snippet
+      await deleteButton.dblclick();
+
+      // Wait for API response to complete
+      await page.waitForResponse('**/api/updateContentMetaData');
+
+      // Verify thirdMultiIndicatorItems now has count of 1
+      await expect(thirdMultiIndicatorItems).toHaveCount(1);
     });
 
     test('3 second loop using Shift+" TranscriptItem keys', async ({
