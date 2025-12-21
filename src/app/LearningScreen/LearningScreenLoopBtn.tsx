@@ -5,18 +5,12 @@ import useLearningScreen from './useLearningScreen';
 
 const LearningScreenLoopBtn = () => {
   const {
-    threeSecondLoopState,
     setThreeSecondLoopState,
     contractThreeSecondLoopState,
     isVideoPlaying,
   } = useLearningScreen();
 
-  const startPoint =
-    threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
-
-  const upToEndTime = startPoint + (contractThreeSecondLoopState ? 1.5 : 3);
-
-  const loopLength = upToEndTime - startPoint;
+  const loopLength = contractThreeSecondLoopState ? 1.5 : 3;
 
   return (
     <Button

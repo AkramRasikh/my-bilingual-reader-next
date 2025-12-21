@@ -1924,7 +1924,9 @@ test.describe('Keyboard actions', () => {
       await expect(timeOverlapIndicator).not.toBeVisible();
 
       // Verify transcript looping sentence is NOT visible initially
-      const loopingSentence = page.getByTestId('transcript-looping-sentence');
+      const loopingSentence = page.getByTestId(
+        `transcript-looping-sentence-${thirdContentId}`,
+      );
       await expect(loopingSentence).not.toBeVisible();
 
       // Click play on the third transcript item
