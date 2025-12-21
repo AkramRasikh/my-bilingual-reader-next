@@ -2156,9 +2156,15 @@ test.describe('Keyboard actions', () => {
       const secondLoopingSentence = page.getByTestId(
         `transcript-looping-sentence-${secondContentId}`,
       );
+      const secondLoopingSentenceNestedSaveButton = page.getByTestId(
+        `save-snippet-button-${secondContentId}`,
+      );
       const thirdLoopingSentence = page.getByTestId(
         `transcript-looping-sentence-${thirdContentId}`,
       );
+      await expect(secondLoopingSentence).toBeVisible();
+      await expect(secondLoopingSentenceNestedSaveButton).toBeVisible();
+
       await expect(secondLoopingSentence).toBeVisible();
       await expect(thirdLoopingSentence).not.toBeVisible();
 
@@ -2177,7 +2183,7 @@ test.describe('Keyboard actions', () => {
         thirdMultiIndicatorContainer.locator('> div');
       await expect(thirdMultiIndicatorItems).toHaveCount(1);
 
-      await page.keyboard.press('Shift+Enter');
+      await secondLoopingSentenceNestedSaveButton.click();
 
       // Wait for API response to complete
       await page.waitForResponse('**/api/updateContentMetaData');

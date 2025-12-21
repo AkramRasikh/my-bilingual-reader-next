@@ -196,6 +196,7 @@ const TranscriptItemLoopingSentence = ({
       <Button
         size='icon'
         variant='outline'
+        data-testid={`save-snippet-button-${contentItemId}`}
         className={clsx(
           'rounded-full h-9 w-9 my-0',
           isLoadingSaveSnippetState ? 'animate-spin bg-amber-600' : '',
