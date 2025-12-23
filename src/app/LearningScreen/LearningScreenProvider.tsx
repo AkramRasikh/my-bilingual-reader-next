@@ -41,8 +41,6 @@ export const LearningScreenProvider = ({
   const [isInReviewMode, setIsInReviewMode] = useState(false);
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
-  const [showOnVideoTranscriptState, setShowOnVideoTranscriptState] =
-    useState(true);
   const [numberOfSentenceDueOnMountState, setNumberOfSentenceDueOnMountState] =
     useState<number | null>(null);
 
@@ -1282,8 +1280,6 @@ export const LearningScreenProvider = ({
         setProgress,
         onlyShowEngState,
         setOnlyShowEngState,
-        showOnVideoTranscriptState,
-        setShowOnVideoTranscriptState,
         showWordsBasketState,
         setShowWordsBasketState,
         contractThreeSecondLoopState,

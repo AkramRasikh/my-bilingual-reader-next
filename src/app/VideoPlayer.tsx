@@ -11,7 +11,6 @@ const VideoPlayer = ({
   ref,
   handleTimeUpdate,
   setIsVideoPlaying,
-  masterPlayComprehensiveState,
   threeSecondLoopState,
   handleSaveSnippet,
   overlappingTextMemoized,
@@ -102,18 +101,7 @@ const VideoPlayer = ({
           >
             {overlappingTextMemoized?.targetLang}
           </p>
-        ) : (
-          masterPlayComprehensiveState?.targetLang && (
-            <p
-              className={clsx(
-                'text-center font-bold text-xl text-blue-900  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg',
-                threeSecondLoopState ? 'm-auto' : '',
-              )}
-            >
-              {masterPlayComprehensiveState.targetLang}
-            </p>
-          )
-        )}
+        ) : null}
         {threeSecondLoopState && <LearningScreenLoopBtn />}
         {handleSaveSnippet && threeSecondLoopState && (
           <Button

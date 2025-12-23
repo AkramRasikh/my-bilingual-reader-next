@@ -10,8 +10,6 @@ const LearningScreenActionBarVideoControls = () => {
     setIsInReviewMode,
     onlyShowEngState,
     setOnlyShowEngState,
-    showOnVideoTranscriptState,
-    setShowOnVideoTranscriptState,
     ref,
     elapsed,
     setElapsed,
@@ -37,14 +35,6 @@ const LearningScreenActionBarVideoControls = () => {
         />
       </div>
       <div className='w-px h-5 my-auto bg-gray-300' />
-      <div className='flex gap-2 my-auto'>
-        <Label data-testid='subs-label'>Subs</Label>
-        <Switch
-          checked={showOnVideoTranscriptState}
-          onCheckedChange={setShowOnVideoTranscriptState}
-          data-testid='subs-switch'
-        />
-      </div>
       <div className='w-px h-5 my-auto bg-gray-300' />
       <CountdownTimer audioTimeRef={ref} />
       <CountUpTimer elapsed={elapsed} setElapsed={setElapsed} />

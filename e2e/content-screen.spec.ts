@@ -185,7 +185,6 @@ test.only('landing screen -> learning content screen navigation', async ({
   // video controls
   await checkVideoControl(page, 'review-label', 'review-switch', 'Review');
   await checkVideoControl(page, 'english-label', 'english-switch', '🇬🇧');
-  await checkVideoControl(page, 'subs-label', 'subs-switch', 'Subs');
 
   // test English toggle functionality
   await checkEnglishTranscriptToggles(page);

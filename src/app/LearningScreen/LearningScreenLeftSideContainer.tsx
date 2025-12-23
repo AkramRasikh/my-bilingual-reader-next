@@ -21,7 +21,6 @@ const LearningScreenLeftSideContainer = () => {
     threeSecondLoopState,
     ref,
     handleTimeUpdate,
-    showOnVideoTranscriptState,
     selectedContentState,
     errorVideoState,
     setErrorVideoState,
@@ -67,9 +66,6 @@ const LearningScreenLeftSideContainer = () => {
           url={videoUrl}
           handleTimeUpdate={handleTimeUpdate}
           setIsVideoPlaying={setIsVideoPlaying}
-          masterPlayComprehensiveState={
-            showOnVideoTranscriptState && masterPlayComprehensiveState
-          }
           threeSecondLoopState={threeSecondLoopState}
           handleSaveSnippet={handleSaveSnippet}
           overlappingTextMemoized={overlappingTextMemoized}

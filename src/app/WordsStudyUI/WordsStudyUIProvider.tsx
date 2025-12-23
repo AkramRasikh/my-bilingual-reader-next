@@ -27,8 +27,6 @@ export const WordsStudyUIProvider = ({
   const [isInReviewMode, setIsInReviewMode] = useState(false);
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
-  const [showOnVideoTranscriptState, setShowOnVideoTranscriptState] =
-    useState(true);
   const [sentenceHighlightingState, setSentenceHighlightingState] =
     useState('');
   const [wordsRepsState, setWordsRepsState] = useState(0);
@@ -300,8 +298,6 @@ export const WordsStudyUIProvider = ({
         setProgress,
         onlyShowEngState,
         setOnlyShowEngState,
-        showOnVideoTranscriptState,
-        setShowOnVideoTranscriptState,
         showWordsBasketState,
         setShowWordsBasketState,
         contractThreeSecondLoopState,
