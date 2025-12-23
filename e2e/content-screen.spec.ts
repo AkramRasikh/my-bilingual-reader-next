@@ -306,7 +306,7 @@ test.beforeEach(async ({ page }) => {
   await setupApiMocks(page);
 });
 
-test.only('landing screen -> learning content screen navigation', async ({
+test('landing screen -> learning content screen navigation', async ({
   page,
 }) => {
   await page.goto('/');
