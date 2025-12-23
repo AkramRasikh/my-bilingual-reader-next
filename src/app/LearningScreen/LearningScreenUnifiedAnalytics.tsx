@@ -93,6 +93,7 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
 
           <Button
             className='w-5 h-5 align-sub bg-amber-300 border-amber-300'
+            data-testid='bulk-review-button'
             variant='outline'
             onDoubleClick={handleBulkAddToReviews}
             disabled={

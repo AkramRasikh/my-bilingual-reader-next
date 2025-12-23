@@ -306,7 +306,7 @@ test.beforeEach(async ({ page }) => {
   await setupApiMocks(page);
 });
 
-test('landing screen -> learning content screen navigation', async ({
+test('landing screen -> learning content screen navigation -> general toggle actions', async ({
   page,
 }) => {
   await page.goto('/');
@@ -1679,6 +1679,45 @@ test('checkpoint button scrolls to last reviewed sentence', async ({
     );
   });
   expect(checkpointNotVisibleFinal).toBe(false);
+});
+
+test('bulk sentence review - double click to review multiple sentences', async ({
+  page,
+}) => {
+  await setupApiMocks(page);
+
+  // Navigate to home page
+  await page.goto('/');
+
+  // Click on the specific content item
+  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+  await contentButton.click();
+
+  // Wait for navigation to complete
+  await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+  // Verify the bulk review count is initially 5
+  const bulkReviewButton = page.getByTestId('bulk-review-button');
+  await expect(page.getByText('Bulk Review: 5')).toBeVisible();
+  await expect(bulkReviewButton).toBeEnabled();
+  await checkSentenceCount(page, '153/200');
+  const bulkReviewBefore = page.getByText('Bulk Review: 5');
+  await expect(bulkReviewBefore).toBeVisible();
+
+  // Double-click the bulk review button
+  await bulkReviewButton.dblclick();
+
+  // Wait for the API call to complete
+  await page.waitForResponse('**/api/bulkSentenceReview');
+
+  // Wait for and verify the toast message appears
+  const toastMessage = page.getByText('Bulk reviewed 5 sentences ✅');
+  await expect(toastMessage).toBeVisible({ timeout: 5000 });
+
+  await checkSentenceCount(page, '153/205');
+
+  const bulkReviewAfter = page.getByText('Bulk Review: 0');
+  await expect(bulkReviewAfter).toBeVisible();
 });
 
 test.describe('Keyboard actions', () => {

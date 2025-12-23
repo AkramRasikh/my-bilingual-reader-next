@@ -126,6 +126,43 @@ export async function setupApiMocks(page: Page) {
       }),
     });
   });
+
+  // Intercept bulkSentenceReview API call
+  await page.route('**/api/bulkSentenceReview', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Calculate review date (current fixed date + 5 minutes)
+    const lastReviewTime = new Date(E2E_FIXED_DATE);
+    const dueTime = new Date(lastReviewTime.getTime() + 5 * 60000); // 5 minutes
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        updatedSentenceIds: [
+          'e9cb0b45-5794-47f8-8a05-9e8323dc0cce',
+          'b460a5ea-587e-4632-924e-1e6379708d59',
+          'cf0d93be-aca9-4889-989f-7148b80bff30',
+          '7afd1f73-cb7a-4600-abea-a174d493734c',
+          '7648d676-66e1-4d3b-abb5-3083750c5ce8',
+        ],
+        reviewData: {
+          due: dueTime.toISOString(),
+          stability: 0.40255,
+          difficulty: 7.1949,
+          elapsed_days: 0,
+          scheduled_days: 0,
+          reps: 1,
+          lapses: 0,
+          state: 1,
+          last_review: lastReviewTime.toISOString(),
+          ease: 2.5,
+          interval: 0,
+        },
+      }),
+    });
+  });
 }
 
 /**

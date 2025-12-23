@@ -1242,7 +1242,6 @@ export const LearningScreenProvider = ({
       });
       setSentenceRepsState((prev) => prev + sentenceIds.length);
     } catch (error) {
-      console.log('## handleAddOverlappedSnippetsToReview error', error);
     } finally {
       setIsGenericItemLoadingState((prev) =>
         prev.filter((item) => !sentenceIds.includes(item)),
