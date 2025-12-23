@@ -20,23 +20,29 @@ const LearningScreenActionBarVideoControls = () => {
   return (
     <div className='flex pb-2 justify-center gap-4'>
       <div className='flex gap-2 my-auto'>
-        <Label>Review</Label>
-        <Switch checked={isInReviewMode} onCheckedChange={setIsInReviewMode} />
-      </div>
-      <div className='w-px h-5 my-auto bg-gray-300' />
-      <div className='flex gap-2 my-auto'>
-        <Label>🇬🇧</Label>
+        <Label data-testid='review-label'>Review</Label>
         <Switch
-          checked={!onlyShowEngState}
-          onCheckedChange={() => setOnlyShowEngState(!onlyShowEngState)}
+          checked={isInReviewMode}
+          onCheckedChange={setIsInReviewMode}
+          data-testid='review-switch'
         />
       </div>
       <div className='w-px h-5 my-auto bg-gray-300' />
       <div className='flex gap-2 my-auto'>
-        <Label>Subs</Label>
+        <Label data-testid='english-label'>🇬🇧</Label>
+        <Switch
+          checked={!onlyShowEngState}
+          onCheckedChange={() => setOnlyShowEngState(!onlyShowEngState)}
+          data-testid='english-switch'
+        />
+      </div>
+      <div className='w-px h-5 my-auto bg-gray-300' />
+      <div className='flex gap-2 my-auto'>
+        <Label data-testid='subs-label'>Subs</Label>
         <Switch
           checked={showOnVideoTranscriptState}
           onCheckedChange={setShowOnVideoTranscriptState}
+          data-testid='subs-switch'
         />
       </div>
       <div className='w-px h-5 my-auto bg-gray-300' />

@@ -65,6 +65,60 @@ async function checkLearningScreenTab(
   }
 }
 
+// Helper function to check video control toggle/button presence
+async function checkVideoControl(
+  page: Page,
+  labelTestId: string,
+  switchTestId: string,
+  expectedLabelText: string,
+) {
+  const label = page.getByTestId(labelTestId);
+  await expect(label).toBeVisible();
+  await expect(label).toContainText(expectedLabelText);
+
+  const toggle = page.getByTestId(switchTestId);
+  await expect(toggle).toBeVisible();
+}
+
+// Helper function to check English transcript toggles
+async function checkEnglishTranscriptToggles(page: Page) {
+  // Check that English text is visible for first transcript item
+  const firstTranscriptEnglish = page.getByTestId(
+    `transcript-base-lang-${firstContentId}`,
+  );
+  await expect(firstTranscriptEnglish).toBeVisible();
+  await expect(firstTranscriptEnglish).toContainText('Easy Linguistics Radio');
+
+  // Check that English text is visible for second transcript item
+  const secondTranscriptEnglish = page.getByTestId(
+    `transcript-base-lang-${secondContentId}`,
+  );
+  await expect(secondTranscriptEnglish).toBeVisible();
+  await expect(secondTranscriptEnglish).toContainText(
+    'Mizu/I read this novel recently.',
+  );
+
+  // Press the English toggle to hide English text
+  const englishToggle = page.getByTestId('english-switch');
+  await englishToggle.click();
+
+  // Wait for toggle to take effect
+  await page.waitForTimeout(500);
+
+  // Assert that English texts are no longer visible
+  await expect(firstTranscriptEnglish).not.toBeVisible();
+  await expect(secondTranscriptEnglish).not.toBeVisible();
+
+  // Toggle back to show English text again
+  await englishToggle.click();
+  await page.waitForTimeout(500);
+
+  // Verify English text is visible again
+  await expect(firstTranscriptEnglish).toBeVisible();
+  await expect(secondTranscriptEnglish).toBeVisible();
+  await englishToggle.click();
+}
+
 test.beforeEach(async ({ page }) => {
   // Setup API mocking for all tests
   await setupApiMocks(page);
@@ -128,7 +182,13 @@ test.only('landing screen -> learning content screen navigation', async ({
   await checkLearningScreenTab(page, 'words-tab-trigger', 'Words 55/84', false);
   await checkLearningScreenTab(page, 'meta-tab-trigger', 'Meta', false);
 
-  // ProgressHeader 0/153
+  // video controls
+  await checkVideoControl(page, 'review-label', 'review-switch', 'Review');
+  await checkVideoControl(page, 'english-label', 'english-switch', '🇬🇧');
+  await checkVideoControl(page, 'subs-label', 'subs-switch', 'Subs');
+
+  // test English toggle functionality
+  await checkEnglishTranscriptToggles(page);
 
   //
 });

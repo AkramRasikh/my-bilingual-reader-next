@@ -77,7 +77,11 @@ const TranscriptItemContent = () => {
               languageSelectedState={languageSelectedState}
             />
           </p>
-          {!onlyShowEngState && <p>{baseLang}</p>}
+          {!onlyShowEngState && (
+            <p data-testid={`transcript-base-lang-${contentItem.id}`}>
+              {baseLang}
+            </p>
+          )}
         </>
       )}
       {transliteration && <p className='mt-1 border-t-2'>{transliteration}</p>}
