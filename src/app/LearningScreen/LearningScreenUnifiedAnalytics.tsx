@@ -63,10 +63,16 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
       >
         Sentences: {sentencesNeedReview}/{sentencesPendingOrDue}
       </p>
-      <p className='text-xs font-medium m-auto w-fit'>
+      <p
+        className='text-xs font-medium m-auto w-fit'
+        data-testid='analytics-words-due'
+      >
         Words Due: {contentMetaWordMemoized.length}
       </p>
-      <p className='text-xs font-medium m-auto w-fit'>
+      <p
+        className='text-xs font-medium m-auto w-fit'
+        data-testid='analytics-snippets-due'
+      >
         Snippets Due: {numberOfDueSnippets}/{numberOfReviewDataSnippets}/
         {contentSnippets.length}
       </p>

@@ -11,9 +11,7 @@ const LearningScreenContentContainer = () => {
   const { updateContentMetaData } = useFetchData();
   const { selectedContentState, isInReviewMode } = useLearningScreen();
 
-  const isFullReview = selectedContentState?.isFullReview;
-
-  const topicName = !isFullReview && selectedContentState?.title;
+  const topicName = selectedContentState?.title;
 
   return (
     <div className='flex-1 w-xl'>
@@ -22,11 +20,7 @@ const LearningScreenContentContainer = () => {
         <LearningScreenTabTranscript />
         {isInReviewMode && <LearningScreenTabJointTranscriptWords />}
         <LearningScreenTabWords />
-        {topicName && (
-          <LearningScreenTabMeta
-            updateContentMetaData={updateContentMetaData}
-          />
-        )}
+        <LearningScreenTabMeta updateContentMetaData={updateContentMetaData} />
       </Tabs>
     </div>
   );

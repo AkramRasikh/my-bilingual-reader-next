@@ -36,10 +36,16 @@ const BreadCrumbHeaderBase = ({
         <BreadcrumbItem>
           {href ? (
             <BreadcrumbLink asChild>
-              <Link href={href}>{heading}</Link>
+              <Link href={href} data-testid='breadcrumb-heading'>
+                {heading}
+              </Link>
             </BreadcrumbLink>
           ) : (
-            <BreadcrumbLink onClick={onClick} className='cursor-pointer'>
+            <BreadcrumbLink
+              onClick={onClick}
+              className='cursor-pointer'
+              data-testid='breadcrumb-heading'
+            >
               {heading}
             </BreadcrumbLink>
           )}
@@ -48,7 +54,7 @@ const BreadCrumbHeaderBase = ({
           <>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage 
+              <BreadcrumbPage
                 className='font-medium text-gray-500'
                 data-testid='breadcrumb-subheading'
               >

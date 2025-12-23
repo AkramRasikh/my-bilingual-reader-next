@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import { setupApiMocks } from './helpers/mock-api';
 import { landingMetaData } from './helpers/landing-meta-data';
 import { mockEasyLinguisticsRadioSignLangIslandSnippets } from './mock-data/easy-linguistics-radio-sign-lang-island';
@@ -10,12 +10,67 @@ const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
 const secondContentId = '9007135c-20a0-4481-9ba7-53f7866e962e';
 const thirdContentId = '814797e3-2a33-4654-a754-3cf3754592cc';
 
+// Helper function to check sentence count
+async function checkSentenceCount(page: Page, expectedText: string) {
+  const sentencesCount = page.getByTestId('analytics-sentences-count');
+  await expect(sentencesCount).toBeVisible();
+  await expect(sentencesCount).toContainText(expectedText);
+}
+
+// Helper function to check words count
+async function checkWordsTabCount(page: Page, expectedText: string) {
+  const wordsTabTrigger = page.getByTestId('words-tab-trigger');
+  await expect(wordsTabTrigger).toBeVisible();
+  await expect(wordsTabTrigger).toContainText(expectedText);
+  return wordsTabTrigger;
+}
+
+// Helper function to check words due count
+async function checkWordsDueMeta(page: Page, expectedText: string) {
+  const wordsDue = page.getByTestId('analytics-words-due');
+  await expect(wordsDue).toBeVisible();
+  await expect(wordsDue).toContainText(expectedText);
+}
+
+// Helper function to check snippets due count
+async function checkSnippetsDueMeta(page: Page, expectedText: string) {
+  const snippetsDue = page.getByTestId('analytics-snippets-due');
+  await expect(snippetsDue).toBeVisible();
+  await expect(snippetsDue).toContainText(expectedText);
+}
+
+// Helper function to check progress header text
+async function checkProgressHeader(page: Page, expectedText: string) {
+  const progressHeader = page.getByTestId('progress-header-text');
+  await expect(progressHeader).toBeVisible();
+  await expect(progressHeader).toContainText(expectedText);
+}
+
+// Helper function to check learning screen tab
+async function checkLearningScreenTab(
+  page: Page,
+  testId: string,
+  expectedText: string,
+  shouldBeDisabled?: boolean,
+) {
+  const tabTrigger = page.getByTestId(testId);
+  await expect(tabTrigger).toBeVisible();
+  await expect(tabTrigger).toContainText(expectedText);
+  if (shouldBeDisabled !== undefined) {
+    if (shouldBeDisabled) {
+      await expect(tabTrigger).toBeDisabled();
+    } else {
+      await expect(tabTrigger).toBeEnabled();
+    }
+  }
+}
+
 test.beforeEach(async ({ page }) => {
   // Setup API mocking for all tests
   await setupApiMocks(page);
 });
 
-test('landing screen -> learning content screen navigation', async ({
+test.only('landing screen -> learning content screen navigation', async ({
   page,
 }) => {
   await page.goto('/');
@@ -40,6 +95,42 @@ test('landing screen -> learning content screen navigation', async ({
   const subHeading = page.getByTestId('breadcrumb-subheading');
   await expect(subHeading).toBeVisible();
   await expect(subHeading).toContainText(contentTitle);
+
+  // home header
+  const heading = page.getByTestId('breadcrumb-heading');
+  await expect(heading).toContainText('Home');
+  // left side meta data
+  await checkSentenceCount(page, '153/200');
+  await checkWordsDueMeta(page, 'Words Due: 55');
+  await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
+  await checkProgressHeader(page, '0/153');
+
+  const bulkReviewBefore = page.getByText('Bulk Review: 5');
+  await expect(bulkReviewBefore).toBeVisible();
+
+  const repsCount = page.getByTestId('analytics-reps-count');
+  await expect(repsCount).toContainText('Reps: 0');
+
+  // tab data
+  await checkWordsTabCount(page, 'Words 55/84');
+  await checkLearningScreenTab(
+    page,
+    'transcript-tab-trigger',
+    'Transcript',
+    false,
+  );
+  await checkLearningScreenTab(
+    page,
+    'comprehensive-tab-trigger',
+    'Comprehensive',
+    true,
+  );
+  await checkLearningScreenTab(page, 'words-tab-trigger', 'Words 55/84', false);
+  await checkLearningScreenTab(page, 'meta-tab-trigger', 'Meta', false);
+
+  // ProgressHeader 0/153
+
+  //
 });
 
 test('transcript item menu interactions and review', async ({ page }) => {
@@ -154,10 +245,9 @@ test('transcript item review error handling', async ({ page }) => {
   await page.waitForLoadState('networkidle');
 
   // Verify initial sentence count and reps
+  await checkSentenceCount(page, '/200');
   const sentencesCount = page.getByTestId('analytics-sentences-count');
-  await expect(sentencesCount).toBeVisible();
   const initialSentencesText = await sentencesCount.textContent();
-  expect(initialSentencesText).toContain('/200');
 
   const repsCount = page.getByTestId('analytics-reps-count');
   await expect(repsCount).toBeVisible();
@@ -320,7 +410,7 @@ test('save word from transcript item - error handling', async ({ page }) => {
   await expect(openaiButton).not.toBeVisible();
 
   // Verify Words count remained at 55/84 (no change due to error)
-  await expect(wordsTabTrigger).toContainText('Words 55/84');
+  await checkWordsTabCount(page, 'Words 55/84');
 
   // Verify the word is NOT underlined (since save failed)
   const underlinedWord = transcriptTargetLang
@@ -494,7 +584,7 @@ test('delete word from transcript item - error handling', async ({ page }) => {
   await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
 
   // Verify Words count increased to 55/85
-  await expect(wordsTabTrigger).toContainText('Words 55/85');
+  await checkWordsTabCount(page, 'Words 55/85');
 
   // Now hover over the saved word to open hover card
   const underlinedWord = transcriptTargetLang
@@ -541,7 +631,7 @@ test('delete word from transcript item - error handling', async ({ page }) => {
   await expect(clickAndConfirmLoading).not.toBeVisible({ timeout: 5000 });
 
   // Verify Words count remained at 55/85 (no change due to error)
-  await expect(wordsTabTrigger).toContainText('Words 55/85');
+  await checkWordsTabCount(page, 'Words 55/85');
 
   // Verify the word is still underlined (deletion failed)
   // Move mouse away first to close hover card
@@ -634,9 +724,7 @@ test('save word from transcript item', async ({ page }) => {
   const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
 
   // Verify initial Words count
-  const wordsTabTrigger = page.getByTestId('words-tab-trigger');
-  await expect(wordsTabTrigger).toBeVisible();
-  await expect(wordsTabTrigger).toContainText('Words 55/84');
+  const wordsTabTrigger = await checkWordsTabCount(page, 'Words 55/84');
 
   // Find the transcript item with text "ゆる言語学ラジオ"
   const transcriptTargetLang = page.getByTestId(
@@ -744,7 +832,7 @@ test('save word from transcript item', async ({ page }) => {
   await expect(googleButton).not.toBeVisible();
 
   // Verify Words count increased from 55/84 to 55/85
-  await expect(wordsTabTrigger).toContainText('Words 55/85');
+  await checkWordsTabCount(page, 'Words 55/85');
 
   // Now hover over the saved word to verify it shows in hover card
   // The word should now be underlined in the transcript
@@ -802,7 +890,7 @@ test('save word from transcript item', async ({ page }) => {
   await expect(clickAndConfirmLoading).not.toBeVisible({ timeout: 5000 });
 
   // Verify Words count went back to 55/84
-  await expect(wordsTabTrigger).toContainText('Words 55/84');
+  await checkWordsTabCount(page, 'Words 55/84');
 
   // Verify the word is no longer underlined
   // The underlined word should not be visible anymore
@@ -1371,10 +1459,8 @@ test.describe('Keyboard actions', () => {
     // Use specific content ID for reliable targeting
 
     // Verify initial sentence count and reps are 0
+    await checkSentenceCount(page, '/200');
     const sentencesCount = page.getByTestId('analytics-sentences-count');
-    await expect(sentencesCount).toBeVisible();
-    const initialSentencesText = await sentencesCount.textContent();
-    expect(initialSentencesText).toContain('/200');
 
     const repsCount = page.getByTestId('analytics-reps-count');
     await expect(repsCount).toBeVisible();
