@@ -35,8 +35,8 @@ const LearningScreenActionBarVideoControls = () => {
         />
       </div>
       <div className='w-px h-5 my-auto bg-gray-300' />
-      <div className='w-px h-5 my-auto bg-gray-300' />
       <CountdownTimer audioTimeRef={ref} />
+      <div className='w-px h-5 my-auto bg-gray-300' />
       <CountUpTimer elapsed={elapsed} setElapsed={setElapsed} />
     </div>
   );
