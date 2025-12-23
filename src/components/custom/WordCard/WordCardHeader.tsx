@@ -12,6 +12,7 @@ const WordCardHeader = ({
   openContentState,
   wordContextIsPlaying,
   wordHasOverlappingSnippetTime,
+  id,
 }) => (
   <div className='flex gap-3 flex-wrap justify-between'>
     <CardTitle
@@ -32,6 +33,7 @@ const WordCardHeader = ({
           wordHasOverlappingSnippetTime ? 'bg-green-400' : 'bg-transparent',
         )}
         onClick={onClickPlayContext}
+        data-testid={`word-card-play-button-${id}`}
       >
         {wordContextIsPlaying ? <LucidePause /> : <LucidePlay />}
       </Button>
@@ -46,6 +48,7 @@ const WordCardHeader = ({
         variant={'secondary'}
         className={'h-3 w-3 p-3 bg-transparent'}
         onClick={() => setOpenContentState(!openContentState)}
+        data-testid={`word-card-more-button-${id}`}
       >
         <MoreVerticalIcon />
       </Button>

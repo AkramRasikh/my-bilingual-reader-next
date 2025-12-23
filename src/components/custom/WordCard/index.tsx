@@ -99,9 +99,14 @@ const WordCard = ({
     });
 
   return (
-    <WordCardWrapper isLoadingState={isLoadingState} isWordDue={isWordDue}>
+    <WordCardWrapper
+      id={id}
+      isLoadingState={isLoadingState}
+      isWordDue={isWordDue}
+    >
       <AnimationWrapper>
         <WordCardHeader
+          id={id}
           textTitle={textTitle}
           isInBasket={isInBasket}
           onClickBasket={handleAddWordToBasket}

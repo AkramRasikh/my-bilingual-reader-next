@@ -11,6 +11,9 @@ const secondContentId = '9007135c-20a0-4481-9ba7-53f7866e962e';
 const thirdContentId = '814797e3-2a33-4654-a754-3cf3754592cc';
 const checkPointContentId = '97d7e891-a669-4bb4-abe6-a4cb60631666';
 
+const firstDueWordId = '2c08d190-1e96-4147-955a-79620e210c37';
+const firstNonDueWordId = '330a7f02-0971-4281-9be6-24b8d68114db';
+
 // Helper function to check sentence count
 async function checkSentenceCount(page: Page, expectedText: string) {
   const sentencesCount = page.getByTestId('analytics-sentences-count');
@@ -1718,6 +1721,88 @@ test('bulk sentence review - double click to review multiple sentences', async (
 
   const bulkReviewAfter = page.getByText('Bulk Review: 0');
   await expect(bulkReviewAfter).toBeVisible();
+});
+
+test.only('Word tab section', async ({ page }) => {
+  await page.goto('/');
+
+  // Click on the specific content item
+  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+  await contentButton.click();
+
+  // Wait for navigation to complete
+  await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+  // Verify word cards are not visible before clicking words tab
+  const firstDueWordCard = page.getByTestId(
+    `word-card-wrapper-${firstDueWordId}`,
+  );
+  const firstNonDueWordCard = page.getByTestId(
+    `word-card-wrapper-${firstNonDueWordId}`,
+  );
+  await expect(firstDueWordCard).not.toBeVisible();
+  await expect(firstNonDueWordCard).not.toBeVisible();
+
+  // Click on words-tab-trigger
+  const firstTranscriptEnglish = page.getByTestId(
+    `transcript-base-lang-${firstContentId}`,
+  );
+  await expect(firstTranscriptEnglish).toBeVisible();
+  const wordsTabTrigger = page.getByTestId('words-tab-trigger');
+  await expect(wordsTabTrigger).toBeVisible();
+  await wordsTabTrigger.click();
+  await expect(firstTranscriptEnglish).not.toBeVisible();
+
+  await page.waitForTimeout(2000);
+
+  // Verify word cards are now visible after clicking words tab
+  await expect(firstDueWordCard).toBeVisible();
+  await expect(firstNonDueWordCard).toBeVisible();
+
+  // Click play button on the first due word card
+  const firstDueWordPlayButton = page.getByTestId(
+    `word-card-play-button-${firstDueWordId}`,
+  );
+  await expect(firstDueWordPlayButton).toBeVisible();
+  await firstDueWordPlayButton.click();
+
+  // Wait for video to start playing
+  await page.waitForTimeout(1000);
+
+  // Verify the specific Japanese text is visible
+  const japaneseText = page.getByText(
+    '堀/え、音声言語は使わなかったってこと？水/音声言語はね、使われていたみたいです。',
+  );
+  await expect(japaneseText).toBeVisible();
+
+  // Click the play button again to pause
+  await firstDueWordPlayButton.click();
+
+  // Wait for pause to take effect
+  await page.waitForTimeout(500);
+
+  // Click the more button to expand word details
+  const firstDueWordMoreButton = page.getByTestId(
+    `word-card-more-button-${firstDueWordId}`,
+  );
+  await expect(firstDueWordMoreButton).toBeVisible();
+  await firstDueWordMoreButton.click();
+
+  // Wait for details to expand
+  await page.waitForTimeout(500);
+
+  // Verify word information is visible within the word card container
+  await expect(firstDueWordCard.getByText('Base Form:')).toBeVisible();
+  await expect(firstDueWordCard.getByText('Surface Form:')).toBeVisible();
+  await expect(firstDueWordCard.getByText('Phonetic:')).toBeVisible();
+  await expect(firstDueWordCard.getByText('Transliteration:')).toBeVisible();
+  await expect(firstDueWordCard.getByText('Definition:')).toBeVisible();
+
+  // Verify values - 音声言語 appears twice (Base Form and Surface Form)
+  await expect(firstDueWordCard.getByText('音声言語')).toHaveCount(3);
+  await expect(firstDueWordCard.getByText('おんせいげんご')).toBeVisible();
+  await expect(firstDueWordCard.getByText('Onsei gengo')).toBeVisible();
+  await expect(firstDueWordCard.getByText('Spoken Language')).toHaveCount(2);
 });
 
 test.describe('Keyboard actions', () => {
