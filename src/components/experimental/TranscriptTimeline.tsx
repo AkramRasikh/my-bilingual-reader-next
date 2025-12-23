@@ -86,6 +86,7 @@ export default function TranscriptTimeline({
           <Tooltip key={`sentence-${sentence.id}`}>
             <TooltipTrigger asChild>
               <div
+                data-testid={`timeline-sentence-marker-${sentence.id}`}
                 onClick={() => onSelectSentence?.(sentence)}
                 className={cn(
                   'absolute bottom-1/2 w-[2px] h-2 bg-primary hover:bg-primary/70 rounded-full cursor-pointer transition-colors',
@@ -106,6 +107,7 @@ export default function TranscriptTimeline({
           <Tooltip key={`word-${word.id}`}>
             <TooltipTrigger asChild>
               <div
+                data-testid={`timeline-word-marker-${word.id}`}
                 onClick={() => onSelectWord?.(word)}
                 className={cn(
                   'absolute top-1/2 w-[1.5px] h-2 bg-blue-300 hover:bg-blue-300/70 rounded-full cursor-pointer transition-colors',
