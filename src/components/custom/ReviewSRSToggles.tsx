@@ -115,6 +115,7 @@ const ReviewSRSToggles = ({
         'flex gap-1 m-1 justify-center',
         isLoadingSRSState && 'opacity-25',
       )}
+      data-testid={`review-srs-toggles-${contentItem.id}`}
     >
       {reviewTogglesMap.map((btn, index) => (
         <Button

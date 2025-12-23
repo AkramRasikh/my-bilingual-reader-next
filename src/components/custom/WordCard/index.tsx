@@ -88,6 +88,7 @@ const WordCard = ({
       console.log('## handleReviewFunc', error);
     } finally {
       setIsLoadingState(false);
+      setOpenContentState(false);
     }
   };
 

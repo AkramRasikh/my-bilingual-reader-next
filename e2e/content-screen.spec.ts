@@ -1723,7 +1723,7 @@ test('bulk sentence review - double click to review multiple sentences', async (
   await expect(bulkReviewAfter).toBeVisible();
 });
 
-test.only('Word tab section', async ({ page }) => {
+test('Word tab section', async ({ page }) => {
   await page.goto('/');
 
   // Click on the specific content item
@@ -1792,6 +1792,7 @@ test.only('Word tab section', async ({ page }) => {
   await page.waitForTimeout(500);
 
   // Verify word information is visible within the word card container
+  await expect(firstDueWordCard.getByText('1) Spoken Language')).toBeVisible();
   await expect(firstDueWordCard.getByText('Base Form:')).toBeVisible();
   await expect(firstDueWordCard.getByText('Surface Form:')).toBeVisible();
   await expect(firstDueWordCard.getByText('Phonetic:')).toBeVisible();
@@ -1843,6 +1844,55 @@ test.only('Word tab section', async ({ page }) => {
 
   // Verify the new value is displayed
   await expect(firstDueWordCard.getByText('Spoken Gengo')).toHaveCount(2);
+
+  // Find the review SRS toggles container
+  const reviewSRSToggles = page.getByTestId(
+    `review-srs-toggles-${firstDueWordId}`,
+  );
+  await expect(reviewSRSToggles).toBeVisible();
+
+  // Find and click the "2 days" button
+  const twoDaysButton = reviewSRSToggles.getByRole('button', {
+    name: /2 days/i,
+  });
+  await expect(twoDaysButton).toBeVisible();
+
+  // Mock the /api/updateWord call for the SRS review
+  const twoDaysFromNow = new Date();
+  twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
+
+  await page.route('**/api/updateWord', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        reviewData: {
+          difficulty: 7.1949,
+          due: twoDaysFromNow.toISOString(),
+          ease: 2.5,
+          elapsed_days: 0,
+          interval: 0,
+          lapses: 0,
+          last_review: new Date().toISOString(),
+          reps: 1,
+          scheduled_days: 0,
+          stability: 0.40255,
+          state: 1,
+        },
+      }),
+    });
+  });
+
+  await checkWordsDueMeta(page, 'Words Due: 55');
+  await checkLearningScreenTab(page, 'words-tab-trigger', 'Words 55/84', false);
+
+  // Click the "2 days" button
+  await twoDaysButton.click();
+  await checkWordsDueMeta(page, 'Words Due: 54');
+  await checkLearningScreenTab(page, 'words-tab-trigger', 'Words 54/84', false);
+
+  await expect(firstDueWordCard.getByText('1) Spoken Gengo')).not.toBeVisible();
+  await expect(firstDueWordCard.getByText('55) Spoken Gengo')).toBeVisible();
 });
 
 test.describe('Keyboard actions', () => {
