@@ -48,6 +48,9 @@ const WordCardEditState = ({
         {/* LABEL — CLICK TO EDIT */}
         <button
           onClick={() => setIsEditing(true)}
+          data-testid={`word-card-edit-label-${label
+            .toLowerCase()
+            .replace(/\s+/g, '-')}`}
           className='text-sm font-semibold whitespace-nowrap text-left cursor-pointer hover:opacity-70 transition my-auto'
         >
           {label}:
@@ -69,12 +72,18 @@ const WordCardEditState = ({
             />
             <button
               onClick={handleSave}
+              data-testid={`word-card-save-button-${label
+                .toLowerCase()
+                .replace(/\s+/g, '-')}`}
               className='p-1 text-green-600 hover:text-green-800'
             >
               <Check size={18} />
             </button>
             <button
               onClick={handleCancel}
+              data-testid={`word-card-cancel-button-${label
+                .toLowerCase()
+                .replace(/\s+/g, '-')}`}
               className='p-1 text-red-600 hover:text-red-800'
             >
               <X size={18} />

@@ -1803,6 +1803,46 @@ test.only('Word tab section', async ({ page }) => {
   await expect(firstDueWordCard.getByText('おんせいげんご')).toBeVisible();
   await expect(firstDueWordCard.getByText('Onsei gengo')).toBeVisible();
   await expect(firstDueWordCard.getByText('Spoken Language')).toHaveCount(2);
+
+  // Click on the Definition label to enter edit mode
+  const definitionLabel = page.getByTestId('word-card-edit-label-definition');
+  await expect(definitionLabel).toBeVisible();
+  await definitionLabel.click();
+
+  // Wait for edit mode to activate
+  await page.waitForTimeout(300);
+
+  // Verify check and X buttons are now visible
+  const saveButton = page.getByTestId('word-card-save-button-definition');
+  const cancelButton = page.getByTestId('word-card-cancel-button-definition');
+  await expect(saveButton).toBeVisible();
+  await expect(cancelButton).toBeVisible();
+
+  // Find the textarea and change the value from "Spoken Language" to "Spoken Gengo"
+  const textarea = firstDueWordCard.locator('textarea');
+  await expect(textarea).toBeVisible();
+  await textarea.fill('Spoken Gengo');
+
+  // Mock the API call to /api/updateWord
+  await page.route('**/api/updateWord', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        definition: 'Spoken Gengo',
+      }),
+    });
+  });
+
+  // Click the save button
+  await saveButton.click();
+
+  // Wait for the API call and verify toast message
+  const toastMessage = page.getByText('Word reviewed ✅');
+  await expect(toastMessage).toBeVisible({ timeout: 3000 });
+
+  // Verify the new value is displayed
+  await expect(firstDueWordCard.getByText('Spoken Gengo')).toHaveCount(2);
 });
 
 test.describe('Keyboard actions', () => {
