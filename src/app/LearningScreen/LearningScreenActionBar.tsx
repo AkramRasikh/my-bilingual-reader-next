@@ -41,12 +41,17 @@ const LearningScreenActionBar = () => {
       <div className='flex gap-2 flex-wrap'>
         {!isInReviewMode && (
           <>
-            <Button onClick={handleStudyFromHere} variant={'outline'}>
-              Study here {studyFromHereTimeState}
+            <Button
+              onClick={handleStudyFromHere}
+              variant={'outline'}
+              data-testid='study-here-button'
+            >
+              Study here {studyFromHereTimeState + 1}
             </Button>
             {studyFromHereTimeStateNumber && (
               <Button
                 variant={'destructive'}
+                data-testid='clear-button'
                 onClick={() => setStudyFromHereTimeState(null)}
               >
                 Clear

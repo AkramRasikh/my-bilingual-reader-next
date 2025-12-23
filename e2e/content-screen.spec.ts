@@ -9,6 +9,7 @@ const contentTitle = contentData.title; // Using the first content item for navi
 const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
 const secondContentId = '9007135c-20a0-4481-9ba7-53f7866e962e';
 const thirdContentId = '814797e3-2a33-4654-a754-3cf3754592cc';
+const checkPointContentId = '97d7e891-a669-4bb4-abe6-a4cb60631666';
 
 // Helper function to check sentence count
 async function checkSentenceCount(page: Page, expectedText: string) {
@@ -116,7 +117,164 @@ async function checkEnglishTranscriptToggles(page: Page) {
   // Verify English text is visible again
   await expect(firstTranscriptEnglish).toBeVisible();
   await expect(secondTranscriptEnglish).toBeVisible();
-  await englishToggle.click();
+}
+
+// Helper function to check action bar buttons in non-review state
+async function checkActionBarButtons(page: Page) {
+  // Check Study here button is visible
+  const studyHereButton = page.getByTestId('study-here-button');
+  await expect(studyHereButton).toBeVisible();
+  await expect(studyHereButton).toContainText('Study here');
+
+  // Check Current button is visible
+  const currentButton = page.getByTestId('current-button');
+  await expect(currentButton).toBeVisible();
+  await expect(currentButton).toContainText('Current');
+
+  // Check Checkpoint button is visible
+  const checkpointButton = page.getByTestId('checkpoint-button');
+  await expect(checkpointButton).toBeVisible();
+  await expect(checkpointButton).toContainText('Checkpoint');
+
+  // Verify checkpoint transcript item is NOT in viewport before clicking
+  const checkpointTranscriptItem = page.getByTestId(
+    `transcript-target-lang-${checkPointContentId}`,
+  );
+  const checkpointNotVisibleInitially = await checkpointTranscriptItem.evaluate(
+    (el) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
+    },
+  );
+  expect(checkpointNotVisibleInitially).toBe(false);
+
+  // Click Checkpoint button
+  await checkpointButton.click();
+
+  // Wait for 2 seconds
+  await page.waitForTimeout(2000);
+
+  // Verify checkpoint transcript item IS in viewport after scroll
+  const checkpointVisibleAfterScroll = await checkpointTranscriptItem.evaluate(
+    (el) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
+    },
+  );
+  expect(checkpointVisibleAfterScroll).toBe(true);
+
+  // Verify first transcript item is NOT in viewport after scroll
+  const firstTranscriptItem = page.getByTestId(
+    `transcript-target-lang-${firstContentId}`,
+  );
+  const firstNotVisibleAfterScroll = await firstTranscriptItem.evaluate(
+    (el) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
+    },
+  );
+  expect(firstNotVisibleAfterScroll).toBe(false);
+
+  // Click play on the first transcript item
+  const firstPlayButton = page.getByTestId(
+    `transcript-play-button-${firstContentId}`,
+  );
+  await expect(firstPlayButton).toBeVisible();
+  await firstPlayButton.click();
+
+  // Wait for play action to register
+  await page.waitForTimeout(1000);
+
+  // Click Current button to scroll to the playing item
+  await currentButton.click();
+
+  // Wait for scroll animation
+  await page.waitForTimeout(2000);
+
+  // Verify first transcript item IS in viewport after clicking Current
+  const firstVisibleAfterCurrent = await firstTranscriptItem.evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <=
+        (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  });
+  expect(firstVisibleAfterCurrent).toBe(true);
+
+  // Verify checkpoint transcript item is NOT in viewport after clicking Current
+  const checkpointNotVisibleAfterCurrent =
+    await checkpointTranscriptItem.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
+    });
+  expect(checkpointNotVisibleAfterCurrent).toBe(false);
+
+  // Click play on the third transcript item
+  const thirdPlayButton = page.getByTestId(
+    `transcript-play-button-${thirdContentId}`,
+  );
+  await expect(thirdPlayButton).toBeVisible();
+  await thirdPlayButton.click();
+
+  // Wait for play action to register
+  await page.waitForTimeout(1000);
+
+  // Click Study here button
+  await studyHereButton.click();
+
+  // Wait for study mode to activate
+  await page.waitForTimeout(500);
+
+  // Verify Study here button text becomes "Study here 3"
+  await expect(studyHereButton).toContainText('Study here 3');
+
+  // Verify Clear button is visible
+  const clearButton = page.getByTestId('clear-button');
+  await expect(clearButton).toBeVisible();
+  await expect(clearButton).toContainText('Clear');
+
+  // Verify first transcript item is NOT visible in UI
+  const firstTranscriptItemAfterStudy = page.getByTestId(
+    `transcript-target-lang-${firstContentId}`,
+  );
+  await expect(firstTranscriptItemAfterStudy).not.toBeVisible();
+
+  // Verify second transcript item is NOT visible in UI
+  const secondTranscriptItem = page.getByTestId(
+    `transcript-target-lang-${secondContentId}`,
+  );
+  await expect(secondTranscriptItem).not.toBeVisible();
 }
 
 test.beforeEach(async ({ page }) => {
@@ -189,7 +347,8 @@ test.only('landing screen -> learning content screen navigation', async ({
   // test English toggle functionality
   await checkEnglishTranscriptToggles(page);
 
-  //
+  // check action bar buttons (non-review state)
+  await checkActionBarButtons(page);
 });
 
 test('transcript item menu interactions and review', async ({ page }) => {
