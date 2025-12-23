@@ -275,6 +275,30 @@ async function checkActionBarButtons(page: Page) {
     `transcript-target-lang-${secondContentId}`,
   );
   await expect(secondTranscriptItem).not.toBeVisible();
+
+  // Verify TranscriptItemSecondary shows the third content
+  const thirdContentJapaneseText = page.getByText(
+    '堀/はい。はい。水/『目で見ることばで話をさせて』という小説なんですけど、これあらすじを話しますと',
+  );
+  await expect(thirdContentJapaneseText).toHaveCount(2);
+
+  const thirdContentEnglishTextShort = page.getByText(
+    'Hori/Yes. Yes. Mizu/It\'s called "Let Me Speak with the Language of My Eyes." Here\'s the synopsis:',
+  );
+  await expect(thirdContentEnglishTextShort).toHaveCount(2);
+
+  // Check for the long English text (may have special quotes)
+  const transcriptSecondary = page.getByTestId('transcript-item-secondary');
+  await expect(transcriptSecondary).toBeVisible();
+  await expect(transcriptSecondary).toContainText('Hori: Yes, yes. Mizuki:');
+  await expect(transcriptSecondary).toContainText(
+    'but if I talk about this summary',
+  );
+
+  const thirdContentEnglishTextLong = page.getByText(
+    'Hori: Yes, yes. Mizuki: It is a novel called ‘Let’s talk with words seen by the eyes,’ but if I talk about this summary,',
+  );
+  await expect(thirdContentEnglishTextLong).toBeVisible();
 }
 
 test.beforeEach(async ({ page }) => {
