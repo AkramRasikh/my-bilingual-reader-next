@@ -5,11 +5,10 @@ import useLearningScreen from './useLearningScreen';
 import LearningScreenTabTranscript from './TabContent/LearningScreenTabTranscript';
 import LearningScreenTabWords from './TabContent/LearningScreenTabWords';
 import { useFetchData } from '../Providers/FetchDataProvider';
-import LearningScreenTabJointTranscriptWords from './TabContent/LearningScreenTabJointTranscriptWords';
 
 const LearningScreenContentContainer = () => {
   const { updateContentMetaData } = useFetchData();
-  const { selectedContentState, isInReviewMode } = useLearningScreen();
+  const { selectedContentState } = useLearningScreen();
 
   const topicName = selectedContentState?.title;
 
@@ -18,7 +17,6 @@ const LearningScreenContentContainer = () => {
       <Tabs defaultValue='transcript'>
         <LearningScreenTabSelection topicName={topicName} />
         <LearningScreenTabTranscript />
-        {isInReviewMode && <LearningScreenTabJointTranscriptWords />}
         <LearningScreenTabWords />
         <LearningScreenTabMeta updateContentMetaData={updateContentMetaData} />
       </Tabs>

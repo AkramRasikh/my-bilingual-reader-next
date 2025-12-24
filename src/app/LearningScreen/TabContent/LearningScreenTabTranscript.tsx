@@ -1,12 +1,14 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { TabsContent } from '@/components/ui/tabs';
 import useLearningScreen from '../useLearningScreen';
 import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
-import LearningScreenTabTranscriptNestedWordsReview from './LearningScreenTabTranscriptNestedWordsReview';
 import getBiggestOverlap from '@/components/custom/TranscriptItem/get-biggest-overlap';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import LearningScreenComprehensiveReview from '../LearningScreenComprehensiveReview';
 
 const LearningScreenTabTranscript = () => {
   const {
@@ -30,7 +32,6 @@ const LearningScreenTabTranscript = () => {
     scrollToElState,
     wordsForSelectedTopic,
     learnFormattedTranscript,
-    sentencesForReviewMemoized,
     handleDeleteSnippet,
     savedSnippetsMemoized,
     setThreeSecondLoopState,
@@ -38,6 +39,7 @@ const LearningScreenTabTranscript = () => {
     handlePlayFromHere,
     overlappingTextMemoized,
     handleSaveSnippet,
+    setIsInReviewMode,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -45,7 +47,9 @@ const LearningScreenTabTranscript = () => {
     handleSaveWord,
     handleDeleteWordDataProvider,
   } = useFetchData();
-  const hasSentencesAndWordsInTandem = sentencesForReviewMemoized?.length > 0;
+
+  const [inComprehensiveModeState, setInComprehensiveModeState] =
+    useState(false);
 
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
 
@@ -64,63 +68,96 @@ const LearningScreenTabTranscript = () => {
       value='transcript'
       className={clsx(contentClasses, 'border rounded-lg')}
     >
-      {hasSentencesAndWordsInTandem && (
-        <LearningScreenTabTranscriptNestedWordsReview
-          sentencesForReviewMemoized={sentencesForReviewMemoized}
-        />
+      <div className='p-1'>
+        <div className='flex gap-2 my-auto'>
+          <Label data-testid='review-label'>Review</Label>
+          <Switch
+            checked={isInReviewMode}
+            onCheckedChange={setIsInReviewMode}
+            data-testid='review-switch'
+          />
+          <div
+            className={clsx(
+              'w-px h-5 my-auto bg-gray-300',
+              !isInReviewMode && 'opacity-50',
+            )}
+          />
+          <Label
+            data-testid='comprehensive-mode-label'
+            className={clsx(!isInReviewMode && 'opacity-50')}
+          >
+            Comprehensive Mode
+          </Label>
+          <Switch
+            checked={inComprehensiveModeState}
+            onCheckedChange={(checked) => {
+              if (isInReviewMode) {
+                setInComprehensiveModeState(checked);
+              }
+            }}
+            disabled={!isInReviewMode}
+            data-testid='comprehensive-mode-switch'
+          />
+        </div>
+      </div>
+      {inComprehensiveModeState ? (
+        <LearningScreenComprehensiveReview />
+      ) : (
+        <ul
+          className={clsx(
+            'gap-1',
+            isInReviewMode ? 'inline-flex flex-wrap' : 'flex flex-col',
+          )}
+          ref={transcriptRef}
+        >
+          {learnFormattedTranscript.map((contentItem, index) => {
+            return (
+              <div key={index}>
+                <TranscriptItemProvider
+                  indexNum={index}
+                  threeSecondLoopState={threeSecondLoopState}
+                  overlappingSnippetDataState={overlappingSnippetDataState}
+                  contentItem={contentItem}
+                  breakdownSentencesArrState={breakdownSentencesArrState}
+                  masterPlay={masterPlay}
+                  isGenericItemLoadingState={isGenericItemLoadingState}
+                  handleSaveWord={handleSaveWord}
+                  handleDeleteWordDataProvider={handleDeleteWordDataProvider}
+                  wordsState={wordsState}
+                  isInReviewMode={isInReviewMode}
+                  onlyShowEngState={onlyShowEngState}
+                  setLoopTranscriptState={setLoopTranscriptState}
+                  loopTranscriptState={loopTranscriptState}
+                  handleReviewFunc={handleReviewFunc}
+                  isVideoPlaying={isVideoPlaying}
+                  handlePause={handlePause}
+                  handleFromHere={handleFromHere}
+                  handleBreakdownSentence={handleBreakdownSentence}
+                  setBreakdownSentencesArrState={setBreakdownSentencesArrState}
+                  isBreakingDownSentenceArrState={
+                    isBreakingDownSentenceArrState
+                  }
+                  scrollToElState={scrollToElState}
+                  wordsForSelectedTopic={wordsForSelectedTopic}
+                  languageSelectedState={languageSelectedState}
+                  savedSnippetsMemoized={savedSnippetsMemoized}
+                  handleDeleteSnippet={handleDeleteSnippet}
+                  setThreeSecondLoopState={setThreeSecondLoopState}
+                  setContractThreeSecondLoopState={
+                    setContractThreeSecondLoopState
+                  }
+                  handlePlayFromHere={handlePlayFromHere}
+                  biggestOverlappedSnippet={biggestOverlappedSnippet}
+                  overlappingTextMemoized={overlappingTextMemoized}
+                  handleSaveSnippet={handleSaveSnippet}
+                >
+                  <TranscriptItem />
+                </TranscriptItemProvider>
+              </div>
+            );
+          })}
+        </ul>
       )}
-      <ul
-        className={clsx(
-          'gap-1',
-          isInReviewMode ? 'inline-flex flex-wrap' : 'flex flex-col',
-        )}
-        ref={transcriptRef}
-      >
-        {learnFormattedTranscript.map((contentItem, index) => {
-          return (
-            <div key={index}>
-              <TranscriptItemProvider
-                indexNum={index}
-                threeSecondLoopState={threeSecondLoopState}
-                overlappingSnippetDataState={overlappingSnippetDataState}
-                contentItem={contentItem}
-                breakdownSentencesArrState={breakdownSentencesArrState}
-                masterPlay={masterPlay}
-                isGenericItemLoadingState={isGenericItemLoadingState}
-                handleSaveWord={handleSaveWord}
-                handleDeleteWordDataProvider={handleDeleteWordDataProvider}
-                wordsState={wordsState}
-                isInReviewMode={isInReviewMode}
-                onlyShowEngState={onlyShowEngState}
-                setLoopTranscriptState={setLoopTranscriptState}
-                loopTranscriptState={loopTranscriptState}
-                handleReviewFunc={handleReviewFunc}
-                isVideoPlaying={isVideoPlaying}
-                handlePause={handlePause}
-                handleFromHere={handleFromHere}
-                handleBreakdownSentence={handleBreakdownSentence}
-                setBreakdownSentencesArrState={setBreakdownSentencesArrState}
-                isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
-                scrollToElState={scrollToElState}
-                wordsForSelectedTopic={wordsForSelectedTopic}
-                languageSelectedState={languageSelectedState}
-                savedSnippetsMemoized={savedSnippetsMemoized}
-                handleDeleteSnippet={handleDeleteSnippet}
-                setThreeSecondLoopState={setThreeSecondLoopState}
-                setContractThreeSecondLoopState={
-                  setContractThreeSecondLoopState
-                }
-                handlePlayFromHere={handlePlayFromHere}
-                biggestOverlappedSnippet={biggestOverlappedSnippet}
-                overlappingTextMemoized={overlappingTextMemoized}
-                handleSaveSnippet={handleSaveSnippet}
-              >
-                <TranscriptItem />
-              </TranscriptItemProvider>
-            </div>
-          );
-        })}
-      </ul>
     </TabsContent>
   );
 };

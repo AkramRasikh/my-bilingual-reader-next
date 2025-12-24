@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { TabsContent } from '@/components/ui/tabs';
-import useLearningScreen from '../useLearningScreen';
+import useLearningScreen from './useLearningScreen';
 import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
-import LearningScreenTabTranscriptNestedWordsReview from './LearningScreenTabTranscriptNestedWordsReview';
-import LearningScreenSnippetReview from '../experimental/LearningScreenSnippetReview';
+import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningScreenTabTranscriptNestedWordsReview';
+import LearningScreenSnippetReview from './experimental/LearningScreenSnippetReview';
 
 function highlightFocusedText(fullText: string, focusedText: string) {
   if (!focusedText) return fullText;
@@ -31,7 +30,7 @@ function highlightFocusedText(fullText: string, focusedText: string) {
   );
 }
 
-const LearningScreenTabJointTranscriptWords = () => {
+const LearningScreenComprehensiveReview = () => {
   const {
     threeSecondLoopState,
     overlappingSnippetDataState,
@@ -182,28 +181,16 @@ const LearningScreenTabJointTranscriptWords = () => {
     transcriptSliceRangeRef.current?.[1],
   );
 
-  const contentClasses = 'p-1 max-h-150 overflow-y-auto';
-
   if (
     postWordsState?.length === 0 &&
     postSentencesState?.length === 0 &&
     postSnippetsState?.length === 0
   ) {
-    return (
-      <TabsContent
-        value='comprehensive'
-        className={clsx(contentClasses, 'border rounded-lg')}
-      >
-        <h2>Done!</h2>
-      </TabsContent>
-    );
+    return <h2>Done!</h2>;
   }
 
   return (
-    <TabsContent
-      value='comprehensive'
-      className={clsx(contentClasses, 'border rounded-lg')}
-    >
+    <>
       <h1 className='text-center font-medium mx-auto'>
         words: {postWordsState?.length} / sentences:{' '}
         {postSentencesState?.length} / snippets : {postSnippetsState?.length}
@@ -279,8 +266,8 @@ const LearningScreenTabJointTranscriptWords = () => {
           );
         })}
       </ul>
-    </TabsContent>
+    </>
   );
 };
 
-export default LearningScreenTabJointTranscriptWords;
+export default LearningScreenComprehensiveReview;

@@ -2,7 +2,7 @@ import { TabsList, TabsTrigger } from '@/components/ui/tabs';
 import useLearningScreen from '../useLearningScreen';
 
 const LearningScreenTabs = ({ topicName }) => {
-  const { wordsForSelectedTopic, contentMetaWordMemoized, isInReviewMode } =
+  const { wordsForSelectedTopic, contentMetaWordMemoized } =
     useLearningScreen();
   const thisTopicHasWords = wordsForSelectedTopic?.length > 0;
 
@@ -14,13 +14,6 @@ const LearningScreenTabs = ({ topicName }) => {
     <TabsList>
       <TabsTrigger value='transcript' data-testid='transcript-tab-trigger'>
         Transcript
-      </TabsTrigger>
-      <TabsTrigger
-        value='comprehensive'
-        disabled={!isInReviewMode}
-        data-testid='comprehensive-tab-trigger'
-      >
-        Comprehensive
       </TabsTrigger>
       <TabsTrigger
         value='words'
