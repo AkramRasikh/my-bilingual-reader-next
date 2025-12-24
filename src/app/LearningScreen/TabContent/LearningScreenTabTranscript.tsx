@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { TabsContent } from '@/components/ui/tabs';
 import useLearningScreen from '../useLearningScreen';
@@ -50,6 +50,12 @@ const LearningScreenTabTranscript = () => {
 
   const [inComprehensiveModeState, setInComprehensiveModeState] =
     useState(false);
+
+  useEffect(() => {
+    if (!isInReviewMode) {
+      setInComprehensiveModeState(false);
+    }
+  }, [isInReviewMode]);
 
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
 
