@@ -74,7 +74,7 @@ const LearningScreenTabTranscript = () => {
       value='transcript'
       className={clsx(contentClasses, 'border rounded-lg')}
     >
-      <div className='p-1'>
+      <div className='p-1 flex justify-center gap-4'>
         <div className='flex gap-2 my-auto'>
           <Label data-testid='review-label'>Review</Label>
           <Switch
