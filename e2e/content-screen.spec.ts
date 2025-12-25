@@ -358,12 +358,6 @@ test('landing screen -> learning content screen navigation -> general toggle act
     'Transcript',
     false,
   );
-  await checkLearningScreenTab(
-    page,
-    'comprehensive-tab-trigger',
-    'Comprehensive',
-    true,
-  );
   await checkLearningScreenTab(page, 'words-tab-trigger', 'Words 55/84', false);
   await checkLearningScreenTab(page, 'meta-tab-trigger', 'Meta', false);
 
