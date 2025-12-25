@@ -15,6 +15,7 @@ import useManageThreeSecondLoop, {
 import useManageLoopInit from './hooks/useManageLoopInit';
 import { useLoopSecondsHook } from './hooks/useMapTranscriptToSeconds';
 import useTrackMasterTranscript from './hooks/useTrackMasterTranscript';
+import { useSavedSnippetsMemoized } from './hooks/useSavedSnippetsMemoized';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
@@ -1080,39 +1081,11 @@ export const LearningScreenProvider = ({
     return dueSnippets;
   }, [selectedContentStateMemoized?.snippets]);
 
-  const savedSnippetsMemoized = useMemo(() => {
-    const allRes = [];
-
-    if (!selectedContentStateMemoized?.snippets) {
-      return [];
-    }
-    selectedContentStateMemoized?.snippets.map((snippetData) => {
-      const startTime =
-        snippetData.time - (snippetData?.isContracted ? 0.75 : 1.5);
-      const endTime =
-        snippetData.time + (snippetData?.isContracted ? 0.75 : 1.5);
-
-      const resultOfThis = threeSecondLoopLogic({
-        refSeconds: loopDataRef,
-        threeSecondLoopState: snippetData.time,
-        formattedTranscriptState: formattedTranscriptMemoized,
-        realStartTime: 0,
-        startTime,
-        endTime,
-        setState: null,
-      });
-      allRes.push(
-        ...resultOfThis?.map((item) => ({
-          ...item,
-          snippetId: snippetData.id,
-          time: snippetData.time,
-          isContracted: snippetData?.isContracted,
-          isPreSnippet: snippetData?.isPreSnippet,
-        })),
-      );
-    });
-    return allRes;
-  }, [selectedContentStateMemoized, formattedTranscriptMemoized]);
+  const savedSnippetsMemoized = useSavedSnippetsMemoized(
+    selectedContentStateMemoized?.snippets,
+    formattedTranscriptMemoized,
+    loopDataRef,
+  );
 
   function accumulateSentenceOverlap(snippetsBySentence) {
     const sentenceMap = {};
@@ -1258,7 +1231,6 @@ export const LearningScreenProvider = ({
         currentTime,
         formattedTranscriptState: formattedTranscriptMemoized,
         secondsState: secondsStateMemoized,
-        // setSecondsState,
         masterPlayComprehensiveState,
         setMasterPlayComprehensiveState,
         isVideoPlaying,
