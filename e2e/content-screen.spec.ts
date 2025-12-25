@@ -364,12 +364,28 @@ test('landing screen -> learning content screen navigation -> general toggle act
   // video controls
   await checkVideoControl(page, 'review-label', 'review-switch', 'Review');
   await checkVideoControl(page, 'english-label', 'english-switch', '🇬🇧');
-
   // test English toggle functionality
   await checkEnglishTranscriptToggles(page);
 
   // check action bar buttons (non-review state)
   await checkActionBarButtons(page);
+
+  // test comprehensive mode - initially disabled
+  const comprehensiveModeLabel = page.getByTestId('comprehensive-mode-label');
+  await expect(comprehensiveModeLabel).toBeVisible();
+  await expect(comprehensiveModeLabel).toContainText('Comprehensive Mode');
+
+  const comprehensiveModeSwitch = page.getByTestId('comprehensive-mode-switch');
+  await expect(comprehensiveModeSwitch).toBeVisible();
+  await expect(comprehensiveModeSwitch).toBeDisabled();
+
+  // toggle review mode on
+  const reviewSwitch = page.getByTestId('review-switch');
+  await reviewSwitch.click();
+  await page.waitForTimeout(500);
+
+  // assert that comprehensive mode is now enabled
+  await expect(comprehensiveModeSwitch).toBeEnabled();
 });
 
 test('transcript item menu interactions and review', async ({ page }) => {
