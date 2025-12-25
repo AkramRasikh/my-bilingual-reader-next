@@ -44,6 +44,7 @@ export const LearningScreenProvider = ({
     useState(false);
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
+  const [trackCurrentState, setTrackCurrentState] = useState(true);
   const [numberOfSentenceDueOnMountState, setNumberOfSentenceDueOnMountState] =
     useState<number | null>(null);
 
@@ -1267,6 +1268,8 @@ export const LearningScreenProvider = ({
         setOnlyShowEngState,
         showWordsBasketState,
         setShowWordsBasketState,
+        trackCurrentState,
+        setTrackCurrentState,
         contractThreeSecondLoopState,
         setContractThreeSecondLoopState,
         masterPlay,

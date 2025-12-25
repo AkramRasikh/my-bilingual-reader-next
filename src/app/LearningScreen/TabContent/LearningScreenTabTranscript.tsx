@@ -9,6 +9,7 @@ import getBiggestOverlap from '@/components/custom/TranscriptItem/get-biggest-ov
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import LearningScreenComprehensiveReview from '../LearningScreenComprehensiveReview';
+import useAutoScrollToCurrentItem from './useAutoScrollToCurrentItem';
 
 const LearningScreenTabTranscript = () => {
   const {
@@ -42,6 +43,7 @@ const LearningScreenTabTranscript = () => {
     overlappingTextMemoized,
     handleSaveSnippet,
     setIsInReviewMode,
+    trackCurrentState,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -61,6 +63,14 @@ const LearningScreenTabTranscript = () => {
     }
     return overlappingSnippetDataState[0].id;
   }, [overlappingSnippetDataState]);
+
+  useAutoScrollToCurrentItem({
+    trackCurrentState,
+    masterPlay,
+    transcriptRef,
+    isInReviewMode,
+    learnFormattedTranscript,
+  });
 
   return (
     <TabsContent

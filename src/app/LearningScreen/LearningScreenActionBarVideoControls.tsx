@@ -5,8 +5,16 @@ import useLearningScreen from './useLearningScreen';
 import CountUpTimer from '@/components/custom/CountUpTimer';
 
 const LearningScreenActionBarVideoControls = () => {
-  const { onlyShowEngState, setOnlyShowEngState, ref, elapsed, setElapsed } =
-    useLearningScreen();
+  const {
+    onlyShowEngState,
+    setOnlyShowEngState,
+    ref,
+    elapsed,
+    setElapsed,
+    trackCurrentState,
+    setTrackCurrentState,
+    isInReviewMode,
+  } = useLearningScreen();
 
   return (
     <div className='flex pb-2 justify-center gap-4'>
@@ -16,6 +24,16 @@ const LearningScreenActionBarVideoControls = () => {
           checked={!onlyShowEngState}
           onCheckedChange={() => setOnlyShowEngState(!onlyShowEngState)}
           data-testid='english-switch'
+        />
+      </div>
+      <div className='w-px h-5 my-auto bg-gray-300' />
+      <div className='flex gap-2 my-auto'>
+        <Label data-testid='track-current-label'>Track</Label>
+        <Switch
+          checked={trackCurrentState}
+          onCheckedChange={setTrackCurrentState}
+          disabled={isInReviewMode}
+          data-testid='track-current-switch'
         />
       </div>
       <div className='w-px h-5 my-auto bg-gray-300' />
