@@ -167,6 +167,7 @@ export interface FetchDataContextTypes {
   addImageDataProvider: (params: AddImageDataProviderCallTypes) => void;
   wordsToReviewGivenOriginalContextId: Record<WordTypes['id'], WordTypes[]>;
   deleteContent: (params: DeleteContentCallTypes) => void;
+  deleteVideo: (filePath: string) => Promise<boolean>;
   wordBasketState: WordBasketTypes[];
   setWordBasketState: Dispatch<SetStateAction<WordBasketTypes[]>>;
   story?: StoryTypeStateTypes;
@@ -180,6 +181,7 @@ const FetchDataContext = createContext<FetchDataContextTypes>({
   updateWordDataProvider: () => {},
   updateSentenceData: () => {},
   deleteContent: () => {},
+  deleteVideo: async () => false,
   setLanguageSelectedState: () => {},
   dispatchSentences: () => {},
   dispatchContent: () => {},
@@ -724,6 +726,27 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     }
   };
 
+  const deleteVideo = async (filePath: string): Promise<boolean> => {
+    try {
+      const res = await fetch('/api/deleteVideo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filePath }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to delete video');
+      }
+
+      setToastMessageState('Video successfully deleted');
+      return true;
+    } catch (error) {
+      console.log('## deleteVideo error', error);
+      setToastMessageState('Failed to delete video ❌');
+      return false;
+    }
+  };
+
   return (
     <FetchDataContext.Provider
       value={{
@@ -758,6 +781,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         wordsToReviewOnMountState,
         wordsToReviewGivenOriginalContextId,
         deleteContent,
+        deleteVideo,
       }}
     >
       {children}

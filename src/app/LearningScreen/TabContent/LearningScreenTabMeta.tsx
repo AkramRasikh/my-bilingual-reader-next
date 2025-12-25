@@ -6,12 +6,13 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { TabsContent } from '@/components/ui/tabs';
 import useLearningScreen from '../useLearningScreen';
-// import ClickAndConfirm from '@/components/custom/ClickAndConfirm';
+import ClickAndConfirm from '@/components/custom/ClickAndConfirm';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
+import { getCloudflareVideoURL } from '@/utils/get-media-url';
 
 const LearningScreenTabMeta = ({ updateContentMetaData }) => {
-  // const [showConfirm, setShowConfirm] = useState(false);
-  const { deleteContent } = useFetchData();
+  const [showConfirmDeleteVideo, setShowConfirmDeleteVideo] = useState(false);
+  const { deleteContent, deleteVideo, languageSelectedState } = useFetchData();
 
   const { selectedContentState, wordsForSelectedTopic } = useLearningScreen();
 
@@ -84,6 +85,25 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
     }
   };
 
+  const deleteThisVideo = async () => {
+    try {
+      setIsLoading(true);
+      // Extract video path from URL
+      // Assuming URL format contains the video path like "japanese-video/filename.mp4"
+
+      const videoPath = getCloudflareVideoURL(
+        title,
+        languageSelectedState,
+        false,
+      );
+      await deleteVideo(videoPath);
+    } catch (error) {
+      console.error('Error deleting video:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <TabsContent value='meta' className={'p-1 max-h-150 overflow-y-auto'}>
       <div className='flex flex-col items-start gap-2 my-2'>
@@ -111,10 +131,21 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
             {url}
           </a>
         </div>
+
+        <div>
+          <Label className='mb-2'>Delete Video from Cloudflare</Label>
+          <ClickAndConfirm
+            showConfirm={showConfirmDeleteVideo}
+            setShowConfirm={setShowConfirmDeleteVideo}
+            onClick={deleteThisVideo}
+            isLoadingState={isLoading}
+          />
+        </div>
+
         {/* <div>
           <ClickAndConfirm
-            showConfirm={showConfirm}
-            setShowConfirm={setShowConfirm}
+            showConfirm={showConfirmDelete}
+            setShowConfirm={setShowConfirmDelete}
             onClick={deleteThisContent}
             isLoadingState={isLoading}
           />

@@ -1,10 +1,13 @@
 export const getCloudflareVideoURL = (
   mp3FileName: string,
   language: string,
+  withBase: boolean = true,
 ) => {
   const languageParam = `${language}-video/`;
   const baseURL = process.env.NEXT_PUBLIC_CLOUDFLARE_ASSETS_URL + languageParam;
-  const url = `${baseURL}${mp3FileName}.mp4`;
+  const url = withBase
+    ? `${baseURL}${mp3FileName}.mp4`
+    : `${languageParam}${mp3FileName}.mp4`;
   return url;
 };
 export const getCloudflareImageURL = (
