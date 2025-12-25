@@ -28,7 +28,7 @@ const YoutubeUploadTranscriptTransliterationActions = () => {
         (item) => !item?.transliteration,
       );
       const formattedSubs = [...filterForNoTranscript]
-        .slice(0, 200)
+        .slice(0, 50)
         .map((item) => `@@${item.originalIndex}@@ ${item.targetLang}`)
         .join('\n');
       await navigator.clipboard.writeText(formattedSubs);
