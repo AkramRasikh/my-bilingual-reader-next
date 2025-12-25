@@ -19,6 +19,8 @@ const LearningScreenTabTranscript = () => {
     isGenericItemLoadingState,
     isBreakingDownSentenceArrState,
     isInReviewMode,
+    inComprehensiveModeState,
+    setInComprehensiveModeState,
     onlyShowEngState,
     setLoopTranscriptState,
     loopTranscriptState,
@@ -47,15 +49,6 @@ const LearningScreenTabTranscript = () => {
     handleSaveWord,
     handleDeleteWordDataProvider,
   } = useFetchData();
-
-  const [inComprehensiveModeState, setInComprehensiveModeState] =
-    useState(false);
-
-  useEffect(() => {
-    if (!isInReviewMode) {
-      setInComprehensiveModeState(false);
-    }
-  }, [isInReviewMode]);
 
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
 
