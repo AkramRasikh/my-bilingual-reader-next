@@ -214,7 +214,7 @@ const LearningScreenComprehensiveReview = () => {
           reviewIntervalState={reviewIntervalState}
           setReviewIntervalState={setReviewIntervalState}
         />
-        <h2>Done!</h2>
+        <h2 className='text-center'>Done!</h2>
       </div>
     );
   }
