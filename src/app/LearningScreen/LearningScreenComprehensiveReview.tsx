@@ -230,8 +230,8 @@ const LearningScreenComprehensiveReview = () => {
           setEnableTranscriptReviewState={setEnableTranscriptReviewState}
           enableSnippetReviewState={enableSnippetReviewState}
           setEnableSnippetReviewState={setEnableSnippetReviewState}
-          wordsCount={postWordsState?.length}
-          sentencesCount={postSentencesState?.length}
+          wordsCount={postWordsState?.length || 0}
+          sentencesCount={postSentencesState?.length || 0}
           snippetsCount={postSnippetsState?.length}
           reviewIntervalState={reviewIntervalState}
           setReviewIntervalState={setReviewIntervalState}
@@ -250,8 +250,8 @@ const LearningScreenComprehensiveReview = () => {
         setEnableTranscriptReviewState={setEnableTranscriptReviewState}
         enableSnippetReviewState={enableSnippetReviewState}
         setEnableSnippetReviewState={setEnableSnippetReviewState}
-        wordsCount={postWordsState?.length}
-        sentencesCount={postSentencesState?.length}
+        wordsCount={postWordsState?.length || 0}
+        sentencesCount={postSentencesState?.length || 0}
         snippetsCount={postSnippetsState?.length}
         reviewIntervalState={reviewIntervalState}
         setReviewIntervalState={setReviewIntervalState}
