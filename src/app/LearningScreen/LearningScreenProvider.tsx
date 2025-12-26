@@ -99,11 +99,13 @@ export const LearningScreenProvider = ({
     sentenceMapMemoized,
     sentencesNeedReview,
     sentencesPendingOrDue,
+    firstSentenceDueTime,
   } = useMemo(() => {
     const now = new Date();
     let firstDueIndexMemoized;
     let sentencesNeedReview = 0;
     let sentencesPendingOrDue = 0;
+    let firstSentenceDueTime = null;
 
     const formattedTranscriptMemoized = content.map((item, index) => {
       const hasBeenReviewed = item?.reviewData?.due;
@@ -114,6 +116,9 @@ export const LearningScreenProvider = ({
       if (isDueCheck(item, now)) {
         sentencesNeedReview += 1;
         if (!isNumber(firstDueIndexMemoized)) {
+          if (enableTranscriptReviewState) {
+            firstSentenceDueTime = item.time;
+          }
           firstDueIndexMemoized = index;
           if (firstDueIndexMemoized > 0) {
             firstDueIndexMemoized = firstDueIndexMemoized - 1;
@@ -178,8 +183,9 @@ export const LearningScreenProvider = ({
       sentenceMapMemoized,
       sentencesNeedReview,
       sentencesPendingOrDue,
+      firstSentenceDueTime,
     };
-  }, [pureWordsMemoized, content]);
+  }, [pureWordsMemoized, content, enableTranscriptReviewState, wordsState]);
 
   const handlePlayFromHere = (time: number) => {
     // hasUnifiedChapter ? generalTopic
@@ -546,37 +552,49 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const { contentMetaWordMemoized, wordsForSelectedTopicMemoized } =
-    useMemo(() => {
-      if (wordsState.length === 0) {
-        return {
-          contentMetaWordMemoized: [],
-          wordsForSelectedTopicMemoized: [],
-        };
-      }
-
-      const allWords = [] as WordTypes[];
-      const dueWords = [] as WordTypes[];
-
-      wordsState.forEach((wordItem) => {
-        if (wordItem.originalContext === thisContentTitle) {
-          allWords.push(wordItem);
-          if (wordItem.isDue) {
-            dueWords.push(wordItem);
-          }
-        }
-      });
-
-      // Sort all words by due status
-      const sortedAllWords = allWords.sort(
-        (a, b) => Number(b.isDue) - Number(a.isDue),
-      );
-
+  const {
+    contentMetaWordMemoized,
+    wordsForSelectedTopicMemoized,
+    firstWordDueTime,
+  } = useMemo(() => {
+    if (wordsState.length === 0 || !enableWordReviewState) {
       return {
-        contentMetaWordMemoized: dueWords,
-        wordsForSelectedTopicMemoized: sortedAllWords,
+        contentMetaWordMemoized: [],
+        wordsForSelectedTopicMemoized: [],
+        firstWordDueTime: null,
       };
-    }, [thisContentTitle, wordsState]);
+    }
+
+    const allWords = [] as WordTypes[];
+    const dueWords = [] as WordTypes[];
+
+    wordsState.forEach((wordItem) => {
+      if (wordItem.originalContext === thisContentTitle) {
+        allWords.push(wordItem);
+        if (wordItem.isDue) {
+          dueWords.push(wordItem);
+        }
+      }
+    });
+
+    // Sort all words by due status
+    const sortedAllWords = allWords.sort(
+      (a, b) => Number(b.isDue) - Number(a.isDue),
+    );
+
+    const firstWordDueTime =
+      dueWords.length > 0
+        ? dueWords.reduce((earliest, curr) =>
+            curr.time < earliest.time ? curr : earliest,
+          ).time
+        : null;
+
+    return {
+      contentMetaWordMemoized: dueWords,
+      wordsForSelectedTopicMemoized: sortedAllWords,
+      firstWordDueTime,
+    };
+  }, [thisContentTitle, wordsState, enableWordReviewState]);
 
   const handleBulkReviews = async () => {
     // const emptyCard = getEmptyCard();
@@ -919,34 +937,53 @@ export const LearningScreenProvider = ({
     }, {});
   }, [sentencesForReviewMemoized]);
 
-  const snippetsWithDueStatusMemoized = useMemo(() => {
-    const now = new Date();
-    return selectedContentStateMemoized?.snippets?.filter(
-      (item) => new Date(item?.reviewData?.due) < now,
-    );
-  }, [selectedContentStateMemoized]);
+  const { snippetsWithDueStatusMemoized, earliestSnippetDueTime } =
+    useMemo(() => {
+      if (
+        !selectedContentStateMemoized?.snippets ||
+        selectedContentStateMemoized?.snippets.length === 0 ||
+        !enableSnippetReviewState
+      ) {
+        return {
+          snippetsWithDueStatusMemoized: [],
+          earliestSnippetDueTime: null,
+        };
+      }
+      const now = new Date();
+
+      const snippetsWithDueStatusMemoized = [];
+      selectedContentStateMemoized?.snippets?.forEach((item) => {
+        if (new Date(item?.reviewData?.due) < now) {
+          snippetsWithDueStatusMemoized.push(item);
+        }
+      });
+
+      const earliestSnippetDueTime =
+        snippetsWithDueStatusMemoized.length > 0
+          ? snippetsWithDueStatusMemoized.reduce((earliest, curr) =>
+              curr.time < earliest.time ? curr : earliest,
+            ).time
+          : null;
+
+      return {
+        snippetsWithDueStatusMemoized,
+        earliestSnippetDueTime,
+      };
+    }, [selectedContentStateMemoized, enableSnippetReviewState]);
 
   const slicedByMinuteIntervalsMemoized = useMemo(() => {
     // Combine potential candidates from both arrays, normalized to a common structure
     if (!isInReviewMode) {
       return null;
     }
-    const dueCandidates = [
-      ...(enableWordReviewState ? contentMetaWordMemoized : []),
-      ...(enableTranscriptReviewState
-        ? formattedTranscriptMemoized.filter((item) => item.isDue)
-        : []),
-      ...(enableSnippetReviewState ? snippetsWithDueStatusMemoized : []),
+    const timeArrays = [
+      earliestSnippetDueTime,
+      firstWordDueTime,
+      firstSentenceDueTime,
     ];
 
-    // Find the earliest .time across both
-    const firstDue = dueCandidates.length
-      ? dueCandidates.reduce((earliest, curr) =>
-          curr.time < earliest.time ? curr : earliest,
-        )
-      : null;
-
-    const firstTime = firstDue ? firstDue.time : null;
+    const validTimes = timeArrays.filter((time) => time !== null);
+    const firstTime = validTimes.length > 0 ? Math.min(...validTimes) : null;
 
     if (firstTime === null) {
       return null;
@@ -998,6 +1035,9 @@ export const LearningScreenProvider = ({
     enableTranscriptReviewState,
     enableSnippetReviewState,
     reviewIntervalState,
+    earliestSnippetDueTime,
+    firstWordDueTime,
+    firstSentenceDueTime,
   ]);
 
   const transcriptSentenceIdsDue = useMemo(() => {
