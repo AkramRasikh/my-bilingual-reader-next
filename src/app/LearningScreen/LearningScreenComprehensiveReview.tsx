@@ -93,7 +93,7 @@ const LearningScreenComprehensiveReview = () => {
       postSnippetsState.length === 0
     ) {
       setFirstTimeState(firstTime);
-    } else if (firstTime !== null || firstTime < firstTimeState) {
+    } else if (firstTime !== null && firstTime < firstTimeState) {
       setFirstTimeState(firstTime);
     }
   }, [
@@ -206,7 +206,7 @@ const LearningScreenComprehensiveReview = () => {
           enableSnippetReviewState={enableSnippetReviewState}
           setEnableSnippetReviewState={setEnableSnippetReviewState}
           wordsCount={postWordsState?.length || 0}
-          sentencesCount={transcriptDueNumber.length || 0}
+          sentencesCount={postSentencesState.length || 0}
           snippetsCount={postSnippetsState?.length}
           reviewIntervalState={reviewIntervalState}
           setReviewIntervalState={setReviewIntervalState}
@@ -226,7 +226,7 @@ const LearningScreenComprehensiveReview = () => {
         enableSnippetReviewState={enableSnippetReviewState}
         setEnableSnippetReviewState={setEnableSnippetReviewState}
         wordsCount={postWordsState?.length || 0}
-        sentencesCount={transcriptDueNumber.length || 0}
+        sentencesCount={postSentencesState.length || 0}
         snippetsCount={postSnippetsState?.length}
         reviewIntervalState={reviewIntervalState}
         setReviewIntervalState={setReviewIntervalState}
