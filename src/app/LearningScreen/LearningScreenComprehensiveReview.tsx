@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import useLearningScreen from './useLearningScreen';
 import TranscriptItem from '@/components/custom/TranscriptItem';
@@ -7,6 +7,7 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningScreenTabTranscriptNestedWordsReview';
 import LearningScreenSnippetReview from './experimental/LearningScreenSnippetReview';
 import ReviewTypeToggles from './components/ReviewTypeToggles';
+import { isWithinInterval } from './LearningScreenProvider';
 
 function highlightFocusedText(fullText: string, focusedText: string) {
   if (!focusedText) return fullText;
@@ -54,12 +55,6 @@ const LearningScreenComprehensiveReview = () => {
     transcriptRef,
     scrollToElState,
     wordsForSelectedTopic,
-    wordsWithinInterval,
-    transcriptsWithinInterval,
-    transcriptSentenceIdsDue,
-    transcriptWordsIdsDue,
-    snippetsWithinInterval,
-    transcriptSnippetsIdsDue,
     formattedTranscriptState,
     handleDeleteSnippet,
     setThreeSecondLoopState,
@@ -75,6 +70,9 @@ const LearningScreenComprehensiveReview = () => {
     setEnableSnippetReviewState,
     reviewIntervalState,
     setReviewIntervalState,
+    firstTime,
+    contentMetaWordMemoized,
+    snippetsWithDueStatusMemoized,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -86,93 +84,91 @@ const LearningScreenComprehensiveReview = () => {
   const [postSentencesState, setPostSentencesState] = useState([]);
   const [postWordsState, setPostWordsState] = useState([]);
   const [postSnippetsState, setPostSnippetsState] = useState([]);
+  const [firstTimeState, setFirstTimeState] = useState(null);
 
-  const transcriptWordsIdsDueRef = useRef(transcriptWordsIdsDue.length);
-  const transcriptSnippetsIdsDueRef = useRef(transcriptSnippetsIdsDue.length);
-  const transcriptSentenceIdsDueRef = useRef(transcriptSentenceIdsDue.length);
-  const transcriptSliceRangeRef = useRef(null);
+  useEffect(() => {
+    if (
+      postSentencesState.length === 0 &&
+      postWordsState.length === 0 &&
+      postSnippetsState.length === 0
+    ) {
+      setFirstTimeState(firstTime);
+    } else if (firstTime !== null && firstTime < firstTimeState) {
+      setFirstTimeState(firstTime);
+    }
+  }, [
+    postSentencesState,
+    postWordsState,
+    postSnippetsState,
+    firstTime,
+    firstTimeState,
+  ]);
 
   useEffect(() => {
     if (!enableWordReviewState) {
       setPostWordsState([]);
-    } else {
-      setPostWordsState(wordsWithinInterval);
+    } else if (firstTimeState !== null) {
+      setPostWordsState(
+        contentMetaWordMemoized.filter((item) =>
+          isWithinInterval(item, firstTimeState, reviewIntervalState),
+        ),
+      );
     }
-  }, [enableWordReviewState]);
+  }, [
+    enableWordReviewState,
+    firstTimeState,
+    reviewIntervalState,
+    contentMetaWordMemoized,
+  ]);
   useEffect(() => {
     if (!enableTranscriptReviewState) {
       setPostSentencesState([]);
-    } else {
+    } else if (firstTimeState !== null) {
       setPostSentencesState(
-        transcriptsWithinInterval?.filter((item) =>
-          transcriptSentenceIdsDue.includes(item.id),
-        ) || [],
+        formattedTranscriptState.filter((item) =>
+          isWithinInterval(item, firstTimeState, reviewIntervalState),
+        ),
       );
     }
-  }, [enableTranscriptReviewState]);
+  }, [
+    enableTranscriptReviewState,
+    firstTimeState,
+    reviewIntervalState,
+    formattedTranscriptState,
+  ]);
 
   useEffect(() => {
     if (!enableSnippetReviewState) {
       setPostSnippetsState([]);
-    } else {
-      setPostSnippetsState(snippetsWithinInterval || []);
-    }
-  }, [enableSnippetReviewState]);
-  useEffect(() => {
-    if (
-      postSentencesState?.length === 0 &&
-      postWordsState?.length === 0 &&
-      (!postSnippetsState || postSnippetsState?.length === 0)
-    ) {
-      const initPostSentences = transcriptsWithinInterval?.filter((item) =>
-        transcriptSentenceIdsDue.includes(item.id),
+    } else if (firstTimeState !== null) {
+      setPostSnippetsState(
+        snippetsWithDueStatusMemoized.filter((item) =>
+          isWithinInterval(item, firstTimeState, reviewIntervalState),
+        ) || [],
       );
-      setPostSentencesState(initPostSentences);
-      setPostSnippetsState(snippetsWithinInterval || []);
-      if (transcriptsWithinInterval?.length > 0) {
-        transcriptSliceRangeRef.current = [
-          transcriptsWithinInterval[0].sentenceIndex,
-          transcriptsWithinInterval[transcriptsWithinInterval.length - 1]
-            .sentenceIndex,
-        ];
-      }
-      setPostWordsState(wordsWithinInterval);
     }
   }, [
-    snippetsWithinInterval,
-    transcriptsWithinInterval,
-    wordsWithinInterval,
-    postSentencesState,
-    postWordsState,
-    postSnippetsState,
+    enableSnippetReviewState,
+    firstTimeState,
+    reviewIntervalState,
+    snippetsWithDueStatusMemoized,
   ]);
 
-  useEffect(() => {
-    if (
-      postSentencesState?.length > 0 &&
-      transcriptSentenceIdsDueRef.current !== transcriptSentenceIdsDue.length
-    ) {
-      const updatedSentences = postSentencesState.filter((item) =>
-        transcriptSentenceIdsDue.includes(item.id),
-      );
-      setPostSentencesState(updatedSentences);
-      transcriptSentenceIdsDueRef.current = transcriptSentenceIdsDue.length;
-    }
-  }, [postSentencesState, transcriptSentenceIdsDue]);
+  const transcriptMemoised = useMemo(() => {
+    const indexFirstTime = formattedTranscriptState.findIndex(
+      (item) => item.time >= firstTimeState,
+    );
+    const indexLastTime = formattedTranscriptState.findIndex(
+      (item) => item.time >= firstTimeState + reviewIntervalState,
+    );
 
-  useEffect(() => {
-    if (
-      postSnippetsState?.length > 0 &&
-      transcriptSnippetsIdsDueRef.current !== transcriptSnippetsIdsDue.length
-    ) {
-      const updatedSnippets =
-        postSnippetsState.filter((item) =>
-          transcriptSnippetsIdsDue.includes(item.id),
-        ) || [];
-      setPostSnippetsState(updatedSnippets);
-      transcriptSnippetsIdsDueRef.current = transcriptSnippetsIdsDue.length;
-    }
-  }, [postSnippetsState, transcriptSnippetsIdsDue]);
+    const sliceArr = formattedTranscriptState.slice(
+      indexFirstTime,
+      indexLastTime,
+    );
+
+    return { sliceArr, numberDue: sliceArr.filter((item) => item.isDue) };
+  }, [formattedTranscriptState, firstTimeState, reviewIntervalState]);
 
   const handleLoopHere = ({ time, isContracted }) => {
     const playFromTime = time - (isContracted ? 0.75 : 1.5);
@@ -180,19 +176,6 @@ const LearningScreenComprehensiveReview = () => {
     setContractThreeSecondLoopState(isContracted);
     handlePlayFromHere(playFromTime);
   };
-
-  useEffect(() => {
-    if (
-      postWordsState?.length > 0 &&
-      transcriptWordsIdsDueRef.current !== transcriptWordsIdsDue.length
-    ) {
-      const updatedWords = postWordsState.filter((item) =>
-        transcriptWordsIdsDue.includes(item.id),
-      );
-      setPostWordsState(updatedWords);
-      transcriptWordsIdsDueRef.current = transcriptWordsIdsDue.length;
-    }
-  }, [postWordsState, transcriptWordsIdsDue]);
 
   const handleReviewSnippets = async (args) => {
     const isRemoveReview = args?.isRemoveReview;
@@ -211,11 +194,6 @@ const LearningScreenComprehensiveReview = () => {
     setContractThreeSecondLoopState();
   };
 
-  const slicedTranscriptArrayMemoized = formattedTranscriptState.slice(
-    transcriptSliceRangeRef.current?.[0],
-    transcriptSliceRangeRef.current?.[1],
-  );
-
   if (
     postWordsState?.length === 0 &&
     postSentencesState?.length === 0 &&
@@ -231,7 +209,7 @@ const LearningScreenComprehensiveReview = () => {
           enableSnippetReviewState={enableSnippetReviewState}
           setEnableSnippetReviewState={setEnableSnippetReviewState}
           wordsCount={postWordsState?.length || 0}
-          sentencesCount={postSentencesState?.length || 0}
+          sentencesCount={transcriptMemoised.numberDue?.length || 0}
           snippetsCount={postSnippetsState?.length}
           reviewIntervalState={reviewIntervalState}
           setReviewIntervalState={setReviewIntervalState}
@@ -251,7 +229,7 @@ const LearningScreenComprehensiveReview = () => {
         enableSnippetReviewState={enableSnippetReviewState}
         setEnableSnippetReviewState={setEnableSnippetReviewState}
         wordsCount={postWordsState?.length || 0}
-        sentencesCount={postSentencesState?.length || 0}
+        sentencesCount={transcriptMemoised.numberDue?.length || 0}
         snippetsCount={postSnippetsState?.length}
         reviewIntervalState={reviewIntervalState}
         setReviewIntervalState={setReviewIntervalState}
@@ -287,7 +265,7 @@ const LearningScreenComprehensiveReview = () => {
         )}
         ref={transcriptRef}
       >
-        {slicedTranscriptArrayMemoized?.map((contentItem, index) => {
+        {transcriptMemoised.sliceArr?.map((contentItem, index) => {
           return (
             <TranscriptItemProvider
               key={index}
