@@ -40,8 +40,6 @@ export const LearningScreenProvider = ({
     useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isInReviewMode, setIsInReviewMode] = useState(false);
-  const [inComprehensiveModeState, setInComprehensiveModeState] =
-    useState(false);
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
   const [trackCurrentState, setTrackCurrentState] = useState(true);
@@ -442,12 +440,6 @@ export const LearningScreenProvider = ({
       handleFromHere(latestestReviewSentenceTime);
     }
   };
-
-  useEffect(() => {
-    if (!isInReviewMode) {
-      setInComprehensiveModeState(false);
-    }
-  }, [isInReviewMode]);
 
   useEffect(() => {
     if (isInReviewMode) {
@@ -942,7 +934,7 @@ export const LearningScreenProvider = ({
 
   const slicedByMinuteIntervalsMemoized = useMemo(() => {
     // Combine potential candidates from both arrays, normalized to a common structure
-    if (!inComprehensiveModeState) {
+    if (!isInReviewMode) {
       return null;
     }
     const dueCandidates = [
@@ -1006,7 +998,7 @@ export const LearningScreenProvider = ({
     wordsForSelectedTopicMemoized,
     learnFormattedTranscript,
     snippetsWithDueStatusMemoized,
-    inComprehensiveModeState,
+    isInReviewMode,
   ]);
 
   const transcriptSentenceIdsDue = useMemo(() => {
@@ -1250,8 +1242,6 @@ export const LearningScreenProvider = ({
         setIsVideoPlaying,
         isInReviewMode,
         setIsInReviewMode,
-        inComprehensiveModeState,
-        setInComprehensiveModeState,
         isGenericItemLoadingState,
         setIsGenericItemLoadingState,
         breakdownSentencesArrState,

@@ -20,8 +20,6 @@ const LearningScreenTabTranscript = () => {
     isGenericItemLoadingState,
     isBreakingDownSentenceArrState,
     isInReviewMode,
-    inComprehensiveModeState,
-    setInComprehensiveModeState,
     onlyShowEngState,
     setLoopTranscriptState,
     loopTranscriptState,
@@ -91,25 +89,9 @@ const LearningScreenTabTranscript = () => {
               !isInReviewMode && 'opacity-50',
             )}
           />
-          <Label
-            data-testid='comprehensive-mode-label'
-            className={clsx(!isInReviewMode && 'opacity-50')}
-          >
-            Comprehensive Mode
-          </Label>
-          <Switch
-            checked={inComprehensiveModeState}
-            onCheckedChange={(checked) => {
-              if (isInReviewMode) {
-                setInComprehensiveModeState(checked);
-              }
-            }}
-            disabled={!isInReviewMode}
-            data-testid='comprehensive-mode-switch'
-          />
         </div>
       </div>
-      {inComprehensiveModeState ? (
+      {isInReviewMode ? (
         <LearningScreenComprehensiveReview />
       ) : (
         <ul
