@@ -141,6 +141,7 @@ export const LearningScreenProvider = ({
       return {
         ...item,
         dueStatus,
+        isDue: isDueNow,
         targetLangformatted,
         wordsFromSentence,
         ...(helperReviewSentence && { helperReviewSentence: true }),
@@ -914,10 +915,8 @@ export const LearningScreenProvider = ({
 
   const snippetsWithDueStatusMemoized = useMemo(() => {
     const now = new Date();
-    return (
-      selectedContentStateMemoized?.snippets
-        ?.filter((item) => new Date(item?.reviewData?.due) < now)
-        ?.map((item) => ({ time: item.time, source: 'snippet' })) || []
+    return selectedContentStateMemoized?.snippets?.filter(
+      (item) => new Date(item?.reviewData?.due) < now,
     );
   }, [selectedContentStateMemoized]);
 
@@ -927,12 +926,8 @@ export const LearningScreenProvider = ({
       return null;
     }
     const dueCandidates = [
-      ...wordsForSelectedTopicMemoized
-        .filter((item) => item.isDue)
-        .map((item) => ({ time: item.time, source: 'words' })),
-      ...learnFormattedTranscript
-        .filter((item) => item.dueStatus === 'now')
-        .map((item) => ({ time: item.time, source: 'transcript' })),
+      ...contentMetaWordMemoized,
+      ...formattedTranscriptMemoized.filter((item) => item.isDue),
       ...snippetsWithDueStatusMemoized,
     ];
 
@@ -943,29 +938,25 @@ export const LearningScreenProvider = ({
         )
       : null;
 
-    let firstTime = firstDue ? firstDue.time : null;
+    const firstTime = firstDue ? firstDue.time : null;
 
     if (firstTime === null) {
+      return null;
       // console.log('No items due now found in either array.');
     } else {
       const interval = 60; // seconds
 
       // Filter each array separately within that 60s window
-      const wordsWithinInterval = wordsForSelectedTopicMemoized.filter(
+      const wordsWithinInterval = contentMetaWordMemoized.filter(
         (item) =>
-          item?.isDue &&
+          item?.time &&
           item.time >= firstTime &&
           item.time <= firstTime + interval,
       );
-      const now = new Date();
 
-      const snippetsWithinInterval =
-        selectedContentStateMemoized?.snippets?.filter(
-          (item) =>
-            new Date(item?.reviewData?.due) < now &&
-            item.time >= firstTime &&
-            item.time <= firstTime + interval,
-        );
+      const snippetsWithinInterval = snippetsWithDueStatusMemoized?.filter(
+        (item) => item.time >= firstTime && item.time <= firstTime + interval,
+      );
 
       const transcriptsWithinInterval = [];
       formattedTranscriptMemoized.forEach((item, index) => {
@@ -983,10 +974,9 @@ export const LearningScreenProvider = ({
       };
     }
   }, [
-    selectedContentStateMemoized?.snippets,
-    wordsForSelectedTopicMemoized,
-    learnFormattedTranscript,
     snippetsWithDueStatusMemoized,
+    contentMetaWordMemoized,
+    formattedTranscriptMemoized,
     isInReviewMode,
   ]);
 
@@ -1059,21 +1049,12 @@ export const LearningScreenProvider = ({
   }, [wordsForSelectedTopicMemoized]);
 
   const transcriptSnippetsIdsDue = useMemo(() => {
-    if (!selectedContentStateMemoized?.snippets) {
+    if (!snippetsWithDueStatusMemoized) {
       return [];
     }
-    const now = new Date();
 
-    const dueSnippets = [];
-    selectedContentStateMemoized?.snippets.forEach((item) => {
-      const hasBeenReviewed = item?.reviewData?.due;
-      const isDueNow = new Date(hasBeenReviewed) < now;
-      if (isDueNow) {
-        dueSnippets.push(item.id);
-      }
-    });
-    return dueSnippets;
-  }, [selectedContentStateMemoized?.snippets]);
+    return snippetsWithDueStatusMemoized.map((item) => item.id);
+  }, [snippetsWithDueStatusMemoized]);
 
   const savedSnippetsMemoized = useSavedSnippetsMemoized(
     selectedContentStateMemoized?.snippets,

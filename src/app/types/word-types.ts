@@ -14,4 +14,5 @@ export interface WordTypes {
   notes?: string;
   imageUrl?: string;
   mnemonic?: string;
+  time?: number;
 }
