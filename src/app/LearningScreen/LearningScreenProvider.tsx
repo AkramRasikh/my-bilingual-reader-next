@@ -1011,17 +1011,6 @@ export const LearningScreenProvider = ({
     firstSentenceDueTime,
   ]);
 
-  const transcriptSentenceIdsDue = useMemo(() => {
-    const sentenceIdsForReview = [];
-
-    learnFormattedTranscript.forEach((transcriptEl) => {
-      if (transcriptEl.dueStatus === 'now') {
-        sentenceIdsForReview.push(transcriptEl.id);
-      }
-    });
-    return sentenceIdsForReview;
-  }, [learnFormattedTranscript]);
-
   function sliceTranscriptItems(items) {
     let result = '';
 
@@ -1067,25 +1056,6 @@ export const LearningScreenProvider = ({
     contractThreeSecondLoopState,
     formattedTranscriptMemoized,
   ]);
-
-  const transcriptWordsIdsDue = useMemo(() => {
-    const wordIdsForReview = [];
-
-    wordsForSelectedTopicMemoized.forEach((transcriptEl) => {
-      if (transcriptEl.isDue) {
-        wordIdsForReview.push(transcriptEl.id);
-      }
-    });
-    return wordIdsForReview;
-  }, [wordsForSelectedTopicMemoized]);
-
-  const transcriptSnippetsIdsDue = useMemo(() => {
-    if (!snippetsWithDueStatusMemoized) {
-      return [];
-    }
-
-    return snippetsWithDueStatusMemoized.map((item) => item.id);
-  }, [snippetsWithDueStatusMemoized]);
 
   const savedSnippetsMemoized = useSavedSnippetsMemoized(
     selectedContentStateMemoized?.snippets,
@@ -1304,10 +1274,7 @@ export const LearningScreenProvider = ({
         groupedByContextBySentence,
         sentencesForReviewMemoized,
         firstTime,
-        transcriptSentenceIdsDue,
-        transcriptWordsIdsDue,
         handleSaveSnippet,
-        transcriptSnippetsIdsDue,
         overlappingTextMemoized,
         savedSnippetsMemoized,
         handleUpdateSnippetReview,
