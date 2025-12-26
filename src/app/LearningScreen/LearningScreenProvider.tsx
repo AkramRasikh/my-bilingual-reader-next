@@ -76,6 +76,7 @@ export const LearningScreenProvider = ({
     useState(true);
   const [enableSnippetReviewState, setEnableSnippetReviewState] =
     useState(true);
+  const [reviewIntervalState, setReviewIntervalState] = useState(60);
 
   const {
     pureWordsMemoized,
@@ -951,7 +952,7 @@ export const LearningScreenProvider = ({
       return null;
       // console.log('No items due now found in either array.');
     } else {
-      const interval = 60; // seconds
+      const interval = reviewIntervalState; // seconds
 
       // Filter each array separately within that 60s window
       const wordsWithinInterval = enableWordReviewState
@@ -996,12 +997,8 @@ export const LearningScreenProvider = ({
     enableWordReviewState,
     enableTranscriptReviewState,
     enableSnippetReviewState,
+    reviewIntervalState,
   ]);
-
-  console.log(
-    '## wordsWithinInterval',
-    slicedByMinuteIntervalsMemoized?.wordsWithinInterval,
-  );
 
   const transcriptSentenceIdsDue = useMemo(() => {
     const sentenceIdsForReview = [];
@@ -1324,6 +1321,8 @@ export const LearningScreenProvider = ({
         setEnableTranscriptReviewState,
         enableSnippetReviewState,
         setEnableSnippetReviewState,
+        reviewIntervalState,
+        setReviewIntervalState,
       }}
     >
       {children}

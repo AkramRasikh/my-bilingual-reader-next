@@ -83,12 +83,6 @@ const LearningScreenTabTranscript = () => {
             onCheckedChange={setIsInReviewMode}
             data-testid='review-switch'
           />
-          <div
-            className={clsx(
-              'w-px h-5 my-auto bg-gray-300',
-              !isInReviewMode && 'opacity-50',
-            )}
-          />
         </div>
       </div>
       {isInReviewMode ? (

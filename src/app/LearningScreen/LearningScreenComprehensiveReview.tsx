@@ -73,6 +73,8 @@ const LearningScreenComprehensiveReview = () => {
     setEnableTranscriptReviewState,
     enableSnippetReviewState,
     setEnableSnippetReviewState,
+    reviewIntervalState,
+    setReviewIntervalState,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -231,7 +233,10 @@ const LearningScreenComprehensiveReview = () => {
           wordsCount={postWordsState?.length}
           sentencesCount={postSentencesState?.length}
           snippetsCount={postSnippetsState?.length}
+          reviewIntervalState={reviewIntervalState}
+          setReviewIntervalState={setReviewIntervalState}
         />
+        <h2>Done!</h2>
       </div>
     );
   }
@@ -248,6 +253,8 @@ const LearningScreenComprehensiveReview = () => {
         wordsCount={postWordsState?.length}
         sentencesCount={postSentencesState?.length}
         snippetsCount={postSnippetsState?.length}
+        reviewIntervalState={reviewIntervalState}
+        setReviewIntervalState={setReviewIntervalState}
       />
       {postSnippetsState?.length > 0 ? (
         <div className='flex flex-col gap-2 mb-2'>
