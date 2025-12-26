@@ -594,7 +594,7 @@ export const LearningScreenProvider = ({
     );
 
     const firstWordDueTime =
-      dueWords.length > 0
+      enableWordReviewState && dueWords.length > 0
         ? dueWords.reduce((earliest, curr) =>
             curr.time < earliest.time ? curr : earliest,
           ).time
@@ -970,7 +970,7 @@ export const LearningScreenProvider = ({
       });
 
       const earliestSnippetDueTime =
-        snippetsWithDueStatusMemoized.length > 0
+        enableSnippetReviewState && snippetsWithDueStatusMemoized.length > 0
           ? snippetsWithDueStatusMemoized.reduce((earliest, curr) =>
               curr.time < earliest.time ? curr : earliest,
             ).time
