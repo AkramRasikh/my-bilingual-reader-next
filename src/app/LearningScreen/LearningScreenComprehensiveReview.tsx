@@ -6,6 +6,7 @@ import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/Trans
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningScreenTabTranscriptNestedWordsReview';
 import LearningScreenSnippetReview from './experimental/LearningScreenSnippetReview';
+import ReviewTypeToggles from './components/ReviewTypeToggles';
 
 function highlightFocusedText(fullText: string, focusedText: string) {
   if (!focusedText) return fullText;
@@ -66,6 +67,12 @@ const LearningScreenComprehensiveReview = () => {
     handlePlayFromHere,
     handleUpdateSnippetReview,
     savedSnippetsMemoized,
+    enableWordReviewState,
+    setEnableWordReviewState,
+    enableTranscriptReviewState,
+    setEnableTranscriptReviewState,
+    enableSnippetReviewState,
+    setEnableSnippetReviewState,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -83,6 +90,32 @@ const LearningScreenComprehensiveReview = () => {
   const transcriptSentenceIdsDueRef = useRef(transcriptSentenceIdsDue.length);
   const transcriptSliceRangeRef = useRef(null);
 
+  useEffect(() => {
+    if (!enableWordReviewState) {
+      setPostWordsState([]);
+    } else {
+      setPostWordsState(wordsWithinInterval);
+    }
+  }, [enableWordReviewState]);
+  useEffect(() => {
+    if (!enableTranscriptReviewState) {
+      setPostSentencesState([]);
+    } else {
+      setPostSentencesState(
+        transcriptsWithinInterval?.filter((item) =>
+          transcriptSentenceIdsDue.includes(item.id),
+        ) || [],
+      );
+    }
+  }, [enableTranscriptReviewState]);
+
+  useEffect(() => {
+    if (!enableSnippetReviewState) {
+      setPostSnippetsState([]);
+    } else {
+      setPostSnippetsState(snippetsWithinInterval || []);
+    }
+  }, [enableSnippetReviewState]);
   useEffect(() => {
     if (
       postSentencesState?.length === 0 &&
@@ -186,15 +219,36 @@ const LearningScreenComprehensiveReview = () => {
     postSentencesState?.length === 0 &&
     postSnippetsState?.length === 0
   ) {
-    return <h2>Done!</h2>;
+    return (
+      <div>
+        <ReviewTypeToggles
+          enableWordReviewState={enableWordReviewState}
+          setEnableWordReviewState={setEnableWordReviewState}
+          enableTranscriptReviewState={enableTranscriptReviewState}
+          setEnableTranscriptReviewState={setEnableTranscriptReviewState}
+          enableSnippetReviewState={enableSnippetReviewState}
+          setEnableSnippetReviewState={setEnableSnippetReviewState}
+          wordsCount={postWordsState?.length}
+          sentencesCount={postSentencesState?.length}
+          snippetsCount={postSnippetsState?.length}
+        />
+      </div>
+    );
   }
 
   return (
     <>
-      <h1 className='text-center font-medium mx-auto'>
-        words: {postWordsState?.length} / sentences:{' '}
-        {postSentencesState?.length} / snippets : {postSnippetsState?.length}
-      </h1>
+      <ReviewTypeToggles
+        enableWordReviewState={enableWordReviewState}
+        setEnableWordReviewState={setEnableWordReviewState}
+        enableTranscriptReviewState={enableTranscriptReviewState}
+        setEnableTranscriptReviewState={setEnableTranscriptReviewState}
+        enableSnippetReviewState={enableSnippetReviewState}
+        setEnableSnippetReviewState={setEnableSnippetReviewState}
+        wordsCount={postWordsState?.length}
+        sentencesCount={postSentencesState?.length}
+        snippetsCount={postSnippetsState?.length}
+      />
       {postSnippetsState?.length > 0 ? (
         <div className='flex flex-col gap-2 mb-2'>
           {postSnippetsState.map((item, index) => {

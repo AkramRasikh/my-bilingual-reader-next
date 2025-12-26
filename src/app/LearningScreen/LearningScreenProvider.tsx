@@ -71,6 +71,11 @@ export const LearningScreenProvider = ({
 
   const [elapsed, setElapsed] = useState(0);
   const [errorVideoState, setErrorVideoState] = useState(false);
+  const [enableWordReviewState, setEnableWordReviewState] = useState(true);
+  const [enableTranscriptReviewState, setEnableTranscriptReviewState] =
+    useState(true);
+  const [enableSnippetReviewState, setEnableSnippetReviewState] =
+    useState(true);
 
   const {
     pureWordsMemoized,
@@ -926,9 +931,11 @@ export const LearningScreenProvider = ({
       return null;
     }
     const dueCandidates = [
-      ...contentMetaWordMemoized,
-      ...formattedTranscriptMemoized.filter((item) => item.isDue),
-      ...snippetsWithDueStatusMemoized,
+      ...(enableWordReviewState ? contentMetaWordMemoized : []),
+      ...(enableTranscriptReviewState
+        ? formattedTranscriptMemoized.filter((item) => item.isDue)
+        : []),
+      ...(enableSnippetReviewState ? snippetsWithDueStatusMemoized : []),
     ];
 
     // Find the earliest .time across both
@@ -947,24 +954,32 @@ export const LearningScreenProvider = ({
       const interval = 60; // seconds
 
       // Filter each array separately within that 60s window
-      const wordsWithinInterval = contentMetaWordMemoized.filter(
-        (item) =>
-          item?.time &&
-          item.time >= firstTime &&
-          item.time <= firstTime + interval,
-      );
+      const wordsWithinInterval = enableWordReviewState
+        ? contentMetaWordMemoized.filter(
+            (item) =>
+              item?.time &&
+              item.time >= firstTime &&
+              item.time <= firstTime + interval,
+          )
+        : [];
 
-      const snippetsWithinInterval = snippetsWithDueStatusMemoized?.filter(
-        (item) => item.time >= firstTime && item.time <= firstTime + interval,
-      );
+      const snippetsWithinInterval = enableSnippetReviewState
+        ? snippetsWithDueStatusMemoized?.filter(
+            (item) =>
+              item.time >= firstTime && item.time <= firstTime + interval,
+          )
+        : [];
 
       const transcriptsWithinInterval = [];
-      formattedTranscriptMemoized.forEach((item, index) => {
-        if (item.time >= firstTime && item.time <= firstTime + interval) {
-          const sentenceIndex = index;
-          transcriptsWithinInterval.push({ ...item, sentenceIndex });
-        }
-      });
+
+      if (enableTranscriptReviewState) {
+        formattedTranscriptMemoized.forEach((item, index) => {
+          if (item.time >= firstTime && item.time <= firstTime + interval) {
+            const sentenceIndex = index;
+            transcriptsWithinInterval.push({ ...item, sentenceIndex });
+          }
+        });
+      }
 
       return {
         wordsWithinInterval,
@@ -978,7 +993,15 @@ export const LearningScreenProvider = ({
     contentMetaWordMemoized,
     formattedTranscriptMemoized,
     isInReviewMode,
+    enableWordReviewState,
+    enableTranscriptReviewState,
+    enableSnippetReviewState,
   ]);
+
+  console.log(
+    '## wordsWithinInterval',
+    slicedByMinuteIntervalsMemoized?.wordsWithinInterval,
+  );
 
   const transcriptSentenceIdsDue = useMemo(() => {
     const sentenceIdsForReview = [];
@@ -1295,6 +1318,12 @@ export const LearningScreenProvider = ({
         overlappedSentencesViableForReviewMemoized,
         handleAddOverlappedSnippetsToReview,
         setScrollToElState,
+        enableWordReviewState,
+        setEnableWordReviewState,
+        enableTranscriptReviewState,
+        setEnableTranscriptReviewState,
+        enableSnippetReviewState,
+        setEnableSnippetReviewState,
       }}
     >
       {children}
