@@ -21,6 +21,7 @@ import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
 import { mapSentenceIdsToSeconds } from './utils/map-sentence-ids-to-seconds';
 import { useFetchData } from '../Providers/FetchDataProvider';
+import { WordTypes } from '../types/word-types';
 
 export const LearningScreenContext = createContext(null);
 
@@ -547,40 +548,28 @@ export const LearningScreenProvider = ({
         };
       }
 
-      const dateNow = new Date();
-      const thisTopicsSentenceIds = content.map((i) => i.id);
+      const allWords = [] as WordTypes[];
+      const dueWords = [] as WordTypes[];
 
-      const allWords = [];
-      const dueWords = [];
-
-      wordsState.forEach((word) => {
-        const originalContextId = word.contexts[0];
-        if (!thisTopicsSentenceIds.includes(originalContextId)) {
-          return;
-        }
-
-        const time = content.find(
-          (item) => item.id === word?.contexts?.[0],
-        ).time;
-        const isDue = !word?.reviewData || isDueCheck(word, dateNow);
-        const wordWithMeta = { ...word, time, isDue };
-
-        allWords.push(wordWithMeta);
-        if (isDue) {
-          dueWords.push(wordWithMeta);
+      wordsState.forEach((wordItem) => {
+        if (wordItem.originalContext === thisContentTitle) {
+          allWords.push(wordItem);
+          if (wordItem.isDue) {
+            dueWords.push(wordItem);
+          }
         }
       });
 
       // Sort all words by due status
       const sortedAllWords = allWords.sort(
-        (a, b) => isDueCheck(b, dateNow) - isDueCheck(a, dateNow),
+        (a, b) => Number(b.isDue) - Number(a.isDue),
       );
 
       return {
         contentMetaWordMemoized: dueWords,
         wordsForSelectedTopicMemoized: sortedAllWords,
       };
-    }, [thisContentTitle, wordsState, content]);
+    }, [thisContentTitle, wordsState]);
 
   const handleBulkReviews = async () => {
     // const emptyCard = getEmptyCard();

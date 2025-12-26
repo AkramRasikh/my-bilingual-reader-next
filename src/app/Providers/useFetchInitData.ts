@@ -55,6 +55,8 @@ const useFetchInitData = ({
         dispatchWords({
           type: 'initWords',
           words: wordsState,
+          content: contentState,
+          // sentences: sentencesState,
         });
         dispatchContent({
           type: 'initContent',
@@ -80,6 +82,7 @@ const useFetchInitData = ({
             dispatchWords({
               type: 'initWords',
               words: data?.wordsData,
+              content: data.contentData,
             });
             dispatchContent({
               type: 'initContent',

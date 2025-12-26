@@ -1,9 +1,12 @@
+import { isDueCheck } from '@/utils/is-due-check';
 import { WordTypes } from '../types/word-types';
+import { ContentStateTypes } from './content-reducer';
 
 export type WordActions =
   | {
       type: 'initWords';
       words: WordTypes[];
+      content: ContentStateTypes[];
     }
   | {
       type: 'addWord';
@@ -31,8 +34,36 @@ export type WordActions =
 export function wordsReducer(state: WordTypes[], action: WordActions) {
   switch (action.type) {
     case 'initWords':
+      if (action.words === null) {
+        return [];
+      }
       // for your first useEffect initialization
-      return action.words || [];
+      // const sentencesState = action.sentences // need to figure out how this fits in
+      const contentState = action.content;
+
+      // Create a map of sentenceId -> content title
+      const sentenceIdToTitleMap = contentState?.reduce((acc, contentItem) => {
+        contentItem.content.forEach((sentence) => {
+          acc[sentence.id] = { title: contentItem.title, time: sentence.time };
+        });
+        return acc;
+      }, {} as Record<string, { title: string; time: number }>);
+
+      const now = new Date();
+
+      return action.words.map((word) => {
+        const originalContext = word.contexts[0]; // assuming first is not sentenceState
+        return {
+          ...word,
+          originalContext: sentenceIdToTitleMap
+            ? sentenceIdToTitleMap[originalContext]?.title || null
+            : null,
+          isDue: isDueCheck(word, now),
+          time: sentenceIdToTitleMap
+            ? sentenceIdToTitleMap[originalContext]?.time || null
+            : null,
+        };
+      });
 
     case 'addWord':
       // Add one or multiple words to the state

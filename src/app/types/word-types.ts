@@ -9,6 +9,8 @@ export interface WordTypes {
   reviewData: ReviewDataTypes;
   surfaceForm: string;
   transliteration: string;
+  originalContext: string;
+  isDue: boolean;
   notes?: string;
   imageUrl?: string;
   mnemonic?: string;
