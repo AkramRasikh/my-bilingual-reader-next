@@ -6,10 +6,9 @@ import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import getBiggestOverlap from '@/components/custom/TranscriptItem/get-biggest-overlap';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import LearningScreenComprehensiveReview from '../LearningScreenComprehensiveReview';
 import useAutoScrollToCurrentItem from './useAutoScrollToCurrentItem';
+import ReviewTypeToggles from '../components/ReviewTypeToggles';
 
 const LearningScreenTabTranscript = () => {
   const {
@@ -42,6 +41,14 @@ const LearningScreenTabTranscript = () => {
     handleSaveSnippet,
     setIsInReviewMode,
     trackCurrentState,
+    enableWordReviewState,
+    setEnableWordReviewState,
+    enableTranscriptReviewState,
+    setEnableTranscriptReviewState,
+    enableSnippetReviewState,
+    setEnableSnippetReviewState,
+    reviewIntervalState,
+    setReviewIntervalState,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -75,16 +82,23 @@ const LearningScreenTabTranscript = () => {
       value='transcript'
       className={clsx(contentClasses, 'border rounded-lg')}
     >
-      <div className='p-1 flex justify-center gap-4'>
-        <div className='flex gap-2 my-auto'>
-          <Label data-testid='review-label'>Review</Label>
-          <Switch
-            checked={isInReviewMode}
-            onCheckedChange={setIsInReviewMode}
-            data-testid='review-switch'
-          />
-        </div>
-      </div>
+      {!isInReviewMode && (
+        <ReviewTypeToggles
+          enableWordReviewState={enableWordReviewState}
+          setEnableWordReviewState={setEnableWordReviewState}
+          enableTranscriptReviewState={enableTranscriptReviewState}
+          setEnableTranscriptReviewState={setEnableTranscriptReviewState}
+          enableSnippetReviewState={enableSnippetReviewState}
+          setEnableSnippetReviewState={setEnableSnippetReviewState}
+          wordsCount={0}
+          sentencesCount={0}
+          snippetsCount={0}
+          reviewIntervalState={reviewIntervalState}
+          setReviewIntervalState={setReviewIntervalState}
+          isInReviewMode={isInReviewMode}
+          setIsInReviewMode={setIsInReviewMode}
+        />
+      )}
       {isInReviewMode ? (
         <LearningScreenComprehensiveReview />
       ) : (

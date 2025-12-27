@@ -73,6 +73,7 @@ const LearningScreenComprehensiveReview = () => {
     firstTime,
     contentMetaWordMemoized,
     snippetsWithDueStatusMemoized,
+    setIsInReviewMode,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -210,6 +211,8 @@ const LearningScreenComprehensiveReview = () => {
           snippetsCount={postSnippetsState?.length}
           reviewIntervalState={reviewIntervalState}
           setReviewIntervalState={setReviewIntervalState}
+          isInReviewMode={isInReviewMode}
+          setIsInReviewMode={setIsInReviewMode}
         />
         <h2 className='text-center'>Done!</h2>
       </div>
@@ -230,6 +233,8 @@ const LearningScreenComprehensiveReview = () => {
         snippetsCount={postSnippetsState?.length}
         reviewIntervalState={reviewIntervalState}
         setReviewIntervalState={setReviewIntervalState}
+        isInReviewMode={isInReviewMode}
+        setIsInReviewMode={setIsInReviewMode}
       />
       {postSnippetsState?.length > 0 ? (
         <div className='flex flex-col gap-2 mb-2'>
