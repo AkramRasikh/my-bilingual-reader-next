@@ -79,7 +79,9 @@ export function wordsReducer(state: WordTypes[], action: WordActions) {
     case 'updateWord':
       return state.map((item) => {
         if (item.id === action.wordId) {
-          const isDue = action?.data?.reviewData?.due < new Date();
+          const isDue = action?.data?.reviewData?.due
+            ? isDueCheck(action.data, new Date())
+            : isDueCheck(item, new Date());
           return {
             ...item,
             ...action.data,

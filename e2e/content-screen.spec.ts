@@ -1536,6 +1536,12 @@ test('checkpoint button scrolls to last reviewed sentence', async ({
   // Wait for the content to load
   await page.waitForLoadState('networkidle');
 
+  // Turn off track-current switch before testing checkpoint
+  const trackCurrentSwitch = page.getByTestId('track-current-switch');
+  await expect(trackCurrentSwitch).toBeVisible();
+  await trackCurrentSwitch.click();
+  await page.waitForTimeout(500);
+
   // The checkpoint text from the last reviewed sentence
   const checkpointText =
     'Hori/In the meantime, we look forward to everyone continuing to subscribe, like, and leave comments with their thoughts, so please feel free to send in whatever you think. Wed/Yes.';
@@ -1867,7 +1873,7 @@ test('Word tab section', async ({ page }) => {
   await saveButton.click();
 
   // Wait for the API call and verify toast message
-  const toastMessage = page.getByText('Word reviewed ✅');
+  const toastMessage = page.getByText('Word updated ✅');
   await expect(toastMessage).toBeVisible({ timeout: 3000 });
 
   // Verify the new value is displayed

@@ -648,7 +648,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         },
       })) as HandleSaveWordResponseCallTypes;
 
-      const wordToSave = savedWordResponse.word;
+      const wordToSave = { ...savedWordResponse.word, originalContext, time };
 
       if (wordToSave) {
         dispatchWords({
