@@ -74,6 +74,7 @@ const LearningScreenComprehensiveReview = () => {
     contentMetaWordMemoized,
     snippetsWithDueStatusMemoized,
     setIsInReviewMode,
+    selectedContentTitleState,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -301,6 +302,7 @@ const LearningScreenComprehensiveReview = () => {
               isComprehensiveMode={true}
               setThreeSecondLoopState={setThreeSecondLoopState}
               setContractThreeSecondLoopState={setContractThreeSecondLoopState}
+              originalContext={selectedContentTitleState}
             >
               <TranscriptItem />
             </TranscriptItemProvider>

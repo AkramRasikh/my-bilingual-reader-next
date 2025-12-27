@@ -40,6 +40,7 @@ export const TranscriptItemProvider = ({
   biggestOverlappedSnippet,
   overlappingTextMemoized,
   handleSaveSnippet,
+  originalContext,
   children,
 }) => {
   const transcriptItemContainerRef = useRef(null);
@@ -228,6 +229,8 @@ export const TranscriptItemProvider = ({
         contextSentence: contentItem.targetLang,
         meaning: thisWordMeaning,
         isGoogle,
+        originalContext,
+        time: contentItem?.time,
       });
     } catch (error) {
     } finally {

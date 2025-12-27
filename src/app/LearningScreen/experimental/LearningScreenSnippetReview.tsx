@@ -68,6 +68,8 @@ const LearningScreenSnippetReview = ({
     handleUpdateSnippet,
     wordsForSelectedTopicMemoized,
     getSentenceDataOfOverlappingWordsDuringSave,
+    selectedContentTitleState,
+    sentenceMapMemoized,
   } = useLearningScreen();
   const {
     pureWordsMemoized,
@@ -105,6 +107,8 @@ const LearningScreenSnippetReview = ({
           contextSentence: item.targetLang, // maybe these two should match?
           meaning: thisWordMeaning,
           isGoogle,
+          originalContext: selectedContentTitleState,
+          time: sentenceMapMemoized[belongingSentenceId]?.time,
         });
       } else {
         console.log('## no belonding sentence found');

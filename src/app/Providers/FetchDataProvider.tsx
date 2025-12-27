@@ -571,7 +571,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
           wordId,
           data,
         });
-        setToastMessageState('Word reviewed ✅');
+        setToastMessageState('Word updated ✅');
         return true;
       }
     } catch (error) {
@@ -625,6 +625,8 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     contextSentence,
     meaning,
     isGoogle,
+    originalContext,
+    time,
   }: HandleSaveWordCallTypes) => {
     try {
       const cardDataRelativeToNow = getEmptyCard();

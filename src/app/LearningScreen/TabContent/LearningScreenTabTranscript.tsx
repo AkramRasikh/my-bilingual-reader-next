@@ -49,6 +49,7 @@ const LearningScreenTabTranscript = () => {
     setEnableSnippetReviewState,
     reviewIntervalState,
     setReviewIntervalState,
+    selectedContentTitleState,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -149,6 +150,7 @@ const LearningScreenTabTranscript = () => {
                   biggestOverlappedSnippet={biggestOverlappedSnippet}
                   overlappingTextMemoized={overlappingTextMemoized}
                   handleSaveSnippet={handleSaveSnippet}
+                  originalContext={selectedContentTitleState}
                 >
                   <TranscriptItem />
                 </TranscriptItemProvider>

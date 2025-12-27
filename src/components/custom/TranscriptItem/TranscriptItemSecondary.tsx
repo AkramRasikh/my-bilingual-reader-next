@@ -11,7 +11,8 @@ const TranscriptItemSecondary = ({ contentItem, handleSaveWord }) => {
   const [isLoadingState, setIsLoadingState] = useState(false);
 
   const { wordsState, handleDeleteWordDataProvider } = useFetchData();
-  const { wordsForSelectedTopic } = useLearningScreen();
+  const { wordsForSelectedTopic, selectedContentTitleState } =
+    useLearningScreen();
 
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -32,6 +33,8 @@ const TranscriptItemSecondary = ({ contentItem, handleSaveWord }) => {
         contextSentence: contentItem.targetLang,
         meaning: thisWordMeaning,
         isGoogle,
+        originalContext: selectedContentTitleState,
+        time: contentItem?.time,
       });
     } catch (error) {
     } finally {
