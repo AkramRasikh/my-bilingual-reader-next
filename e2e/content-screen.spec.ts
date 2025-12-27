@@ -370,22 +370,40 @@ test('landing screen -> learning content screen navigation -> general toggle act
   // check action bar buttons (non-review state)
   await checkActionBarButtons(page);
 
-  // test comprehensive mode - initially disabled
-  const comprehensiveModeLabel = page.getByTestId('comprehensive-mode-label');
-  await expect(comprehensiveModeLabel).toBeVisible();
-  await expect(comprehensiveModeLabel).toContainText('Comprehensive Mode');
+  // Before toggling review mode, verify checkboxes are disabled with 0 counts
+  const wordsToggle = page.locator('#words-toggle');
+  const sentencesToggle = page.locator('#sentences-toggle');
+  const snippetsToggle = page.locator('#snippets-toggle');
 
-  const comprehensiveModeSwitch = page.getByTestId('comprehensive-mode-switch');
-  await expect(comprehensiveModeSwitch).toBeVisible();
-  await expect(comprehensiveModeSwitch).toBeDisabled();
+  await expect(wordsToggle).toBeDisabled();
+  await expect(sentencesToggle).toBeDisabled();
+  await expect(snippetsToggle).toBeDisabled();
+
+  // Verify counts are 0 before review mode
+  const wordsLabel = page.locator('label[for="words-toggle"]');
+  const sentencesLabel = page.locator('label[for="sentences-toggle"]');
+  const snippetsLabel = page.locator('label[for="snippets-toggle"]');
+
+  await expect(wordsLabel).toContainText('🔤 (0)');
+  await expect(sentencesLabel).toContainText('📝 (0)');
+  await expect(snippetsLabel).toContainText('✂️ (0)');
 
   // toggle review mode on
   const reviewSwitch = page.getByTestId('review-switch');
   await reviewSwitch.click();
   await page.waitForTimeout(500);
 
-  // assert that comprehensive mode is now enabled
-  await expect(comprehensiveModeSwitch).toBeEnabled();
+  // After toggling review mode, verify checkboxes are enabled with proper counts
+  await expect(wordsToggle).not.toBeDisabled();
+  await expect(sentencesToggle).not.toBeDisabled();
+  await expect(snippetsToggle).not.toBeDisabled();
+
+  // Verify counts are updated after review mode
+  await expect(wordsLabel).toContainText('🔤 (5)');
+  await expect(sentencesLabel).toContainText('📝 (0)');
+  await expect(snippetsLabel).toContainText('✂️ (0)');
+
+  //
 });
 
 test('transcript item menu interactions and review', async ({ page }) => {
