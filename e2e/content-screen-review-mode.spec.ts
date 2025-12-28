@@ -1,7 +1,11 @@
 import { test, expect, Page } from '@playwright/test';
 import { setupApiMocks } from './helpers/mock-api';
 import { landingMetaData } from './helpers/landing-meta-data';
-import { checkSnippetsDueMeta, checkWordsDueMeta } from './content-screen.spec';
+import {
+  checkSentenceCount,
+  checkSnippetsDueMeta,
+  checkWordsDueMeta,
+} from './content-screen.spec';
 import { mockEasyLinguisticsRadioSignLangIslandSnippets } from './mock-data/easy-linguistics-radio-sign-lang-island';
 
 const contentData = landingMetaData[0];
@@ -34,12 +38,13 @@ const fifthDueWord = {
 };
 
 const firstSnippet = '75a51c0b-9378-4f44-8ea5-e8e3013abd23';
-
 const secondSnippet = '3eca4d57-72f3-40ba-95f9-ec7dfe35635a';
-
 const thirdSnippet = '7f3b7a90-4419-48e1-b4a3-527ab83e4014';
-
 const fourthSnippet = '4fee7322-f0db-41d1-b671-e8c472bcc395';
+
+const firstDueSentenceId = '7c5ba8cc-c745-422e-b0f5-4c8ab884744d';
+const secondDueSentenceId = '24cb7886-50d5-4ee9-85e8-55eb099faf5a';
+
 // Helper function to check review variant counts
 async function checkReviewVariantCounts(
   page: Page,
@@ -282,6 +287,16 @@ async function reviewSnippet(page: Page, snippetId: string) {
   await page.waitForTimeout(1000);
 }
 
+async function reviewSentence(page: Page, sentenceId: string) {
+  //refactor to one
+  const reviewSRSTogglesForSentence = page.getByTestId(
+    `review-srs-toggles-${sentenceId}`,
+  );
+
+  await reviewSRSTogglesForSentence.locator('button').nth(3).click();
+  await page.waitForTimeout(1000);
+}
+
 test.beforeEach(async ({ page }) => {
   // Setup API mocking for all tests
   await setupApiMocks(page);
@@ -331,6 +346,7 @@ test.only('review each variant - words/sentences/snippets - follows a change in 
   await checkPrePostReviewToggle(page);
   // check meta data
   await checkWordsDueMeta(page, 'Words Due: 55');
+  await checkSentenceCount(page, '153/200');
 
   await checkReviewVariantCounts(page, 5, 0, 0);
 
@@ -369,6 +385,13 @@ test.only('review each variant - words/sentences/snippets - follows a change in 
   await checkSnippetsDueMeta(page, 'Snippets Due: 221/292/292');
 
   // Find the review SRS toggles container
+  await reviewSentence(page, firstDueSentenceId);
+  await checkReviewVariantCounts(page, 6, 1, 0);
+  await checkSentenceCount(page, '152/200');
+
+  await reviewSentence(page, secondDueSentenceId);
+  await checkReviewVariantCounts(page, 6, 0, 0);
+  await checkSentenceCount(page, '151/200');
 
   // review-srs-toggles-4fee7322-f0db-41d1-b671-e8c472bcc395
   //

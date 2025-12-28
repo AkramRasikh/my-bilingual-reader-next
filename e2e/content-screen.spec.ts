@@ -15,7 +15,7 @@ const firstDueWordId = '2c08d190-1e96-4147-955a-79620e210c37';
 const firstNonDueWordId = '330a7f02-0971-4281-9be6-24b8d68114db';
 
 // Helper function to check sentence count
-async function checkSentenceCount(page: Page, expectedText: string) {
+export async function checkSentenceCount(page: Page, expectedText: string) {
   const sentencesCount = page.getByTestId('analytics-sentences-count');
   await expect(sentencesCount).toBeVisible();
   await expect(sentencesCount).toContainText(expectedText);
