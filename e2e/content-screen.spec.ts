@@ -1722,25 +1722,6 @@ test('checkpoint button scrolls to last reviewed sentence', async ({
   expect(checkpointNotVisibleFinal).toBe(false);
 });
 
-test.only('review mode', async ({ page }) => {
-  await page.goto('/');
-
-  // Wait for page to be loaded
-  await page.waitForLoadState('networkidle');
-
-  // Navigate to content screen
-  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-  await contentButton.click();
-
-  // Wait for navigation to complete
-  await page.waitForURL(`**/content?topic=${contentTitle}`);
-
-  // Wait for the content to load
-  await page.waitForLoadState('networkidle');
-
-  await checkPrePostReviewToggle(page);
-});
-
 test('bulk sentence review - double click to review multiple sentences', async ({
   page,
 }) => {
