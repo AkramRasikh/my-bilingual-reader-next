@@ -122,6 +122,42 @@ async function checkEnglishTranscriptToggles(page: Page) {
   await expect(secondTranscriptEnglish).toBeVisible();
 }
 
+// Helper function to check pre/post review toggle state
+async function checkPrePostReviewToggle(page: Page) {
+  // Before toggling review mode, verify checkboxes are disabled with 0 counts
+  const wordsToggle = page.locator('#words-toggle');
+  const sentencesToggle = page.locator('#sentences-toggle');
+  const snippetsToggle = page.locator('#snippets-toggle');
+
+  await expect(wordsToggle).toBeDisabled();
+  await expect(sentencesToggle).toBeDisabled();
+  await expect(snippetsToggle).toBeDisabled();
+
+  // Verify counts are 0 before review mode
+  const wordsLabel = page.locator('label[for="words-toggle"]');
+  const sentencesLabel = page.locator('label[for="sentences-toggle"]');
+  const snippetsLabel = page.locator('label[for="snippets-toggle"]');
+
+  await expect(wordsLabel).toContainText('🔤 (0)');
+  await expect(sentencesLabel).toContainText('📝 (0)');
+  await expect(snippetsLabel).toContainText('✂️ (0)');
+
+  // toggle review mode on
+  const reviewSwitch = page.getByTestId('review-switch');
+  await reviewSwitch.click();
+  await page.waitForTimeout(500);
+
+  // After toggling review mode, verify checkboxes are enabled with proper counts
+  await expect(wordsToggle).not.toBeDisabled();
+  await expect(sentencesToggle).not.toBeDisabled();
+  await expect(snippetsToggle).not.toBeDisabled();
+
+  // Verify counts are updated after review mode
+  await expect(wordsLabel).toContainText('🔤 (5)');
+  await expect(sentencesLabel).toContainText('📝 (0)');
+  await expect(snippetsLabel).toContainText('✂️ (0)');
+}
+
 // Helper function to check action bar buttons in non-review state
 async function checkActionBarButtons(page: Page) {
   // Check Study here button is visible
@@ -370,40 +406,8 @@ test('landing screen -> learning content screen navigation -> general toggle act
   // check action bar buttons (non-review state)
   await checkActionBarButtons(page);
 
-  // Before toggling review mode, verify checkboxes are disabled with 0 counts
-  const wordsToggle = page.locator('#words-toggle');
-  const sentencesToggle = page.locator('#sentences-toggle');
-  const snippetsToggle = page.locator('#snippets-toggle');
-
-  await expect(wordsToggle).toBeDisabled();
-  await expect(sentencesToggle).toBeDisabled();
-  await expect(snippetsToggle).toBeDisabled();
-
-  // Verify counts are 0 before review mode
-  const wordsLabel = page.locator('label[for="words-toggle"]');
-  const sentencesLabel = page.locator('label[for="sentences-toggle"]');
-  const snippetsLabel = page.locator('label[for="snippets-toggle"]');
-
-  await expect(wordsLabel).toContainText('🔤 (0)');
-  await expect(sentencesLabel).toContainText('📝 (0)');
-  await expect(snippetsLabel).toContainText('✂️ (0)');
-
-  // toggle review mode on
-  const reviewSwitch = page.getByTestId('review-switch');
-  await reviewSwitch.click();
-  await page.waitForTimeout(500);
-
-  // After toggling review mode, verify checkboxes are enabled with proper counts
-  await expect(wordsToggle).not.toBeDisabled();
-  await expect(sentencesToggle).not.toBeDisabled();
-  await expect(snippetsToggle).not.toBeDisabled();
-
-  // Verify counts are updated after review mode
-  await expect(wordsLabel).toContainText('🔤 (5)');
-  await expect(sentencesLabel).toContainText('📝 (0)');
-  await expect(snippetsLabel).toContainText('✂️ (0)');
-
-  //
+  // check pre/post review toggle state
+  await checkPrePostReviewToggle(page);
 });
 
 test('transcript item menu interactions and review', async ({ page }) => {
@@ -997,7 +1001,7 @@ test('save word from transcript item', async ({ page }) => {
   const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
 
   // Verify initial Words count
-  const wordsTabTrigger = await checkWordsTabCount(page, 'Words 55/84');
+  await checkWordsTabCount(page, 'Words 55/84');
 
   // Find the transcript item with text "ゆる言語学ラジオ"
   const transcriptTargetLang = page.getByTestId(
@@ -1716,6 +1720,25 @@ test('checkpoint button scrolls to last reviewed sentence', async ({
     );
   });
   expect(checkpointNotVisibleFinal).toBe(false);
+});
+
+test.only('review mode', async ({ page }) => {
+  await page.goto('/');
+
+  // Wait for page to be loaded
+  await page.waitForLoadState('networkidle');
+
+  // Navigate to content screen
+  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+  await contentButton.click();
+
+  // Wait for navigation to complete
+  await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+  // Wait for the content to load
+  await page.waitForLoadState('networkidle');
+
+  await checkPrePostReviewToggle(page);
 });
 
 test('bulk sentence review - double click to review multiple sentences', async ({
