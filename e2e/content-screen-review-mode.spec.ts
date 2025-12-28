@@ -11,31 +11,19 @@ import { mockEasyLinguisticsRadioSignLangIslandSnippets } from './mock-data/easy
 const contentData = landingMetaData[0];
 const contentTitle = contentData.title;
 
-const firstDueWord = {
-  definition: 'summary; Synopsis',
-  id: '860b155c-45fc-433d-8c77-d43e4e1d87b4',
-};
-
-const secondDueWord = {
-  definition: 'Difficulty',
-  id: 'c277baca-452d-416e-8334-c517ca36e59d',
-};
-
-const thirdDueWord = {
-  definition: 'signs; sign',
-  id: 'ee863404-57ff-4393-82f0-beb8c92b3cb0',
-};
-
-const fourthDueWord = {
-  definition: 'Speaker',
-  id: '0e98f24f-aaee-4b52-a1e3-aad4af3570cf',
-};
-
-const fifthDueWord = {
-  definition:
-    'were forced (to experience) or something; Or they were forced to',
-  id: '8099e324-61ab-4ac0-984c-c1571a1ae912',
-};
+const batchDueWord = [
+  '860b155c-45fc-433d-8c77-d43e4e1d87b4',
+  'c277baca-452d-416e-8334-c517ca36e59d',
+  'ee863404-57ff-4393-82f0-beb8c92b3cb0',
+  '0e98f24f-aaee-4b52-a1e3-aad4af3570cf',
+  '8099e324-61ab-4ac0-984c-c1571a1ae912',
+  'b8efc615-240b-4cd7-a9cf-669cb2fce94a',
+  'bfeeb3fe-9707-4196-a754-82a1b7e84d7a',
+  '9e7897fc-2e24-4ba7-ac67-2a157bbce850',
+  'b2856484-1667-41ce-be9f-9c911d3ed927',
+  '9a9cdfcf-17af-4f72-b350-ec719e1147ff',
+  '7ae308cf-0c27-46a9-b1db-16191a97eeca',
+];
 
 const firstSnippet = '75a51c0b-9378-4f44-8ea5-e8e3013abd23';
 const secondSnippet = '3eca4d57-72f3-40ba-95f9-ec7dfe35635a';
@@ -203,14 +191,9 @@ async function checkReviewIntervalButtons(page: Page) {
 }
 
 async function reviewWord(page: Page, wordId: string) {
-  const reviewSRSToggles = page.getByTestId(`review-srs-toggles-${wordId}`);
-  await expect(reviewSRSToggles).toBeVisible();
-
-  // Find and click the "2 days" button
-  const threeDaysButton = reviewSRSToggles.getByRole('button', {
-    name: /3 days/i,
-  });
-  await expect(threeDaysButton).toBeVisible();
+  const reviewSRSTogglesForWord = page.getByTestId(
+    `review-srs-toggles-${wordId}`,
+  );
 
   // Mock the /api/updateWord call for the SRS review
   const twoDaysFromNow = new Date();
@@ -237,7 +220,8 @@ async function reviewWord(page: Page, wordId: string) {
       }),
     });
   });
-  await threeDaysButton.click();
+
+  await reviewSRSTogglesForWord.locator('button').nth(3).click();
   await page.waitForTimeout(500);
 }
 
@@ -326,7 +310,7 @@ test('review mode toggle settings (widgets & time interval)', async ({
   await checkReviewIntervalButtons(page);
 });
 
-test.only('review each variant - words/sentences/snippets - follows a change in review numbers', async ({
+test('review each variant - words/sentences/snippets - follows a change in review numbers', async ({
   page,
 }) => {
   await page.goto('/');
@@ -343,6 +327,8 @@ test.only('review each variant - words/sentences/snippets - follows a change in 
 
   // Wait for the content to load
   await page.waitForLoadState('networkidle');
+
+  const repsCount = page.getByTestId('analytics-reps-count');
   await checkPrePostReviewToggle(page);
   // check meta data
   await checkWordsDueMeta(page, 'Words Due: 55');
@@ -350,19 +336,19 @@ test.only('review each variant - words/sentences/snippets - follows a change in 
 
   await checkReviewVariantCounts(page, 5, 0, 0);
 
-  await reviewWord(page, firstDueWord.id);
+  await reviewWord(page, batchDueWord[0]);
   await checkWordsDueMeta(page, 'Words Due: 54');
   await checkReviewVariantCounts(page, 4, 0, 0);
-  await reviewWord(page, secondDueWord.id);
+  await reviewWord(page, batchDueWord[1]);
   await checkWordsDueMeta(page, 'Words Due: 53');
   await checkReviewVariantCounts(page, 3, 0, 0);
-  await reviewWord(page, thirdDueWord.id);
+  await reviewWord(page, batchDueWord[2]);
   await checkWordsDueMeta(page, 'Words Due: 52');
   await checkReviewVariantCounts(page, 2, 0, 0);
-  await reviewWord(page, fourthDueWord.id);
+  await reviewWord(page, batchDueWord[3]);
   await checkWordsDueMeta(page, 'Words Due: 51');
   await checkReviewVariantCounts(page, 1, 0, 0);
-  await reviewWord(page, fifthDueWord.id);
+  await reviewWord(page, batchDueWord[4]);
   await checkWordsDueMeta(page, 'Words Due: 50');
   await checkReviewVariantCounts(page, 6, 2, 4);
 
@@ -385,14 +371,34 @@ test.only('review each variant - words/sentences/snippets - follows a change in 
   await checkSnippetsDueMeta(page, 'Snippets Due: 221/292/292');
 
   // Find the review SRS toggles container
+  await expect(repsCount).toContainText('Reps: 0');
   await reviewSentence(page, firstDueSentenceId);
   await checkReviewVariantCounts(page, 6, 1, 0);
+
+  await expect(repsCount).toContainText('Reps: 1');
   await checkSentenceCount(page, '152/200');
 
   await reviewSentence(page, secondDueSentenceId);
   await checkReviewVariantCounts(page, 6, 0, 0);
   await checkSentenceCount(page, '151/200');
-
-  // review-srs-toggles-4fee7322-f0db-41d1-b671-e8c472bcc395
-  //
+  await expect(repsCount).toContainText('Reps: 2');
+  // second batch of words
+  await reviewWord(page, batchDueWord[5]);
+  await checkReviewVariantCounts(page, 5, 0, 0);
+  await checkWordsDueMeta(page, 'Words Due: 49');
+  await reviewWord(page, batchDueWord[6]);
+  await checkReviewVariantCounts(page, 4, 0, 0);
+  await checkWordsDueMeta(page, 'Words Due: 48');
+  await reviewWord(page, batchDueWord[7]);
+  await checkReviewVariantCounts(page, 3, 0, 0);
+  await checkWordsDueMeta(page, 'Words Due: 47');
+  await reviewWord(page, batchDueWord[8]);
+  await checkReviewVariantCounts(page, 2, 0, 0);
+  await checkWordsDueMeta(page, 'Words Due: 46');
+  await reviewWord(page, batchDueWord[9]);
+  await checkReviewVariantCounts(page, 1, 0, 0);
+  await checkWordsDueMeta(page, 'Words Due: 45');
+  await reviewWord(page, batchDueWord[10]);
+  await checkReviewVariantCounts(page, 5, 6, 1);
+  await checkWordsDueMeta(page, 'Words Due: 44');
 });
