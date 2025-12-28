@@ -30,14 +30,14 @@ async function checkWordsTabCount(page: Page, expectedText: string) {
 }
 
 // Helper function to check words due count
-async function checkWordsDueMeta(page: Page, expectedText: string) {
+export async function checkWordsDueMeta(page: Page, expectedText: string) {
   const wordsDue = page.getByTestId('analytics-words-due');
   await expect(wordsDue).toBeVisible();
   await expect(wordsDue).toContainText(expectedText);
 }
 
 // Helper function to check snippets due count
-async function checkSnippetsDueMeta(page: Page, expectedText: string) {
+export async function checkSnippetsDueMeta(page: Page, expectedText: string) {
   const snippetsDue = page.getByTestId('analytics-snippets-due');
   await expect(snippetsDue).toBeVisible();
   await expect(snippetsDue).toContainText(expectedText);

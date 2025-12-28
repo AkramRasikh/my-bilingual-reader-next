@@ -1,6 +1,8 @@
 import { test, expect, Page } from '@playwright/test';
 import { setupApiMocks } from './helpers/mock-api';
 import { landingMetaData } from './helpers/landing-meta-data';
+import { checkSnippetsDueMeta, checkWordsDueMeta } from './content-screen.spec';
+import { mockEasyLinguisticsRadioSignLangIslandSnippets } from './mock-data/easy-linguistics-radio-sign-lang-island';
 
 const contentData = landingMetaData[0];
 const contentTitle = contentData.title;
@@ -31,6 +33,13 @@ const fifthDueWord = {
   id: '8099e324-61ab-4ac0-984c-c1571a1ae912',
 };
 
+const firstSnippet = '75a51c0b-9378-4f44-8ea5-e8e3013abd23';
+
+const secondSnippet = '3eca4d57-72f3-40ba-95f9-ec7dfe35635a';
+
+const thirdSnippet = '7f3b7a90-4419-48e1-b4a3-527ab83e4014';
+
+const fourthSnippet = '4fee7322-f0db-41d1-b671-e8c472bcc395';
 // Helper function to check review variant counts
 async function checkReviewVariantCounts(
   page: Page,
@@ -225,12 +234,53 @@ async function reviewWord(page: Page, wordId: string) {
   });
   await threeDaysButton.click();
   await page.waitForTimeout(500);
-
-  // const toastMessage = page.getByText('Word updated ✅');
-  // // await expect(reviewSRSToggles).not.toBeVisible();
-  // await expect(toastMessage).toBeVisible({ timeout: 500 });
 }
-// setToastMessageState('Word updated ✅');
+
+async function reviewSnippet(page: Page, snippetId: string) {
+  await page.route('**/api/updateContentMetaData', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        snippets: [
+          ...mockEasyLinguisticsRadioSignLangIslandSnippets,
+          {
+            baseLang: '*****',
+            focusedText: '****',
+            id: snippetId,
+            isContracted: true,
+            reviewData: {
+              difficulty: 7.1949,
+              due: new Date().toISOString(),
+              ease: 2.5,
+              elapsed_days: 0,
+              interval: 0,
+              lapses: 0,
+              last_review: new Date().toISOString(),
+              reps: 1,
+              scheduled_days: 0,
+              stability: 0.40255,
+              state: 1,
+            },
+            suggestedFocusText: '****',
+            targetLang: '****',
+            time: 1000,
+          },
+        ],
+      }),
+    });
+  });
+
+  const reviewSRSTogglesForSnippet = page.getByTestId(
+    `review-srs-toggles-${snippetId}`,
+  );
+
+  await reviewSRSTogglesForSnippet.locator('button').nth(3).click();
+  await page.waitForTimeout(1000);
+}
 
 test.beforeEach(async ({ page }) => {
   // Setup API mocking for all tests
@@ -280,16 +330,46 @@ test.only('review each variant - words/sentences/snippets - follows a change in 
   await page.waitForLoadState('networkidle');
   await checkPrePostReviewToggle(page);
   // check meta data
+  await checkWordsDueMeta(page, 'Words Due: 55');
+
   await checkReviewVariantCounts(page, 5, 0, 0);
 
   await reviewWord(page, firstDueWord.id);
+  await checkWordsDueMeta(page, 'Words Due: 54');
   await checkReviewVariantCounts(page, 4, 0, 0);
   await reviewWord(page, secondDueWord.id);
+  await checkWordsDueMeta(page, 'Words Due: 53');
   await checkReviewVariantCounts(page, 3, 0, 0);
   await reviewWord(page, thirdDueWord.id);
+  await checkWordsDueMeta(page, 'Words Due: 52');
   await checkReviewVariantCounts(page, 2, 0, 0);
   await reviewWord(page, fourthDueWord.id);
+  await checkWordsDueMeta(page, 'Words Due: 51');
   await checkReviewVariantCounts(page, 1, 0, 0);
   await reviewWord(page, fifthDueWord.id);
+  await checkWordsDueMeta(page, 'Words Due: 50');
   await checkReviewVariantCounts(page, 6, 2, 4);
+
+  await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
+  await reviewSnippet(page, firstSnippet);
+
+  await checkReviewVariantCounts(page, 6, 2, 3);
+  await checkSnippetsDueMeta(page, 'Snippets Due: 224/292/292');
+
+  await reviewSnippet(page, secondSnippet);
+  await checkReviewVariantCounts(page, 6, 2, 2);
+  await checkSnippetsDueMeta(page, 'Snippets Due: 223/292/292');
+
+  await reviewSnippet(page, fourthSnippet);
+  await checkReviewVariantCounts(page, 6, 2, 1);
+  await checkSnippetsDueMeta(page, 'Snippets Due: 222/292/292');
+
+  await reviewSnippet(page, thirdSnippet);
+  await checkReviewVariantCounts(page, 6, 2, 0);
+  await checkSnippetsDueMeta(page, 'Snippets Due: 221/292/292');
+
+  // Find the review SRS toggles container
+
+  // review-srs-toggles-4fee7322-f0db-41d1-b671-e8c472bcc395
+  //
 });
