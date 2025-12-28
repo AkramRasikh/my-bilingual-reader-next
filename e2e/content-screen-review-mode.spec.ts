@@ -53,7 +53,7 @@ async function checkReviewVariantCheckboxes(page: Page) {
 
   const sentencesLabel = page.locator('label[for="sentences-toggle"]');
   await expect(sentencesLabel).toContainText('📝 (2)');
-  
+
   // Toggle the sentences checkbox
   const sentencesToggle = page.locator('#sentences-toggle');
   await sentencesToggle.click();
@@ -70,6 +70,40 @@ async function checkReviewVariantCheckboxes(page: Page) {
 
   // Assert "Done!" is rendered
   await expect(page.getByText('Done!')).toBeVisible();
+
+  await wordsToggle.click();
+  await sentencesToggle.click();
+  await snippetsToggle.click();
+
+  await expect(page.getByText('Done!')).not.toBeVisible();
+
+  await expect(wordsLabel).toContainText('🔤 (5)');
+  await expect(sentencesLabel).toContainText('📝 (0)');
+  await expect(snippetsLabel).toContainText('✂️ (0)');
+}
+async function checkReviewIntervalButtons(page: Page) {
+  // click review-interval-increment
+  const incrementButton = page.getByTestId('review-interval-increment');
+  const incrementCount = page.getByTestId('review-interval-count');
+  await expect(incrementCount).toHaveText('60s');
+  await incrementButton.click();
+  await page.waitForTimeout(500);
+  await expect(incrementCount).toHaveText('90s');
+  await incrementButton.click();
+  await page.waitForTimeout(500);
+  await expect(incrementCount).toHaveText('120s');
+  await incrementButton.click();
+  await page.waitForTimeout(500);
+  await expect(incrementCount).toHaveText('150s');
+  await incrementButton.click();
+  await page.waitForTimeout(500);
+  await expect(incrementButton).toBeEnabled();
+  await expect(incrementCount).toHaveText('180s');
+  await incrementButton.click();
+  await page.waitForTimeout(500);
+  await expect(incrementButton).toBeDisabled();
+  await expect(incrementCount).toHaveText('210s');
+  //
 }
 
 test.beforeEach(async ({ page }) => {
@@ -96,4 +130,5 @@ test('review mode', async ({ page }) => {
   await expect(page.getByText('Done!')).not.toBeVisible();
   await checkPrePostReviewToggle(page);
   await checkReviewVariantCheckboxes(page);
+  await checkReviewIntervalButtons(page);
 });

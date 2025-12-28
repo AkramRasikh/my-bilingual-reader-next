@@ -115,10 +115,14 @@ const ReviewTypeToggles = ({
             className='h-6 w-6'
             onClick={handleDecrement}
             disabled={!isInReviewMode || reviewIntervalState <= 30}
+            data-testid='review-interval-decrement'
           >
             <Minus className='h-3 w-3' />
           </Button>
-          <span className='text-sm font-medium min-w-12 text-center'>
+          <span
+            className='text-sm font-medium min-w-12 text-center'
+            data-testid='review-interval-count'
+          >
             {reviewIntervalState}s
           </span>
           <Button
@@ -127,6 +131,7 @@ const ReviewTypeToggles = ({
             className='h-6 w-6'
             onClick={handleIncrement}
             disabled={!isInReviewMode || reviewIntervalState >= 210}
+            data-testid='review-interval-increment'
           >
             <Plus className='h-3 w-3' />
           </Button>
