@@ -167,7 +167,9 @@ test.beforeEach(async ({ page }) => {
   await setupApiMocks(page);
 });
 
-test('review mode', async ({ page }) => {
+test('review mode toggle settings (widgets & time interval)', async ({
+  page,
+}) => {
   await page.goto('/');
 
   // Wait for page to be loaded
