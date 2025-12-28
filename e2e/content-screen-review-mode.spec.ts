@@ -5,6 +5,22 @@ import { landingMetaData } from './helpers/landing-meta-data';
 const contentData = landingMetaData[0];
 const contentTitle = contentData.title;
 
+// Helper function to check review variant counts
+async function checkReviewVariantCounts(
+  page: Page,
+  expectedWordsCount: number,
+  expectedSentencesCount: number,
+  expectedSnippetsCount: number,
+) {
+  const wordsLabel = page.locator('label[for="words-toggle"]');
+  const sentencesLabel = page.locator('label[for="sentences-toggle"]');
+  const snippetsLabel = page.locator('label[for="snippets-toggle"]');
+
+  await expect(wordsLabel).toContainText(`🔤 (${expectedWordsCount})`);
+  await expect(sentencesLabel).toContainText(`📝 (${expectedSentencesCount})`);
+  await expect(snippetsLabel).toContainText(`✂️ (${expectedSnippetsCount})`);
+}
+
 // Helper function to check pre/post review toggle state
 async function checkPrePostReviewToggle(page: Page) {
   // Before toggling review mode, verify checkboxes are disabled with 0 counts
@@ -86,28 +102,36 @@ async function checkReviewIntervalButtons(page: Page) {
   const incrementButton = page.getByTestId('review-interval-increment');
   const decrementButton = page.getByTestId('review-interval-decrement');
   const incrementCount = page.getByTestId('review-interval-count');
+
   await expect(incrementCount).toHaveText('60s');
   await expect(decrementButton).toBeEnabled();
   await decrementButton.click();
+  await checkReviewVariantCounts(page, 1, 0, 0);
   await expect(incrementCount).toHaveText('30s');
   await expect(decrementButton).toBeDisabled();
   await incrementButton.click();
   await expect(incrementCount).toHaveText('60s');
+  await checkReviewVariantCounts(page, 5, 0, 0);
   await incrementButton.click();
   await page.waitForTimeout(500);
   await expect(incrementCount).toHaveText('90s');
+  await checkReviewVariantCounts(page, 5, 0, 3);
   await incrementButton.click();
   await page.waitForTimeout(500);
   await expect(incrementCount).toHaveText('120s');
+  await checkReviewVariantCounts(page, 11, 1, 4);
   await incrementButton.click();
   await page.waitForTimeout(500);
   await expect(incrementCount).toHaveText('150s');
+  await checkReviewVariantCounts(page, 11, 3, 5);
   await incrementButton.click();
   await page.waitForTimeout(500);
   await expect(incrementButton).toBeEnabled();
+  await checkReviewVariantCounts(page, 16, 8, 5);
   await expect(incrementCount).toHaveText('180s');
   await incrementButton.click();
   await page.waitForTimeout(500);
+  await checkReviewVariantCounts(page, 17, 11, 6);
   await expect(incrementButton).toBeDisabled();
   await expect(incrementCount).toHaveText('210s');
 }
