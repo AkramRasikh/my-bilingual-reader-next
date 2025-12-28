@@ -5,6 +5,32 @@ import { landingMetaData } from './helpers/landing-meta-data';
 const contentData = landingMetaData[0];
 const contentTitle = contentData.title;
 
+const firstDueWord = {
+  definition: 'summary; Synopsis',
+  id: '860b155c-45fc-433d-8c77-d43e4e1d87b4',
+};
+
+const secondDueWord = {
+  definition: 'Difficulty',
+  id: 'c277baca-452d-416e-8334-c517ca36e59d',
+};
+
+const thirdDueWord = {
+  definition: 'signs; sign',
+  id: 'ee863404-57ff-4393-82f0-beb8c92b3cb0',
+};
+
+const fourthDueWord = {
+  definition: 'Speaker',
+  id: '0e98f24f-aaee-4b52-a1e3-aad4af3570cf',
+};
+
+const fifthDueWord = {
+  definition:
+    'were forced (to experience) or something; Or they were forced to',
+  id: '8099e324-61ab-4ac0-984c-c1571a1ae912',
+};
+
 // Helper function to check review variant counts
 async function checkReviewVariantCounts(
   page: Page,
@@ -162,6 +188,50 @@ async function checkReviewIntervalButtons(page: Page) {
   await checkReviewVariantCounts(page, 5, 0, 0);
 }
 
+async function reviewWord(page: Page, wordId: string) {
+  const reviewSRSToggles = page.getByTestId(`review-srs-toggles-${wordId}`);
+  await expect(reviewSRSToggles).toBeVisible();
+
+  // Find and click the "2 days" button
+  const threeDaysButton = reviewSRSToggles.getByRole('button', {
+    name: /3 days/i,
+  });
+  await expect(threeDaysButton).toBeVisible();
+
+  // Mock the /api/updateWord call for the SRS review
+  const twoDaysFromNow = new Date();
+  twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
+
+  await page.route('**/api/updateWord', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        reviewData: {
+          difficulty: 7.1949,
+          due: twoDaysFromNow.toISOString(),
+          ease: 2.5,
+          elapsed_days: 0,
+          interval: 0,
+          lapses: 0,
+          last_review: new Date().toISOString(),
+          reps: 1,
+          scheduled_days: 0,
+          stability: 0.40255,
+          state: 1,
+        },
+      }),
+    });
+  });
+  await threeDaysButton.click();
+  await page.waitForTimeout(500);
+
+  // const toastMessage = page.getByText('Word updated ✅');
+  // // await expect(reviewSRSToggles).not.toBeVisible();
+  // await expect(toastMessage).toBeVisible({ timeout: 500 });
+}
+// setToastMessageState('Word updated ✅');
+
 test.beforeEach(async ({ page }) => {
   // Setup API mocking for all tests
   await setupApiMocks(page);
@@ -189,4 +259,37 @@ test('review mode toggle settings (widgets & time interval)', async ({
   await checkPrePostReviewToggle(page);
   await checkReviewVariantCheckboxes(page);
   await checkReviewIntervalButtons(page);
+});
+
+test.only('review each variant - words/sentences/snippets - follows a change in review numbers', async ({
+  page,
+}) => {
+  await page.goto('/');
+
+  // Wait for page to be loaded
+  await page.waitForLoadState('networkidle');
+
+  // Navigate to content screen
+  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+  await contentButton.click();
+
+  // Wait for navigation to complete
+  await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+  // Wait for the content to load
+  await page.waitForLoadState('networkidle');
+  await checkPrePostReviewToggle(page);
+  // check meta data
+  await checkReviewVariantCounts(page, 5, 0, 0);
+
+  await reviewWord(page, firstDueWord.id);
+  await checkReviewVariantCounts(page, 4, 0, 0);
+  await reviewWord(page, secondDueWord.id);
+  await checkReviewVariantCounts(page, 3, 0, 0);
+  await reviewWord(page, thirdDueWord.id);
+  await checkReviewVariantCounts(page, 2, 0, 0);
+  await reviewWord(page, fourthDueWord.id);
+  await checkReviewVariantCounts(page, 1, 0, 0);
+  await reviewWord(page, fifthDueWord.id);
+  await checkReviewVariantCounts(page, 6, 2, 4);
 });
