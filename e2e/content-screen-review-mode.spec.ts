@@ -84,7 +84,14 @@ async function checkReviewVariantCheckboxes(page: Page) {
 async function checkReviewIntervalButtons(page: Page) {
   // click review-interval-increment
   const incrementButton = page.getByTestId('review-interval-increment');
+  const decrementButton = page.getByTestId('review-interval-decrement');
   const incrementCount = page.getByTestId('review-interval-count');
+  await expect(incrementCount).toHaveText('60s');
+  await expect(decrementButton).toBeEnabled();
+  await decrementButton.click();
+  await expect(incrementCount).toHaveText('30s');
+  await expect(decrementButton).toBeDisabled();
+  await incrementButton.click();
   await expect(incrementCount).toHaveText('60s');
   await incrementButton.click();
   await page.waitForTimeout(500);
@@ -103,7 +110,6 @@ async function checkReviewIntervalButtons(page: Page) {
   await page.waitForTimeout(500);
   await expect(incrementButton).toBeDisabled();
   await expect(incrementCount).toHaveText('210s');
-  //
 }
 
 test.beforeEach(async ({ page }) => {
