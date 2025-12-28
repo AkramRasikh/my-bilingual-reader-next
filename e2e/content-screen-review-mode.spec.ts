@@ -103,6 +103,10 @@ async function checkReviewIntervalButtons(page: Page) {
   const decrementButton = page.getByTestId('review-interval-decrement');
   const incrementCount = page.getByTestId('review-interval-count');
 
+  const wordsToggle = page.locator('#words-toggle');
+  const sentencesToggle = page.locator('#sentences-toggle');
+  const snippetsToggle = page.locator('#snippets-toggle');
+
   await expect(incrementCount).toHaveText('60s');
   await expect(decrementButton).toBeEnabled();
   await decrementButton.click();
@@ -134,6 +138,28 @@ async function checkReviewIntervalButtons(page: Page) {
   await checkReviewVariantCounts(page, 17, 11, 6);
   await expect(incrementButton).toBeDisabled();
   await expect(incrementCount).toHaveText('210s');
+
+  await wordsToggle.click();
+  await checkReviewVariantCounts(page, 0, 11, 6);
+  await sentencesToggle.click();
+  await checkReviewVariantCounts(page, 0, 0, 6);
+  await snippetsToggle.click();
+  // reset
+  await wordsToggle.click();
+  await checkReviewVariantCounts(page, 17, 0, 0);
+  await wordsToggle.click();
+  await sentencesToggle.click();
+  await checkReviewVariantCounts(page, 0, 16, 0);
+  await wordsToggle.click();
+  await snippetsToggle.click();
+
+  await decrementButton.click();
+  await decrementButton.click();
+  await decrementButton.click();
+  await decrementButton.click();
+  await decrementButton.click();
+  await expect(incrementCount).toHaveText('60s');
+  await checkReviewVariantCounts(page, 5, 0, 0);
 }
 
 test.beforeEach(async ({ page }) => {
