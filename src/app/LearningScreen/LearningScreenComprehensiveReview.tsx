@@ -16,29 +16,6 @@ const isWithinInterval = (
   return time >= firstTime && time <= firstTime + interval;
 };
 
-function highlightFocusedText(fullText: string, focusedText: string) {
-  if (!focusedText) return fullText;
-
-  const idx = fullText.indexOf(focusedText);
-  if (idx === -1) {
-    return fullText; // no match
-  }
-
-  const before = fullText.slice(0, idx);
-  const focus = fullText.slice(idx, idx + focusedText.length);
-  const after = fullText.slice(idx + focusedText.length);
-
-  return (
-    <>
-      {before}
-      <strong style={{ background: '#fff176', borderRadius: '4px' }}>
-        {focus}
-      </strong>
-      {after}
-    </>
-  );
-}
-
 const LearningScreenComprehensiveReview = () => {
   const {
     threeSecondLoopState,
@@ -254,7 +231,6 @@ const LearningScreenComprehensiveReview = () => {
                 handleLoopHere={handleLoopHere}
                 isVideoPlaying={isVideoPlaying}
                 threeSecondLoopState={threeSecondLoopState}
-                highlightFocusedText={highlightFocusedText}
                 handleReviewSnippets={handleReviewSnippets}
               />
             );

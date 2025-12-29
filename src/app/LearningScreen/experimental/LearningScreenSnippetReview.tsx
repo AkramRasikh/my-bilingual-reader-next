@@ -49,7 +49,6 @@ const LearningScreenSnippetReview = ({
   handleLoopHere,
   isVideoPlaying,
   threeSecondLoopState,
-  highlightFocusedText,
   handleReviewSnippets,
 }) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
