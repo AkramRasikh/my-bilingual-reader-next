@@ -87,7 +87,7 @@ export const LearningScreenProvider = ({
     updateContentMetaData,
   } = useFetchData();
 
-  const thisContentTitle = selectedContentStateMemoized.title;
+  const selectedContentTitleState = selectedContentStateMemoized.title;
 
   const content = selectedContentStateMemoized.content;
   const contentIndex = selectedContentStateMemoized.contentIndex;
@@ -569,7 +569,7 @@ export const LearningScreenProvider = ({
     const dueWords = [] as WordTypes[];
 
     wordsState.forEach((wordItem) => {
-      if (wordItem.originalContext === thisContentTitle) {
+      if (wordItem.originalContext === selectedContentTitleState) {
         allWords.push(wordItem);
         if (wordItem.isDue) {
           dueWords.push(wordItem);
@@ -594,7 +594,7 @@ export const LearningScreenProvider = ({
       wordsForSelectedTopicMemoized: sortedAllWords,
       firstWordDueTime,
     };
-  }, [thisContentTitle, wordsState, enableWordReviewState]);
+  }, [selectedContentTitleState, wordsState, enableWordReviewState]);
 
   const handleBulkReviews = async () => {
     // const emptyCard = getEmptyCard();
@@ -643,7 +643,7 @@ export const LearningScreenProvider = ({
 
     try {
       const result = await updateSentenceData({
-        topicName: thisContentTitle,
+        topicName: selectedContentTitleState,
         sentenceId,
         fieldToUpdate: isRemoveReview
           ? { removeReview: true }
@@ -1234,7 +1234,7 @@ export const LearningScreenProvider = ({
         studyFromHereTimeState,
         transcriptRef,
         scrollToElState,
-        thisContentTitle,
+        selectedContentTitleState,
         wordsForSelectedTopic: wordsForSelectedTopicMemoized,
         selectedContentState: selectedContentStateMemoized,
         sentenceRepsState,
@@ -1248,7 +1248,6 @@ export const LearningScreenProvider = ({
         numberOfSentenceDueOnMountState,
         errorVideoState,
         setErrorVideoState,
-        selectedContentTitleState: selectedContentStateMemoized.title,
         handleJumpToFirstElInReviewTranscript,
         learnFormattedTranscript,
         groupedByContextBySentence,
