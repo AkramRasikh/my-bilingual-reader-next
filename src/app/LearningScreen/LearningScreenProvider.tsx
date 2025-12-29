@@ -25,17 +25,6 @@ import { WordTypes } from '../types/word-types';
 
 export const LearningScreenContext = createContext(null);
 
-export const isWithinInterval = (
-  item: { time?: number },
-  firstTime: number,
-  interval: number,
-): boolean => {
-  return (
-    item?.time !== undefined &&
-    item.time >= firstTime &&
-    item.time <= firstTime + interval
-  );
-};
 // type time
 
 export const LearningScreenProvider = ({
@@ -994,16 +983,7 @@ export const LearningScreenProvider = ({
     ];
 
     const validTimes = timeArrays.filter((time) => time !== null);
-    const firstTime = validTimes.length > 0 ? Math.min(...validTimes) : null;
-
-    if (firstTime === null) {
-      return null;
-      // console.log('No items due now found in either array.');
-    } else {
-      // Filter each array separately within that 60s window
-
-      return firstTime;
-    }
+    return validTimes.length > 0 ? Math.min(...validTimes) : null;
   }, [
     isInReviewMode,
     earliestSnippetDueTime,
