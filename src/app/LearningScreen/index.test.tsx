@@ -18,6 +18,35 @@ const mockUseFetchData = useFetchData as jest.MockedFunction<
   typeof useFetchData
 >;
 
+const checkMetaDataOnLoad = () => {
+  expect(screen.getByText('Sentences: 0/0')).toBeInTheDocument();
+  expect(screen.getByText('Words Due: 0')).toBeInTheDocument();
+  expect(screen.getByText('Snippets Due: 0/0/0')).toBeInTheDocument();
+  expect(screen.getByText('Reps: 0')).toBeInTheDocument();
+  expect(screen.queryByText('Bulk Review: 0')).not.toBeInTheDocument();
+
+  // navbar
+  expect(screen.getByText('Home')).toBeInTheDocument();
+  expect(screen.getByText('Test Content title')).toBeInTheDocument();
+  expect(screen.queryByTestId('progress-header')).not.toBeInTheDocument();
+
+  const breadcrumbSentencesButton = screen.getByTestId(
+    'breadcrumb-sentences-button',
+  );
+  const breadcrumbWordsButton = screen.getByTestId('breadcrumb-words-button');
+  const breadcrumbContentButton = screen.getByTestId(
+    'breadcrumb-content-button',
+  );
+  const breadcrumbBasketButton = screen.getByTestId('basket-button');
+
+  expect(breadcrumbSentencesButton).toBeDisabled();
+  expect(breadcrumbSentencesButton).toHaveTextContent('Sentence (0)');
+  expect(breadcrumbBasketButton).toHaveTextContent('🧺 (0)');
+  expect(breadcrumbWordsButton).toHaveTextContent('Words (0)');
+  expect(breadcrumbWordsButton).toBeDisabled();
+  expect(breadcrumbContentButton).toHaveTextContent('Content');
+};
+
 describe('LearningScreen', () => {
   const mockSelectedContent = {
     id: 'content-1',
@@ -71,31 +100,6 @@ describe('LearningScreen', () => {
     renderWithProvider();
 
     // left side section
-    expect(screen.getByText('Sentences: 0/0')).toBeInTheDocument();
-    expect(screen.getByText('Words Due: 0')).toBeInTheDocument();
-    expect(screen.getByText('Snippets Due: 0/0/0')).toBeInTheDocument();
-    expect(screen.getByText('Reps: 0')).toBeInTheDocument();
-    expect(screen.queryByText('Bulk Review: 0')).not.toBeInTheDocument();
-
-    // navbar
-    expect(screen.getByText('Home')).toBeInTheDocument();
-    expect(screen.getByText('Test Content title')).toBeInTheDocument();
-    expect(screen.queryByTestId('progress-header')).not.toBeInTheDocument();
-
-    const breadcrumbSentencesButton = screen.getByTestId(
-      'breadcrumb-sentences-button',
-    );
-    const breadcrumbWordsButton = screen.getByTestId('breadcrumb-words-button');
-    const breadcrumbContentButton = screen.getByTestId(
-      'breadcrumb-content-button',
-    );
-    const breadcrumbBasketButton = screen.getByTestId('basket-button');
-
-    expect(breadcrumbSentencesButton).toBeDisabled();
-    expect(breadcrumbSentencesButton).toHaveTextContent('Sentence (0)');
-    expect(breadcrumbBasketButton).toHaveTextContent('🧺 (0)');
-    expect(breadcrumbWordsButton).toHaveTextContent('Words (0)');
-    expect(breadcrumbWordsButton).toBeDisabled();
-    expect(breadcrumbContentButton).toHaveTextContent('Content');
+    checkMetaDataOnLoad();
   });
 });
