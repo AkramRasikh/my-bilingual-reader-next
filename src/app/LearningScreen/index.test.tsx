@@ -1,3 +1,8 @@
+import { render, screen, waitFor, within } from '@testing-library/react';
+import { LearningScreenProvider } from './LearningScreenProvider';
+import { useFetchData } from '../Providers/FetchDataProvider';
+import { ContentScreenContainer } from '../content/page';
+
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
@@ -15,11 +20,6 @@ beforeAll(() => {
     },
   });
 });
-import { render, screen, within } from '@testing-library/react';
-import { LearningScreenProvider } from './LearningScreenProvider';
-import { useFetchData } from '../Providers/FetchDataProvider';
-import { ContentScreenContainer } from '../content/page';
-
 // Mock the dependencies
 jest.mock('../Providers/FetchDataProvider');
 
@@ -184,7 +184,7 @@ describe('LearningScreen', () => {
     );
   };
 
-  it.only('should render a blank project with no previously reviewed content', () => {
+  it.only('should render a blank project with no previously reviewed content', async () => {
     renderWithProvider();
 
     checkMetaDataOnLoad();
@@ -194,5 +194,55 @@ describe('LearningScreen', () => {
     checkingNoTimelineMarkers();
     checkAllTranscriptItems();
     checkingMediaActionButtons();
+
+    // transcript-menu-toggle-f378ec1d-c885-4e6a-9821-405b0ff9aa24
+    const transcriptMenuToggle = screen.getByTestId(
+      'transcript-menu-toggle-sentence-1',
+    );
+
+    transcriptMenuToggle.click();
+    const nonVisibleReviewMenuItem = screen.queryByTestId(
+      'transcript-menu-review-sentence-1',
+    );
+    expect(nonVisibleReviewMenuItem).not.toBeInTheDocument();
+    await waitFor(() => {
+      const visibleReviewMenuItem = screen.getByTestId(
+        'transcript-menu-review-sentence-1',
+      );
+      expect(visibleReviewMenuItem).toBeInTheDocument();
+    });
+
+    // reviewMenuItem.click();
+
+    //
+    // const dueTime = new Date();
+    // const lastReviewTime = new Date();
+    // const reviewData = {
+    //   due: dueTime.toISOString(),
+    //   stability: 0.40255,
+    //   difficulty: 7.1949,
+    //   elapsed_days: 0,
+    //   scheduled_days: 0,
+    //   reps: 1,
+    //   lapses: 0,
+    //   state: 1,
+    //   last_review: lastReviewTime.toISOString(),
+    //   ease: 2.5,
+    //   interval: 0,
+    // };
+
+    // mockUseFetchData.mockReturnValue({
+    //   ...mockFetchData,
+    //   updateSentenceData: jest.fn().mockResolvedValue({ reviewData }),
+    // });
+
+    // // ...render and trigger clicks...
+
+    // // Now assert the UI reflects the new reviewData, e.g.:
+    // await waitFor(() => {
+    //   expect(
+    //     screen.getByText(/* some text that should appear after reviewData is set */),
+    //   ).toBeInTheDocument();
+    // });
   });
 });
