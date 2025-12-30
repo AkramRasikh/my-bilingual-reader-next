@@ -7,14 +7,14 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningScreenTabTranscriptNestedWordsReview';
 import LearningScreenSnippetReview from './experimental/LearningScreenSnippetReview';
 import ReviewTypeToggles from './components/ReviewTypeToggles';
-
 const isWithinInterval = (
-  time: number,
+  item: { time?: number },
   firstTime: number,
   interval: number,
-): boolean => {
-  return time >= firstTime && time <= firstTime + interval;
-};
+): boolean =>
+  item?.time !== undefined &&
+  item.time >= firstTime &&
+  item.time <= firstTime + interval;
 
 const LearningScreenComprehensiveReview = () => {
   const {
@@ -96,7 +96,7 @@ const LearningScreenComprehensiveReview = () => {
     } else if (firstTimeState !== null) {
       setPostWordsState(
         contentMetaWordMemoized.filter((item) =>
-          isWithinInterval(item.time, firstTimeState, reviewIntervalState),
+          isWithinInterval(item, firstTimeState, reviewIntervalState),
         ),
       );
     }
