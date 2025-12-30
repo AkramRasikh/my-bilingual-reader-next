@@ -1,7 +1,16 @@
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+    // add other router methods/properties as needed
+  }),
+}));
+// ...existing code...
 import { render, screen } from '@testing-library/react';
-import LearningScreen from './index';
 import { LearningScreenProvider } from './LearningScreenProvider';
 import { useFetchData } from '../Providers/FetchDataProvider';
+import { ContentScreenContainer } from '../content/page';
 
 // Mock the dependencies
 jest.mock('../Providers/FetchDataProvider');
@@ -15,11 +24,6 @@ jest.mock('./LearningScreenLeftSideContainer', () => {
     return <div data-testid='left-side-container'>Left Side Container</div>;
   };
 });
-jest.mock('./LearningScreenContentChapterNavigation', () => {
-  return function MockLearningScreenContentChapterNavigation() {
-    return <div data-testid='chapter-navigation'>Chapter Navigation</div>;
-  };
-});
 
 const mockUseFetchData = useFetchData as jest.MockedFunction<
   typeof useFetchData
@@ -28,7 +32,7 @@ const mockUseFetchData = useFetchData as jest.MockedFunction<
 describe('LearningScreen', () => {
   const mockSelectedContent = {
     id: 'content-1',
-    title: 'Test Content',
+    title: 'Test Content title',
     contentIndex: 0,
     content: [
       {
@@ -54,8 +58,13 @@ describe('LearningScreen', () => {
     sentenceReviewBulk: jest.fn(),
     updateSentenceData: jest.fn(),
     updateContentMetaData: jest.fn(),
+    hasFetchedDataState: true,
+    contentState: [mockSelectedContent],
+    languageSelectedState: 'japanese',
+    sentencesDueForReviewMemoized: [],
+    wordsForReviewMemoized: [],
+    wordBasketState: [],
   };
-
   beforeEach(() => {
     jest.clearAllMocks();
     mockUseFetchData.mockReturnValue(mockFetchData);
@@ -64,16 +73,24 @@ describe('LearningScreen', () => {
   const renderWithProvider = (selectedContent = mockSelectedContent) => {
     return render(
       <LearningScreenProvider selectedContentStateMemoized={selectedContent}>
-        <LearningScreen />
+        <ContentScreenContainer />
       </LearningScreenProvider>,
     );
   };
 
-  it('should render all components when wrapped in provider with valid data', () => {
+  it.only('should render a blank project with no previously reviewed content', () => {
     renderWithProvider();
 
-    expect(screen.getByTestId('chapter-navigation')).toBeInTheDocument();
-    expect(screen.getByTestId('left-side-container')).toBeInTheDocument();
+    // left side section
+    expect(screen.getByText('Sentences: 0/0')).toBeInTheDocument();
+    expect(screen.getByText('Words Due: 0')).toBeInTheDocument();
+    expect(screen.getByText('Snippets Due: 0/0/0')).toBeInTheDocument();
+    expect(screen.getByText('Reps: 0')).toBeInTheDocument();
+    expect(screen.queryByText('Bulk Review: 0')).not.toBeInTheDocument();
+
+    // navbar
+    expect(screen.getByText('Home')).toBeInTheDocument();
+    expect(screen.getByText('Test Content title')).toBeInTheDocument();
   });
 
   it('should render with correct container classes', () => {

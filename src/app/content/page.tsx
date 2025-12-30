@@ -1,16 +1,15 @@
 'use client';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
 import MockFlag from '../../components/custom/MockFlag';
 import LearningScreenBreadCrumbHeader from '../LearningScreen/LearningScreenBreadCrumbHeader';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { useSearchParams } from 'next/navigation';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
-import useLearningScreen from '../LearningScreen/useLearningScreen';
 import LearningScreen from '../LearningScreen';
 import PageContainer from '@/components/custom/PageContainer';
 
-const ContentScreenContainer = () => {
+export const ContentScreenContainer = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
 
   const {
@@ -20,16 +19,6 @@ const ContentScreenContainer = () => {
     hasFetchedDataState,
     languageSelectedState,
   } = useFetchData();
-
-  const { selectedContentTitleState } = useLearningScreen();
-
-  const searchParams = useSearchParams();
-  const topicValue = searchParams.get('topic');
-
-  useEffect(() => {
-    if (topicValue && !selectedContentTitleState && contentState?.length > 0) {
-    }
-  }, [topicValue, selectedContentTitleState, contentState]);
 
   if (!hasFetchedDataState || !contentState?.length || !languageSelectedState) {
     return <LoadingSpinner big />;

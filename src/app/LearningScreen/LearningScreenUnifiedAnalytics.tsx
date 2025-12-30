@@ -46,7 +46,7 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
 
   const [numberOfDueSnippets, numberOfReviewDataSnippets] = useMemo(() => {
     if (contentSnippets.length === 0) {
-      return [];
+      return [0, 0];
     }
 
     return [
