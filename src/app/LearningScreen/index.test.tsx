@@ -23,6 +23,27 @@ import { ContentScreenContainer } from '../content/page';
 // Mock the dependencies
 jest.mock('../Providers/FetchDataProvider');
 
+const mockSelectedContent = {
+  id: 'content-1',
+  title: 'Test Content title',
+  contentIndex: 0,
+  content: [
+    {
+      id: 'sentence-1',
+      targetLang: 'Hello world',
+      baseLang: 'Hola mundo',
+      time: 0,
+    },
+    {
+      id: 'sentence-2',
+      targetLang: 'How are you?',
+      baseLang: '¿Cómo estás?',
+      time: 2,
+    },
+  ],
+  snippets: [],
+};
+
 const mockUseFetchData = useFetchData as jest.MockedFunction<
   typeof useFetchData
 >;
@@ -86,33 +107,54 @@ const checkTabTriggersOnLoad = () => {
 const checkingMainTranscriptContent = () => {
   const mainTranscriptItem = screen.getByTestId('transcript-item-secondary');
   expect(mainTranscriptItem).toBeInTheDocument();
-
   within(mainTranscriptItem).getByText('Hola mundo');
   within(mainTranscriptItem).getByText('Hello world');
 };
 
-describe('LearningScreen', () => {
-  const mockSelectedContent = {
-    id: 'content-1',
-    title: 'Test Content title',
-    contentIndex: 0,
-    content: [
-      {
-        id: 'sentence-1',
-        targetLang: 'Hello world',
-        baseLang: 'Hola mundo',
-        time: 0,
-      },
-      {
-        id: 'sentence-2',
-        targetLang: 'How are you?',
-        baseLang: '¿Cómo estás?',
-        time: 2,
-      },
-    ],
-    snippets: [],
-  };
+const checkingNoTimelineMarkers = () => {
+  expect(
+    document.querySelectorAll('[data-testid^="timeline-sentence-"]'),
+  ).toHaveLength(0);
 
+  expect(
+    document.querySelectorAll('[data-testid^="timeline-word-marker-"]'),
+  ).toHaveLength(0);
+  expect(
+    document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
+  ).toHaveLength(0);
+};
+
+const checkingMediaActionButtons = () => {
+  const englishSwitch = screen.getByTestId('english-switch');
+  expect(englishSwitch).toBeChecked();
+  const trackMediaElLabel = screen.getByTestId('track-current-switch');
+  expect(trackMediaElLabel).toBeChecked();
+  expect(trackMediaElLabel).toBeEnabled();
+  expect(screen.getByTestId('countup-timer-button')).toBeInTheDocument();
+  expect(screen.getByTestId('countdown-timer-button')).toBeInTheDocument();
+
+  const currentMediaPositionBtn = screen.getByTestId('current-button');
+  expect(currentMediaPositionBtn).toBeInTheDocument();
+  const studyHereButton = screen.getByTestId('study-here-button');
+  expect(studyHereButton).toHaveTextContent('Study here 1');
+  const checkpointButton = screen.getByTestId('checkpoint-button');
+  expect(checkpointButton).toBeInTheDocument();
+};
+
+const checkAllTranscriptItems = () => {
+  mockSelectedContent.content.forEach((sentence) => {
+    const transcriptItemTargetLang = screen.getByTestId(
+      `transcript-target-lang-${sentence.id}`,
+    );
+    const transcriptItemBaseLang = screen.getByTestId(
+      `transcript-base-lang-${sentence.id}`,
+    );
+    expect(transcriptItemTargetLang).toHaveTextContent(sentence.targetLang);
+    expect(transcriptItemBaseLang).toHaveTextContent(sentence.baseLang);
+  });
+};
+
+describe('LearningScreen', () => {
   const mockFetchData = {
     pureWordsMemoized: [],
     wordsState: [],
@@ -147,36 +189,8 @@ describe('LearningScreen', () => {
     checkReviewTogglesOnLoad();
     checkTabTriggersOnLoad();
     checkingMainTranscriptContent();
-
-    mockSelectedContent.content.forEach((sentence) => {
-      const transcriptItemTargetLang = screen.getByTestId(
-        `transcript-target-lang-${sentence.id}`,
-      );
-      const transcriptItemBaseLang = screen.getByTestId(
-        `transcript-base-lang-${sentence.id}`,
-      );
-      expect(transcriptItemTargetLang).toHaveTextContent(sentence.targetLang);
-      expect(transcriptItemBaseLang).toHaveTextContent(sentence.baseLang);
-    });
-
-    expect(
-      document.querySelectorAll('[data-testid^="timeline-sentence-"]'),
-    ).toHaveLength(0);
-
-    expect(
-      document.querySelectorAll('[data-testid^="timeline-word-marker-"]'),
-    ).toHaveLength(0);
-    expect(
-      document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
-    ).toHaveLength(0);
-
-    // video bar actions
-    const englishSwitch = screen.getByTestId('english-switch');
-    expect(englishSwitch).toBeChecked();
-    const trackMediaElLabel = screen.getByTestId('track-current-switch');
-    expect(trackMediaElLabel).toBeChecked();
-    expect(trackMediaElLabel).toBeEnabled();
-    expect(screen.getByTestId('countup-timer-button')).toBeInTheDocument();
-    expect(screen.getByTestId('countdown-timer-button')).toBeInTheDocument();
+    checkingNoTimelineMarkers();
+    checkAllTranscriptItems();
+    checkingMediaActionButtons();
   });
 });
