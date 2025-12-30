@@ -3,6 +3,9 @@ import LearningScreen from './index';
 import { LearningScreenProvider } from './LearningScreenProvider';
 import { useFetchData } from '../Providers/FetchDataProvider';
 
+// Add jest types for TypeScript
+/// <reference types="jest" />
+
 // Mock the dependencies
 jest.mock('../Providers/FetchDataProvider');
 jest.mock('./LearningScreenContentContainer', () => {

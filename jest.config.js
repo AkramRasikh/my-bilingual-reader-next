@@ -1,4 +1,5 @@
 module.exports = {
+  preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
@@ -7,7 +8,16 @@ module.exports = {
   },
   testPathIgnorePatterns: ['/node_modules/', '/.next/', '.*\\.spec\\..*'],
   transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
+    '^.+\\.(ts|tsx)$': 'ts-jest',
+    '^.+\\.(js|jsx)$': 'ts-jest',
+  },
+  transformIgnorePatterns: [
+    '/node_modules/'
+  ],
+  globals: {
+    'ts-jest': {
+      tsconfig: '<rootDir>/tsconfig.jest.json',
+    },
   },
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
