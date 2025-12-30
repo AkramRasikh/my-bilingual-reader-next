@@ -62,6 +62,7 @@ export default function CountUpTimer({ elapsed, setElapsed }) {
   return (
     <Button
       onClick={handleClick}
+      data-testid='countup-timer-button'
       className={`rounded-2xl text-xl font-mono shadow-md transition
         ${
           isRunning

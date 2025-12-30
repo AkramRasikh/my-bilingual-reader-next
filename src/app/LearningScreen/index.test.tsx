@@ -169,5 +169,14 @@ describe('LearningScreen', () => {
     expect(
       document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
     ).toHaveLength(0);
+
+    // video bar actions
+    const englishSwitch = screen.getByTestId('english-switch');
+    expect(englishSwitch).toBeChecked();
+    const trackMediaElLabel = screen.getByTestId('track-current-switch');
+    expect(trackMediaElLabel).toBeChecked();
+    expect(trackMediaElLabel).toBeEnabled();
+    expect(screen.getByTestId('countup-timer-button')).toBeInTheDocument();
+    expect(screen.getByTestId('countdown-timer-button')).toBeInTheDocument();
   });
 });

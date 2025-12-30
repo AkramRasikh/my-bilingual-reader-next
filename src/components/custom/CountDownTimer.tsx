@@ -43,6 +43,7 @@ export default function CountdownTimer({ audioTimeRef }) {
     <Button
       onClick={startTimer}
       onDoubleClick={resetAndStopAudio}
+      data-testid='countdown-timer-button'
       className={`rounded-2xl text-xl font-mono shadow-md transition
         ${
           targetTime
