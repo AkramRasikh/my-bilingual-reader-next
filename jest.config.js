@@ -11,9 +11,7 @@ module.exports = {
     '^.+\\.(ts|tsx)$': 'ts-jest',
     '^.+\\.(js|jsx)$': 'ts-jest',
   },
-  transformIgnorePatterns: [
-    '/node_modules/'
-  ],
+  transformIgnorePatterns: ['/node_modules/'],
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.jest.json',
