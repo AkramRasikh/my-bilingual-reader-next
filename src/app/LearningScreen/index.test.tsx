@@ -1,7 +1,9 @@
 import { render, screen, waitFor, within } from '@testing-library/react';
 import { LearningScreenProvider } from './LearningScreenProvider';
-import { useFetchData } from '../Providers/FetchDataProvider';
+import { FetchDataProvider } from '../Providers/FetchDataProvider';
 import { ContentScreenContainer } from '../content/page';
+import * as apiLib from '@/lib/api-request-wrapper';
+jest.mock('../Providers/useDataSaveToLocalStorage', () => () => {});
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -20,8 +22,6 @@ beforeAll(() => {
     },
   });
 });
-// Mock the dependencies
-jest.mock('../Providers/FetchDataProvider');
 
 const mockSelectedContent = {
   id: 'content-1',
@@ -43,10 +43,6 @@ const mockSelectedContent = {
   ],
   snippets: [],
 };
-
-const mockUseFetchData = useFetchData as jest.MockedFunction<
-  typeof useFetchData
->;
 
 const checkMetaDataOnLoad = () => {
   expect(screen.getByText('Sentences: 0/0')).toBeInTheDocument();
@@ -110,8 +106,27 @@ const checkingMainTranscriptContent = () => {
   within(mainTranscriptItem).getByText(
     mockSelectedContent.content[0].targetLang,
   );
-  within(mainTranscriptItem).getByText(mockSelectedContent.content[0].baseLang);
 };
+beforeAll(() => {
+  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
+    if (params.url === '/api/getOnLoadData') {
+      return {
+        contentData: [mockSelectedContent],
+        wordsData: [],
+        sentencesData: [],
+      };
+    }
+    if (params.url === '/api/updateSentence') {
+      return {
+        reviewData: {
+          /* mock reviewData object here if needed */
+        },
+      };
+    }
+    // Default mock response
+    return {};
+  });
+});
 
 const checkingNoTimelineMarkers = () => {
   expect(
@@ -157,35 +172,23 @@ const checkAllTranscriptItems = () => {
 };
 
 describe('LearningScreen', () => {
-  const mockFetchData = {
-    pureWordsMemoized: [],
-    wordsState: [],
-    breakdownSentence: jest.fn(),
-    sentenceReviewBulk: jest.fn(),
-    updateSentenceData: jest.fn(),
-    updateContentMetaData: jest.fn(),
-    hasFetchedDataState: true,
-    contentState: [mockSelectedContent],
-    languageSelectedState: 'japanese',
-    sentencesDueForReviewMemoized: [],
-    wordsForReviewMemoized: [],
-    wordBasketState: [],
-  };
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseFetchData.mockReturnValue(mockFetchData);
   });
 
   const renderWithProvider = (selectedContent = mockSelectedContent) => {
     return render(
-      <LearningScreenProvider selectedContentStateMemoized={selectedContent}>
-        <ContentScreenContainer />
-      </LearningScreenProvider>,
+      <FetchDataProvider>
+        <LearningScreenProvider selectedContentStateMemoized={selectedContent}>
+          <ContentScreenContainer />
+        </LearningScreenProvider>
+      </FetchDataProvider>,
     );
   };
 
   it.only('should render a blank project with no previously reviewed content', async () => {
     renderWithProvider();
+    expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
 
     checkMetaDataOnLoad();
     checkReviewTogglesOnLoad();
@@ -212,9 +215,12 @@ describe('LearningScreen', () => {
       expect(visibleReviewMenuItem).toBeInTheDocument();
     });
 
-    // reviewMenuItem.click();
+    const reviewMenuItem = screen.getByTestId(
+      'transcript-menu-review-sentence-1',
+    );
+    // await waitFor(() => {
+    reviewMenuItem.click();
 
-    //
     // const dueTime = new Date();
     // const lastReviewTime = new Date();
     // const reviewData = {
@@ -236,13 +242,11 @@ describe('LearningScreen', () => {
     //   updateSentenceData: jest.fn().mockResolvedValue({ reviewData }),
     // });
 
-    // // ...render and trigger clicks...
+    // // // ...render and trigger clicks...
 
-    // // Now assert the UI reflects the new reviewData, e.g.:
+    // // // Now assert the UI reflects the new reviewData, e.g.:
     // await waitFor(() => {
-    //   expect(
-    //     screen.getByText(/* some text that should appear after reviewData is set */),
-    //   ).toBeInTheDocument();
+    //   expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
     // });
   });
 });

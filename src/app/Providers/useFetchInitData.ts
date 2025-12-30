@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { FetchDataContextTypes } from './FetchDataProvider';
 import { isE2EMode } from '@/utils/is-e2e-mode';
+import { apiRequestWrapper } from '@/lib/api-request-wrapper';
 
 export const content = 'content';
 export const words = 'words';
@@ -68,16 +69,14 @@ const useFetchInitData = ({
         });
         setToastMessageState('Loaded data from LocalStorage ✅💰');
       } else {
-        fetch('/api/getOnLoadData', {
-          //not fully sure how i will need this
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        console.log('## useFetchInitData 3');
+        apiRequestWrapper({
+          url: '/api/getOnLoadData',
+          body: {
             refs: [content, words, sentences],
             language: languageSelectedState,
-          }),
-        }) // your endpoint
-          .then((res) => res.json())
+          },
+        })
           .then((data) => {
             dispatchWords({
               type: 'initWords',
