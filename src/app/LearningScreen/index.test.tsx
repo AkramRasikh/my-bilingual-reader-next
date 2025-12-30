@@ -31,13 +31,13 @@ const mockSelectedContent = {
     {
       id: 'sentence-1',
       targetLang: 'Hello world',
-      baseLang: 'Hola mundo',
+      baseLang: 'こんにちは世界',
       time: 0,
     },
     {
       id: 'sentence-2',
       targetLang: 'How are you?',
-      baseLang: '¿Cómo estás?',
+      baseLang: 'お元気ですか？',
       time: 2,
     },
   ],
@@ -107,8 +107,10 @@ const checkTabTriggersOnLoad = () => {
 const checkingMainTranscriptContent = () => {
   const mainTranscriptItem = screen.getByTestId('transcript-item-secondary');
   expect(mainTranscriptItem).toBeInTheDocument();
-  within(mainTranscriptItem).getByText('Hola mundo');
-  within(mainTranscriptItem).getByText('Hello world');
+  within(mainTranscriptItem).getByText(
+    mockSelectedContent.content[0].targetLang,
+  );
+  within(mainTranscriptItem).getByText(mockSelectedContent.content[0].baseLang);
 };
 
 const checkingNoTimelineMarkers = () => {
