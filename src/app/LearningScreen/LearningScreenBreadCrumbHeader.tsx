@@ -68,17 +68,20 @@ const LearningScreenBreadCrumbHeader = () => {
       disabled: !(numberOfSentences > 0),
       variant: 'link',
       text: `Sentence (${numberOfSentences})`,
+      dataTestId: 'breadcrumb-sentences-button',
     },
     {
       onClick: () => router.push('/words'),
       disabled: !(wordsForReviewMemoized.length > 0),
       variant: 'link',
       text: `Words (${wordsForReviewMemoized.length})`,
+      dataTestId: 'breadcrumb-words-button',
     },
     {
       onClick: () => router.push('/youtube-upload'),
       variant: 'link',
       text: 'Content',
+      dataTestId: 'breadcrumb-content-button',
     },
   ];
 
@@ -97,6 +100,7 @@ const LearningScreenBreadCrumbHeader = () => {
                 onClick={item.onClick}
                 disabled={item.disabled}
                 variant={item.variant}
+                data-testid={item.dataTestId}
               >
                 {item.text}
               </Button>

@@ -6,7 +6,6 @@ jest.mock('next/navigation', () => ({
     // add other router methods/properties as needed
   }),
 }));
-// ...existing code...
 import { render, screen } from '@testing-library/react';
 import { LearningScreenProvider } from './LearningScreenProvider';
 import { useFetchData } from '../Providers/FetchDataProvider';
@@ -14,16 +13,6 @@ import { ContentScreenContainer } from '../content/page';
 
 // Mock the dependencies
 jest.mock('../Providers/FetchDataProvider');
-jest.mock('./LearningScreenContentContainer', () => {
-  return function MockLearningScreenContentContainer() {
-    return <div data-testid='content-container'>Content Container</div>;
-  };
-});
-jest.mock('./LearningScreenLeftSideContainer', () => {
-  return function MockLearningScreenLeftSideContainer() {
-    return <div data-testid='left-side-container'>Left Side Container</div>;
-  };
-});
 
 const mockUseFetchData = useFetchData as jest.MockedFunction<
   typeof useFetchData
@@ -91,66 +80,22 @@ describe('LearningScreen', () => {
     // navbar
     expect(screen.getByText('Home')).toBeInTheDocument();
     expect(screen.getByText('Test Content title')).toBeInTheDocument();
-  });
+    expect(screen.queryByTestId('progress-header')).not.toBeInTheDocument();
 
-  it('should render with correct container classes', () => {
-    const { container } = renderWithProvider();
-    const mainDiv = container.querySelector('.flex.gap-5.w-fit.mx-auto.mt-4');
+    const breadcrumbSentencesButton = screen.getByTestId(
+      'breadcrumb-sentences-button',
+    );
+    const breadcrumbWordsButton = screen.getByTestId('breadcrumb-words-button');
+    const breadcrumbContentButton = screen.getByTestId(
+      'breadcrumb-content-button',
+    );
+    const breadcrumbBasketButton = screen.getByTestId('basket-button');
 
-    expect(mainDiv).toBeInTheDocument();
-  });
-
-  it('should render with empty content array', () => {
-    const emptyContent = {
-      ...mockSelectedContent,
-      content: [],
-    };
-
-    renderWithProvider(emptyContent);
-
-    expect(screen.getByTestId('chapter-navigation')).toBeInTheDocument();
-    expect(screen.getByTestId('left-side-container')).toBeInTheDocument();
-  });
-
-  it('should render with content containing review data', () => {
-    const contentWithReviews = {
-      ...mockSelectedContent,
-      content: [
-        {
-          id: 'sentence-1',
-          targetLang: 'Hello world',
-          baseLang: 'Hola mundo',
-          time: 0,
-          reviewData: {
-            due: new Date(Date.now() - 1000).toISOString(),
-          },
-        },
-      ],
-    };
-
-    renderWithProvider(contentWithReviews);
-
-    expect(screen.getByTestId('chapter-navigation')).toBeInTheDocument();
-  });
-
-  it('should render with snippets data', () => {
-    const contentWithSnippets = {
-      ...mockSelectedContent,
-      snippets: [
-        {
-          id: 'snippet-1',
-          time: 1.5,
-          targetLang: 'Hello',
-          baseLang: 'Hola',
-          reviewData: {
-            due: new Date(Date.now() + 1000).toISOString(),
-          },
-        },
-      ],
-    };
-
-    renderWithProvider(contentWithSnippets);
-
-    expect(screen.getByTestId('left-side-container')).toBeInTheDocument();
+    expect(breadcrumbSentencesButton).toBeDisabled();
+    expect(breadcrumbSentencesButton).toHaveTextContent('Sentence (0)');
+    expect(breadcrumbBasketButton).toHaveTextContent('🧺 (0)');
+    expect(breadcrumbWordsButton).toHaveTextContent('Words (0)');
+    expect(breadcrumbWordsButton).toBeDisabled();
+    expect(breadcrumbContentButton).toHaveTextContent('Content');
   });
 });

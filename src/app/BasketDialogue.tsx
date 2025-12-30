@@ -72,7 +72,9 @@ const BasketDialogue = () => {
   return (
     <Dialog>
       <DialogTrigger asChild disabled={wordBasketState.length === 0}>
-        <Button>🧺 ({wordBasketState.length})</Button>
+        <Button data-testid='basket-button'>
+          🧺 ({wordBasketState.length})
+        </Button>
       </DialogTrigger>
       <DialogContent className='max-h-200 overflow-scroll'>
         <DialogTitle>Basket:</DialogTitle>

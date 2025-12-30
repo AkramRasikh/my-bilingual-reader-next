@@ -20,7 +20,7 @@ export const useProgressHeader = ({
 
 const ProgressHeader = ({ progressState, progressText, small = false }) => {
   return (
-    <div className='flex gap-2'>
+    <div className='flex gap-2' data-testid='progress-header'>
       <Progress
         value={progressState}
         className={clsx(' my-auto', small ? 'w-7/12' : 'w-full')}
