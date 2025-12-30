@@ -69,6 +69,7 @@ const ReviewTypeToggles = ({
         <div className='flex items-center gap-2'>
           <Checkbox
             id='words-toggle'
+            data-testid='words-toggle'
             checked={checkboxesDisabled ? false : enableWordReviewState}
             onCheckedChange={setEnableWordReviewState}
             disabled={checkboxesDisabled}
@@ -83,6 +84,7 @@ const ReviewTypeToggles = ({
         <div className='flex items-center gap-2'>
           <Checkbox
             id='sentences-toggle'
+            data-testid='sentences-toggle'
             checked={checkboxesDisabled ? false : enableTranscriptReviewState}
             onCheckedChange={setEnableTranscriptReviewState}
             disabled={checkboxesDisabled}
@@ -97,6 +99,7 @@ const ReviewTypeToggles = ({
         <div className='flex items-center gap-2'>
           <Checkbox
             id='snippets-toggle'
+            data-testid='snippets-toggle'
             checked={checkboxesDisabled ? false : enableSnippetReviewState}
             onCheckedChange={setEnableSnippetReviewState}
             disabled={checkboxesDisabled}

@@ -47,6 +47,33 @@ const checkMetaDataOnLoad = () => {
   expect(breadcrumbContentButton).toHaveTextContent('Content');
 };
 
+const checkReviewTogglesOnLoad = () => {
+  const reviewButton = screen.getByTestId('review-label');
+  expect(reviewButton).toBeInTheDocument();
+  const wordsToggles = screen.getByTestId('words-toggle');
+  const sentencesToggles = screen.getByTestId('sentences-toggle');
+  const snippetsToggles = screen.getByTestId('snippets-toggle');
+  const reviewIntervalDecrement = screen.getByTestId(
+    'review-interval-decrement',
+  );
+  const reviewIntervalIncrement = screen.getByTestId(
+    'review-interval-increment',
+  );
+  expect(wordsToggles).toBeDisabled();
+  expect(sentencesToggles).toBeDisabled();
+  expect(snippetsToggles).toBeDisabled();
+  expect(reviewIntervalDecrement).toBeDisabled();
+  expect(reviewIntervalIncrement).toBeDisabled();
+};
+
+const checkTabTriggersOnLoad = () => {
+  expect(screen.getByTestId('transcript-tab-trigger')).toBeInTheDocument();
+  const wordsTabTrigger = screen.getByTestId('words-tab-trigger');
+  expect(wordsTabTrigger).toBeDisabled();
+  expect(wordsTabTrigger).toHaveTextContent('Words 0/0');
+  expect(screen.getByTestId('meta-tab-trigger')).toBeInTheDocument();
+};
+
 describe('LearningScreen', () => {
   const mockSelectedContent = {
     id: 'content-1',
@@ -99,7 +126,8 @@ describe('LearningScreen', () => {
   it.only('should render a blank project with no previously reviewed content', () => {
     renderWithProvider();
 
-    // left side section
     checkMetaDataOnLoad();
+    checkReviewTogglesOnLoad();
+    checkTabTriggersOnLoad();
   });
 });
