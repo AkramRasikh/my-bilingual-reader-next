@@ -29,6 +29,7 @@ const LearningScreenLeftSideContainer = () => {
     firstTime,
     handleSaveSnippet,
     overlappingTextMemoized,
+    snippetsWithDueStatusMemoized,
   } = useLearningScreen();
   const { languageSelectedState, handleSaveWord } = useFetchData();
 
@@ -98,8 +99,10 @@ const LearningScreenLeftSideContainer = () => {
           videoDuration={ref.current.duration}
           words={words}
           sentences={sentences}
+          snippets={snippetsWithDueStatusMemoized}
           onSelectSentence={(e) => console.log('## onSelectSentence', e)}
           onSelectWord={(e) => console.log('## onSelectWord', e)}
+          onSelectSnippet={(e) => console.log('## onSelectSnippet', e)}
           firstTime={firstTime}
         />
       ) : null}

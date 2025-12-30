@@ -18,19 +18,23 @@ type Marker = {
 interface TranscriptTimelineProps {
   sentences?: Marker[];
   words?: Marker[];
+  snippets?: Marker[];
   videoDuration: number; // in seconds
   firstTime?: number; // optional range start time
   onSelectSentence?: (sentence: Marker) => void;
   onSelectWord?: (word: Marker) => void;
+  onSelectSnippet?: (snippet: Marker) => void;
 }
 
 export default function TranscriptTimeline({
   sentences = [],
   words = [],
+  snippets = [],
   videoDuration,
   firstTime,
   onSelectSentence,
   onSelectWord,
+  onSelectSnippet,
 }: TranscriptTimelineProps) {
   const sentencePositions = useMemo(
     () =>
@@ -48,6 +52,15 @@ export default function TranscriptTimeline({
         position: Math.min(Math.max(w.time / videoDuration, 0), 1),
       })),
     [words, videoDuration],
+  );
+
+  const snippetPositions = useMemo(
+    () =>
+      snippets.map((w) => ({
+        ...w,
+        position: Math.min(Math.max(w.time / videoDuration, 0), 1),
+      })),
+    [snippets, videoDuration],
   );
 
   // Compute highlight range (green section)
@@ -119,6 +132,26 @@ export default function TranscriptTimeline({
               <div className='text-sm max-w-xs'>
                 <strong>{formatTime(word.time)}</strong>
                 <div className='text-muted-foreground'>{word.text}</div>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        ))}
+        {snippetPositions.map((snippet) => (
+          <Tooltip key={`snippet-${snippet.id}`}>
+            <TooltipTrigger asChild>
+              <div
+                data-testid={`timeline-snippet-marker-${snippet.id}`}
+                onClick={() => onSelectSnippet?.(snippet)}
+                className={cn(
+                  'absolute bottom-0 w-[1.5px] h-2 bg-amber-300 hover:bg-amber-300/70 rounded-full cursor-pointer transition-colors',
+                )}
+                style={{ left: `${snippet.position * 100}%` }}
+              />
+            </TooltipTrigger>
+            <TooltipContent side='bottom'>
+              <div className='text-sm max-w-xs'>
+                <strong>{formatTime(snippet.time)}</strong>
+                <div className='text-muted-foreground'>{snippet.text}</div>
               </div>
             </TooltipContent>
           </Tooltip>

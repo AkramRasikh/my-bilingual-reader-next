@@ -158,5 +158,16 @@ describe('LearningScreen', () => {
       expect(transcriptItemTargetLang).toHaveTextContent(sentence.targetLang);
       expect(transcriptItemBaseLang).toHaveTextContent(sentence.baseLang);
     });
+
+    expect(
+      document.querySelectorAll('[data-testid^="timeline-sentence-"]'),
+    ).toHaveLength(0);
+
+    expect(
+      document.querySelectorAll('[data-testid^="timeline-word-marker-"]'),
+    ).toHaveLength(0);
+    expect(
+      document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
+    ).toHaveLength(0);
   });
 });
