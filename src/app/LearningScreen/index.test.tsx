@@ -6,7 +6,16 @@ jest.mock('next/navigation', () => ({
     // add other router methods/properties as needed
   }),
 }));
-import { render, screen } from '@testing-library/react';
+
+beforeAll(() => {
+  Object.defineProperty(HTMLMediaElement.prototype, 'duration', {
+    configurable: true,
+    get() {
+      return 5;
+    },
+  });
+});
+import { render, screen, within } from '@testing-library/react';
 import { LearningScreenProvider } from './LearningScreenProvider';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { ContentScreenContainer } from '../content/page';
@@ -74,6 +83,14 @@ const checkTabTriggersOnLoad = () => {
   expect(screen.getByTestId('meta-tab-trigger')).toBeInTheDocument();
 };
 
+const checkingMainTranscriptContent = () => {
+  const mainTranscriptItem = screen.getByTestId('transcript-item-secondary');
+  expect(mainTranscriptItem).toBeInTheDocument();
+
+  within(mainTranscriptItem).getByText('Hola mundo');
+  within(mainTranscriptItem).getByText('Hello world');
+};
+
 describe('LearningScreen', () => {
   const mockSelectedContent = {
     id: 'content-1',
@@ -129,5 +146,17 @@ describe('LearningScreen', () => {
     checkMetaDataOnLoad();
     checkReviewTogglesOnLoad();
     checkTabTriggersOnLoad();
+    checkingMainTranscriptContent();
+
+    mockSelectedContent.content.forEach((sentence) => {
+      const transcriptItemTargetLang = screen.getByTestId(
+        `transcript-target-lang-${sentence.id}`,
+      );
+      const transcriptItemBaseLang = screen.getByTestId(
+        `transcript-base-lang-${sentence.id}`,
+      );
+      expect(transcriptItemTargetLang).toHaveTextContent(sentence.targetLang);
+      expect(transcriptItemBaseLang).toHaveTextContent(sentence.baseLang);
+    });
   });
 });
