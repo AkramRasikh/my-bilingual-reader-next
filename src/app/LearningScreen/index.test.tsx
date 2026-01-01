@@ -117,10 +117,24 @@ beforeAll(() => {
       };
     }
     if (params.url === '/api/updateSentence') {
+      const dueTime = new Date();
+      const lastReviewTime = new Date();
+      const reviewData = {
+        due: dueTime.toISOString(),
+        stability: 0.40255,
+        difficulty: 7.1949,
+        elapsed_days: 0,
+        scheduled_days: 0,
+        reps: 1,
+        lapses: 0,
+        state: 1,
+        last_review: lastReviewTime.toISOString(),
+        ease: 2.5,
+        interval: 0,
+      };
+
       return {
-        reviewData: {
-          /* mock reviewData object here if needed */
-        },
+        reviewData,
       };
     }
     // Default mock response
@@ -198,7 +212,6 @@ describe('LearningScreen', () => {
     checkAllTranscriptItems();
     checkingMediaActionButtons();
 
-    // transcript-menu-toggle-f378ec1d-c885-4e6a-9821-405b0ff9aa24
     const transcriptMenuToggle = screen.getByTestId(
       'transcript-menu-toggle-sentence-1',
     );
@@ -214,39 +227,13 @@ describe('LearningScreen', () => {
       );
       expect(visibleReviewMenuItem).toBeInTheDocument();
     });
-
     const reviewMenuItem = screen.getByTestId(
       'transcript-menu-review-sentence-1',
     );
-    // await waitFor(() => {
+    expect(screen.queryByText('Sentence reviewed ✅')).not.toBeInTheDocument();
     reviewMenuItem.click();
-
-    // const dueTime = new Date();
-    // const lastReviewTime = new Date();
-    // const reviewData = {
-    //   due: dueTime.toISOString(),
-    //   stability: 0.40255,
-    //   difficulty: 7.1949,
-    //   elapsed_days: 0,
-    //   scheduled_days: 0,
-    //   reps: 1,
-    //   lapses: 0,
-    //   state: 1,
-    //   last_review: lastReviewTime.toISOString(),
-    //   ease: 2.5,
-    //   interval: 0,
-    // };
-
-    // mockUseFetchData.mockReturnValue({
-    //   ...mockFetchData,
-    //   updateSentenceData: jest.fn().mockResolvedValue({ reviewData }),
-    // });
-
-    // // // ...render and trigger clicks...
-
-    // // // Now assert the UI reflects the new reviewData, e.g.:
-    // await waitFor(() => {
-    //   expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
-    // });
+    await waitFor(() => {
+      expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
+    });
   });
 });
