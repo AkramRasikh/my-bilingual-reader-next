@@ -69,7 +69,6 @@ const useFetchInitData = ({
         });
         setToastMessageState('Loaded data from LocalStorage ✅💰');
       } else {
-        console.log('## useFetchInitData 3');
         apiRequestWrapper({
           url: '/api/getOnLoadData',
           body: {
