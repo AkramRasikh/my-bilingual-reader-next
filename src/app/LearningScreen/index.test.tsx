@@ -380,6 +380,21 @@ const removeSecondSentenceFromReview = async () => {
 };
 
 describe('LearningScreen', () => {
+  beforeAll(() => {
+    jest
+      .spyOn(apiLib, 'apiRequestWrapper')
+      .mockImplementation(async (params) => {
+        if (params.url === '/api/getOnLoadData') {
+          return {
+            contentData: [mockSelectedContent],
+            wordsData: [],
+            sentencesData: [],
+          };
+        }
+        // Default mock response
+        return {};
+      });
+  });
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -395,22 +410,7 @@ describe('LearningScreen', () => {
   };
 
   describe('Review sentences', () => {
-    beforeAll(() => {
-      jest
-        .spyOn(apiLib, 'apiRequestWrapper')
-        .mockImplementation(async (params) => {
-          if (params.url === '/api/getOnLoadData') {
-            return {
-              contentData: [mockSelectedContent],
-              wordsData: [],
-              sentencesData: [],
-            };
-          }
-          // Default mock response
-          return {};
-        });
-    });
-    it.only('should render a blank project with no previously reviewed content', async () => {
+    it('should render a blank project with no previously reviewed content', async () => {
       renderWithProvider();
       expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
 
@@ -426,6 +426,13 @@ describe('LearningScreen', () => {
       startReviewMode();
       await reviewFirstSentenceAgain();
       await removeSecondSentenceFromReview();
+    });
+  });
+
+  describe('Review words', () => {
+    it('should allow to add and remove words from transcript', async () => {
+      renderWithProvider();
+      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
     });
   });
 });
