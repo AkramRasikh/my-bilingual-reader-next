@@ -185,6 +185,32 @@ const checkAllTranscriptItems = () => {
   });
 };
 
+const addFirstSentenceToReview = async () => {
+  const transcriptMenuToggle = screen.getByTestId(
+    'transcript-menu-toggle-sentence-1',
+  );
+
+  transcriptMenuToggle.click();
+  const nonVisibleReviewMenuItem = screen.queryByTestId(
+    'transcript-menu-review-sentence-1',
+  );
+  expect(nonVisibleReviewMenuItem).not.toBeInTheDocument();
+  await waitFor(() => {
+    const visibleReviewMenuItem = screen.getByTestId(
+      'transcript-menu-review-sentence-1',
+    );
+    expect(visibleReviewMenuItem).toBeInTheDocument();
+  });
+  const reviewMenuItem = screen.getByTestId(
+    'transcript-menu-review-sentence-1',
+  );
+  expect(screen.queryByText('Sentence reviewed ✅')).not.toBeInTheDocument();
+  reviewMenuItem.click();
+  await waitFor(() => {
+    expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
+  });
+};
+
 describe('LearningScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -211,29 +237,6 @@ describe('LearningScreen', () => {
     checkingNoTimelineMarkers();
     checkAllTranscriptItems();
     checkingMediaActionButtons();
-
-    const transcriptMenuToggle = screen.getByTestId(
-      'transcript-menu-toggle-sentence-1',
-    );
-
-    transcriptMenuToggle.click();
-    const nonVisibleReviewMenuItem = screen.queryByTestId(
-      'transcript-menu-review-sentence-1',
-    );
-    expect(nonVisibleReviewMenuItem).not.toBeInTheDocument();
-    await waitFor(() => {
-      const visibleReviewMenuItem = screen.getByTestId(
-        'transcript-menu-review-sentence-1',
-      );
-      expect(visibleReviewMenuItem).toBeInTheDocument();
-    });
-    const reviewMenuItem = screen.getByTestId(
-      'transcript-menu-review-sentence-1',
-    );
-    expect(screen.queryByText('Sentence reviewed ✅')).not.toBeInTheDocument();
-    reviewMenuItem.click();
-    await waitFor(() => {
-      expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
-    });
+    await addFirstSentenceToReview();
   });
 });
