@@ -29,6 +29,9 @@ const TranscriptItem = () => {
   } = useTranscriptItem();
 
   const thisIsOverlapping = biggestOverlappedSnippet === contentItem.id;
+
+  console.log('## highlightedTextState', highlightedTextState);
+
   return (
     <TranscriptItemWrapper>
       {highlightedTextsArabicTransliteration && (

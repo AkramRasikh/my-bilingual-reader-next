@@ -40,14 +40,14 @@ const mockSelectedContent = {
   content: [
     {
       id: 'sentence-1',
-      targetLang: 'Hello world',
-      baseLang: 'こんにちは世界',
+      baseLang: 'Hello world',
+      targetLang: 'こんにちは世界',
       time: 0,
     },
     {
       id: 'sentence-2',
-      targetLang: 'How are you?',
-      baseLang: 'お元気ですか？',
+      baseLang: 'How are you?',
+      targetLang: 'お元気ですか？',
       time: 2,
     },
   ],
@@ -433,6 +433,85 @@ describe('LearningScreen', () => {
     it('should allow to add and remove words from transcript', async () => {
       renderWithProvider();
       expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+
+      const element = screen.getByTestId('transcript-target-lang-sentence-1');
+      const highlightedTextContainer = screen.queryByTestId(
+        'highlighted-text-container',
+      );
+      expect(highlightedTextContainer).not.toBeInTheDocument();
+      const textNode = element.firstChild; // Get the text node inside the element
+      const range = document.createRange();
+      range.setStart(textNode, 5); // start after 'こんにちは' (position 5)
+      range.setEnd(textNode, 7); // end after '世界' (position 7)
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      // Verify the selection
+      expect(selection.toString()).toBe('世界');
+
+      // Trigger mouseup event to make the component recognize the selection
+      fireEvent.mouseUp(element);
+
+      await waitFor(() => {
+        // Now highlightedTextState should be populated
+        expect(screen.getByText('世界')).toBeInTheDocument();
+      });
+
+      // Spy for api/saveWord
+      jest
+        .spyOn(apiLib, 'apiRequestWrapper')
+        .mockImplementation(async (params) => {
+          if (params.url === '/api/saveWord') {
+            const dueTime = new Date();
+            const lastReviewTime = new Date();
+            return {
+              baseForm: '世界',
+              contexts: ['sentence-1'],
+              definition: 'world',
+              id: 'mocked-id-sekai',
+              notes:
+                'In this context, 世界 refers to the world or universe as a whole.',
+              phonetic: 'せかい',
+              reviewData: {
+                difficulty: 7.1949,
+                due: dueTime.toISOString(),
+                ease: 2.5,
+                elapsed_days: 0,
+                interval: 0,
+                lapses: 0,
+                last_review: lastReviewTime.toISOString(),
+                reps: 1,
+                scheduled_days: 0,
+                stability: 0.40255,
+                state: 1,
+              },
+              surfaceForm: '世界',
+              transliteration: 'sekai',
+            };
+          }
+          // fallback to previous mocks
+          return {};
+        });
+
+      const saveWordButton = screen.getByTestId('save-word-openai-button');
+      const genericFirstSentenceSpinnerNotPresent = screen.queryByTestId(
+        'transcript-action-loading-sentence-1',
+      );
+
+      const wordTabText = screen.getByTestId('words-tab-trigger');
+      expect(wordTabText).toHaveTextContent('Words 0/0');
+
+      expect(genericFirstSentenceSpinnerNotPresent).not.toBeInTheDocument();
+      fireEvent.click(saveWordButton);
+      const genericFirstSentenceSpinner = screen.getByTestId(
+        'transcript-action-loading-sentence-1',
+      );
+      expect(genericFirstSentenceSpinner).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('世界 saved!')).toBeInTheDocument();
+      });
+      expect(wordTabText).toHaveTextContent('Words 0/1');
     });
   });
 });
