@@ -111,9 +111,14 @@ const LearningScreenComprehensiveReview = () => {
     const indexFirstTime = formattedTranscriptState.findIndex(
       (item) => item.time >= firstTimeState,
     );
-    const indexLastTime = formattedTranscriptState.findIndex(
-      (item) => item.time >= firstTimeState + reviewIntervalState,
+    const timeWithInterval = firstTimeState + reviewIntervalState;
+
+    let indexLastTime = formattedTranscriptState.findIndex(
+      (item) => item.time >= timeWithInterval,
     );
+    if (indexLastTime === -1) {
+      indexLastTime = formattedTranscriptState.length;
+    }
 
     return formattedTranscriptState.slice(indexFirstTime, indexLastTime);
   }, [formattedTranscriptState, firstTimeState, reviewIntervalState]);

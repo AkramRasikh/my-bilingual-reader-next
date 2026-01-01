@@ -195,12 +195,37 @@ const addFirstSentenceToReview = async () => {
     'transcript-menu-review-sentence-1',
   );
   expect(screen.queryByText('Sentence reviewed ✅')).not.toBeInTheDocument();
+  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
+    if (params.url === '/api/updateSentence') {
+      const dueTime = new Date();
+      const lastReviewTime = new Date();
+      const reviewData = {
+        due: dueTime.toISOString(),
+        stability: 0.40255,
+        difficulty: 7.1949,
+        elapsed_days: 0,
+        scheduled_days: 0,
+        reps: 1,
+        lapses: 0,
+        state: 1,
+        last_review: lastReviewTime.toISOString(),
+        ease: 2.5,
+        interval: 0,
+      };
+
+      return {
+        reviewData,
+      };
+    }
+    // Default mock response
+    return {};
+  });
   reviewMenuItem.click();
   await waitFor(() => {
     expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
   });
   expect(screen.getByText('Reps: 1')).toBeInTheDocument();
-  jest.useFakeTimers().setSystemTime(new Date(Date.now() + 1 * 60 * 1000));
+  // jest.useFakeTimers().setSystemTime(new Date(Date.now() + 1 * 60 * 1000));
   expect(await screen.findByTestId('progress-header')).toBeInTheDocument();
   expect(screen.getByText('0/1')).toBeInTheDocument();
   const sentenceMetaCount = screen.getByTestId('analytics-sentences-count');
@@ -225,6 +250,31 @@ const addSecondSentenceToReview = async () => {
   const reviewMenuItem = screen.getByTestId(
     'transcript-menu-review-sentence-2',
   );
+  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
+    if (params.url === '/api/updateSentence') {
+      const dueTime = new Date();
+      const lastReviewTime = new Date();
+      const reviewData = {
+        due: dueTime.toISOString(),
+        stability: 0.40255,
+        difficulty: 7.1949,
+        elapsed_days: 0,
+        scheduled_days: 0,
+        reps: 1,
+        lapses: 0,
+        state: 1,
+        last_review: lastReviewTime.toISOString(),
+        ease: 2.5,
+        interval: 0,
+      };
+
+      return {
+        reviewData,
+      };
+    }
+    // Default mock response
+    return {};
+  });
   reviewMenuItem.click();
   await waitFor(() => {
     expect(screen.getAllByText('Sentence reviewed ✅')).toHaveLength(2);
@@ -238,8 +288,6 @@ const addSecondSentenceToReview = async () => {
 };
 
 const startReviewMode = () => {
-  jest.useFakeTimers().setSystemTime(new Date(Date.now() + 10 * 60 * 1000));
-
   const reviewButton = screen.getByTestId('review-switch');
   fireEvent.click(reviewButton);
   const sentenceReviewLabel = screen.getByTestId('sentences-toggle-label');
@@ -272,27 +320,6 @@ describe('LearningScreen', () => {
               contentData: [mockSelectedContent],
               wordsData: [],
               sentencesData: [],
-            };
-          }
-          if (params.url === '/api/updateSentence') {
-            const dueTime = new Date();
-            const lastReviewTime = new Date();
-            const reviewData = {
-              due: dueTime.toISOString(),
-              stability: 0.40255,
-              difficulty: 7.1949,
-              elapsed_days: 0,
-              scheduled_days: 0,
-              reps: 1,
-              lapses: 0,
-              state: 1,
-              last_review: lastReviewTime.toISOString(),
-              ease: 2.5,
-              interval: 0,
-            };
-
-            return {
-              reviewData,
             };
           }
           // Default mock response
