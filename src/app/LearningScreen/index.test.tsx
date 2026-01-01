@@ -225,7 +225,6 @@ const addFirstSentenceToReview = async () => {
     expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
   });
   expect(screen.getByText('Reps: 1')).toBeInTheDocument();
-  // jest.useFakeTimers().setSystemTime(new Date(Date.now() + 1 * 60 * 1000));
   expect(await screen.findByTestId('progress-header')).toBeInTheDocument();
   expect(screen.getByText('0/1')).toBeInTheDocument();
   const sentenceMetaCount = screen.getByTestId('analytics-sentences-count');
@@ -280,7 +279,6 @@ const addSecondSentenceToReview = async () => {
     expect(screen.getAllByText('Sentence reviewed ✅')).toHaveLength(2);
   });
   expect(screen.getByText('Reps: 2')).toBeInTheDocument();
-  // jest.useFakeTimers().setSystemTime(new Date(Date.now() + 4 * 60 * 1000));
   expect(await screen.findByTestId('progress-header')).toBeInTheDocument();
   expect(screen.getByText('0/2')).toBeInTheDocument();
   const sentenceMetaCount = screen.getByTestId('analytics-sentences-count');
