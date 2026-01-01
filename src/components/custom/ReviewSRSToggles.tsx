@@ -129,6 +129,7 @@ const ReviewSRSToggles = ({
       ))}
       <Button
         variant='destructive'
+        data-testid={`review-srs-toggles-remove-${contentItem.id}`}
         className={clsx(
           isScheduledForDeletion ? 'animate-pulse bg-amber-500' : '',
         )}

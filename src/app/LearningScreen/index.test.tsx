@@ -293,6 +293,92 @@ const startReviewMode = () => {
   expect(sentenceReviewLabel).toHaveTextContent('📝 (2)');
 };
 
+const reviewFirstSentenceAgain = async () => {
+  const srsTogglesFirstSentence = screen.getByTestId(
+    'review-srs-toggles-sentence-1',
+  );
+  expect(srsTogglesFirstSentence).toBeInTheDocument();
+  const easyButton = within(srsTogglesFirstSentence).getByText('2 days');
+  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
+    if (params.url === '/api/updateSentence') {
+      const dueTime = new Date();
+      dueTime.setDate(dueTime.getDate() + 2);
+      const lastReviewTime = new Date();
+      const reviewData = {
+        due: dueTime.toISOString(),
+        stability: 0.7,
+        difficulty: 6.5,
+        elapsed_days: 0,
+        scheduled_days: 2,
+        reps: 2,
+        lapses: 0,
+        state: 1,
+        last_review: lastReviewTime.toISOString(),
+        ease: 2.6,
+        interval: 2,
+      };
+
+      return {
+        reviewData,
+      };
+    }
+    // Default mock response
+    return {};
+  });
+  fireEvent.click(easyButton);
+  await waitFor(() => {
+    expect(screen.getAllByText('Sentence reviewed ✅')).toHaveLength(3);
+  });
+  expect(screen.getByText('Reps: 3')).toBeInTheDocument();
+  expect(await screen.findByTestId('progress-header')).toBeInTheDocument();
+  const sentenceMetaCount = screen.getByTestId('analytics-sentences-count');
+  expect(sentenceMetaCount).toHaveTextContent('Sentences: 1/2'); // due/pending+pending
+  // expect(screen.getByTestId('progress-header-text')).toHaveTextContent('1/2'); // come back to when fixing and testing progress header
+};
+
+const removeSecondSentenceFromReview = async () => {
+  const srsTogglesSecondSentence = screen.getByTestId(
+    'review-srs-toggles-sentence-2',
+  );
+  expect(srsTogglesSecondSentence).toBeInTheDocument();
+  const removeButton = screen.getByTestId(
+    `review-srs-toggles-remove-sentence-2`,
+  );
+  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
+    if (params.url === '/api/updateSentence') {
+      const reviewData = {
+        due: null,
+        stability: null,
+        difficulty: null,
+        elapsed_days: null,
+        scheduled_days: null,
+        reps: 0,
+        lapses: 0,
+        state: 0,
+        last_review: null,
+        ease: 2.5,
+        interval: null,
+      };
+
+      return {
+        reviewData,
+      };
+    }
+    // Default mock response
+    return {};
+  });
+  fireEvent.click(removeButton);
+  await waitFor(() => {
+    expect(
+      screen.getByText('Successful learned sentence ✅'),
+    ).toBeInTheDocument();
+  });
+  expect(screen.getByText('Reps: 4')).toBeInTheDocument();
+  expect(screen.queryByTestId('progress-header')).not.toBeInTheDocument();
+  const sentenceMetaCount = screen.getByTestId('analytics-sentences-count');
+  expect(sentenceMetaCount).toHaveTextContent('Sentences: 0/1'); // due/pending+pending
+};
+
 describe('LearningScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -338,7 +424,8 @@ describe('LearningScreen', () => {
       await addFirstSentenceToReview();
       await addSecondSentenceToReview();
       startReviewMode();
-      // await reviewFirstSentenceAgain();
+      await reviewFirstSentenceAgain();
+      await removeSecondSentenceFromReview();
     });
   });
 });
