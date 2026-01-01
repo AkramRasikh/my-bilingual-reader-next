@@ -76,6 +76,7 @@ const ReviewTypeToggles = ({
           />
           <Label
             htmlFor='words-toggle'
+            data-testid='words-toggle-label'
             className='text-sm font-medium cursor-pointer'
           >
             🔤 ({displayWordsCount})
@@ -91,6 +92,7 @@ const ReviewTypeToggles = ({
           />
           <Label
             htmlFor='sentences-toggle'
+            data-testid='sentences-toggle-label'
             className='text-sm font-medium cursor-pointer'
           >
             📝 ({displaySentencesCount})
@@ -106,6 +108,7 @@ const ReviewTypeToggles = ({
           />
           <Label
             htmlFor='snippets-toggle'
+            data-testid='snippets-toggle-label'
             className='text-sm font-medium cursor-pointer'
           >
             ✂️ ({displaySnippetsCount})

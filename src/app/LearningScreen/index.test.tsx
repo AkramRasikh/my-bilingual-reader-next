@@ -1,16 +1,26 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { LearningScreenProvider } from './LearningScreenProvider';
 import { FetchDataProvider } from '../Providers/FetchDataProvider';
-import { ContentScreenContainer } from '../content/page';
+import ContentScreen from '../content/page';
 import * as apiLib from '@/lib/api-request-wrapper';
 jest.mock('../Providers/useDataSaveToLocalStorage', () => () => {});
 
+const mockTitle = 'Test-Content-title';
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
     replace: jest.fn(),
     prefetch: jest.fn(),
     // add other router methods/properties as needed
+  }),
+  useSearchParams: () => ({
+    get: (key: string) => (key === 'topic' ? mockTitle : null),
   }),
 }));
 
@@ -25,7 +35,7 @@ beforeAll(() => {
 
 const mockSelectedContent = {
   id: 'content-1',
-  title: 'Test Content title',
+  title: mockTitle,
   contentIndex: 0,
   content: [
     {
@@ -53,7 +63,7 @@ const checkMetaDataOnLoad = () => {
 
   // navbar
   expect(screen.getByText('Home')).toBeInTheDocument();
-  expect(screen.getByText('Test Content title')).toBeInTheDocument();
+  expect(screen.getByText(mockTitle)).toBeInTheDocument();
   expect(screen.queryByTestId('progress-header')).not.toBeInTheDocument();
 
   const breadcrumbSentencesButton = screen.getByTestId(
@@ -116,27 +126,7 @@ beforeAll(() => {
         sentencesData: [],
       };
     }
-    if (params.url === '/api/updateSentence') {
-      const dueTime = new Date();
-      const lastReviewTime = new Date();
-      const reviewData = {
-        due: dueTime.toISOString(),
-        stability: 0.40255,
-        difficulty: 7.1949,
-        elapsed_days: 0,
-        scheduled_days: 0,
-        reps: 1,
-        lapses: 0,
-        state: 1,
-        last_review: lastReviewTime.toISOString(),
-        ease: 2.5,
-        interval: 0,
-      };
 
-      return {
-        reviewData,
-      };
-    }
     // Default mock response
     return {};
   });
@@ -209,6 +199,52 @@ const addFirstSentenceToReview = async () => {
   await waitFor(() => {
     expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
   });
+  expect(screen.getByText('Reps: 1')).toBeInTheDocument();
+  jest.useFakeTimers().setSystemTime(new Date(Date.now() + 1 * 60 * 1000));
+  expect(await screen.findByTestId('progress-header')).toBeInTheDocument();
+  expect(screen.getByText('0/1')).toBeInTheDocument();
+  const sentenceMetaCount = screen.getByTestId('analytics-sentences-count');
+  expect(sentenceMetaCount).toHaveTextContent('Sentences: 1/1'); // due/pending+pending
+};
+const addSecondSentenceToReview = async () => {
+  const transcriptMenuToggle = screen.getByTestId(
+    'transcript-menu-toggle-sentence-2',
+  );
+
+  transcriptMenuToggle.click();
+  const nonVisibleReviewMenuItem = screen.queryByTestId(
+    'transcript-menu-review-sentence-2',
+  );
+  expect(nonVisibleReviewMenuItem).not.toBeInTheDocument();
+  await waitFor(() => {
+    const visibleReviewMenuItem = screen.getByTestId(
+      'transcript-menu-review-sentence-2',
+    );
+    expect(visibleReviewMenuItem).toBeInTheDocument();
+  });
+  const reviewMenuItem = screen.getByTestId(
+    'transcript-menu-review-sentence-2',
+  );
+  reviewMenuItem.click();
+  await waitFor(() => {
+    expect(screen.getAllByText('Sentence reviewed ✅')).toHaveLength(2);
+  });
+  expect(screen.getByText('Reps: 2')).toBeInTheDocument();
+  // jest.useFakeTimers().setSystemTime(new Date(Date.now() + 4 * 60 * 1000));
+  expect(await screen.findByTestId('progress-header')).toBeInTheDocument();
+  expect(screen.getByText('0/2')).toBeInTheDocument();
+  const sentenceMetaCount = screen.getByTestId('analytics-sentences-count');
+  expect(sentenceMetaCount).toHaveTextContent('Sentences: 2/2'); // due/pending+pending
+};
+
+const startReviewMode = () => {
+  jest.useFakeTimers().setSystemTime(new Date(Date.now() + 10 * 60 * 1000));
+
+  const reviewButton = screen.getByTestId('review-switch');
+  fireEvent.click(reviewButton);
+  const sentenceReviewLabel = screen.getByTestId('sentences-toggle-label');
+  expect(sentenceReviewLabel).toBeInTheDocument();
+  expect(sentenceReviewLabel).toHaveTextContent('📝 (2)');
 };
 
 describe('LearningScreen', () => {
@@ -220,23 +256,64 @@ describe('LearningScreen', () => {
     return render(
       <FetchDataProvider>
         <LearningScreenProvider selectedContentStateMemoized={selectedContent}>
-          <ContentScreenContainer />
+          <ContentScreen />
         </LearningScreenProvider>
       </FetchDataProvider>,
     );
   };
 
-  it.only('should render a blank project with no previously reviewed content', async () => {
-    renderWithProvider();
-    expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+  describe('Review sentences', () => {
+    beforeAll(() => {
+      jest
+        .spyOn(apiLib, 'apiRequestWrapper')
+        .mockImplementation(async (params) => {
+          if (params.url === '/api/getOnLoadData') {
+            return {
+              contentData: [mockSelectedContent],
+              wordsData: [],
+              sentencesData: [],
+            };
+          }
+          if (params.url === '/api/updateSentence') {
+            const dueTime = new Date();
+            const lastReviewTime = new Date();
+            const reviewData = {
+              due: dueTime.toISOString(),
+              stability: 0.40255,
+              difficulty: 7.1949,
+              elapsed_days: 0,
+              scheduled_days: 0,
+              reps: 1,
+              lapses: 0,
+              state: 1,
+              last_review: lastReviewTime.toISOString(),
+              ease: 2.5,
+              interval: 0,
+            };
 
-    checkMetaDataOnLoad();
-    checkReviewTogglesOnLoad();
-    checkTabTriggersOnLoad();
-    checkingMainTranscriptContent();
-    checkingNoTimelineMarkers();
-    checkAllTranscriptItems();
-    checkingMediaActionButtons();
-    await addFirstSentenceToReview();
+            return {
+              reviewData,
+            };
+          }
+          // Default mock response
+          return {};
+        });
+    });
+    it.only('should render a blank project with no previously reviewed content', async () => {
+      renderWithProvider();
+      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+
+      checkMetaDataOnLoad();
+      checkReviewTogglesOnLoad();
+      checkTabTriggersOnLoad();
+      checkingMainTranscriptContent();
+      checkingNoTimelineMarkers();
+      checkAllTranscriptItems();
+      checkingMediaActionButtons();
+      await addFirstSentenceToReview();
+      await addSecondSentenceToReview();
+      startReviewMode();
+      // await reviewFirstSentenceAgain();
+    });
   });
 });
