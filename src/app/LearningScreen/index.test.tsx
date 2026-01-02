@@ -649,4 +649,18 @@ describe('LearningScreen', () => {
       await deleteFirstWord();
     });
   });
+
+  describe('Review snippets', () => {
+    // just test for standard snippet and overlap snippet.
+    it('should allow to create and remove snippets from transcript', async () => {
+      // FIRSTLY increase mock data
+      // fake video play?
+      // fake keyboard shortcut
+      // test for presence of master component and nested UI component
+      // toggle left and right changes the nested UI
+      // click left and right changes it too
+    });
+  });
+
+  // describe('review mode all content', () =>{})
 });
