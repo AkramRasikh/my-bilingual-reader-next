@@ -3,7 +3,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import clsx from 'clsx';
 import HoverWordCardActive from './HoverWordCardActive';
 
@@ -17,18 +17,13 @@ const HoverWordCard = ({
   hasHighlightedBackground,
   originalText,
 }) => {
-  const [isOriginalWordSettingState, setIsOriginalWordSettingState] =
-    useState(false);
-
-  useEffect(() => {
-    const textIsOriginalToSelectedTopic = wordsForSelectedTopic?.some(
-      (item) => text === item.baseForm || text === item.surfaceForm,
+  const isOriginalWordSettingState = useMemo(() => {
+    return (
+      wordsForSelectedTopic?.some(
+        (item) => text === item.baseForm || text === item.surfaceForm,
+      ) || false
     );
-
-    if (textIsOriginalToSelectedTopic) {
-      setIsOriginalWordSettingState(true);
-    }
-  }, [wordsForSelectedTopic]);
+  }, [wordsForSelectedTopic, text]);
 
   const onHoverTrigger = () => {
     const hoverTings = wordsFromSentence?.filter((item) => {
@@ -63,11 +58,15 @@ const HoverWordCard = ({
           textDecorationLine: 'underline',
         }}
         onMouseEnter={onHoverTrigger}
+        data-testid={`underlined-word-${text}`}
       >
-        <span data-testid={`underlined-word-${text}`}>{text}</span>
+        <span>{text}</span>
       </HoverCardTrigger>
       <HoverCardContent className='w-80'>
-        <div className='flex justify-between gap-4'>
+        <div
+          className='flex justify-between gap-4'
+          data-testid='word-pop-up-container'
+        >
           <div className='space-y-1'>
             {wordPopUpState?.map((word, index) => (
               <HoverWordCardActive

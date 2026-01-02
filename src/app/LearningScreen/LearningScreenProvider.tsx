@@ -565,6 +565,8 @@ export const LearningScreenProvider = ({
       };
     }
 
+    const now = new Date();
+
     const allWords = [] as WordTypes[];
     const dueWords = [] as WordTypes[];
 
@@ -572,6 +574,8 @@ export const LearningScreenProvider = ({
       if (wordItem.originalContext === selectedContentTitleState) {
         allWords.push(wordItem);
         if (wordItem.isDue) {
+          dueWords.push(wordItem);
+        } else if (isDueCheck(wordItem, now)) {
           dueWords.push(wordItem);
         }
       }

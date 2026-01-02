@@ -379,6 +379,216 @@ const removeSecondSentenceFromReview = async () => {
   expect(sentenceMetaCount).toHaveTextContent('Sentences: 0/1'); // due/pending+pending
 };
 
+const saveWordFirstInTranscript = async () => {
+  const element = screen.getByTestId('transcript-target-lang-sentence-1');
+  const highlightedTextContainer = screen.queryByTestId(
+    'highlighted-text-container',
+  );
+  expect(highlightedTextContainer).not.toBeInTheDocument();
+  const textNode = element.firstChild; // Get the text node inside the element
+  const range = document.createRange();
+  range.setStart(textNode, 5); // start after 'こんにちは' (position 5)
+  range.setEnd(textNode, 7); // end after '世界' (position 7)
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+
+  // Verify the selection
+  expect(selection.toString()).toBe('世界');
+
+  // Trigger mouseup event to make the component recognize the selection
+  fireEvent.mouseUp(element);
+
+  await waitFor(() => {
+    // Now highlightedTextState should be populated
+    expect(screen.getByText('世界')).toBeInTheDocument();
+  });
+
+  // Spy for api/saveWord
+  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
+    if (params.url === '/api/saveWord') {
+      const dueTime = new Date();
+      const lastReviewTime = new Date();
+      return {
+        word: {
+          baseForm: '世界',
+          surfaceForm: '世界',
+          contexts: ['sentence-1'],
+          definition: 'world',
+          id: 'mocked-id-sekai',
+          notes:
+            'In this context, 世界 refers to the world or universe as a whole.',
+          phonetic: 'せかい',
+          reviewData: {
+            difficulty: 7.1949,
+            due: dueTime.toISOString(),
+            ease: 2.5,
+            elapsed_days: 0,
+            interval: 0,
+            lapses: 0,
+            last_review: lastReviewTime.toISOString(),
+            reps: 1,
+            scheduled_days: 0,
+            stability: 0.40255,
+            state: 1,
+          },
+          transliteration: 'sekai',
+        },
+      };
+    }
+    // fallback to previous mocks
+    return {};
+  });
+
+  const saveWordButton = screen.getByTestId('save-word-openai-button');
+  const genericFirstSentenceSpinnerNotPresent = screen.queryByTestId(
+    'transcript-action-loading-sentence-1',
+  );
+
+  const wordTabText = screen.getByTestId('words-tab-trigger');
+  expect(wordTabText).toHaveTextContent('Words 0/0');
+
+  expect(genericFirstSentenceSpinnerNotPresent).not.toBeInTheDocument();
+  fireEvent.click(saveWordButton);
+  const genericFirstSentenceSpinner = screen.getByTestId(
+    'transcript-action-loading-sentence-1',
+  );
+  expect(genericFirstSentenceSpinner).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('世界 saved!')).toBeInTheDocument();
+  });
+  expect(wordTabText).toHaveTextContent('Words 1/1');
+  expect(screen.getByText('Words Due: 1')).toBeInTheDocument();
+};
+const saveWordSecondInTranscript = async () => {
+  const element = screen.getByTestId('transcript-target-lang-sentence-2');
+  const highlightedTextContainer = screen.queryByTestId(
+    'highlighted-text-container',
+  );
+  expect(highlightedTextContainer).not.toBeInTheDocument();
+  const textNode = element.firstChild; // Get the text node inside the element
+  const range = document.createRange();
+  range.setStart(textNode, 1);
+  range.setEnd(textNode, 3);
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+
+  // Verify the selection
+  expect(selection.toString()).toBe('元気');
+
+  // Trigger mouseup event to make the component recognize the selection
+  fireEvent.mouseUp(element);
+
+  await waitFor(() => {
+    // Now highlightedTextState should be populated
+    expect(screen.getByText('元気')).toBeInTheDocument();
+  });
+
+  // Spy for api/saveWord
+  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
+    if (params.url === '/api/saveWord') {
+      const dueTime = new Date();
+      const lastReviewTime = new Date();
+      return {
+        word: {
+          baseForm: '元気',
+          surfaceForm: '元気',
+          contexts: ['sentence-2'],
+          definition: 'healthy; energetic',
+          id: 'mocked-id-genki',
+          notes: 'In this context, 元気 refers to being healthy or energetic.',
+          phonetic: 'げんき',
+          reviewData: {
+            difficulty: 7.1949,
+            due: dueTime.toISOString(),
+            ease: 2.5,
+            elapsed_days: 0,
+            interval: 0,
+            lapses: 0,
+            last_review: lastReviewTime.toISOString(),
+            reps: 1,
+            scheduled_days: 0,
+            stability: 0.40255,
+            state: 1,
+          },
+          transliteration: 'genki',
+        },
+      };
+    }
+    // fallback to previous mocks
+    return {};
+  });
+
+  const saveWordButton = screen.getByTestId('save-word-openai-button');
+  const genericFirstSentenceSpinnerNotPresent = screen.queryByTestId(
+    'transcript-action-loading-sentence-2',
+  );
+
+  const wordTabText = screen.getByTestId('words-tab-trigger');
+  expect(wordTabText).toHaveTextContent('Words 1/1');
+
+  expect(genericFirstSentenceSpinnerNotPresent).not.toBeInTheDocument();
+  fireEvent.click(saveWordButton);
+  const genericFirstSentenceSpinner = screen.getByTestId(
+    'transcript-action-loading-sentence-2',
+  );
+  expect(genericFirstSentenceSpinner).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText('元気 saved!')).toBeInTheDocument();
+  });
+  expect(wordTabText).toHaveTextContent('Words 2/2'); // hmmm
+  expect(screen.getByText('Words Due: 2')).toBeInTheDocument();
+};
+
+const hoverOverSavedWord = async () => {
+  const wordPopUpContainer = screen.queryByTestId('word-pop-up-container');
+  expect(wordPopUpContainer).not.toBeInTheDocument();
+  const firstSentenceElTargetLang = screen.getByTestId(
+    'transcript-target-lang-sentence-1',
+  );
+  const savedWordElement = within(firstSentenceElTargetLang).getByText('世');
+
+  // Trigger hover events - HoverCard needs multiple events to open
+  fireEvent.pointerEnter(savedWordElement);
+  fireEvent.mouseEnter(savedWordElement);
+  fireEvent.pointerMove(savedWordElement);
+
+  await waitFor(() => {
+    expect(screen.getByTestId('word-pop-up-container')).toBeInTheDocument();
+  }); // Increase timeout for HoverCard delay
+};
+
+const deleteFirstWord = async () => {
+  const wordPopUpContainer = screen.getByTestId('word-pop-up-container');
+  const deleteButton = within(wordPopUpContainer).getByTestId('delete-button');
+
+  const genericFirstSentenceSpinnerNotPresent = screen.queryByTestId(
+    'transcript-action-loading-sentence-1',
+  );
+
+  expect(genericFirstSentenceSpinnerNotPresent).not.toBeInTheDocument();
+  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
+    if (params.url === '/api/deleteWord') {
+      return {
+        id: 'mocked-id-sekai',
+      };
+    }
+  });
+
+  deleteButton.click();
+  const confirmDeleteButton =
+    within(wordPopUpContainer).getByText('Confirm Delete');
+  confirmDeleteButton.click();
+  await waitFor(() => {
+    expect(screen.getByText('Word deleted!')).toBeInTheDocument();
+  });
+
+  const wordTabText = screen.getByTestId('words-tab-trigger');
+  expect(wordTabText).toHaveTextContent('Words 1/1');
+  expect(screen.getByText('Words Due: 1')).toBeInTheDocument();
+};
+
 describe('LearningScreen', () => {
   beforeAll(() => {
     jest
@@ -433,85 +643,10 @@ describe('LearningScreen', () => {
     it('should allow to add and remove words from transcript', async () => {
       renderWithProvider();
       expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
-
-      const element = screen.getByTestId('transcript-target-lang-sentence-1');
-      const highlightedTextContainer = screen.queryByTestId(
-        'highlighted-text-container',
-      );
-      expect(highlightedTextContainer).not.toBeInTheDocument();
-      const textNode = element.firstChild; // Get the text node inside the element
-      const range = document.createRange();
-      range.setStart(textNode, 5); // start after 'こんにちは' (position 5)
-      range.setEnd(textNode, 7); // end after '世界' (position 7)
-      const selection = window.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(range);
-
-      // Verify the selection
-      expect(selection.toString()).toBe('世界');
-
-      // Trigger mouseup event to make the component recognize the selection
-      fireEvent.mouseUp(element);
-
-      await waitFor(() => {
-        // Now highlightedTextState should be populated
-        expect(screen.getByText('世界')).toBeInTheDocument();
-      });
-
-      // Spy for api/saveWord
-      jest
-        .spyOn(apiLib, 'apiRequestWrapper')
-        .mockImplementation(async (params) => {
-          if (params.url === '/api/saveWord') {
-            const dueTime = new Date();
-            const lastReviewTime = new Date();
-            return {
-              baseForm: '世界',
-              contexts: ['sentence-1'],
-              definition: 'world',
-              id: 'mocked-id-sekai',
-              notes:
-                'In this context, 世界 refers to the world or universe as a whole.',
-              phonetic: 'せかい',
-              reviewData: {
-                difficulty: 7.1949,
-                due: dueTime.toISOString(),
-                ease: 2.5,
-                elapsed_days: 0,
-                interval: 0,
-                lapses: 0,
-                last_review: lastReviewTime.toISOString(),
-                reps: 1,
-                scheduled_days: 0,
-                stability: 0.40255,
-                state: 1,
-              },
-              surfaceForm: '世界',
-              transliteration: 'sekai',
-            };
-          }
-          // fallback to previous mocks
-          return {};
-        });
-
-      const saveWordButton = screen.getByTestId('save-word-openai-button');
-      const genericFirstSentenceSpinnerNotPresent = screen.queryByTestId(
-        'transcript-action-loading-sentence-1',
-      );
-
-      const wordTabText = screen.getByTestId('words-tab-trigger');
-      expect(wordTabText).toHaveTextContent('Words 0/0');
-
-      expect(genericFirstSentenceSpinnerNotPresent).not.toBeInTheDocument();
-      fireEvent.click(saveWordButton);
-      const genericFirstSentenceSpinner = screen.getByTestId(
-        'transcript-action-loading-sentence-1',
-      );
-      expect(genericFirstSentenceSpinner).toBeInTheDocument();
-      await waitFor(() => {
-        expect(screen.getByText('世界 saved!')).toBeInTheDocument();
-      });
-      expect(wordTabText).toHaveTextContent('Words 0/1');
+      await saveWordFirstInTranscript();
+      await saveWordSecondInTranscript();
+      await hoverOverSavedWord();
+      await deleteFirstWord();
     });
   });
 });
