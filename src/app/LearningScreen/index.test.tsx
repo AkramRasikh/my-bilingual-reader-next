@@ -1173,6 +1173,69 @@ describe('LearningScreen', () => {
         document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
       ).toHaveLength(3);
     };
+
+    const switchToReviewMode = async () => {
+      const wordToggleLabel = screen.getByTestId('words-toggle-label');
+      const sentenceToggleLabel = screen.getByTestId('sentences-toggle-label');
+      const snippetToggleLabel = screen.getByTestId('snippets-toggle-label');
+
+      const wordToggleCheckBoxes = screen.getByTestId('words-toggle');
+      const sentenceToggleCheckBoxes = screen.getByTestId('sentences-toggle');
+      const snippetToggleCheckBoxes = screen.getByTestId('snippets-toggle');
+      expect(wordToggleCheckBoxes).toBeDisabled();
+      expect(sentenceToggleCheckBoxes).toBeDisabled();
+      expect(snippetToggleCheckBoxes).toBeDisabled();
+      expect(wordToggleLabel).toHaveTextContent('🔤 (0)');
+      expect(sentenceToggleLabel).toHaveTextContent('📝 (0)');
+      expect(snippetToggleLabel).toHaveTextContent('✂️ (0)');
+      const reviewSwitch = screen.getByTestId('review-switch');
+      fireEvent.click(reviewSwitch);
+      const wordToggleLabelPost = screen.getByTestId('words-toggle-label');
+      const sentenceToggleLabelPost = screen.getByTestId(
+        'sentences-toggle-label',
+      );
+      const snippetToggleLabelPost = screen.getByTestId(
+        'snippets-toggle-label',
+      );
+      expect(wordToggleLabelPost).toHaveTextContent('🔤 (3)');
+      expect(sentenceToggleLabelPost).toHaveTextContent('📝 (3)');
+      expect(snippetToggleLabelPost).toHaveTextContent('✂️ (3)');
+      const reviewIntervalDecrement = screen.getByTestId(
+        'review-interval-decrement',
+      );
+      const reviewIntervalCount = screen.getByTestId('review-interval-count');
+      const reviewIntervalIncrement = screen.getByTestId(
+        'review-interval-increment',
+      );
+      expect(reviewIntervalDecrement).toBeEnabled();
+      expect(reviewIntervalCount).toHaveTextContent('60s');
+      expect(reviewIntervalIncrement).toBeEnabled();
+      await waitFor(() => {
+        // Re-query inside waitFor to get fresh references on each retry
+        const wordToggleCheckBoxes = screen.getByTestId('words-toggle');
+        const sentenceToggleCheckBoxes = screen.getByTestId('sentences-toggle');
+        const snippetToggleCheckBoxes = screen.getByTestId('snippets-toggle');
+        expect(wordToggleCheckBoxes).toBeEnabled();
+        expect(sentenceToggleCheckBoxes).toBeEnabled();
+        expect(snippetToggleCheckBoxes).toBeEnabled();
+      });
+    };
+
+    const reviewSnippetsInReviewMode = async () => {
+      const snippetReviewToggle1 = screen.getByTestId(
+        'snippet-review-item-snippet-due-1',
+      );
+
+      expect(snippetReviewToggle1).toHaveTextContent('天気がいい');
+      const snippetReviewToggle2 = screen.getByTestId(
+        'snippet-review-item-snippet-due-2',
+      );
+      expect(snippetReviewToggle2).toHaveTextContent('本を読む');
+      const snippetReviewToggle3 = screen.getByTestId(
+        'snippet-review-item-snippet-due-3',
+      );
+      expect(snippetReviewToggle3).toHaveTextContent('公園に行きましょう');
+    };
     beforeAll(() => {
       jest
         .spyOn(apiLib, 'apiRequestWrapper')
@@ -1194,6 +1257,8 @@ describe('LearningScreen', () => {
       const onLoadTitle = await screen.findByText(mockTitle);
       expect(onLoadTitle).toBeDefined();
       checkForDefaultReviewModeMetaData();
+      await switchToReviewMode();
+      await reviewSnippetsInReviewMode();
       // To be implemented
     });
   });

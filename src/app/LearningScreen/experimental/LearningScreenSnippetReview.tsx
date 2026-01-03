@@ -220,7 +220,7 @@ const LearningScreenSnippetReview = ({
   const indexHasChanged = endIndexKeyState !== 0 || startIndexKeyState !== 0;
 
   return (
-    <div className='relative'>
+    <div className='relative' data-testid={`snippet-review-item-${item.id}`}>
       {isLoadingSaveSnippetState && (
         <div className='absolute right-1/2 top-3/10'>
           <LoadingSpinner />
