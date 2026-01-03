@@ -862,71 +862,77 @@ describe('LearningScreen', () => {
     );
   };
 
-  describe('Review sentences', () => {
-    it('should render a blank project with no previously reviewed content', async () => {
-      renderWithProvider();
-      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+  describe('studying new content', () => {
+    describe('Review sentences', () => {
+      it('should render a blank project with no previously reviewed content', async () => {
+        renderWithProvider();
+        expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
 
-      checkMetaDataOnLoad();
-      checkReviewTogglesOnLoad();
-      checkTabTriggersOnLoad();
-      checkingMainTranscriptContent();
-      checkingNoTimelineMarkers();
-      checkAllTranscriptItems();
-      checkingMediaActionButtons();
-      await addFirstSentenceToReview();
-      await addSecondSentenceToReview();
-      startReviewMode();
-      await reviewFirstSentenceAgain();
-      await removeSecondSentenceFromReview();
-    });
-  });
-
-  describe('Review words', () => {
-    it('should allow to add and remove words from transcript', async () => {
-      renderWithProvider();
-      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
-      await saveWordFirstInTranscript();
-      await saveWordSecondInTranscript();
-      await hoverOverSavedWord();
-      await deleteFirstWord();
-    });
-  });
-
-  describe('Review snippets', () => {
-    // just test for standard snippet and overlap snippet.
-    it('should allow to create and remove snippets from transcript', async () => {
-      // Mock currentTime for this test
-      Object.defineProperty(HTMLMediaElement.prototype, 'currentTime', {
-        configurable: true,
-        get() {
-          return 10;
-        },
-        set() {
-          // Mock setter to prevent errors
-        },
+        checkMetaDataOnLoad();
+        checkReviewTogglesOnLoad();
+        checkTabTriggersOnLoad();
+        checkingMainTranscriptContent();
+        checkingNoTimelineMarkers();
+        checkAllTranscriptItems();
+        checkingMediaActionButtons();
+        await addFirstSentenceToReview();
+        await addSecondSentenceToReview();
+        startReviewMode();
+        await reviewFirstSentenceAgain();
+        await removeSecondSentenceFromReview();
       });
+    });
 
-      renderWithProvider();
-      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
-      expect(
-        screen.queryByTestId('video-player-snippet-text'),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByTestId('transcript-looping-sentence-sentence-4'),
-      ).not.toBeInTheDocument();
+    describe('Review words', () => {
+      it('should allow to add and remove words from transcript', async () => {
+        renderWithProvider();
+        expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+        await saveWordFirstInTranscript();
+        await saveWordSecondInTranscript();
+        await hoverOverSavedWord();
+        await deleteFirstWord();
+      });
+    });
 
-      await triggerSnippetViaKeyboard();
-      await triggerContractedSnippet();
-      await triggerMoveSnippetLeftAndRight();
-      await saveSnippet();
-      await checkForRemovalOfPreSnippetUIComponents();
-      await checkNewStableSnippetUIComponents();
-      await deleteSnippet();
+    describe('Review snippets', () => {
+      // just test for standard snippet and overlap snippet.
+      it('should allow to create and remove snippets from transcript', async () => {
+        // Mock currentTime for this test
+        Object.defineProperty(HTMLMediaElement.prototype, 'currentTime', {
+          configurable: true,
+          get() {
+            return 10;
+          },
+          set() {
+            // Mock setter to prevent errors
+          },
+        });
 
-      // check snippet present in timeline
+        renderWithProvider();
+        expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+        expect(
+          screen.queryByTestId('video-player-snippet-text'),
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId('transcript-looping-sentence-sentence-4'),
+        ).not.toBeInTheDocument();
+
+        await triggerSnippetViaKeyboard();
+        await triggerContractedSnippet();
+        await triggerMoveSnippetLeftAndRight();
+        await saveSnippet();
+        await checkForRemovalOfPreSnippetUIComponents();
+        await checkNewStableSnippetUIComponents();
+        await deleteSnippet();
+
+        // check snippet present in timeline
+      });
     });
   });
 
-  // describe('review mode all content', () =>{})
+  describe('review mode', () => {
+    it('should allow user to review words/sentences/snippets', async () => {
+      // To be implemented
+    });
+  });
 });
