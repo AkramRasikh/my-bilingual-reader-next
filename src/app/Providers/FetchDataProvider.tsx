@@ -409,6 +409,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     contentId,
   }: UpdateContentMetaDataCallTypes) => {
     try {
+      // this should be updated as a function from the API
       const resObj = await apiRequestWrapper({
         url: '/api/updateContentMetaData',
         body: {

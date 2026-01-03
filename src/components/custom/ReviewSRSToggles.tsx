@@ -99,13 +99,29 @@ const ReviewSRSToggles = ({
   };
 
   const reviewTogglesMap = [
-    { disabled: isLoadingSRSState, text: againText, difficultyNumber: '1' },
-    { disabled: isLoadingSRSState, text: hardText, difficultyNumber: '2' },
-    { disabled: isLoadingSRSState, text: goodText, difficultyNumber: '3' },
+    {
+      disabled: isLoadingSRSState,
+      text: againText,
+      difficultyNumber: '1',
+      dataTestId: `again-${contentItem.id}`,
+    },
+    {
+      disabled: isLoadingSRSState,
+      text: hardText,
+      difficultyNumber: '2',
+      dataTestId: `hard-${contentItem.id}`,
+    },
+    {
+      disabled: isLoadingSRSState,
+      text: goodText,
+      difficultyNumber: '3',
+      dataTestId: `good-${contentItem.id}`,
+    },
     {
       disabled: isLoadingSRSState || isScheduledForDeletion,
       text: easyText,
       difficultyNumber: '4',
+      dataTestId: `easy-${contentItem.id}`,
     },
   ];
 
@@ -123,6 +139,7 @@ const ReviewSRSToggles = ({
           variant='outline'
           disabled={btn.disabled}
           onClick={() => handleNextReview(btn.difficultyNumber)}
+          data-testid={btn.dataTestId}
         >
           {btn.text}
         </Button>
