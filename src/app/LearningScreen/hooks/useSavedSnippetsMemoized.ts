@@ -29,8 +29,11 @@ export const useSavedSnippetsMemoized = (
         setState: null,
       });
 
+      if (!resultOfThis) {
+        return;
+      }
       allRes.push(
-        ...resultOfThis?.map((item) => ({
+        ...resultOfThis.map((item) => ({
           ...item,
           snippetId: snippetData.id,
           time: snippetData.time,

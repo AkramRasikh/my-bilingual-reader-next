@@ -1121,6 +1121,9 @@ export const LearningScreenProvider = ({
         setState: null,
       });
 
+      if (!overlappingSentenceData) {
+        return;
+      }
       overlappingSentenceData.forEach((item) => {
         const sentenceIsUpForReview =
           sentenceMapMemoized[item.id].isUpForReview;

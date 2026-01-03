@@ -74,6 +74,218 @@ const mockSelectedContent = {
   snippets: [],
 };
 
+const dueDateOneDayAgo = new Date();
+dueDateOneDayAgo.setDate(dueDateOneDayAgo.getDate() - 1);
+
+const lastReviewDateTwoDaysAgo = new Date();
+lastReviewDateTwoDaysAgo.setDate(lastReviewDateTwoDaysAgo.getDate() - 2);
+
+const mockSelectedContentWithDueData = {
+  id: 'content-1',
+  title: mockTitle,
+  contentIndex: 0,
+  content: [
+    {
+      id: 'sentence-due-1',
+      baseLang: 'The weather is nice today.',
+      targetLang: '今日は天気がいいですね。',
+      time: 0,
+      reviewData: {
+        difficulty: 6.8,
+        due: dueDateOneDayAgo.toISOString(),
+        ease: 2.5,
+        elapsed_days: 1,
+        interval: 1,
+        lapses: 0,
+        last_review: lastReviewDateTwoDaysAgo.toISOString(),
+        reps: 2,
+        scheduled_days: 1,
+        stability: 0.5,
+        state: 2,
+      },
+    },
+    {
+      id: 'sentence-due-2',
+      baseLang: 'I like reading books.',
+      targetLang: '私は本を読むのが好きです。',
+      time: 3,
+      reviewData: {
+        difficulty: 7.2,
+        due: dueDateOneDayAgo.toISOString(),
+        ease: 2.6,
+        elapsed_days: 1,
+        interval: 1,
+        lapses: 0,
+        last_review: lastReviewDateTwoDaysAgo.toISOString(),
+        reps: 3,
+        scheduled_days: 1,
+        stability: 0.6,
+        state: 2,
+      },
+    },
+    {
+      id: 'sentence-due-3',
+      baseLang: "Let's go to the park tomorrow.",
+      targetLang: '明日、公園に行きましょう。',
+      time: 7,
+      reviewData: {
+        difficulty: 6.5,
+        due: dueDateOneDayAgo.toISOString(),
+        ease: 2.7,
+        elapsed_days: 1,
+        interval: 1,
+        lapses: 0,
+        last_review: lastReviewDateTwoDaysAgo.toISOString(),
+        reps: 2,
+        scheduled_days: 1,
+        stability: 0.55,
+        state: 2,
+      },
+    },
+  ],
+  snippets: [
+    {
+      id: 'snippet-due-1',
+      baseLang: 'The weather is nice today.',
+      targetLang: '今日は天気がいいですね。',
+      time: 1.5,
+      focusedText: '天気がいい',
+      isContracted: false,
+      isPreSnippet: false,
+      reviewData: {
+        difficulty: 7.0,
+        due: dueDateOneDayAgo.toISOString(),
+        ease: 2.5,
+        elapsed_days: 1,
+        interval: 1,
+        lapses: 0,
+        last_review: lastReviewDateTwoDaysAgo.toISOString(),
+        reps: 1,
+        scheduled_days: 1,
+        stability: 0.45,
+        state: 2,
+      },
+    },
+    {
+      id: 'snippet-due-2',
+      baseLang: 'I like reading books.',
+      targetLang: '私は本を読むのが好きです。',
+      time: 4.5,
+      focusedText: '本を読む',
+      isContracted: false,
+      isPreSnippet: false,
+      reviewData: {
+        difficulty: 6.9,
+        due: dueDateOneDayAgo.toISOString(),
+        ease: 2.6,
+        elapsed_days: 1,
+        interval: 1,
+        lapses: 0,
+        last_review: lastReviewDateTwoDaysAgo.toISOString(),
+        reps: 2,
+        scheduled_days: 1,
+        stability: 0.5,
+        state: 2,
+      },
+    },
+    {
+      id: 'snippet-due-3',
+      baseLang: "Let's go to the park tomorrow.",
+      targetLang: '明日、公園に行きましょう。',
+      focusedText: '公園に行きましょう',
+      isContracted: false,
+      isPreSnippet: false,
+      time: 8.5,
+      reviewData: {
+        difficulty: 7.1,
+        due: dueDateOneDayAgo.toISOString(),
+        ease: 2.5,
+        elapsed_days: 1,
+        interval: 1,
+        lapses: 0,
+        last_review: lastReviewDateTwoDaysAgo.toISOString(),
+        reps: 1,
+        scheduled_days: 1,
+        stability: 0.48,
+        state: 2,
+      },
+    },
+  ],
+};
+
+const mockWordsData = [
+  {
+    baseForm: '天気',
+    surfaceForm: '天気',
+    contexts: ['sentence-due-1'],
+    definition: 'weather',
+    id: 'mocked-id-tenki',
+    notes:
+      'In this context, 天気 refers to the weather or atmospheric conditions.',
+    phonetic: 'てんき',
+    reviewData: {
+      difficulty: 6.8,
+      due: dueDateOneDayAgo.toISOString(),
+      ease: 2.5,
+      elapsed_days: 1,
+      interval: 1,
+      lapses: 0,
+      last_review: lastReviewDateTwoDaysAgo.toISOString(),
+      reps: 2,
+      scheduled_days: 1,
+      stability: 0.5,
+      state: 2,
+    },
+    transliteration: 'tenki',
+  },
+  {
+    baseForm: '本',
+    surfaceForm: '本',
+    contexts: ['sentence-due-2'],
+    definition: 'book',
+    id: 'mocked-id-hon',
+    notes: 'In this context, 本 refers to a book or written material.',
+    phonetic: 'ほん',
+    reviewData: {
+      difficulty: 7.0,
+      due: dueDateOneDayAgo.toISOString(),
+      ease: 2.6,
+      elapsed_days: 1,
+      interval: 1,
+      lapses: 0,
+      last_review: lastReviewDateTwoDaysAgo.toISOString(),
+      reps: 3,
+      scheduled_days: 1,
+      stability: 0.55,
+      state: 2,
+    },
+    transliteration: 'hon',
+  },
+  {
+    baseForm: '公園',
+    surfaceForm: '公園',
+    contexts: ['sentence-due-3'],
+    definition: 'park',
+    id: 'mocked-id-kouen',
+    notes: 'In this context, 公園 refers to a public park or garden.',
+    phonetic: 'こうえん',
+    reviewData: {
+      difficulty: 6.7,
+      due: dueDateOneDayAgo.toISOString(),
+      ease: 2.7,
+      elapsed_days: 1,
+      interval: 1,
+      lapses: 0,
+      last_review: lastReviewDateTwoDaysAgo.toISOString(),
+      reps: 2,
+      scheduled_days: 1,
+      stability: 0.52,
+      state: 2,
+    },
+    transliteration: 'kouen',
+  },
+];
+
 const checkMetaDataOnLoad = () => {
   expect(screen.getByText('Sentences: 0/0')).toBeInTheDocument();
   expect(screen.getByText('Words Due: 0')).toBeInTheDocument();
@@ -137,20 +349,6 @@ const checkingMainTranscriptContent = () => {
     mockSelectedContent.content[0].targetLang,
   );
 };
-beforeAll(() => {
-  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
-    if (params.url === '/api/getOnLoadData') {
-      return {
-        contentData: [mockSelectedContent],
-        wordsData: [],
-        sentencesData: [],
-      };
-    }
-
-    // Default mock response
-    return {};
-  });
-});
 
 const checkingNoTimelineMarkers = () => {
   expect(
@@ -863,6 +1061,23 @@ describe('LearningScreen', () => {
   };
 
   describe('studying new content', () => {
+    beforeAll(() => {
+      jest
+        .spyOn(apiLib, 'apiRequestWrapper')
+        .mockImplementation(async (params) => {
+          if (params.url === '/api/getOnLoadData') {
+            return {
+              contentData: [mockSelectedContent],
+              wordsData: [],
+              sentencesData: [],
+            };
+          }
+
+          // Default mock response
+          return {};
+        });
+    });
+
     describe('Review sentences', () => {
       it('should render a blank project with no previously reviewed content', async () => {
         renderWithProvider();
@@ -931,7 +1146,26 @@ describe('LearningScreen', () => {
   });
 
   describe('review mode', () => {
-    it('should allow user to review words/sentences/snippets', async () => {
+    beforeAll(() => {
+      jest
+        .spyOn(apiLib, 'apiRequestWrapper')
+        .mockImplementation(async (params) => {
+          if (params.url === '/api/getOnLoadData') {
+            return {
+              contentData: [mockSelectedContentWithDueData],
+              wordsData: mockWordsData,
+              sentencesData: [],
+            };
+          }
+
+          // Default mock response
+          return {};
+        });
+    });
+    it.only('should allow user to review words/sentences/snippets', async () => {
+      renderWithProvider(mockSelectedContentWithDueData);
+      const getSentenceDueCount = await screen.findByText(mockTitle);
+      expect(getSentenceDueCount).toBeDefined();
       // To be implemented
     });
   });
