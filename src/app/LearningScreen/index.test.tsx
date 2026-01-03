@@ -1420,6 +1420,80 @@ describe('LearningScreen', () => {
       checkWordsMetaData(0, '0/3');
     };
 
+    const checkSentenceMetaData = (dueCount, pendingCountText, reps) => {
+      const sentenceDueText = screen.getByTestId('analytics-sentences-count');
+      expect(sentenceDueText).toHaveTextContent(
+        `Sentences: ${dueCount}/${pendingCountText}`,
+      );
+
+      expect(screen.getByText(`Reps: ${reps}`)).toBeInTheDocument();
+      // expect(screen.getByTestId('progress-header-text')).toHaveTextContent('1/2'); // come back to when fixing and testing progress header
+    };
+
+    const reviewSentencesInReviewMode = async () => {
+      expect(screen.queryByText('Done!')).not.toBeInTheDocument();
+      checkSentenceMetaData(3, 3, 0);
+      jest
+        .spyOn(apiLib, 'apiRequestWrapper')
+        .mockImplementation(async (params) => {
+          if (params.url === '/api/updateSentence') {
+            const dueTime = new Date();
+            dueTime.setDate(dueTime.getDate() + 2);
+            const lastReviewTime = new Date();
+            const reviewData = {
+              due: dueTime.toISOString(),
+              stability: 0.7,
+              difficulty: 6.5,
+              elapsed_days: 0,
+              scheduled_days: 2,
+              reps: 2,
+              lapses: 0,
+              state: 1,
+              last_review: lastReviewTime.toISOString(),
+              ease: 2.6,
+              interval: 2,
+            };
+
+            return {
+              reviewData,
+            };
+          }
+          // Default mock response
+          return {};
+        });
+      const firstSentenceDueTime = screen.getByTestId('easy-sentence-due-1');
+
+      firstSentenceDueTime.click();
+      await waitFor(() => {
+        expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
+      });
+      checkSentenceMetaData(2, 3, 1);
+      checkForReviewLabelText(0, 0, 2);
+
+      const secondSentenceDueTime = screen.getByTestId('easy-sentence-due-2');
+
+      secondSentenceDueTime.click();
+      await waitFor(() => {
+        expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
+      });
+
+      checkSentenceMetaData(1, 3, 2);
+      checkForReviewLabelText(0, 0, 1);
+
+      const thirdSentenceDueTime = screen.getByTestId('easy-sentence-due-3');
+
+      thirdSentenceDueTime.click();
+      await waitFor(() => {
+        expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
+      });
+
+      checkSentenceMetaData(0, 3, 3);
+      checkForReviewLabelText(0, 0, 0);
+
+      expect(screen.getByText('Done!')).toBeInTheDocument();
+      // expect(screen.getByTestId('progress-header-text')).toHaveTextContent('1/2'); // come back to when fixing and testing progress header
+    };
+
     beforeAll(() => {
       jest
         .spyOn(apiLib, 'apiRequestWrapper')
@@ -1436,7 +1510,7 @@ describe('LearningScreen', () => {
           return {};
         });
     });
-    it.only('should allow user to review words/sentences/snippets', async () => {
+    it('should allow user to review words/sentences/snippets', async () => {
       renderWithProvider(mockSelectedContentWithDueData);
       const onLoadTitle = await screen.findByText(mockTitle);
       expect(onLoadTitle).toBeDefined();
@@ -1444,6 +1518,7 @@ describe('LearningScreen', () => {
       await switchToReviewMode();
       await reviewSnippetsInReviewMode();
       await reviewWordsInReviewMode();
+      await reviewSentencesInReviewMode();
       // To be implemented
     });
   });
