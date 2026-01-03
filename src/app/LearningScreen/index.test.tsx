@@ -31,6 +31,8 @@ beforeAll(() => {
       return 5;
     },
   });
+
+  process.env.NEXT_PUBLIC_CLOUDFLARE_ASSETS_URL = 'https://mocked-url/';
 });
 
 const mockSelectedContent = {
@@ -49,6 +51,24 @@ const mockSelectedContent = {
       baseLang: 'How are you?',
       targetLang: 'お元気ですか？',
       time: 2,
+    },
+    {
+      id: 'sentence-3',
+      baseLang: 'Nice to meet you.',
+      targetLang: 'はじめまして。',
+      time: 5,
+    },
+    {
+      id: 'sentence-4',
+      baseLang: 'See you later, friend! Let us meet again soon at the park.',
+      targetLang: 'またね、友達！また公園ですぐに会いましょう。',
+      time: 8,
+    },
+    {
+      id: 'sentence-5',
+      baseLang: 'Thank you very much.',
+      targetLang: 'どうもありがとうございます。',
+      time: 12,
     },
   ],
   snippets: [],
@@ -589,6 +609,112 @@ const deleteFirstWord = async () => {
   expect(screen.getByText('Words Due: 1')).toBeInTheDocument();
 };
 
+const triggerSnippetViaKeyboard = async () => {
+  const transcriptMenuToggle = screen.getByTestId(
+    'transcript-menu-toggle-sentence-4',
+  );
+  expect(transcriptMenuToggle).toBeInTheDocument();
+  fireEvent.keyDown(document, { key: '"', shiftKey: true });
+
+  await waitFor(() => {
+    const snippetContainerVisible = screen.getByTestId(
+      'video-player-snippet-text',
+    );
+    expect(snippetContainerVisible).toBeInTheDocument();
+  });
+  const stopLoopButton = screen.getByTestId('stop-loop');
+  expect(stopLoopButton).toHaveTextContent('(3)');
+  //
+
+  const highlightedSnippetText = screen.getByTestId('highlighted-snippet-text');
+
+  const highlightedSnippetString = highlightedSnippetText.textContent.trim();
+  const initialExpectedSnippetString = 'ね、友達！また公園ですぐに会いま';
+
+  expect(highlightedSnippetString).toBe(initialExpectedSnippetString);
+};
+
+const triggerContractedSnippet = async () => {
+  fireEvent.keyDown(document, { key: 'arrowup' });
+  const stopLoopButton = screen.getByTestId('stop-loop');
+
+  expect(stopLoopButton).toHaveTextContent('(1.5)');
+  const overlappingIndicator = screen.getByTestId(
+    'transcript-time-overlap-indicator',
+  );
+  expect(overlappingIndicator).toBeInTheDocument();
+
+  const transcriptMenuToggleNonVisible = screen.queryByTestId(
+    'transcript-menu-toggle-sentence-4',
+  );
+  expect(transcriptMenuToggleNonVisible).not.toBeInTheDocument();
+  const noSavedSnippets = screen.queryByTestId(
+    'transcript-time-overlap-indicator-multi-sentence-4',
+  );
+  expect(noSavedSnippets).not.toBeInTheDocument();
+
+  const originalTargetLang = screen.queryByTestId(
+    'transcript-target-lang-sentence-4',
+  );
+  expect(originalTargetLang).not.toBeInTheDocument();
+  const originalBaseLang = screen.queryByTestId(
+    'transcript-base-lang-sentence-4',
+  );
+  expect(originalBaseLang).not.toBeInTheDocument();
+
+  // SECONDLY, stop looping - save snippet ✅
+  const visibleNestedLoopingText = screen.getByTestId(
+    'transcript-looping-sentence-sentence-4',
+  );
+  expect(visibleNestedLoopingText).toBeInTheDocument();
+  const saveSnippetTranscriptBtn = screen.getByTestId(
+    'save-snippet-button-sentence-4',
+  );
+
+  const highlightedSnippetTextPost = screen.getByTestId(
+    'highlighted-snippet-text',
+  );
+
+  const initialExpectedSnippetString = 'ね、友達！また公園ですぐに会いま';
+
+  const highlightedSnippetTextPostTrimmed =
+    highlightedSnippetTextPost.textContent.trim();
+  expect(highlightedSnippetTextPostTrimmed.length).toBeLessThan(
+    initialExpectedSnippetString.length,
+  );
+};
+
+const triggerMoveSnippetLeftAndRight = async () => {
+  const highlightedSnippetTextPost = screen.getByTestId(
+    'highlighted-snippet-text',
+  );
+  const highlightedSnippetTextPostTrimmed =
+    highlightedSnippetTextPost.textContent.trim();
+  fireEvent.keyDown(document, { key: ',' });
+
+  const highlightedSnippetTextMovedLeft = screen.getByTestId(
+    'highlighted-snippet-text',
+  );
+  expect(highlightedSnippetTextMovedLeft.textContent.trim()).not.toEqual(
+    highlightedSnippetTextPostTrimmed,
+  );
+  expect(highlightedSnippetTextMovedLeft.textContent.trim().length).toEqual(
+    highlightedSnippetTextPostTrimmed.length,
+  );
+
+  fireEvent.keyDown(document, { key: '.' });
+
+  const highlightedSnippetTextMovedRight = screen
+    .getByTestId('highlighted-snippet-text')
+    .textContent.trim();
+  expect(highlightedSnippetTextMovedRight).not.toEqual(
+    highlightedSnippetTextMovedLeft.textContent.trim(),
+  );
+  expect(highlightedSnippetTextMovedRight.length).toEqual(
+    highlightedSnippetTextPostTrimmed.length,
+  );
+};
+
 describe('LearningScreen', () => {
   beforeAll(() => {
     jest
@@ -652,13 +778,46 @@ describe('LearningScreen', () => {
 
   describe('Review snippets', () => {
     // just test for standard snippet and overlap snippet.
-    it('should allow to create and remove snippets from transcript', async () => {
-      // FIRSTLY increase mock data
-      // fake video play?
-      // fake keyboard shortcut
-      // test for presence of master component and nested UI component
-      // toggle left and right changes the nested UI
-      // click left and right changes it too
+    it.only('should allow to create and remove snippets from transcript', async () => {
+      // Mock currentTime for this test
+      Object.defineProperty(HTMLMediaElement.prototype, 'currentTime', {
+        configurable: true,
+        get() {
+          return 10;
+        },
+        set() {
+          // Mock setter to prevent errors
+        },
+      });
+
+      //
+      // FIRSTLY increase mock data ✅
+      // fake video play? ✅
+      // fake keyboard shortcut ✅
+      // test for presence of master component and nested UI component ✅
+
+      //
+
+      // toggle left and right changes the nested UI component ✅
+      // click left and right changes it too  ✅
+      // save snippet
+
+      renderWithProvider();
+      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+      expect(
+        screen.queryByTestId('video-player-snippet-text'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId('transcript-looping-sentence-sentence-4'),
+      ).not.toBeInTheDocument();
+
+      await triggerSnippetViaKeyboard();
+      await triggerContractedSnippet();
+      await triggerMoveSnippetLeftAndRight();
+
+      // check snippet present in timeline
+      // check snippet present in transcript
+      // remove snippet from transcript
     });
   });
 

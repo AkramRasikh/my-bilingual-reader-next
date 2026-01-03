@@ -94,6 +94,7 @@ const VideoPlayer = ({
         {overlappingTextMemoized ? (
           <p
             ref={masterTextRef}
+            data-testid='video-player-snippet-text'
             className={clsx(
               'text-center font-bold text-xl text-blue-700 backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg',
               threeSecondLoopState ? 'm-auto' : '',

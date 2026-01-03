@@ -56,7 +56,7 @@ export function highlightApprox(
   return {
     htmlText: `
         ${before}
-        <span class="bg-yellow-200 shadow-yellow-500 shadow-sm px-1 rounded ${opacityClass}">
+        <span data-testid="highlighted-snippet-text" class="bg-yellow-200 shadow-yellow-500 shadow-sm px-1 rounded ${opacityClass}">
             ${match}
         </span>
         ${after}
