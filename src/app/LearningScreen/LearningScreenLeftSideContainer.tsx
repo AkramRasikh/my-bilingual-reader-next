@@ -33,11 +33,7 @@ const LearningScreenLeftSideContainer = () => {
   } = useLearningScreen();
   const { languageSelectedState, handleSaveWord } = useFetchData();
 
-  const isFullReview = selectedContentState?.isFullReview;
-
-  const generalTopic = isFullReview
-    ? selectedContentState?.title
-    : selectedContentState?.generalTopicName;
+  const generalTopic = selectedContentState?.title;
   const videoUrl = getCloudflareVideoURL(generalTopic, languageSelectedState);
 
   useCheckVideoIsWorking(ref, setErrorVideoState);

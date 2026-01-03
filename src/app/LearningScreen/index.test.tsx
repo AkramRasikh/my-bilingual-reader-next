@@ -667,9 +667,6 @@ const triggerContractedSnippet = async () => {
     'transcript-looping-sentence-sentence-4',
   );
   expect(visibleNestedLoopingText).toBeInTheDocument();
-  const saveSnippetTranscriptBtn = screen.getByTestId(
-    'save-snippet-button-sentence-4',
-  );
 
   const highlightedSnippetTextPost = screen.getByTestId(
     'highlighted-snippet-text',
@@ -712,6 +709,126 @@ const triggerMoveSnippetLeftAndRight = async () => {
   );
   expect(highlightedSnippetTextMovedRight.length).toEqual(
     highlightedSnippetTextPostTrimmed.length,
+  );
+};
+
+const saveSnippet = async () => {
+  const saveSnippetTranscriptBtn = screen.getByTestId(
+    'save-snippet-button-sentence-4',
+  );
+
+  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
+    if (params.url === '/api/updateContentMetaData') {
+      const dueTime = new Date();
+      const lastReviewTime = new Date();
+      const reviewData = {
+        due: dueTime.toISOString(),
+        stability: 0.40255,
+        difficulty: 7.1949,
+        elapsed_days: 0,
+        scheduled_days: 0,
+        reps: 1,
+        lapses: 0,
+        state: 1,
+        last_review: lastReviewTime.toISOString(),
+        ease: 2.5,
+        interval: 0,
+      };
+
+      return {
+        ...mockSelectedContent,
+        snippets: [
+          {
+            id: 'mocked-snippet-id-1',
+            time: 10,
+            reviewData,
+            isContracted: true,
+            contentId: 'content-1',
+            targetLang: 'またね、友達！また公園ですぐに会いましょう。',
+            baseLang:
+              'See you later, friend! Let us meet again soon at the park.',
+            suggestedFocusText: '！また公園ですぐ',
+            focusedText: '！また公園ですぐ',
+          },
+        ],
+      };
+    }
+    // Default mock response
+    return {};
+  });
+
+  saveSnippetTranscriptBtn.click();
+
+  await waitFor(() => {
+    expect(screen.getByText('Updated content data ✅!')).toBeInTheDocument();
+  });
+};
+
+const checkForRemovalOfPreSnippetUIComponents = async () => {
+  const noLoopingSentence = screen.queryByTestId(
+    'transcript-looping-sentence-sentence-4',
+  );
+  expect(noLoopingSentence).not.toBeInTheDocument();
+  const noSnippetTextContainer = screen.queryByTestId(
+    'video-player-snippet-text',
+  );
+  expect(noSnippetTextContainer).not.toBeInTheDocument();
+  const overlappingIndicator = screen.queryByTestId(
+    'transcript-time-overlap-indicator',
+  );
+  expect(overlappingIndicator).not.toBeInTheDocument();
+};
+
+const checkNewStableSnippetUIComponents = async () => {
+  const savedSnippetBottomUIWidget = screen.getByTestId(
+    'transcript-time-overlap-indicator-multi-sentence-4',
+  );
+  expect(savedSnippetBottomUIWidget).toBeInTheDocument();
+  expect(screen.getByTestId('analytics-snippets-due')).toHaveTextContent(
+    'Snippets Due: 0/1/1',
+  ); // if review triggered it will show 1/1/1
+
+  // expect(
+  //   document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
+  // ).toHaveLength(0); // need to trigger due state maybe?
+
+  // const reviewButton = screen.getByTestId('review-switch');
+  // fireEvent.click(reviewButton);
+
+  // // expect(screen.getByTestId('analytics-snippets-due')).toHaveTextContent(
+  // //   'Snippets Due: 1/1/1',
+  // // ); // if review triggered it will show 1/1/1
+  // expect(
+  //   document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
+  // ).toHaveLength(1); // need to trigger due state maybe?
+};
+
+const deleteSnippet = async () => {
+  const multiSnippetActionsContainer = screen.getByTestId(
+    `transcript-time-overlap-indicator-multi-sentence-4`,
+  );
+  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
+    if (params.url === '/api/updateContentMetaData') {
+      return {
+        ...mockSelectedContent,
+        snippets: [],
+      };
+    }
+    // Default mock response
+    return {};
+  });
+
+  const deleteButton = within(multiSnippetActionsContainer).getByRole(
+    'button',
+    { name: '❌' },
+  );
+  fireEvent.doubleClick(deleteButton);
+
+  await waitFor(() => {
+    expect(screen.getByText('Updated content data ✅!')).toBeInTheDocument();
+  });
+  expect(screen.getByTestId('analytics-snippets-due')).toHaveTextContent(
+    'Snippets Due: 0/0/0',
   );
 };
 
@@ -790,18 +907,6 @@ describe('LearningScreen', () => {
         },
       });
 
-      //
-      // FIRSTLY increase mock data ✅
-      // fake video play? ✅
-      // fake keyboard shortcut ✅
-      // test for presence of master component and nested UI component ✅
-
-      //
-
-      // toggle left and right changes the nested UI component ✅
-      // click left and right changes it too  ✅
-      // save snippet
-
       renderWithProvider();
       expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
       expect(
@@ -814,10 +919,12 @@ describe('LearningScreen', () => {
       await triggerSnippetViaKeyboard();
       await triggerContractedSnippet();
       await triggerMoveSnippetLeftAndRight();
+      await saveSnippet();
+      await checkForRemovalOfPreSnippetUIComponents();
+      await checkNewStableSnippetUIComponents();
+      await deleteSnippet();
 
       // check snippet present in timeline
-      // check snippet present in transcript
-      // remove snippet from transcript
     });
   });
 
