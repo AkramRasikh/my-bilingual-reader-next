@@ -286,6 +286,14 @@ const mockWordsData = [
   },
 ];
 
+const checkWordsMetaData = (wordsNumber, wordTabText) => {
+  expect(screen.getByText(`Words Due: ${wordsNumber}`)).toBeInTheDocument();
+  const breadcrumbWordsButton = screen.getByTestId('breadcrumb-words-button');
+  expect(breadcrumbWordsButton).toHaveTextContent(`Words (${wordsNumber})`);
+  const wordsTabTrigger = screen.getByTestId('words-tab-trigger');
+
+  expect(wordsTabTrigger).toHaveTextContent(`Words ${wordTabText}`);
+};
 const checkMetaDataOnLoad = () => {
   expect(screen.getByText('Sentences: 0/0')).toBeInTheDocument();
   expect(screen.getByText('Words Due: 0')).toBeInTheDocument();
@@ -1373,6 +1381,45 @@ describe('LearningScreen', () => {
       checkForReviewLabelText(0, 3, 3);
     };
 
+    const reviewWordsInReviewMode = async () => {
+      checkWordsMetaData(3, '3/3');
+      jest
+        .spyOn(apiLib, 'apiRequestWrapper')
+        .mockImplementation(async (params) => {
+          if (params.url === '/api/updateWord') {
+            // Clone the snippets array and update the due date of snippet-due-2
+            return {
+              reviewData: { ...mockWordsData[0].reviewData, due: dueIn2Days() },
+            };
+          }
+          // Default mock response
+          return {};
+        });
+
+      const firstWord = screen.getByTestId('easy-mocked-id-tenki');
+      firstWord.click();
+      await waitFor(() => {
+        expect(screen.getByText('Word updated ✅')).toBeInTheDocument();
+      });
+      checkForReviewLabelText(0, 2, 3);
+      checkWordsMetaData(2, '2/3');
+      const secondWord = screen.getByTestId('easy-mocked-id-hon');
+
+      secondWord.click();
+      await waitFor(() => {
+        expect(screen.getByText('Word updated ✅')).toBeInTheDocument();
+      });
+      checkForReviewLabelText(0, 1, 3);
+      checkWordsMetaData(1, '1/3');
+      const thirdWord = screen.getByTestId('easy-mocked-id-kouen');
+      thirdWord.click();
+      await waitFor(() => {
+        expect(screen.getByText('Word updated ✅')).toBeInTheDocument();
+      });
+      checkForReviewLabelText(0, 0, 3);
+      checkWordsMetaData(0, '0/3');
+    };
+
     beforeAll(() => {
       jest
         .spyOn(apiLib, 'apiRequestWrapper')
@@ -1396,6 +1443,7 @@ describe('LearningScreen', () => {
       checkForDefaultReviewModeMetaData();
       await switchToReviewMode();
       await reviewSnippetsInReviewMode();
+      await reviewWordsInReviewMode();
       // To be implemented
     });
   });

@@ -556,17 +556,15 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         setToastMessageState('Successful learned word ✅');
         return true;
       } else {
-        const res = await fetch('/api/updateWord', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        const data = await apiRequestWrapper({
+          url: '/api/updateWord',
+          body: {
             id: wordId,
             fieldToUpdate,
             language: languageSelectedState,
-          }),
+          },
         });
 
-        const data = await res.json();
         dispatchWords({
           type: 'updateWord',
           wordId,
