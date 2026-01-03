@@ -1146,6 +1146,33 @@ describe('LearningScreen', () => {
   });
 
   describe('review mode', () => {
+    const checkForDefaultReviewModeMetaData = () => {
+      const wordsDueText = screen.getByTestId('analytics-words-due');
+      const snippetsDueText = screen.getByTestId('analytics-snippets-due');
+      const sentencesCountText = screen.getByTestId(
+        'analytics-sentences-count',
+      );
+      const wordsBtnLink = screen.getByTestId('breadcrumb-words-button');
+      expect(wordsBtnLink).toHaveTextContent('Words (3)');
+      expect(wordsDueText).toHaveTextContent('Words Due: 3');
+      expect(snippetsDueText).toHaveTextContent('Snippets Due: 3/3/3');
+      expect(sentencesCountText).toHaveTextContent('Sentences: 3/3');
+      expect(screen.getByText('Reps: 0')).toBeInTheDocument();
+
+      const wordsTabTrigger = screen.getByTestId('words-tab-trigger');
+      expect(wordsTabTrigger).toHaveTextContent('Words 3/3');
+      const progressHeader = screen.getByTestId('progress-header-text');
+      expect(progressHeader).toHaveTextContent('0/3');
+      expect(
+        document.querySelectorAll('[data-testid^="timeline-sentence-"]'),
+      ).toHaveLength(3);
+      expect(
+        document.querySelectorAll('[data-testid^="timeline-word-marker-"]'),
+      ).toHaveLength(3);
+      expect(
+        document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
+      ).toHaveLength(3);
+    };
     beforeAll(() => {
       jest
         .spyOn(apiLib, 'apiRequestWrapper')
@@ -1164,8 +1191,9 @@ describe('LearningScreen', () => {
     });
     it.only('should allow user to review words/sentences/snippets', async () => {
       renderWithProvider(mockSelectedContentWithDueData);
-      const getSentenceDueCount = await screen.findByText(mockTitle);
-      expect(getSentenceDueCount).toBeDefined();
+      const onLoadTitle = await screen.findByText(mockTitle);
+      expect(onLoadTitle).toBeDefined();
+      checkForDefaultReviewModeMetaData();
       // To be implemented
     });
   });
