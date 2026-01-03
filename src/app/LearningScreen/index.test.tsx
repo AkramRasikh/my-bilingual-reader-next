@@ -358,16 +358,18 @@ const checkingMainTranscriptContent = () => {
   );
 };
 
-const checkingNoTimelineMarkers = () => {
+const checkingTimelineMarkers = (snippets = 0, words = 0, sentence = 0) => {
   expect(
-    document.querySelectorAll('[data-testid^="timeline-sentence-"]'),
+    document.querySelectorAll(`[data-testid^="timeline-sentence-${sentence}"]`),
   ).toHaveLength(0);
 
   expect(
-    document.querySelectorAll('[data-testid^="timeline-word-marker-"]'),
+    document.querySelectorAll(`[data-testid^="timeline-word-marker-${words}"]`),
   ).toHaveLength(0);
   expect(
-    document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
+    document.querySelectorAll(
+      `[data-testid^="timeline-snippet-marker-${snippets}"]`,
+    ),
   ).toHaveLength(0);
 };
 
@@ -1095,7 +1097,7 @@ describe('LearningScreen', () => {
         checkReviewTogglesOnLoad();
         checkTabTriggersOnLoad();
         checkingMainTranscriptContent();
-        checkingNoTimelineMarkers();
+        checkingTimelineMarkers();
         checkAllTranscriptItems();
         checkingMediaActionButtons();
         await addFirstSentenceToReview();
@@ -1246,6 +1248,7 @@ describe('LearningScreen', () => {
     };
 
     const reviewSnippetsInReviewMode = async () => {
+      checkingTimelineMarkers(3, 3, 3);
       const snippetReviewToggle1 = screen.getByTestId(
         'snippet-review-item-snippet-due-1',
       );
@@ -1293,6 +1296,7 @@ describe('LearningScreen', () => {
       });
 
       checkForReviewLabelText(2, 3, 3);
+      checkingTimelineMarkers(2, 3, 3);
 
       jest
         .spyOn(apiLib, 'apiRequestWrapper')
@@ -1333,6 +1337,7 @@ describe('LearningScreen', () => {
       });
 
       checkForReviewLabelText(1, 3, 3);
+      checkingTimelineMarkers(1, 3, 3);
 
       jest
         .spyOn(apiLib, 'apiRequestWrapper')
@@ -1379,6 +1384,7 @@ describe('LearningScreen', () => {
       });
 
       checkForReviewLabelText(0, 3, 3);
+      checkingTimelineMarkers(0, 3, 3);
     };
 
     const reviewWordsInReviewMode = async () => {
@@ -1402,6 +1408,7 @@ describe('LearningScreen', () => {
         expect(screen.getByText('Word updated ✅')).toBeInTheDocument();
       });
       checkForReviewLabelText(0, 2, 3);
+      checkingTimelineMarkers(0, 2, 3);
       checkWordsMetaData(2, '2/3');
       const secondWord = screen.getByTestId('easy-mocked-id-hon');
 
@@ -1410,6 +1417,7 @@ describe('LearningScreen', () => {
         expect(screen.getByText('Word updated ✅')).toBeInTheDocument();
       });
       checkForReviewLabelText(0, 1, 3);
+      checkingTimelineMarkers(0, 1, 3);
       checkWordsMetaData(1, '1/3');
       const thirdWord = screen.getByTestId('easy-mocked-id-kouen');
       thirdWord.click();
@@ -1417,6 +1425,7 @@ describe('LearningScreen', () => {
         expect(screen.getByText('Word updated ✅')).toBeInTheDocument();
       });
       checkForReviewLabelText(0, 0, 3);
+      checkingTimelineMarkers(0, 0, 3);
       checkWordsMetaData(0, '0/3');
     };
 
@@ -1469,6 +1478,7 @@ describe('LearningScreen', () => {
       });
       checkSentenceMetaData(2, 3, 1);
       checkForReviewLabelText(0, 0, 2);
+      checkingTimelineMarkers(0, 0, 2);
 
       const secondSentenceDueTime = screen.getByTestId('easy-sentence-due-2');
 
@@ -1479,6 +1489,7 @@ describe('LearningScreen', () => {
 
       checkSentenceMetaData(1, 3, 2);
       checkForReviewLabelText(0, 0, 1);
+      checkingTimelineMarkers(0, 0, 1);
 
       const thirdSentenceDueTime = screen.getByTestId('easy-sentence-due-3');
 
@@ -1489,6 +1500,7 @@ describe('LearningScreen', () => {
 
       checkSentenceMetaData(0, 3, 3);
       checkForReviewLabelText(0, 0, 0);
+      checkingTimelineMarkers(0, 0, 0);
 
       expect(screen.getByText('Done!')).toBeInTheDocument();
       // expect(screen.getByTestId('progress-header-text')).toHaveTextContent('1/2'); // come back to when fixing and testing progress header
