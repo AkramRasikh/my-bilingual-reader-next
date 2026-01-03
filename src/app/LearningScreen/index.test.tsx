@@ -895,7 +895,7 @@ describe('LearningScreen', () => {
 
   describe('Review snippets', () => {
     // just test for standard snippet and overlap snippet.
-    it.only('should allow to create and remove snippets from transcript', async () => {
+    it('should allow to create and remove snippets from transcript', async () => {
       // Mock currentTime for this test
       Object.defineProperty(HTMLMediaElement.prototype, 'currentTime', {
         configurable: true,
