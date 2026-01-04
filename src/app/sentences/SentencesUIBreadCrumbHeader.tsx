@@ -5,11 +5,15 @@ import Link from 'next/link';
 import { useSentencesUIScreen } from './SentencesUIProvider';
 
 const SentencesUIBreadCrumbHeader = () => {
-  const { progressState, initNumState, numberOfSentences } =
-    useSentencesUIScreen();
-  const numberOfStudiedSentences = initNumState - numberOfSentences;
+  const { initialSentenceCount, numberOfSentences } = useSentencesUIScreen();
 
-  const progressText = `${numberOfStudiedSentences}/${initNumState}`;
+  const totalItems = Math.max(initialSentenceCount ?? 0, numberOfSentences);
+  const remainingItems = numberOfSentences;
+  const completedItems = totalItems - remainingItems;
+  const progressValue =
+    totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+
+  const progressText = `${completedItems}/${totalItems}`;
 
   const addContent = {
     href: '/youtube-upload',
@@ -22,7 +26,7 @@ const SentencesUIBreadCrumbHeader = () => {
     <BreadCrumbHeaderBase
       heading={'Home'}
       onClick={() => {}}
-      href="/"
+      href='/'
       navigationButtons={() =>
         navigationButtons.map((item, index) => {
           return (
@@ -39,7 +43,7 @@ const SentencesUIBreadCrumbHeader = () => {
       }
       progressHeaderComponent={() => (
         <ProgressHeader
-          progressState={progressState}
+          progressState={progressValue}
           progressText={progressText}
         />
       )}
@@ -48,4 +52,3 @@ const SentencesUIBreadCrumbHeader = () => {
 };
 
 export default SentencesUIBreadCrumbHeader;
-

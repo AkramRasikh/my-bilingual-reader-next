@@ -10,7 +10,6 @@ import {
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { getAudioURL } from '@/utils/get-media-url';
-import { useProgressHeader } from '@/components/custom/ProgressHeader';
 
 const SentencesUIContext = createContext(null);
 
@@ -19,13 +18,12 @@ export const SentencesUIProvider = ({
 }: PropsWithChildren<object>) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const rafRef = useRef<number | null>(null);
+  const initialSentenceCount = useRef<number | null>(null);
 
   const transcriptRef = useRef(null);
   const [selectedElState, setSelectedElState] = useState(0);
   const [isPlayingState, setIsPlayingState] = useState(false);
-  const [progressState, setProgressState] = useState(0);
   const [audioProgressState, setAudioProgressState] = useState(0);
-  const [initNumState, setInitNumState] = useState(null);
 
   const {
     languageSelectedState,
@@ -36,16 +34,10 @@ export const SentencesUIProvider = ({
   const numberOfSentences = sentencesDueForReviewMemoized.length;
 
   useEffect(() => {
-    if (!initNumState) {
-      setInitNumState(numberOfSentences);
+    if (initialSentenceCount.current === null && numberOfSentences > 0) {
+      initialSentenceCount.current = numberOfSentences;
     }
-  }, [initNumState]);
-
-  useProgressHeader({
-    setProgressState,
-    totalItems: initNumState,
-    remainingItems: numberOfSentences,
-  });
+  }, [numberOfSentences]);
 
   // Smooth progress updater
   const updateProgress = () => {
@@ -132,12 +124,11 @@ export const SentencesUIProvider = ({
         audioRef,
         transcriptRef,
         sentencesInQueue,
-        progressState,
         numberOfSentences,
         selectedElState,
         setSelectedElState,
         selectedSentenceDataMemoized,
-        initNumState,
+        initialSentenceCount: initialSentenceCount.current,
         handleReviewFunc,
         togglePlay,
         isPlayingState,
