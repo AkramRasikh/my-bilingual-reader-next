@@ -44,8 +44,7 @@ export const LearningScreenProvider = ({
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
   const [trackCurrentState, setTrackCurrentState] = useState(true);
-  const [numberOfSentenceDueOnMountState, setNumberOfSentenceDueOnMountState] =
-    useState<number | null>(null);
+  const initialSentenceCount = useRef<number | null>(null);
 
   const [scrollToElState, setScrollToElState] = useState('');
   const [sentenceRepsState, setSentenceRepsState] = useState(0);
@@ -880,10 +879,10 @@ export const LearningScreenProvider = ({
   };
 
   useEffect(() => {
-    if (!isNumber(numberOfSentenceDueOnMountState) && sentencesNeedReview > 0) {
-      setNumberOfSentenceDueOnMountState(sentencesNeedReview);
+    if (initialSentenceCount.current === null && sentencesNeedReview > 0) {
+      initialSentenceCount.current = sentencesNeedReview;
     }
-  }, [sentencesNeedReview, numberOfSentenceDueOnMountState]);
+  }, [sentencesNeedReview]);
 
   const learnFormattedTranscript = studyFromHereTimeState
     ? formattedTranscriptMemoized.slice(studyFromHereTimeState)
@@ -1252,7 +1251,7 @@ export const LearningScreenProvider = ({
         sentencesNeedReview,
         sentencesPendingOrDue,
         contentMetaWordMemoized,
-        numberOfSentenceDueOnMountState,
+        numberOfSentenceDueOnMountState: initialSentenceCount.current,
         errorVideoState,
         setErrorVideoState,
         handleJumpToFirstElInReviewTranscript,
