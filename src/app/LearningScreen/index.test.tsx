@@ -1531,7 +1531,6 @@ describe('LearningScreen', () => {
       await reviewSnippetsInReviewMode();
       await reviewWordsInReviewMode();
       await reviewSentencesInReviewMode();
-      // To be implemented
     });
   });
 });
