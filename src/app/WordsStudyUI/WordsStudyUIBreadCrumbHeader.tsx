@@ -2,17 +2,18 @@ import BreadCrumbHeaderBase from '@/components/BreadCrumbHeaderBase';
 import ProgressHeader from '@/components/custom/ProgressHeader';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import { useFetchData } from '../Providers/FetchDataProvider';
 
 const WordsStudyUIBreadCrumbHeader = () => {
   const { wordsToReviewOnMountState, wordsForReviewMemoized } = useFetchData();
-  const { progressState } = useWordsStudyUIScreen();
 
-  const numberOfStudiedWords =
-    wordsToReviewOnMountState - wordsForReviewMemoized.length;
+  const remainingItems = wordsForReviewMemoized.length;
+  const totalItems = Math.max(wordsToReviewOnMountState, remainingItems);
+  const completedItems = totalItems - remainingItems;
+  const progressValue =
+    totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
 
-  const progressText = `${numberOfStudiedWords}/${wordsToReviewOnMountState}`;
+  const progressText = `${completedItems}/${totalItems}`;
 
   const addContent = {
     href: '/youtube-upload',
@@ -42,7 +43,7 @@ const WordsStudyUIBreadCrumbHeader = () => {
       }
       progressHeaderComponent={() => (
         <ProgressHeader
-          progressState={progressState}
+          progressState={progressValue}
           progressText={progressText}
         />
       )}

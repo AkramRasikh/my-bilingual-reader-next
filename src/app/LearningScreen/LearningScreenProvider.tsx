@@ -497,7 +497,6 @@ export const LearningScreenProvider = ({
     loopTranscriptState,
     setContractThreeSecondLoopState,
     masterPlay,
-    progress,
   });
 
   useLoopSecondsHook({

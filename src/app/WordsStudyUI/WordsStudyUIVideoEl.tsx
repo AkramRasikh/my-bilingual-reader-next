@@ -79,7 +79,6 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
     loopTranscriptState: [],
     setContractThreeSecondLoopState,
     masterPlay,
-    progress: null,
   });
 
   const handleAudio = (currentContext, contextTime) => {

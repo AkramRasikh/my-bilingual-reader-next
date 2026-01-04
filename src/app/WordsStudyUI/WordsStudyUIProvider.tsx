@@ -4,7 +4,6 @@ import { createContext, useRef, useState, useContext } from 'react';
 import useTrackMasterTranscript from '../LearningScreen/hooks/useManageThreeSecondLoop';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import useWordsStudyUIinit from './useWordsStudyUIinit';
-import { useProgressHeader } from '@/components/custom/ProgressHeader';
 
 const WordsStudyUIContext = createContext(null);
 
@@ -47,16 +46,12 @@ export const WordsStudyUIProvider = ({
     number | null
   >();
   const [progress, setProgress] = useState(0);
-  const [progressState, setProgressState] = useState(0);
   const [audioSentenceProgressState, setAudioSentenceProgressState] =
     useState(0);
   const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
     useState(false);
 
   const [isSentencePlayingsState, setIsSentencePlayingsState] = useState(false);
-
-  // const [sentenceAudioProgressState, setSentenceAudioProgressState] =
-  //   useState(0);
 
   const [elapsed, setElapsed] = useState(0);
 
@@ -69,12 +64,6 @@ export const WordsStudyUIProvider = ({
     wordsForReviewMemoized,
     updateWordDataProvider,
   } = useFetchData();
-
-  useProgressHeader({
-    setProgressState,
-    totalItems: wordsToReviewOnMountState,
-    remainingItems: wordsForReviewMemoized.length,
-  });
 
   useWordsStudyUIinit({
     setFormattedWordsStudyState,
@@ -324,7 +313,6 @@ export const WordsStudyUIProvider = ({
         updateWordDataWordsStudyUI,
         wordsRepsState,
         setWordsRepsState,
-        progressState,
         wordsForReviewMemoized,
         wordsToReviewOnMountState,
         seperateSentenceAudioRef,

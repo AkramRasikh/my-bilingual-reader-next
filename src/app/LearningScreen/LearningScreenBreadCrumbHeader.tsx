@@ -7,13 +7,10 @@ import BreadCrumbHeaderBase from '../../components/BreadCrumbHeaderBase';
 import { useRouter } from 'next/navigation';
 import LanguageSelector from '../../components/custom/LanguageSelector';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
-import ProgressHeader, {
-  useProgressHeader,
-} from '../../components/custom/ProgressHeader';
+import ProgressHeader from '../../components/custom/ProgressHeader';
 
 const LearningScreenBreadCrumbHeader = () => {
   const [showBasketState, setShowBasketState] = useState(false);
-  const [progressState, setProgressState] = useState(0);
 
   const { wordBasketState } = useFetchData();
   const { selectedContentState, initialSentenceCount, sentencesNeedReview } =
@@ -38,12 +35,8 @@ const LearningScreenBreadCrumbHeader = () => {
   const totalItems = Math.max(initialSentenceCount, sentencesNeedReview);
   const remainingItems = sentencesNeedReview;
   const completedItems = totalItems - remainingItems;
-
-  useProgressHeader({
-    setProgressState,
-    totalItems,
-    remainingItems,
-  });
+  const progressValue =
+    totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
 
   const progressText = `${completedItems}/${totalItems}`;
 
@@ -103,7 +96,7 @@ const LearningScreenBreadCrumbHeader = () => {
           sentencesNeedReview
             ? () => (
                 <ProgressHeader
-                  progressState={progressState}
+                  progressState={progressValue}
                   progressText={progressText}
                   small
                 />

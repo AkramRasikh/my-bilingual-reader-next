@@ -1,33 +1,11 @@
-import { useEffect } from 'react';
 import { Progress } from '../ui/progress';
 import clsx from 'clsx';
-
-interface UseProgressHeaderProps {
-  setProgressState: (value: number) => void;
-  totalItems: number | null;
-  remainingItems: number | null;
-}
 
 interface ProgressHeaderProps {
   progressState: number;
   progressText: string;
   small?: boolean;
 }
-
-export const useProgressHeader = ({
-  setProgressState,
-  totalItems,
-  remainingItems,
-}: UseProgressHeaderProps) => {
-  useEffect(() => {
-    if (totalItems === null || remainingItems === null) {
-      return;
-    }
-    const progressValue = ((totalItems - remainingItems) / totalItems) * 100;
-
-    setProgressState(progressValue);
-  }, [remainingItems, totalItems, setProgressState]);
-};
 
 const ProgressHeader = ({
   progressState,

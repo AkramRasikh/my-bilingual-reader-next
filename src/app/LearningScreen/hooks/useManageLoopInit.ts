@@ -8,7 +8,6 @@ const useManageLoopInit = ({
   loopTranscriptState,
   setContractThreeSecondLoopState,
   masterPlay,
-  progress,
 }) => {
   useEffect(() => {
     // can be split into two for efficiency but fine for now
@@ -45,7 +44,6 @@ const useManageLoopInit = ({
     masterPlay,
     contractThreeSecondLoopState,
     threeSecondLoopState,
-    progress,
   ]);
 };
 
