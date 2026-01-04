@@ -20,14 +20,14 @@ export const useProgressHeader = ({
   currentStateNumber,
 }: UseProgressHeaderProps) => {
   useEffect(() => {
-    if (!initNumState || !currentStateNumber) {
+    if (initNumState === null || currentStateNumber === null) {
       return;
     }
     const progressValue =
       ((initNumState - currentStateNumber) / initNumState) * 100;
 
     setProgressState(progressValue);
-  }, [currentStateNumber, initNumState]);
+  }, [currentStateNumber, initNumState, setProgressState]);
 };
 
 const ProgressHeader = ({
