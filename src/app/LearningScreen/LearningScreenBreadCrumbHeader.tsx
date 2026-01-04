@@ -16,11 +16,8 @@ const LearningScreenBreadCrumbHeader = () => {
   const [progressState, setProgressState] = useState(0);
 
   const { wordBasketState } = useFetchData();
-  const {
-    selectedContentState,
-    numberOfSentenceDueOnMountState,
-    sentencesNeedReview,
-  } = useLearningScreen();
+  const { selectedContentState, initialSentenceCount, sentencesNeedReview } =
+    useLearningScreen();
 
   const {
     languageSelectedState,
@@ -38,10 +35,7 @@ const LearningScreenBreadCrumbHeader = () => {
   }, [wordBasketState, showBasketState]);
 
   // totalItems: starts at initial count, increases if new items are added
-  const totalItems = Math.max(
-    numberOfSentenceDueOnMountState,
-    sentencesNeedReview,
-  );
+  const totalItems = Math.max(initialSentenceCount, sentencesNeedReview);
   const remainingItems = sentencesNeedReview;
   const completedItems = totalItems - remainingItems;
 

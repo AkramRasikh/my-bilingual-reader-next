@@ -1251,7 +1251,7 @@ export const LearningScreenProvider = ({
         sentencesNeedReview,
         sentencesPendingOrDue,
         contentMetaWordMemoized,
-        numberOfSentenceDueOnMountState: initialSentenceCount.current,
+        initialSentenceCount: initialSentenceCount.current,
         errorVideoState,
         setErrorVideoState,
         handleJumpToFirstElInReviewTranscript,
