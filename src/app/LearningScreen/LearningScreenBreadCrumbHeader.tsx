@@ -49,8 +49,8 @@ const LearningScreenBreadCrumbHeader = () => {
 
   useProgressHeader({
     setProgressState,
-    initNumState: updatedNumberOfSentencesDue,
-    currentStateNumber: sentencesNeedReview,
+    totalItems: updatedNumberOfSentencesDue,
+    remainingItems: sentencesNeedReview,
   });
 
   const progressText = `${numberOfStudiedSentencesUpdated}/${updatedNumberOfSentencesDue}`;

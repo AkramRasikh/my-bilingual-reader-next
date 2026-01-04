@@ -25,7 +25,7 @@ export const SentencesUIProvider = ({
   const [isPlayingState, setIsPlayingState] = useState(false);
   const [progressState, setProgressState] = useState(0);
   const [audioProgressState, setAudioProgressState] = useState(0);
-  const [initNumState, setInitNumState] = useState();
+  const [initNumState, setInitNumState] = useState(null);
 
   const {
     languageSelectedState,
@@ -43,8 +43,8 @@ export const SentencesUIProvider = ({
 
   useProgressHeader({
     setProgressState,
-    initNumState,
-    currentStateNumber: numberOfSentences,
+    totalItems: initNumState,
+    remainingItems: numberOfSentences,
   });
 
   // Smooth progress updater

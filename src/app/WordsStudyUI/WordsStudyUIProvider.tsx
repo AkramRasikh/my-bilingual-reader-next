@@ -72,8 +72,8 @@ export const WordsStudyUIProvider = ({
 
   useProgressHeader({
     setProgressState,
-    initNumState: wordsToReviewOnMountState,
-    currentStateNumber: wordsForReviewMemoized.length,
+    totalItems: wordsToReviewOnMountState,
+    remainingItems: wordsForReviewMemoized.length,
   });
 
   useWordsStudyUIinit({

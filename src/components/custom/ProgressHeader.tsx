@@ -4,8 +4,8 @@ import clsx from 'clsx';
 
 interface UseProgressHeaderProps {
   setProgressState: (value: number) => void;
-  initNumState: number | null;
-  currentStateNumber: number | null;
+  totalItems: number | null;
+  remainingItems: number | null;
 }
 
 interface ProgressHeaderProps {
@@ -16,18 +16,18 @@ interface ProgressHeaderProps {
 
 export const useProgressHeader = ({
   setProgressState,
-  initNumState,
-  currentStateNumber,
+  totalItems,
+  remainingItems,
 }: UseProgressHeaderProps) => {
   useEffect(() => {
-    if (initNumState === null || currentStateNumber === null) {
+    if (totalItems === null || remainingItems === null) {
       return;
     }
     const progressValue =
-      ((initNumState - currentStateNumber) / initNumState) * 100;
+      ((totalItems - remainingItems) / totalItems) * 100;
 
     setProgressState(progressValue);
-  }, [currentStateNumber, initNumState, setProgressState]);
+  }, [remainingItems, totalItems, setProgressState]);
 };
 
 const ProgressHeader = ({

@@ -66,17 +66,17 @@ describe('ProgressHeader', () => {
   describe('useProgressHeader hook', () => {
     it('should calculate progress correctly', () => {
       const setProgressState = jest.fn();
-      const { rerender } = renderHook(
-        ({ initNumState, currentStateNumber }) =>
+      renderHook(
+        ({ totalItems, remainingItems }) =>
           useProgressHeader({
             setProgressState,
-            initNumState,
-            currentStateNumber,
+            totalItems,
+            remainingItems,
           }),
         {
           initialProps: {
-            initNumState: 10,
-            currentStateNumber: 5,
+            totalItems: 10,
+            remainingItems: 5,
           },
         },
       );
@@ -89,8 +89,8 @@ describe('ProgressHeader', () => {
       renderHook(() =>
         useProgressHeader({
           setProgressState,
-          initNumState: 10,
-          currentStateNumber: 10,
+          totalItems: 10,
+          remainingItems: 10,
         }),
       );
 
@@ -102,86 +102,86 @@ describe('ProgressHeader', () => {
       renderHook(() =>
         useProgressHeader({
           setProgressState,
-          initNumState: 10,
-          currentStateNumber: 0,
+          totalItems: 10,
+          remainingItems: 0,
         }),
       );
 
       expect(setProgressState).toHaveBeenCalledWith(100);
     });
 
-    it('should not call setProgressState when initNumState is null', () => {
+    it('should not call setProgressState when totalItems is null', () => {
       const setProgressState = jest.fn();
       renderHook(() =>
         useProgressHeader({
           setProgressState,
-          initNumState: null,
-          currentStateNumber: 5,
+          totalItems: null,
+          remainingItems: 5,
         }),
       );
 
       expect(setProgressState).not.toHaveBeenCalled();
     });
 
-    it('should not call setProgressState when currentStateNumber is null', () => {
+    it('should not call setProgressState when remainingItems is null', () => {
       const setProgressState = jest.fn();
       renderHook(() =>
         useProgressHeader({
           setProgressState,
-          initNumState: 10,
-          currentStateNumber: null,
+          totalItems: 10,
+          remainingItems: null,
         }),
       );
 
       expect(setProgressState).not.toHaveBeenCalled();
     });
 
-    it('should update progress when currentStateNumber changes', () => {
+    it('should update progress when remainingItems changes', () => {
       const setProgressState = jest.fn();
       const { rerender } = renderHook(
-        ({ initNumState, currentStateNumber }) =>
+        ({ totalItems, remainingItems }) =>
           useProgressHeader({
             setProgressState,
-            initNumState,
-            currentStateNumber,
+            totalItems,
+            remainingItems,
           }),
         {
           initialProps: {
-            initNumState: 10,
-            currentStateNumber: 10,
+            totalItems: 10,
+            remainingItems: 10,
           },
         },
       );
 
       expect(setProgressState).toHaveBeenCalledWith(0);
 
-      rerender({ initNumState: 10, currentStateNumber: 5 });
+      rerender({ totalItems: 10, remainingItems: 5 });
       expect(setProgressState).toHaveBeenCalledWith(50);
 
-      rerender({ initNumState: 10, currentStateNumber: 2 });
+      rerender({ totalItems: 10, remainingItems: 2 });
       expect(setProgressState).toHaveBeenCalledWith(80);
     });
 
-    it('should recalculate progress when initNumState changes', () => {
+    it('should recalculate progress when totalItems changes', () => {
       const setProgressState = jest.fn();
       const { rerender } = renderHook(
-        ({ initNumState, currentStateNumber }) =>
+        ({ totalItems, remainingItems }) =>
           useProgressHeader({
             setProgressState,
-            initNumState,
-            currentStateNumber,
+            totalItems,
+            remainingItems,
           }),
         {
           initialProps: {
-            initNumState: 10,
-            currentStateNumber: 5,
+            totalItems: 10,
+            remainingItems: 5,
           },
         },
       );
 
       expect(setProgressState).toHaveBeenCalledWith(50);
 
-      rerender({ initNumState: 20, currentStateNumber: 5 });
+      rerender({ totalItems: 20, remainingItems: 5 });
       expect(setProgressState).toHaveBeenCalledWith(75);
     });
   });
