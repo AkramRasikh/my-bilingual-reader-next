@@ -13,7 +13,7 @@ import ProgressHeader, {
 
 const LearningScreenBreadCrumbHeader = () => {
   const [showBasketState, setShowBasketState] = useState(false);
-  const [progressState, setProgressState] = useState(false);
+  const [progressState, setProgressState] = useState(0);
 
   const { wordBasketState } = useFetchData();
   const {
