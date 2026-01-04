@@ -37,23 +37,21 @@ const LearningScreenBreadCrumbHeader = () => {
     }
   }, [wordBasketState, showBasketState]);
 
-  const numberOfStudiedSentences =
-    numberOfSentenceDueOnMountState - sentencesNeedReview;
-  const updatedNumberOfSentencesDue =
-    numberOfStudiedSentences < 0
-      ? numberOfSentenceDueOnMountState + Math.abs(numberOfStudiedSentences)
-      : numberOfSentenceDueOnMountState;
-
-  const numberOfStudiedSentencesUpdated =
-    numberOfStudiedSentences < 0 ? 0 : numberOfStudiedSentences;
+  // totalItems: starts at initial count, increases if new items are added
+  const totalItems = Math.max(
+    numberOfSentenceDueOnMountState,
+    sentencesNeedReview,
+  );
+  const remainingItems = sentencesNeedReview;
+  const completedItems = totalItems - remainingItems;
 
   useProgressHeader({
     setProgressState,
-    totalItems: updatedNumberOfSentencesDue,
-    remainingItems: sentencesNeedReview,
+    totalItems,
+    remainingItems,
   });
 
-  const progressText = `${numberOfStudiedSentencesUpdated}/${updatedNumberOfSentencesDue}`;
+  const progressText = `${completedItems}/${totalItems}`;
 
   const numberOfSentences = sentencesDueForReviewMemoized.length;
   const generalTopicName = selectedContentState.title;

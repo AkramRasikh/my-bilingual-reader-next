@@ -23,8 +23,7 @@ export const useProgressHeader = ({
     if (totalItems === null || remainingItems === null) {
       return;
     }
-    const progressValue =
-      ((totalItems - remainingItems) / totalItems) * 100;
+    const progressValue = ((totalItems - remainingItems) / totalItems) * 100;
 
     setProgressState(progressValue);
   }, [remainingItems, totalItems, setProgressState]);
