@@ -2,11 +2,23 @@ import { useEffect } from 'react';
 import { Progress } from '../ui/progress';
 import clsx from 'clsx';
 
+interface UseProgressHeaderProps {
+  setProgressState: (value: number) => void;
+  initNumState: number | null;
+  currentStateNumber: number | null;
+}
+
+interface ProgressHeaderProps {
+  progressState: number;
+  progressText: string;
+  small?: boolean;
+}
+
 export const useProgressHeader = ({
   setProgressState,
   initNumState,
   currentStateNumber,
-}) => {
+}: UseProgressHeaderProps) => {
   useEffect(() => {
     if (!initNumState || !currentStateNumber) {
       return;
@@ -18,7 +30,11 @@ export const useProgressHeader = ({
   }, [currentStateNumber, initNumState]);
 };
 
-const ProgressHeader = ({ progressState, progressText, small = false }) => {
+const ProgressHeader = ({
+  progressState,
+  progressText,
+  small = false,
+}: ProgressHeaderProps) => {
   return (
     <div className='flex gap-2' data-testid='progress-header'>
       <Progress
