@@ -1532,5 +1532,9 @@ describe('LearningScreen', () => {
       await reviewWordsInReviewMode();
       await reviewSentencesInReviewMode();
     });
+
+    it('should show freshly added review content after it is added in to review AND within timebox', async () => {});
+
+    it('should lock in review session block given an interval and timeframe', async () => {});
   });
 });
