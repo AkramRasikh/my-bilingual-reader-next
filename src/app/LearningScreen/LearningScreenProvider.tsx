@@ -749,37 +749,29 @@ export const LearningScreenProvider = ({
   };
 
   const handleBreakdownMasterSentence = async () => {
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsStateMemoized.length > 0 &&
-      secondsStateMemoized[Math.floor(ref.current.currentTime)];
-
-    if (!currentMasterPlay) return null;
-    const thisSentence = formattedTranscriptMemoized.find(
-      (item) => item.id === currentMasterPlay,
-    );
-
-    const alreadyHasBreakdown = thisSentence?.sentenceStructure;
+    if (!masterPlayComprehensive) return null;
+    const alreadyHasBreakdown = masterPlayComprehensive?.sentenceStructure;
     if (alreadyHasBreakdown) {
       handleOpenBreakdownSentence();
       return null;
     }
 
-    const thisSentenceTargetLang = thisSentence.targetLang;
-
     try {
-      setIsBreakingDownSentenceArrState((prev) => [...prev, currentMasterPlay]);
+      setIsBreakingDownSentenceArrState((prev) => [
+        ...prev,
+        masterPlayComprehensive.id,
+      ]);
       await breakdownSentence({
         indexKey: selectedContentStateMemoized.id,
-        sentenceId: currentMasterPlay,
-        targetLang: thisSentenceTargetLang,
+        sentenceId: masterPlayComprehensive.id,
+        targetLang: masterPlayComprehensive.targetLang,
         contentIndex,
       });
     } catch (error) {
       console.log('## handleBreakdownMasterSentence error', error);
     } finally {
       setIsBreakingDownSentenceArrState((prev) =>
-        prev.filter((item) => item !== currentMasterPlay),
+        prev.filter((item) => item !== masterPlayComprehensive.id),
       );
     }
   };
