@@ -518,9 +518,7 @@ export const LearningScreenProvider = ({
     (ref.current.currentTime = ref.current.currentTime - 3);
 
   const playFromThisContext = (contextId) => {
-    const contextSentence = formattedTranscriptMemoized.find(
-      (item) => item.id === contextId,
-    );
+    const contextSentence = sentenceMapMemoized[contextId];
     if (contextSentence) {
       handleFromHere(contextSentence.time);
     }
