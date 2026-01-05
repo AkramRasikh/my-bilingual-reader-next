@@ -186,7 +186,6 @@ export const LearningScreenProvider = ({
   }, [pureWordsMemoized, content, enableTranscriptReviewState, wordsState]);
 
   const handlePlayFromHere = (time: number) => {
-    // hasUnifiedChapter ? generalTopic
     if (ref.current) {
       ref.current.currentTime = time;
       ref.current.play();
@@ -201,9 +200,7 @@ export const LearningScreenProvider = ({
   };
 
   const handleStudyFromHere = () => {
-    const masterPlayIndex = formattedTranscriptMemoized.findIndex(
-      (item) => item.id === masterPlay,
-    );
+    const masterPlayIndex = masterPlayComprehensive.index;
     setStudyFromHereTimeState(masterPlayIndex);
     if (transcriptRef.current) {
       transcriptRef.current.scrollIntoView();
