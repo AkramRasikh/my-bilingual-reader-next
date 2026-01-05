@@ -730,29 +730,25 @@ export const LearningScreenProvider = ({
   };
 
   const handleOpenBreakdownSentence = () => {
-    const currentSecond = Math.floor(ref.current.currentTime);
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsStateMemoized.length > 0 &&
-      secondsStateMemoized[currentSecond];
+    if (!masterPlayComprehensive) return null;
 
-    if (!currentMasterPlay) return null;
-    const thisSentence = formattedTranscriptMemoized.find(
-      (item) => item.id === currentMasterPlay,
-    );
-
-    const alreadyHasBreakdown = thisSentence?.sentenceStructure;
+    const alreadyHasBreakdown = masterPlayComprehensive?.sentenceStructure;
     if (!alreadyHasBreakdown) return null;
 
-    const isOpen = breakdownSentencesArrState.includes(currentMasterPlay);
+    const isOpen = breakdownSentencesArrState.includes(
+      masterPlayComprehensive.id,
+    );
 
     if (isOpen) {
       const updatedList = breakdownSentencesArrState.filter(
-        (i) => i !== currentMasterPlay,
+        (i) => i !== masterPlayComprehensive.id,
       );
       setBreakdownSentencesArrState(updatedList);
     } else {
-      const updatedList = [...breakdownSentencesArrState, currentMasterPlay];
+      const updatedList = [
+        ...breakdownSentencesArrState,
+        masterPlayComprehensive.id,
+      ];
       setBreakdownSentencesArrState(updatedList);
     }
   };
