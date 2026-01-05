@@ -487,7 +487,7 @@ export const LearningScreenProvider = ({
       : '';
 
   const masterPlayComprehensive = sentenceMapMemoized
-    ? sentenceMapMemoized[Math.floor(currentTime)]
+    ? sentenceMapMemoized[masterPlay]
     : null;
 
   useManageLoopInit({
@@ -772,6 +772,8 @@ export const LearningScreenProvider = ({
       );
     }
   };
+
+  console.log('## masterPlayComprehensive', masterPlayComprehensive);
 
   const handleAddMasterToReview = async () => {
     if (!masterPlayComprehensive) {
