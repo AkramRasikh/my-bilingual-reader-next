@@ -163,6 +163,7 @@ export const LearningScreenProvider = ({
       const next = formattedTranscriptMemoized[i + 1];
       sentenceMapMemoized[current.id] = {
         ...current,
+        index: i,
         prevSentence: prev ? prev.time : null,
         thisSentence: current.time,
         targetLang: current.targetLang,
@@ -680,18 +681,12 @@ export const LearningScreenProvider = ({
   };
 
   const handleLoopThisSentence = () => {
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsStateMemoized.length > 0 &&
-      secondsStateMemoized[Math.floor(ref.current.currentTime)];
-    const thisIndex = formattedTranscriptMemoized.findIndex(
-      (item) => item.id === currentMasterPlay,
-    );
-    const masterItem = formattedTranscriptMemoized[thisIndex];
+    if (!masterPlayComprehensive) return null;
+    const thisIndex = masterPlayComprehensive.index;
 
     if (
       loopTranscriptState?.length === 1 &&
-      loopTranscriptState[0]?.id === currentMasterPlay
+      loopTranscriptState[0]?.id === masterPlayComprehensive.id
     ) {
       setLoopTranscriptState(null);
       return;
@@ -699,7 +694,7 @@ export const LearningScreenProvider = ({
 
     setLoopTranscriptState([
       {
-        ...masterItem,
+        ...masterPlayComprehensive,
         nextTime:
           thisIndex === formattedTranscriptMemoized.length - 1
             ? ref.current.duration - 0.05
