@@ -527,17 +527,16 @@ export const LearningScreenProvider = ({
   };
 
   const handleJumpToSentenceViaKeys = (nextIndex: number) => {
-    if (!sentenceMapMemoized) {
+    if (!masterPlayComprehensive) {
       return;
     }
-    const thisSentenceKey = sentenceMapMemoized[masterPlay];
 
     const nextTimeToFollow =
       nextIndex === 1
-        ? thisSentenceKey?.nextSentence
+        ? masterPlayComprehensive?.nextSentence
         : nextIndex === 0
-        ? thisSentenceKey?.thisSentence
-        : thisSentenceKey?.prevSentence;
+        ? masterPlayComprehensive?.thisSentence
+        : masterPlayComprehensive?.prevSentence;
 
     if (nextTimeToFollow >= 0) {
       handleFromHere(nextTimeToFollow);
@@ -772,8 +771,6 @@ export const LearningScreenProvider = ({
       );
     }
   };
-
-  console.log('## masterPlayComprehensive', masterPlayComprehensive);
 
   const handleAddMasterToReview = async () => {
     if (!masterPlayComprehensive) {
