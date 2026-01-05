@@ -14,7 +14,6 @@ import useManageThreeSecondLoop, {
 } from './hooks/useManageThreeSecondLoop';
 import useManageLoopInit from './hooks/useManageLoopInit';
 import { useLoopSecondsHook } from './hooks/useMapTranscriptToSeconds';
-import useTrackMasterTranscript from './hooks/useTrackMasterTranscript';
 import { useSavedSnippetsMemoized } from './hooks/useSavedSnippetsMemoized';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
@@ -37,7 +36,6 @@ export const LearningScreenProvider = ({
 
   const [currentTime, setCurrentTime] = useState(0);
   const [loopSecondsState, setLoopSecondsState] = useState([]);
-
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isInReviewMode, setIsInReviewMode] = useState(false);
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
@@ -164,6 +162,7 @@ export const LearningScreenProvider = ({
       const prev = formattedTranscriptMemoized[i - 1];
       const next = formattedTranscriptMemoized[i + 1];
       sentenceMapMemoized[current.id] = {
+        ...current,
         prevSentence: prev ? prev.time : null,
         thisSentence: current.time,
         targetLang: current.targetLang,
@@ -504,10 +503,9 @@ export const LearningScreenProvider = ({
     loopTranscriptState,
   });
 
-  const masterPlayComprehensiveMemoized = useTrackMasterTranscript({
-    masterPlay,
-    formattedTranscriptState: formattedTranscriptMemoized,
-  });
+  const masterPlayComprehensive = sentenceMapMemoized
+    ? sentenceMapMemoized[masterPlay]
+    : null;
 
   const handleFromHere = (time) => {
     if (!isNumber(time)) {
@@ -1190,7 +1188,7 @@ export const LearningScreenProvider = ({
         currentTime,
         formattedTranscriptState: formattedTranscriptMemoized,
         secondsState: secondsStateMemoized,
-        masterPlayComprehensiveState: masterPlayComprehensiveMemoized,
+        masterPlayComprehensive,
         isVideoPlaying,
         setIsVideoPlaying,
         isInReviewMode,

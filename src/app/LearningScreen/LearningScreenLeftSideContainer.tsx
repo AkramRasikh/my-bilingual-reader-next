@@ -16,7 +16,7 @@ import TranscriptTimeline from '@/components/experimental/TranscriptTimeline';
 
 const LearningScreenLeftSideContainer = () => {
   const {
-    masterPlayComprehensiveState,
+    masterPlayComprehensive,
     setIsVideoPlaying,
     threeSecondLoopState,
     ref,
@@ -81,9 +81,9 @@ const LearningScreenLeftSideContainer = () => {
               threeSecondLoopState ? 'flex w-full justify-between' : '',
             )}
           >
-            {masterPlayComprehensiveState?.targetLang && (
+            {masterPlayComprehensive?.targetLang && (
               <p className='text-center font-bold text-xl text-blue-900  backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg'>
-                {masterPlayComprehensiveState.targetLang}
+                {masterPlayComprehensive.targetLang}
               </p>
             )}
             {threeSecondLoopState && <LearningScreenLoopBtn />}
@@ -103,9 +103,9 @@ const LearningScreenLeftSideContainer = () => {
         />
       ) : null}
       <LearningScreenActionBar />
-      {masterPlayComprehensiveState && (
+      {masterPlayComprehensive && (
         <TranscriptItemSecondary
-          contentItem={masterPlayComprehensiveState}
+          contentItem={masterPlayComprehensive}
           handleSaveWord={handleSaveWord}
         />
       )}
