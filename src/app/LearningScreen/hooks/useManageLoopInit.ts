@@ -9,41 +9,53 @@ const useManageLoopInit = ({
   setContractThreeSecondLoopState,
   masterPlay,
 }) => {
+  // Handle three-second loop boundary checking
   useEffect(() => {
-    // can be split into two for efficiency but fine for now
-    if (!ref.current) return;
-    if (isNumber(threeSecondLoopState)) {
-      //
-      const startTime =
-        threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
-      const endTime =
-        threeSecondLoopState + (contractThreeSecondLoopState ? 0.75 : 1.5);
-      const lessThan1500Seconds = ref.current.currentTime < startTime;
-      const moreThan1500Seconds = ref.current.currentTime > endTime;
-      if (lessThan1500Seconds || moreThan1500Seconds) {
-        ref.current.currentTime = startTime;
-        ref.current.play();
-        return;
+    if (!ref.current || !isNumber(threeSecondLoopState)) return;
+
+    const video = ref.current;
+    const startTime =
+      threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
+    const endTime =
+      threeSecondLoopState + (contractThreeSecondLoopState ? 0.75 : 1.5);
+
+    const handleTimeUpdate = () => {
+      const currentTime = video.currentTime;
+      if (currentTime < startTime || currentTime > endTime) {
+        video.currentTime = startTime;
+        video.play();
       }
-      return;
+    };
+
+    // Initial check and play
+    handleTimeUpdate();
+
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    return () => video.removeEventListener('timeupdate', handleTimeUpdate);
+  }, [threeSecondLoopState, contractThreeSecondLoopState]);
+
+  // Handle transcript loop
+  useEffect(() => {
+    if (!ref.current || !loopTranscriptState?.length) return;
+
+    const loopTranscriptIds = loopTranscriptState.map((item) => item?.id);
+    const firstLoopScript = loopTranscriptState[0];
+
+    if (!loopTranscriptIds.includes(masterPlay)) {
+      ref.current.currentTime = firstLoopScript.time;
+      ref.current.play();
     }
-    if (ref.current && loopTranscriptState?.length > 0) {
-      const loopTranscriptIds = loopTranscriptState.map((item) => item?.id);
-      const firstLoopScript = loopTranscriptState[0];
-      if (!loopTranscriptIds.includes(masterPlay)) {
-        ref.current.currentTime = firstLoopScript.time;
-        ref.current.play();
-      }
-    }
+  }, [loopTranscriptState, masterPlay]);
+
+  // Reset contract state when three-second loop ends
+  useEffect(() => {
     if (contractThreeSecondLoopState && !threeSecondLoopState) {
       setContractThreeSecondLoopState(false);
     }
   }, [
-    loopTranscriptState,
-    ref,
-    masterPlay,
     contractThreeSecondLoopState,
     threeSecondLoopState,
+    setContractThreeSecondLoopState,
   ]);
 };
 
