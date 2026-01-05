@@ -9,6 +9,13 @@ import { LearningScreenProvider } from './LearningScreenProvider';
 import { FetchDataProvider } from '../Providers/FetchDataProvider';
 import ContentScreen from '../content/page';
 import * as apiLib from '@/lib/api-request-wrapper';
+import {
+  checkMetaDataOnLoad,
+  checkWordsMetaData,
+  checkReviewTogglesOnLoad,
+  checkTabTriggersOnLoad,
+  checkingTimelineMarkers,
+} from '@/utils/test-helpers';
 jest.mock('../Providers/useDataSaveToLocalStorage', () => () => {});
 
 const mockTitle = 'Test-Content-title';
@@ -286,91 +293,12 @@ const mockWordsData = [
   },
 ];
 
-const checkWordsMetaData = (wordsNumber, wordTabText) => {
-  expect(screen.getByText(`Words Due: ${wordsNumber}`)).toBeInTheDocument();
-  const breadcrumbWordsButton = screen.getByTestId('breadcrumb-words-button');
-  expect(breadcrumbWordsButton).toHaveTextContent(`Words (${wordsNumber})`);
-  const wordsTabTrigger = screen.getByTestId('words-tab-trigger');
-
-  expect(wordsTabTrigger).toHaveTextContent(`Words ${wordTabText}`);
-};
-const checkMetaDataOnLoad = () => {
-  expect(screen.getByText('Sentences: 0/0')).toBeInTheDocument();
-  expect(screen.getByText('Words Due: 0')).toBeInTheDocument();
-  expect(screen.getByText('Snippets Due: 0/0/0')).toBeInTheDocument();
-  expect(screen.getByText('Reps: 0')).toBeInTheDocument();
-  expect(screen.queryByText('Bulk Review: 0')).not.toBeInTheDocument();
-
-  // navbar
-  expect(screen.getByText('Home')).toBeInTheDocument();
-  expect(screen.getByText(mockTitle)).toBeInTheDocument();
-  expect(screen.queryByTestId('progress-header')).not.toBeInTheDocument();
-
-  const breadcrumbSentencesButton = screen.getByTestId(
-    'breadcrumb-sentences-button',
-  );
-  const breadcrumbWordsButton = screen.getByTestId('breadcrumb-words-button');
-  const breadcrumbContentButton = screen.getByTestId(
-    'breadcrumb-content-button',
-  );
-  const breadcrumbBasketButton = screen.getByTestId('basket-button');
-
-  expect(breadcrumbSentencesButton).toBeDisabled();
-  expect(breadcrumbSentencesButton).toHaveTextContent('Sentence (0)');
-  expect(breadcrumbBasketButton).toHaveTextContent('🧺 (0)');
-  expect(breadcrumbWordsButton).toHaveTextContent('Words (0)');
-  expect(breadcrumbWordsButton).toBeDisabled();
-  expect(breadcrumbContentButton).toHaveTextContent('Content');
-};
-
-const checkReviewTogglesOnLoad = () => {
-  const reviewButton = screen.getByTestId('review-label');
-  expect(reviewButton).toBeInTheDocument();
-  const wordsToggles = screen.getByTestId('words-toggle');
-  const sentencesToggles = screen.getByTestId('sentences-toggle');
-  const snippetsToggles = screen.getByTestId('snippets-toggle');
-  const reviewIntervalDecrement = screen.getByTestId(
-    'review-interval-decrement',
-  );
-  const reviewIntervalIncrement = screen.getByTestId(
-    'review-interval-increment',
-  );
-  expect(wordsToggles).toBeDisabled();
-  expect(sentencesToggles).toBeDisabled();
-  expect(snippetsToggles).toBeDisabled();
-  expect(reviewIntervalDecrement).toBeDisabled();
-  expect(reviewIntervalIncrement).toBeDisabled();
-};
-
-const checkTabTriggersOnLoad = () => {
-  expect(screen.getByTestId('transcript-tab-trigger')).toBeInTheDocument();
-  const wordsTabTrigger = screen.getByTestId('words-tab-trigger');
-  expect(wordsTabTrigger).toBeDisabled();
-  expect(wordsTabTrigger).toHaveTextContent('Words 0/0');
-  expect(screen.getByTestId('meta-tab-trigger')).toBeInTheDocument();
-};
-
 const checkingMainTranscriptContent = () => {
   const mainTranscriptItem = screen.getByTestId('transcript-item-secondary');
   expect(mainTranscriptItem).toBeInTheDocument();
   within(mainTranscriptItem).getByText(
     mockSelectedContent.content[0].targetLang,
   );
-};
-
-const checkingTimelineMarkers = (snippets = 0, words = 0, sentence = 0) => {
-  expect(
-    document.querySelectorAll(`[data-testid^="timeline-sentence-${sentence}"]`),
-  ).toHaveLength(0);
-
-  expect(
-    document.querySelectorAll(`[data-testid^="timeline-word-marker-${words}"]`),
-  ).toHaveLength(0);
-  expect(
-    document.querySelectorAll(
-      `[data-testid^="timeline-snippet-marker-${snippets}"]`,
-    ),
-  ).toHaveLength(0);
 };
 
 const checkingMediaActionButtons = () => {
@@ -1093,7 +1021,7 @@ describe('LearningScreen', () => {
         renderWithProvider();
         expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
 
-        checkMetaDataOnLoad();
+        checkMetaDataOnLoad(mockTitle);
         checkReviewTogglesOnLoad();
         checkTabTriggersOnLoad();
         checkingMainTranscriptContent();
@@ -1532,9 +1460,5 @@ describe('LearningScreen', () => {
       await reviewWordsInReviewMode();
       await reviewSentencesInReviewMode();
     });
-
-    it('should show freshly added review content after it is added in to review AND within timebox', async () => {});
-
-    it('should lock in review session block given an interval and timeframe', async () => {});
   });
 });
