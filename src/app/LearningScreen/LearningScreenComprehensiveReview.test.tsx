@@ -1,4 +1,10 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import { LearningScreenProvider } from './LearningScreenProvider';
 import { FetchDataProvider } from '../Providers/FetchDataProvider';
 import ContentScreen from '../content/page';
@@ -8,7 +14,10 @@ import {
   mockSelectedContent,
   mockSelectedContentWithDueData,
 } from './mock-data';
-import { startReviewMode } from './LearningScreen.test';
+import {
+  checkForReviewLabelText,
+  startReviewMode,
+} from './LearningScreen.test';
 jest.mock('../Providers/useDataSaveToLocalStorage', () => () => {});
 
 const mockTitle = 'Test-Content-title';
@@ -69,7 +78,7 @@ dueDateOneDayAgo.setDate(dueDateOneDayAgo.getDate() - 1);
 const lastReviewDateTwoDaysAgo = new Date();
 lastReviewDateTwoDaysAgo.setDate(lastReviewDateTwoDaysAgo.getDate() - 2);
 
-const reviewSentenceIn5Mins = async () => {
+const reviewFirstSentenceDueIn5mins = async () => {
   const againSRSToggleFirstSentence = screen.getByTestId(
     'again-sentence-due-1',
   );
@@ -77,9 +86,22 @@ const reviewSentenceIn5Mins = async () => {
   mockReviewSentence();
   againSRSToggleFirstSentence.click();
   await waitFor(() => {
-    expect(screen.getAllByText('Sentence reviewed ✅')).toHaveLength(1);
+    expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
   });
   expect(screen.getByText('Reps: 1')).toBeInTheDocument();
+};
+const reviewSecondSentenceDueIn5mins = async () => {
+  const againSRSToggleSecondSentence = screen.getByTestId(
+    'again-sentence-due-2',
+  );
+
+  expect(againSRSToggleSecondSentence).toHaveTextContent('5 mins');
+  mockReviewSentence();
+  againSRSToggleSecondSentence.click();
+  await waitFor(() => {
+    expect(screen.getByText('Reps: 2')).toBeInTheDocument();
+    expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
+  });
 };
 
 describe('LearningScreen - comprehensive review', () => {
@@ -88,6 +110,12 @@ describe('LearningScreen - comprehensive review', () => {
   });
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
 
   const renderWithProvider = (selectedContent = mockSelectedContent) => {
@@ -107,10 +135,16 @@ describe('LearningScreen - comprehensive review', () => {
     );
     expect(sentenceCounter).toHaveTextContent('Sentences: 3/3');
     startReviewMode(3);
-    await reviewSentenceIn5Mins();
-
-    // mock call ✅
-    // wait 6 mins
+    checkForReviewLabelText(3, 0, 3);
+    await reviewFirstSentenceDueIn5mins();
+    jest.advanceTimersByTime(6 * 60 * 1000); // Advance time by 6 minutes (6 * 60 * 1000 milliseconds)
+    checkForReviewLabelText(3, 0, 2);
+    await reviewSecondSentenceDueIn5mins();
+    jest.advanceTimersByTime(6 * 60 * 1000); // Advance time by 6 minutes (6 * 60 * 1000 milliseconds)
+    checkForReviewLabelText(3, 0, 1);
+    const reviewButton = screen.getByTestId('review-switch');
+    fireEvent.click(reviewButton);
+    startReviewMode(3);
     // review next one
     // the first one should not appear DESPITE it being due because we've timeboxed it
   });

@@ -675,6 +675,16 @@ const checkForRemovalOfPreSnippetUIComponents = async () => {
   expect(overlappingIndicator).not.toBeInTheDocument();
 };
 
+export const checkForReviewLabelText = (snippets, words, sentences) => {
+  const wordToggleLabel = screen.getByTestId('words-toggle-label');
+  const sentenceToggleLabel = screen.getByTestId('sentences-toggle-label');
+  const snippetToggleLabel = screen.getByTestId('snippets-toggle-label');
+
+  expect(snippetToggleLabel).toHaveTextContent(`✂️ (${snippets})`);
+  expect(wordToggleLabel).toHaveTextContent(`🔤 (${words})`);
+  expect(sentenceToggleLabel).toHaveTextContent(`📝 (${sentences})`);
+};
+
 const checkNewStableSnippetUIComponents = async () => {
   const savedSnippetBottomUIWidget = screen.getByTestId(
     'transcript-time-overlap-indicator-multi-sentence-4',
@@ -870,16 +880,6 @@ describe('LearningScreen', () => {
       expect(
         document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
       ).toHaveLength(3);
-    };
-
-    const checkForReviewLabelText = (snippets, words, sentences) => {
-      const wordToggleLabel = screen.getByTestId('words-toggle-label');
-      const sentenceToggleLabel = screen.getByTestId('sentences-toggle-label');
-      const snippetToggleLabel = screen.getByTestId('snippets-toggle-label');
-
-      expect(snippetToggleLabel).toHaveTextContent(`✂️ (${snippets})`);
-      expect(wordToggleLabel).toHaveTextContent(`🔤 (${words})`);
-      expect(sentenceToggleLabel).toHaveTextContent(`📝 (${sentences})`);
     };
 
     const switchToReviewMode = async () => {

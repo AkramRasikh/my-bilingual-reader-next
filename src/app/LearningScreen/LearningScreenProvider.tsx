@@ -183,7 +183,13 @@ export const LearningScreenProvider = ({
       sentencesPendingOrDue,
       firstSentenceDueTime,
     };
-  }, [pureWordsMemoized, content, enableTranscriptReviewState, wordsState]);
+  }, [
+    pureWordsMemoized,
+    content,
+    enableTranscriptReviewState,
+    wordsState,
+    isInReviewMode, // added to update state for when review mode is toggled
+  ]);
 
   const handlePlayFromHere = (time: number) => {
     if (ref.current) {
