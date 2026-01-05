@@ -37,8 +37,7 @@ export const LearningScreenProvider = ({
 
   const [currentTime, setCurrentTime] = useState(0);
   const [loopSecondsState, setLoopSecondsState] = useState([]);
-  const [masterPlayComprehensiveState, setMasterPlayComprehensiveState] =
-    useState(null);
+
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isInReviewMode, setIsInReviewMode] = useState(false);
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
@@ -505,10 +504,9 @@ export const LearningScreenProvider = ({
     loopTranscriptState,
   });
 
-  useTrackMasterTranscript({
+  const masterPlayComprehensiveMemoized = useTrackMasterTranscript({
     masterPlay,
     formattedTranscriptState: formattedTranscriptMemoized,
-    setMasterPlayComprehensiveState,
   });
 
   const handleFromHere = (time) => {
@@ -1192,8 +1190,7 @@ export const LearningScreenProvider = ({
         currentTime,
         formattedTranscriptState: formattedTranscriptMemoized,
         secondsState: secondsStateMemoized,
-        masterPlayComprehensiveState,
-        setMasterPlayComprehensiveState,
+        masterPlayComprehensiveState: masterPlayComprehensiveMemoized,
         isVideoPlaying,
         setIsVideoPlaying,
         isInReviewMode,

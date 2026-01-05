@@ -168,7 +168,6 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
             ref={ref}
             url={videoUrl}
             setIsVideoPlaying={setIsVideoPlaying}
-            masterPlayComprehensiveState={contextDataEl}
             handleTimeUpdate={handleTimeUpdate}
           />
           {threeSecondLoopState && (

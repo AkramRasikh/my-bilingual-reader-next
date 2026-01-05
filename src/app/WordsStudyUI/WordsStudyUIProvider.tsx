@@ -1,7 +1,6 @@
 'use client';
 import { isNumber } from '@/utils/is-number';
 import { createContext, useRef, useState, useContext } from 'react';
-import useTrackMasterTranscript from '../LearningScreen/hooks/useManageThreeSecondLoop';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import useWordsStudyUIinit from './useWordsStudyUIinit';
 
@@ -19,8 +18,6 @@ export const WordsStudyUIProvider = ({
   const [formattedTranscriptState, setFormattedTranscriptState] = useState([]);
   const [secondsState, setSecondsState] = useState([]);
   const [loopSecondsState, setLoopSecondsState] = useState([]);
-  const [masterPlayComprehensiveState, setMasterPlayComprehensiveState] =
-    useState(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [selectedElState, setSelectedElState] = useState(0);
   const [isInReviewMode, setIsInReviewMode] = useState(false);
@@ -130,12 +127,6 @@ export const WordsStudyUIProvider = ({
       setCurrentTime(ref.current.currentTime);
     }
   };
-
-  useTrackMasterTranscript({
-    masterPlay,
-    formattedTranscriptState,
-    setMasterPlayComprehensiveState,
-  });
 
   const handleFromHere = (time) => {
     if (!isNumber(time)) {
@@ -265,8 +256,6 @@ export const WordsStudyUIProvider = ({
         setFormattedTranscriptState,
         secondsState,
         setSecondsState,
-        masterPlayComprehensiveState,
-        setMasterPlayComprehensiveState,
         isVideoPlaying,
         setIsVideoPlaying,
         isInReviewMode,
