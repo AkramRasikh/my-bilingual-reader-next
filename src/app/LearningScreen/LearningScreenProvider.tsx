@@ -486,6 +486,10 @@ export const LearningScreenProvider = ({
       ? secondsStateMemoized[Math.floor(currentTime)]
       : '';
 
+  const masterPlayComprehensive = sentenceMapMemoized
+    ? sentenceMapMemoized[Math.floor(currentTime)]
+    : null;
+
   useManageLoopInit({
     ref,
     threeSecondLoopState,
@@ -500,10 +504,6 @@ export const LearningScreenProvider = ({
     setLoopSecondsState,
     loopTranscriptState,
   });
-
-  const masterPlayComprehensive = sentenceMapMemoized
-    ? sentenceMapMemoized[masterPlay]
-    : null;
 
   const handleFromHere = (time) => {
     if (!isNumber(time)) {
