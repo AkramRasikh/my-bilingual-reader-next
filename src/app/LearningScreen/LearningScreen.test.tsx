@@ -201,12 +201,12 @@ const addSecondSentenceToReview = async () => {
   expect(sentenceMetaCount).toHaveTextContent('Sentences: 2/2'); // due/pending+pending
 };
 
-const startReviewMode = () => {
+export const startReviewMode = (sentenceCount) => {
   const reviewButton = screen.getByTestId('review-switch');
   fireEvent.click(reviewButton);
   const sentenceReviewLabel = screen.getByTestId('sentences-toggle-label');
   expect(sentenceReviewLabel).toBeInTheDocument();
-  expect(sentenceReviewLabel).toHaveTextContent('📝 (2)');
+  expect(sentenceReviewLabel).toHaveTextContent(`📝 (${sentenceCount})`);
 };
 
 const reviewFirstSentenceAgain = async () => {
@@ -790,7 +790,7 @@ describe('LearningScreen', () => {
         checkingMediaActionButtons();
         await addFirstSentenceToReview();
         await addSecondSentenceToReview();
-        startReviewMode();
+        startReviewMode(2);
         await reviewFirstSentenceAgain();
         await removeSecondSentenceFromReview();
       });
