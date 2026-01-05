@@ -776,45 +776,36 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const getThisSentenceInfo = (sentenceId) =>
-    formattedTranscriptMemoized.find((item) => item.id === sentenceId);
-
   const handleAddMasterToReview = async () => {
-    const currentSecond = Math.floor(ref.current.currentTime);
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsStateMemoized.length > 0 &&
-      secondsStateMemoized[currentSecond]; // need to make sure its part of the content
+    if (!masterPlayComprehensive) {
+      return;
+    }
 
-    const sentenceHasReview =
-      getThisSentenceInfo(currentMasterPlay)?.reviewData;
+    const sentenceHasReview = masterPlayComprehensive?.reviewData;
 
     try {
-      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
+      setIsGenericItemLoadingState((prev) => [
+        ...prev,
+        masterPlayComprehensive.id,
+      ]);
       await handleReviewFunc({
-        sentenceId: currentMasterPlay,
+        sentenceId: masterPlayComprehensive.id,
         isRemoveReview: Boolean(sentenceHasReview),
         nextDue: null,
       });
       setSentenceRepsState(sentenceRepsState + 1);
-    } catch (error) {
-      console.log('## handleAddMasterToReview', error);
     } finally {
       setIsGenericItemLoadingState((prev) =>
-        prev.filter((item) => item !== currentMasterPlay),
+        prev.filter((item) => item !== masterPlayComprehensive.id),
       );
     }
   };
 
   const handleIsEasyReviewShortCut = async () => {
-    const currentSecond = Math.floor(ref.current.currentTime);
-    const currentMasterPlay =
-      isNumber(currentTime) &&
-      secondsStateMemoized.length > 0 &&
-      secondsStateMemoized[currentSecond]; // need to make sure its part of the content
-
-    const sentenceHasReview =
-      getThisSentenceInfo(currentMasterPlay)?.reviewData;
+    if (!masterPlayComprehensive) {
+      return;
+    }
+    const sentenceHasReview = masterPlayComprehensive?.reviewData;
 
     const { nextScheduledOptions } = srsCalculationAndText({
       reviewData: sentenceHasReview,
@@ -825,9 +816,12 @@ export const LearningScreenProvider = ({
     const nextReviewData = nextScheduledOptions['4'].card;
 
     try {
-      setIsGenericItemLoadingState((prev) => [...prev, currentMasterPlay]);
+      setIsGenericItemLoadingState((prev) => [
+        ...prev,
+        masterPlayComprehensive.id,
+      ]);
       await handleReviewFunc({
-        sentenceId: currentMasterPlay,
+        sentenceId: masterPlayComprehensive.id,
         nextDue: nextReviewData,
       });
       setSentenceRepsState(sentenceRepsState + 1);
@@ -835,7 +829,7 @@ export const LearningScreenProvider = ({
       console.log('## handleIsEasyReviewShortCut', error);
     } finally {
       setIsGenericItemLoadingState((prev) =>
-        prev.filter((item) => item !== currentMasterPlay),
+        prev.filter((item) => item !== masterPlayComprehensive.id),
       );
     }
   };
