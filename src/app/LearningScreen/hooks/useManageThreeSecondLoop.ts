@@ -55,13 +55,6 @@ export const threeSecondLoopLogic = ({
 
   refSeconds.current = threeSecondLoopState;
 
-  console.log(
-    '## results',
-    results.length,
-    '## original:',
-    formattedTranscriptState.length,
-  );
-
   if (results?.length > 0) {
     if (setState) {
       setState(results);
