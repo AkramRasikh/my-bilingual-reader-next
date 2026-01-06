@@ -39,7 +39,7 @@ export const highlightSnippetTextApprox = (
   if (index === -1) return fullText; // no suitable match
 
   const before = fullText.slice(0, index + startIndexKeyState);
-  const match = fullText.slice(
+  const textMatch = fullText.slice(
     index + startIndexKeyState,
     index + endIndexKeyState + slicedText.length,
   );
@@ -47,8 +47,8 @@ export const highlightSnippetTextApprox = (
 
   const opacityClass = isLoadingSaveSnippetState ? 'opacity-50' : '';
   return {
-    htmlText: `${before}<span data-testid="highlighted-snippet-text" class="bg-yellow-200 shadow-yellow-500 shadow-sm px-1 rounded ${opacityClass}">${match}</span>${after}`,
-    textMatch: match,
+    htmlText: `${before}<span data-testid="highlighted-snippet-text" class="bg-yellow-200 shadow-yellow-500 shadow-sm px-1 rounded ${opacityClass}">${textMatch}</span>${after}`,
+    textMatch,
     matchStartKey: index + startIndexKeyState,
     matchEndKey: index + endIndexKeyState + slicedText.length,
   };

@@ -90,7 +90,7 @@ describe('highlightSnippetTextApprox', () => {
       expect(result.textMatch).toBe('e quick brown');
     });
 
-    it.only('should handle large positive shift', () => {
+    it('should handle large positive shift', () => {
       const fullText = 'The quick brown fox jumps over the lazy dog';
       const slicedText = 'quick';
 
