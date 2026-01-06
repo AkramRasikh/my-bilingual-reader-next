@@ -33,23 +33,23 @@ export const highlightSnippetTextApprox = (
   slicedText: string,
   isLoadingSaveSnippetState: boolean,
   startIndexKeyState: number,
-  endIndexKeyState: number,
+  lengthAdjustmentState: number,
 ) => {
   const index = findApproxIndexForSnippet(fullText, slicedText);
   if (index === -1) return fullText; // no suitable match
 
-  const before = fullText.slice(0, index + startIndexKeyState);
-  const textMatch = fullText.slice(
-    index + startIndexKeyState,
-    index + endIndexKeyState + slicedText.length,
-  );
-  const after = fullText.slice(index + endIndexKeyState + slicedText.length);
+  const textStartIndex = index + startIndexKeyState;
+  const textEndIndex = textStartIndex + slicedText.length + lengthAdjustmentState;
+  
+  const before = fullText.slice(0, textStartIndex);
+  const textMatch = fullText.slice(textStartIndex, textEndIndex);
+  const after = fullText.slice(textEndIndex);
 
   const opacityClass = isLoadingSaveSnippetState ? 'opacity-50' : '';
   return {
     htmlText: `${before}<span data-testid="highlighted-snippet-text" class="bg-yellow-200 shadow-yellow-500 shadow-sm px-1 rounded ${opacityClass}">${textMatch}</span>${after}`,
     textMatch,
-    matchStartKey: index + startIndexKeyState,
-    matchEndKey: index + endIndexKeyState + slicedText.length,
+    matchStartKey: textStartIndex,
+    matchEndKey: textEndIndex,
   };
 };

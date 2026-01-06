@@ -14,7 +14,7 @@ const TranscriptItemLoopingSentence = ({
   const [highlightedTextFocusLoopState, setHighlightedTextFocusLoopState] =
     useState('');
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
-  const [endIndexKeyState, setEndIndexKeyState] = useState(0);
+  const [lengthAdjustmentState, setLengthAdjustmentState] = useState(0);
 
   const masterTextRef = useRef(null);
   const targetLang = overlappingTextMemoized.targetLang;
@@ -63,14 +63,14 @@ const TranscriptItemLoopingSentence = ({
       suggestedFocusText,
       isLoadingSaveSnippetState,
       startIndexKeyState,
-      endIndexKeyState,
+      lengthAdjustmentState,
     );
   }, [
     targetLang,
     suggestedFocusText,
     isLoadingSaveSnippetState,
     startIndexKeyState,
-    endIndexKeyState,
+    lengthAdjustmentState,
   ]);
 
   const hasSnippetText =
@@ -99,21 +99,19 @@ const TranscriptItemLoopingSentence = ({
       const shiftKey = e.shiftKey;
 
       if (shiftKey && e.key.toLowerCase() === '<') {
-        setEndIndexKeyState(endIndexKeyState - 1);
+        setLengthAdjustmentState(lengthAdjustmentState - 1);
         return;
       }
       if (shiftKey && e.key.toLowerCase() === '>') {
-        setEndIndexKeyState(endIndexKeyState + 1);
+        setLengthAdjustmentState(lengthAdjustmentState + 1);
         return;
       }
       if (e.key.toLowerCase() === ',') {
         setStartIndexKeyState(startIndexKeyState - 1);
-        setEndIndexKeyState(endIndexKeyState - 1);
         return;
       }
       if (e.key.toLowerCase() === '.') {
         setStartIndexKeyState(startIndexKeyState + 1);
-        setEndIndexKeyState(endIndexKeyState + 1);
         return;
       }
 
@@ -127,7 +125,7 @@ const TranscriptItemLoopingSentence = ({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [startIndexKeyState, endIndexKeyState, hasSnippetText]);
+  }, [startIndexKeyState, lengthAdjustmentState, hasSnippetText]);
 
   return (
     <div

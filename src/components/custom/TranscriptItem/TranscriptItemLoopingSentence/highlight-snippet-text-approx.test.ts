@@ -70,7 +70,7 @@ describe('highlightSnippetTextApprox', () => {
 
       // Original match starts at 4, shifted by +3 = 7
       expect(result.matchStartKey).toBe(7);
-      expect(result.textMatch).toBe('ck brown');
+      expect(result.textMatch).toBe('ck brown fo');
     });
 
     it('should shift match to the left with negative startIndexKeyState', () => {
@@ -87,7 +87,7 @@ describe('highlightSnippetTextApprox', () => {
 
       // Original match starts at 4, shifted by -2 = 2
       expect(result.matchStartKey).toBe(2);
-      expect(result.textMatch).toBe('e quick brown');
+      expect(result.textMatch).toBe('e quick bro');
     });
 
     it('should handle large positive shift', () => {
@@ -102,13 +102,14 @@ describe('highlightSnippetTextApprox', () => {
         0,
       );
 
+      // Start at 4 + 10 = 14, length stays 5
       expect(result.matchStartKey).toBe(14);
-      expect(result.textMatch.length).toBeGreaterThan(0);
+      expect(result.textMatch).toBe('n fox');
     });
   });
 
-  describe('endIndexKeyState adjustments (expanding/contracting)', () => {
-    it('should expand match to the right with positive endIndexKeyState', () => {
+  describe('lengthAdjustmentState adjustments (expanding/contracting)', () => {
+    it('should expand match to the right with positive lengthAdjustmentState', () => {
       const fullText = 'The quick brown fox jumps';
       const slicedText = 'quick brown';
 
@@ -130,10 +131,10 @@ describe('highlightSnippetTextApprox', () => {
       expect(resultExpanded.textMatch.length).toBeGreaterThan(
         resultBase.textMatch.length,
       );
-      expect(resultExpanded.textMatch).toBe('quick brown fox');
+      expect(resultExpanded.textMatch).toBe('quick brown fox ');
     });
 
-    it('should contract match with negative endIndexKeyState', () => {
+    it('should contract match with negative lengthAdjustmentState', () => {
       const fullText = 'The quick brown fox jumps';
       const slicedText = 'quick brown';
 
@@ -191,7 +192,7 @@ describe('highlightSnippetTextApprox', () => {
     });
   });
 
-  describe('combined startIndexKeyState and endIndexKeyState', () => {
+  describe('combined startIndexKeyState and lengthAdjustmentState', () => {
     it('should shift left and expand right', () => {
       const fullText = 'The quick brown fox jumps over the lazy dog';
       const slicedText = 'brown fox';
@@ -225,7 +226,7 @@ describe('highlightSnippetTextApprox', () => {
       expect(result.textMatch.length).toBeLessThan(slicedText.length);
     });
 
-    it('should handle both negative shifts', () => {
+    it('should handle both negative adjustments', () => {
       const fullText = 'The quick brown fox jumps over the lazy dog';
       const slicedText = 'brown fox jumps';
 
@@ -238,10 +239,11 @@ describe('highlightSnippetTextApprox', () => {
       );
 
       // Should shift left and contract
-      expect(result.matchStartKey).toBeLessThan(10); // Original position minus shift
+      expect(result.matchStartKey).toBe(7); // 10 - 3
+      expect(result.textMatch).toBe('ck brown fox');
     });
 
-    it('should handle both positive shifts', () => {
+    it('should handle both positive adjustments', () => {
       const fullText = 'The quick brown fox jumps over the lazy dog';
       const slicedText = 'quick';
 
@@ -256,6 +258,7 @@ describe('highlightSnippetTextApprox', () => {
       // Should shift right and expand
       expect(result.matchStartKey).toBe(6);
       expect(result.textMatch.length).toBeGreaterThan(slicedText.length);
+      expect(result.textMatch).toBe('ick brown fox');
     });
   });
 
@@ -546,7 +549,7 @@ describe('highlightSnippetTextApprox', () => {
       );
     });
 
-    it('should return correct metadata with endIndexKeyState adjustments', () => {
+    it('should return correct metadata with lengthAdjustmentState adjustments', () => {
       const fullText = 'The quick brown fox jumps';
       const slicedText = 'quick';
 
@@ -561,6 +564,7 @@ describe('highlightSnippetTextApprox', () => {
       expect(fullText.substring(result.matchStartKey, result.matchEndKey)).toBe(
         result.textMatch,
       );
+      expect(result.textMatch).toBe('quick brown ');
     });
   });
 });
