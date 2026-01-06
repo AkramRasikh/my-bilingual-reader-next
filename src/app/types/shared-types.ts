@@ -11,3 +11,12 @@ export interface ReviewDataTypes {
   stability: number;
   state: number;
 }
+
+export interface OverlappingSnippetData {
+  id: string;
+  start: number;
+  end: number;
+  percentageOverlap: number;
+  targetLang: string;
+  startPoint: number;
+}

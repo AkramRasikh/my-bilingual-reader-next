@@ -1,5 +1,6 @@
 import { isNumber } from '@/utils/is-number';
 import { useEffect, useRef } from 'react';
+import { OverlappingSnippetData } from '@/app/types/shared-types';
 
 export const threeSecondLoopLogic = ({
   refSeconds,
@@ -9,8 +10,16 @@ export const threeSecondLoopLogic = ({
   setState,
   startTime,
   endTime,
-}) => {
-  const results = [];
+}: {
+  refSeconds: React.MutableRefObject<number | null>;
+  threeSecondLoopState: number;
+  formattedTranscriptState: any[];
+  realStartTime?: number;
+  setState?: (data: OverlappingSnippetData[]) => void;
+  startTime: number;
+  endTime: number;
+}): OverlappingSnippetData[] | void => {
+  const results: OverlappingSnippetData[] = [];
 
   formattedTranscriptState.forEach((item, index) => {
     const start = item.time + realStartTime;
@@ -56,6 +65,13 @@ const useManageThreeSecondLoop = ({
   realStartTime,
   setOverlappingSnippetDataState,
   overlappingSnippetDataState,
+}: {
+  threeSecondLoopState: number | null;
+  contractThreeSecondLoopState: boolean;
+  formattedTranscriptState: any[];
+  realStartTime: number;
+  setOverlappingSnippetDataState: (data: OverlappingSnippetData[]) => void;
+  overlappingSnippetDataState: OverlappingSnippetData[];
 }) => {
   const refSeconds = useRef<number | null>(null);
   const prevContractThreeSecondLoopState = useRef(contractThreeSecondLoopState);

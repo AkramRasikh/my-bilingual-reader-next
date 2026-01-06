@@ -1,4 +1,8 @@
-export const sliceTranscriptViaPercentageOverlap = (items) => {
+import { OverlappingSnippetData } from '@/app/types/shared-types';
+
+export const sliceTranscriptViaPercentageOverlap = (
+  items: OverlappingSnippetData[],
+) => {
   let result = '';
 
   for (const item of items) {

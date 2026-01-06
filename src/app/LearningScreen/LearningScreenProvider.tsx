@@ -13,6 +13,7 @@ import useManageThreeSecondLoop, {
   threeSecondLoopLogic,
 } from './hooks/useManageThreeSecondLoop';
 import useManageLoopInit from './hooks/useManageLoopInit';
+import { OverlappingSnippetData } from '../types/shared-types';
 import { useLoopSecondsHook } from './hooks/useMapTranscriptToSeconds';
 import { useSavedSnippetsMemoized } from './hooks/useSavedSnippetsMemoized';
 import { isDueCheck } from '@/utils/is-due-check';
@@ -56,7 +57,7 @@ export const LearningScreenProvider = ({
     [],
   );
   const [overlappingSnippetDataState, setOverlappingSnippetDataState] =
-    useState([]);
+    useState<OverlappingSnippetData[]>([]);
 
   const [loopTranscriptState, setLoopTranscriptState] = useState([]);
   const [threeSecondLoopState, setThreeSecondLoopState] = useState<
