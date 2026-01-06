@@ -33,6 +33,7 @@ export const threeSecondLoopLogic = ({
         start,
         end,
         percentageOverlap: Number(percentageOverlap.toFixed(2)),
+        targetLang: item.targetLang,
         startPoint: Number(startPoint.toFixed(2)),
       });
     }

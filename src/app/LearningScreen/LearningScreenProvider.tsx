@@ -21,6 +21,7 @@ import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of
 import { mapSentenceIdsToSeconds } from './utils/map-sentence-ids-to-seconds';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { WordTypes } from '../types/word-types';
+import { sliceTranscriptViaPercentageOverlap } from './utils/slice-transcript-via-percentage-overlap';
 
 export const LearningScreenContext = createContext(null);
 
@@ -291,7 +292,8 @@ export const LearningScreenProvider = ({
 
     const targetLang = entries.map((item) => item.targetLang).join('');
     const baseLang = entries.map((item) => item.baseLang).join('');
-    const suggestedFocusText = sliceTranscriptItems(resultOfThis);
+    const suggestedFocusText =
+      sliceTranscriptViaPercentageOverlap(resultOfThis);
 
     const finalSnippetObject = {
       id: uuidv4(),
@@ -960,27 +962,6 @@ export const LearningScreenProvider = ({
     firstSentenceDueTime,
   ]);
 
-  function sliceTranscriptItems(items) {
-    let result = '';
-
-    for (const item of items) {
-      const text = sentenceMapMemoized[item.id].targetLang;
-      if (!text) continue;
-
-      const L = text.length;
-
-      const startIndex = Math.floor(L * (item.startPoint / 100));
-      const endIndex =
-        Math.floor(L * (item.percentageOverlap / 100)) + startIndex;
-      const safeStart = Math.min(startIndex, L);
-      const safeEnd = Math.max(safeStart, Math.min(endIndex, L));
-
-      result += text.substring(safeStart, safeEnd);
-    }
-
-    return result;
-  }
-
   const overlappingTextMemoized = useMemo(() => {
     if (!threeSecondLoopState) {
       return;
@@ -997,7 +978,9 @@ export const LearningScreenProvider = ({
     return {
       targetLang,
       baseLang,
-      suggestedFocusText: sliceTranscriptItems(overlappingSnippetDataState),
+      suggestedFocusText: sliceTranscriptViaPercentageOverlap(
+        overlappingSnippetDataState,
+      ),
     };
   }, [
     overlappingSnippetDataState,
