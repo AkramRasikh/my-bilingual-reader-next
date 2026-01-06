@@ -10,6 +10,7 @@ export const threeSecondLoopLogic = ({
   setState,
   startTime,
   endTime,
+  isRealEndTime,
 }: {
   refSeconds: React.MutableRefObject<number | null>;
   threeSecondLoopState: number;
@@ -18,15 +19,19 @@ export const threeSecondLoopLogic = ({
   setState?: (data: OverlappingSnippetData[]) => void;
   startTime: number;
   endTime: number;
+  isRealEndTime?: number;
 }): OverlappingSnippetData[] | void => {
   const results: OverlappingSnippetData[] = [];
 
   formattedTranscriptState.forEach((item, index) => {
     const start = item.time + realStartTime;
-    const end =
-      index < formattedTranscriptState.length - 1
-        ? formattedTranscriptState[index + 1].time + realStartTime
-        : start;
+    const end = item?.nextSentence
+      ? item.nextSentence
+      : isRealEndTime
+      ? isRealEndTime
+      : index < formattedTranscriptState.length - 1
+      ? formattedTranscriptState[index + 1].time + realStartTime
+      : start;
     const duration = end - start;
 
     const overlapStart = Math.max(start, startTime);
@@ -49,6 +54,14 @@ export const threeSecondLoopLogic = ({
   });
 
   refSeconds.current = threeSecondLoopState;
+
+  console.log(
+    '## results',
+    results.length,
+    '## original:',
+    formattedTranscriptState.length,
+  );
+
   if (results?.length > 0) {
     if (setState) {
       setState(results);
@@ -65,6 +78,7 @@ const useManageThreeSecondLoop = ({
   realStartTime,
   setOverlappingSnippetDataState,
   overlappingSnippetDataState,
+  isRealEndTime,
 }: {
   threeSecondLoopState: number | null;
   contractThreeSecondLoopState: boolean;
@@ -72,6 +86,7 @@ const useManageThreeSecondLoop = ({
   realStartTime: number;
   setOverlappingSnippetDataState: (data: OverlappingSnippetData[]) => void;
   overlappingSnippetDataState: OverlappingSnippetData[];
+  isRealEndTime?: number;
 }) => {
   const refSeconds = useRef<number | null>(null);
   const prevContractThreeSecondLoopState = useRef(contractThreeSecondLoopState);
@@ -105,6 +120,7 @@ const useManageThreeSecondLoop = ({
         setState: setOverlappingSnippetDataState,
         startTime,
         endTime,
+        isRealEndTime,
       });
     }
 
@@ -114,6 +130,7 @@ const useManageThreeSecondLoop = ({
     contractThreeSecondLoopState,
     realStartTime,
     formattedTranscriptState,
+    isRealEndTime,
   ]);
 };
 

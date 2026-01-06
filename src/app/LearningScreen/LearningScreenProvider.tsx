@@ -457,21 +457,6 @@ export const LearningScreenProvider = ({
     }
   };
 
-  useEffect(() => {
-    if (isInReviewMode) {
-      setStudyFromHereTimeState(null);
-    }
-  }, [isInReviewMode, studyFromHereTimeState]);
-
-  useManageThreeSecondLoop({
-    threeSecondLoopState,
-    contractThreeSecondLoopState,
-    formattedTranscriptState: formattedTranscriptMemoized,
-    realStartTime: 0,
-    setOverlappingSnippetDataState,
-    overlappingSnippetDataState,
-  });
-
   const secondsStateMemoized = useMemo(() => {
     if (!ref.current?.duration) {
       return [];
@@ -485,6 +470,56 @@ export const LearningScreenProvider = ({
 
     return arrOfSeconds;
   }, [ref.current?.duration, selectedContentStateMemoized]);
+
+  const loopedTranscriptMemoized = useMemo(() => {
+    if (!threeSecondLoopState || secondsStateMemoized.length === 0) {
+      return [];
+    }
+
+    const startTime =
+      threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
+    const endTime =
+      threeSecondLoopState + (contractThreeSecondLoopState ? 0.75 : 1.5);
+
+    const firstElInArray = secondsStateMemoized[Math.floor(startTime)];
+    const lastElInArray = secondsStateMemoized[Math.ceil(endTime)];
+
+    const secondsStateMemoizedSlice = [
+      ...new Set(
+        secondsStateMemoized.slice(
+          secondsStateMemoized.indexOf(firstElInArray),
+          secondsStateMemoized.indexOf(lastElInArray) + 1,
+        ),
+      ),
+    ];
+
+    const filtered = secondsStateMemoizedSlice.map(
+      (secondsSentenceId) => sentenceMapMemoized[secondsSentenceId],
+    );
+
+    return filtered;
+  }, [
+    secondsStateMemoized,
+    sentenceMapMemoized,
+    contractThreeSecondLoopState,
+    threeSecondLoopState,
+  ]);
+
+  useEffect(() => {
+    if (isInReviewMode) {
+      setStudyFromHereTimeState(null);
+    }
+  }, [isInReviewMode, studyFromHereTimeState]);
+
+  useManageThreeSecondLoop({
+    threeSecondLoopState,
+    contractThreeSecondLoopState,
+    formattedTranscriptState: loopedTranscriptMemoized,
+    realStartTime: 0,
+    setOverlappingSnippetDataState,
+    overlappingSnippetDataState,
+    isRealEndTime: ref.current?.duration,
+  });
 
   const masterPlay =
     currentTime && loopSecondsState.length > 0
@@ -968,12 +1003,16 @@ export const LearningScreenProvider = ({
   ]);
 
   const overlappingTextMemoized = useMemo(() => {
-    if (!threeSecondLoopState) {
+    if (
+      !threeSecondLoopState ||
+      !overlappingSnippetDataState ||
+      overlappingSnippetDataState.length === 0
+    ) {
       return;
     }
 
     const overlappingIds = overlappingSnippetDataState.map((item) => item.id);
-    const entries = formattedTranscriptMemoized.filter((x) =>
+    const entries = loopedTranscriptMemoized.filter((x) =>
       overlappingIds.includes(x.id),
     );
 
@@ -990,8 +1029,7 @@ export const LearningScreenProvider = ({
   }, [
     overlappingSnippetDataState,
     threeSecondLoopState,
-    contractThreeSecondLoopState,
-    formattedTranscriptMemoized,
+    loopedTranscriptMemoized,
   ]);
 
   const savedSnippetsMemoized = useSavedSnippetsMemoized(
