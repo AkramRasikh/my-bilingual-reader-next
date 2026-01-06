@@ -23,6 +23,7 @@ import { mapSentenceIdsToSeconds } from './utils/map-sentence-ids-to-seconds';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { WordTypes } from '../types/word-types';
 import { sliceTranscriptViaPercentageOverlap } from './utils/slice-transcript-via-percentage-overlap';
+import { isTrimmedLang } from '../languages';
 
 export const LearningScreenContext = createContext(null);
 
@@ -83,6 +84,7 @@ export const LearningScreenProvider = ({
     sentenceReviewBulk,
     updateSentenceData,
     updateContentMetaData,
+    languageSelectedState,
   } = useFetchData();
 
   const selectedContentTitleState = selectedContentStateMemoized.title;
@@ -293,8 +295,10 @@ export const LearningScreenProvider = ({
 
     const targetLang = entries.map((item) => item.targetLang).join('');
     const baseLang = entries.map((item) => item.baseLang).join('');
-    const suggestedFocusText =
-      sliceTranscriptViaPercentageOverlap(resultOfThis);
+    const suggestedFocusText = sliceTranscriptViaPercentageOverlap(
+      resultOfThis,
+      !isTrimmedLang(languageSelectedState),
+    );
 
     const finalSnippetObject = {
       id: uuidv4(),

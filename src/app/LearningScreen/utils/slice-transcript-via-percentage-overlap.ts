@@ -2,6 +2,7 @@ import { OverlappingSnippetData } from '@/app/types/shared-types';
 
 export const sliceTranscriptViaPercentageOverlap = (
   items: OverlappingSnippetData[],
+  addSentenceSpace = false,
 ) => {
   let result = '';
 
@@ -17,7 +18,13 @@ export const sliceTranscriptViaPercentageOverlap = (
     const safeStart = Math.min(startIndex, L);
     const safeEnd = Math.max(safeStart, Math.min(endIndex, L));
 
-    result += text.substring(safeStart, safeEnd);
+    const extractedText = text.substring(safeStart, safeEnd);
+    result += extractedText;
+
+    // Add space after each sentence for languages that use spaces between words
+    if (addSentenceSpace && extractedText) {
+      result += ' ';
+    }
   }
 
   return result;
