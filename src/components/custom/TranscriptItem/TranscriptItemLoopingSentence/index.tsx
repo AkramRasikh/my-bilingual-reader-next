@@ -57,7 +57,7 @@ const TranscriptItemLoopingSentence = ({
     };
   }, []);
 
-  const { htmlText, textMatch } = useMemo(() => {
+  const { htmlText, textMatch, matchStartKey, matchEndKey } = useMemo(() => {
     return highlightSnippetTextApprox(
       targetLang,
       suggestedFocusText,
@@ -98,11 +98,19 @@ const TranscriptItemLoopingSentence = ({
     const handleKeyDown = async (e: KeyboardEvent) => {
       const shiftKey = e.shiftKey;
 
-      if (shiftKey && e.key.toLowerCase() === '<') {
+      if (
+        shiftKey &&
+        e.key.toLowerCase() === '<' &&
+        matchEndKey > matchStartKey + 1
+      ) {
         setLengthAdjustmentState(lengthAdjustmentState - 1);
         return;
       }
-      if (shiftKey && e.key.toLowerCase() === '>') {
+      if (
+        shiftKey &&
+        e.key.toLowerCase() === '>' &&
+        matchEndKey < targetLang.length
+      ) {
         setLengthAdjustmentState(lengthAdjustmentState + 1);
         return;
       }
@@ -125,7 +133,14 @@ const TranscriptItemLoopingSentence = ({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [startIndexKeyState, lengthAdjustmentState, hasSnippetText]);
+  }, [
+    startIndexKeyState,
+    lengthAdjustmentState,
+    hasSnippetText,
+    matchEndKey,
+    matchStartKey,
+    targetLang,
+  ]);
 
   return (
     <div

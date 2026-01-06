@@ -171,8 +171,78 @@ describe('highlightSnippetTextApprox', () => {
         -10,
       );
 
-      // Should contract significantly
+      // Should contract significantly but not go backwards
       expect(result.textMatch.length).toBeLessThan(slicedText.length);
+      expect(result.matchEndKey).toBeGreaterThanOrEqual(result.matchStartKey);
+      expect(result.textMatch).toBe('q');
+    });
+
+    it('should prevent textEndIndex from being smaller than textStartIndex', () => {
+      const fullText = 'The quick brown fox jumps';
+      const slicedText = 'brown';
+
+      // Contract so much that it would flip
+      const result = highlightSnippetTextApprox(
+        fullText,
+        slicedText,
+        false,
+        0,
+        -20,
+      );
+
+      // Should clamp to empty string at start position, not flip
+      expect(result.matchEndKey).toBeGreaterThanOrEqual(result.matchStartKey);
+      expect(result.textMatch).toBe('');
+    });
+
+    it('should prevent startIndex from going below 0', () => {
+      const fullText = 'The quick brown fox';
+      const slicedText = 'quick';
+
+      const result = highlightSnippetTextApprox(
+        fullText,
+        slicedText,
+        false,
+        -100,
+        0,
+      );
+
+      expect(result.matchStartKey).toBe(0);
+    });
+
+    it('should prevent endIndex from exceeding text length', () => {
+      const fullText = 'The quick brown fox';
+      const slicedText = 'fox';
+
+      const result = highlightSnippetTextApprox(
+        fullText,
+        slicedText,
+        false,
+        0,
+        100,
+      );
+
+      expect(result.matchEndKey).toBeLessThanOrEqual(fullText.length);
+      // Should extend to end of text
+      expect(result.textMatch).toContain('fox');
+    });
+
+    it('should handle both boundaries exceeded simultaneously', () => {
+      const fullText = 'Short text';
+      const slicedText = 'text';
+
+      const result = highlightSnippetTextApprox(
+        fullText,
+        slicedText,
+        false,
+        -50,
+        100,
+      );
+
+      // Should clamp to valid range
+      expect(result.matchStartKey).toBe(0);
+      expect(result.matchEndKey).toBe(fullText.length);
+      expect(result.textMatch).toBe(fullText);
     });
 
     it('should handle extreme expansion', () => {
@@ -428,7 +498,10 @@ describe('highlightSnippetTextApprox', () => {
         0,
       );
 
-      expect(result).toBe(fullText);
+      // Empty sliced text results in zero-width highlight at position 0
+      expect(result.textMatch).toBe('');
+      expect(result.matchStartKey).toBe(0);
+      expect(result.matchEndKey).toBe(0);
     });
 
     it('should handle single character match', () => {
