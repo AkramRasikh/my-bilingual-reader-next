@@ -1,4 +1,4 @@
-function findApproxIndex(text, query) {
+function findApproxIndexForSnippet(text: string, query: string) {
   // If exact match exists, return it
   const exact = text.indexOf(query);
   if (exact !== -1) return exact;
@@ -29,13 +29,13 @@ function findApproxIndex(text, query) {
 }
 
 export function highlightSnippetTextApprox(
-  fullText,
-  slicedText,
-  isLoadingSaveSnippetState,
-  startIndexKeyState,
-  endIndexKeyState,
+  fullText: string,
+  slicedText: string,
+  isLoadingSaveSnippetState: boolean,
+  startIndexKeyState: number,
+  endIndexKeyState: number,
 ) {
-  const index = findApproxIndex(fullText, slicedText);
+  const index = findApproxIndexForSnippet(fullText, slicedText);
   if (index === -1) return fullText; // no suitable match
 
   const before = fullText.slice(0, index + startIndexKeyState);
