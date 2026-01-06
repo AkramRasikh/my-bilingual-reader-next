@@ -28,13 +28,13 @@ function findApproxIndexForSnippet(text: string, query: string) {
   return bestScore > 0.4 ? bestIndex : -1;
 }
 
-export function highlightSnippetTextApprox(
+export const highlightSnippetTextApprox = (
   fullText: string,
   slicedText: string,
   isLoadingSaveSnippetState: boolean,
   startIndexKeyState: number,
   endIndexKeyState: number,
-) {
+) => {
   const index = findApproxIndexForSnippet(fullText, slicedText);
   if (index === -1) return fullText; // no suitable match
 
@@ -47,15 +47,9 @@ export function highlightSnippetTextApprox(
 
   const opacityClass = isLoadingSaveSnippetState ? 'opacity-50' : '';
   return {
-    htmlText: `
-        ${before}
-        <span data-testid="highlighted-snippet-text" class="bg-yellow-200 shadow-yellow-500 shadow-sm px-1 rounded ${opacityClass}">
-            ${match}
-        </span>
-        ${after}
-    `,
+    htmlText: `${before}<span data-testid="highlighted-snippet-text" class="bg-yellow-200 shadow-yellow-500 shadow-sm px-1 rounded ${opacityClass}">${match}</span>${after}`,
     textMatch: match,
     matchStartKey: index + startIndexKeyState,
     matchEndKey: index + endIndexKeyState + slicedText.length,
   };
-}
+};
