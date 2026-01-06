@@ -889,7 +889,7 @@ const triggerContractedSnippet = async () => {
   );
 };
 
-const triggerMoveSnippetLeftAndRight = async () => {
+const triggerMoveSnippetLeftAndRightExpandAndContract = async () => {
   const highlightedSnippetTextPost = screen.getByTestId(
     'highlighted-snippet-text',
   );
@@ -917,6 +917,21 @@ const triggerMoveSnippetLeftAndRight = async () => {
   );
   expect(highlightedSnippetTextMovedRight.length).toEqual(
     highlightedSnippetTextPostTrimmed.length,
+  );
+
+  fireEvent.keyDown(document, { key: '<', shiftKey: true });
+  const highlightedSnippetTextContractedText = screen
+    .getByTestId('highlighted-snippet-text')
+    .textContent.trim();
+  expect(highlightedSnippetTextContractedText.length).toBe(
+    highlightedSnippetTextMovedRight.length - 1,
+  );
+  fireEvent.keyDown(document, { key: '>', shiftKey: true });
+  const highlightedSnippetTextExpandedText = screen
+    .getByTestId('highlighted-snippet-text')
+    .textContent.trim();
+  expect(highlightedSnippetTextExpandedText.length).toBe(
+    highlightedSnippetTextContractedText.length + 1,
   );
 };
 
@@ -1121,7 +1136,7 @@ describe('LearningScreen', () => {
 
     describe('Review snippets', () => {
       // just test for standard snippet and overlap snippet.
-      it('should allow to create and remove snippets from transcript', async () => {
+      it('should allow snippet creation and removal snippets from transcript', async () => {
         // Mock currentTime for this test
         Object.defineProperty(HTMLMediaElement.prototype, 'currentTime', {
           configurable: true,
@@ -1144,7 +1159,7 @@ describe('LearningScreen', () => {
 
         await triggerSnippetViaKeyboard();
         await triggerContractedSnippet();
-        await triggerMoveSnippetLeftAndRight();
+        await triggerMoveSnippetLeftAndRightExpandAndContract();
         await saveSnippet();
         await checkForRemovalOfPreSnippetUIComponents();
         await checkNewStableSnippetUIComponents();
