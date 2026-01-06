@@ -1,71 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import useTranscriptItem from './useTranscriptItem';
+import useTranscriptItem from '../useTranscriptItem';
 import { Button } from '@/components/ui/button';
 import clsx from 'clsx';
 import { Loader2, SaveIcon } from 'lucide-react';
-
-export function highlightApprox(
-  fullText,
-  slicedText,
-  isLoadingSaveSnippetState,
-  startIndexKeyState,
-  endIndexKeyState,
-) {
-  function findApproxIndex(text, query) {
-    // If exact match exists, return it
-    const exact = text.indexOf(query);
-    if (exact !== -1) return exact;
-
-    // Otherwise fuzzy: sliding window + similarity scoring
-    let bestIndex = 0;
-    let bestScore = 0;
-
-    const qLen = query.length;
-
-    for (let i = 0; i <= text.length - qLen; i++) {
-      const chunk = text.slice(i, i + qLen);
-
-      // similarity = proportion of matching characters
-      let score = 0;
-      for (let j = 0; j < qLen; j++) {
-        if (chunk[j] === query[j]) score++;
-      }
-      score = score / qLen;
-
-      if (score > bestScore) {
-        bestScore = score;
-        bestIndex = i;
-      }
-    }
-
-    return bestScore > 0.4 ? bestIndex : -1;
-    // threshold can be tuned
-  }
-
-  const index = findApproxIndex(fullText, slicedText);
-  if (index === -1) return fullText; // no suitable match
-
-  const before = fullText.slice(0, index + startIndexKeyState);
-  const match = fullText.slice(
-    index + startIndexKeyState,
-    index + endIndexKeyState + slicedText.length,
-  );
-  const after = fullText.slice(index + endIndexKeyState + slicedText.length);
-
-  const opacityClass = isLoadingSaveSnippetState ? 'opacity-50' : '';
-  return {
-    htmlText: `
-        ${before}
-        <span data-testid="highlighted-snippet-text" class="bg-yellow-200 shadow-yellow-500 shadow-sm px-1 rounded ${opacityClass}">
-            ${match}
-        </span>
-        ${after}
-    `,
-    textMatch: match,
-    matchStartKey: index + startIndexKeyState,
-    matchEndKey: index + endIndexKeyState + slicedText.length,
-  };
-}
+import { highlightSnippetTextApprox } from './highlight-snippet-text-approx';
 
 const TranscriptItemLoopingSentence = ({
   overlappingTextMemoized,
@@ -120,7 +58,7 @@ const TranscriptItemLoopingSentence = ({
   }, []);
 
   const { htmlText, textMatch } = useMemo(() => {
-    return highlightApprox(
+    return highlightSnippetTextApprox(
       targetLang,
       suggestedFocusText,
       isLoadingSaveSnippetState,
@@ -160,6 +98,14 @@ const TranscriptItemLoopingSentence = ({
     const handleKeyDown = async (e: KeyboardEvent) => {
       const shiftKey = e.shiftKey;
 
+      if (shiftKey && e.key.toLowerCase() === '<') {
+        setEndIndexKeyState(endIndexKeyState - 1);
+        return;
+      }
+      if (shiftKey && e.key.toLowerCase() === '>') {
+        setEndIndexKeyState(endIndexKeyState + 1);
+        return;
+      }
       if (e.key.toLowerCase() === ',') {
         setStartIndexKeyState(startIndexKeyState - 1);
         setEndIndexKeyState(endIndexKeyState - 1);

@@ -1,6 +1,5 @@
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
-import { highlightApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence';
 import { Button } from '@/components/ui/button';
 import clsx from 'clsx';
 import {
@@ -19,6 +18,7 @@ import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
 import HighlightedText from '@/components/custom/HighlightedText';
+import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
 
 export function expandWordsIntoChunks(words) {
   let globalIdx = 0;
@@ -141,7 +141,7 @@ const LearningScreenSnippetReview = ({
   };
 
   const { textMatch, matchStartKey, matchEndKey } = useMemo(() => {
-    return highlightApprox(
+    return highlightSnippetTextApprox(
       item.targetLang,
       item.focusedText || item.suggestedFocusText,
       isLoadingSaveSnippetState,
