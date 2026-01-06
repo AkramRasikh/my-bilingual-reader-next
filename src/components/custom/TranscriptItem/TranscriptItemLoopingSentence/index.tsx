@@ -114,11 +114,13 @@ const TranscriptItemLoopingSentence = ({
         setLengthAdjustmentState(lengthAdjustmentState + 1);
         return;
       }
-      if (e.key.toLowerCase() === ',') {
+      const stopUserSpillingOverStartPoint = !(matchStartKey <= 0);
+      if (e.key.toLowerCase() === ',' && stopUserSpillingOverStartPoint) {
         setStartIndexKeyState(startIndexKeyState - 1);
         return;
       }
-      if (e.key.toLowerCase() === '.') {
+      const stopUserSpillingOverEndPoint = !(matchEndKey >= targetLang.length);
+      if (e.key.toLowerCase() === '.' && stopUserSpillingOverEndPoint) {
         setStartIndexKeyState(startIndexKeyState + 1);
         return;
       }
