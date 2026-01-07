@@ -9,7 +9,6 @@ import {
   srsRetentionKey,
   srsRetentionKeyTypes,
 } from '../srs-utils/srs-algo';
-import { threeSecondLoopLogicLegacy } from './hooks/useManageThreeSecondLoopLegacy';
 import useManageLoopInit from './hooks/useManageLoopInit';
 import { useLoopSecondsHook } from './hooks/useMapTranscriptToSeconds';
 import { useSavedSnippetsMemoized } from './hooks/useSavedSnippetsMemoized';
@@ -22,6 +21,7 @@ import { WordTypes } from '../types/word-types';
 import { sliceTranscriptViaPercentageOverlap } from './utils/slice-transcript-via-percentage-overlap';
 import { isTrimmedLang } from '../languages';
 import useManageThreeSecondLoopMemo from './hooks/useManageThreeSecondLoopMemo';
+import { getSecondsLoopedTranscriptData } from './hooks/getSecondsLoopedTranscriptData';
 
 export const LearningScreenContext = createContext(null);
 
@@ -213,18 +213,11 @@ export const LearningScreenProvider = ({
   ) => {
     const startTime = thisSnippetsTime - 1.5;
     const endTime = thisSnippetsTime + 1.5;
-    const fauxRef = {
-      currentTime: null,
-    };
 
-    const idsOfOverlappingSentences = threeSecondLoopLogicLegacy({
-      refSeconds: fauxRef,
-      threeSecondLoopState: currentTime,
+    const idsOfOverlappingSentences = getSecondsLoopedTranscriptData({
       formattedTranscriptState: formattedTranscriptMemoized,
-      realStartTime: 0,
-      startTime,
-      endTime,
-      setState: null,
+      loopStartTime: startTime,
+      loopEndTime: endTime,
     })?.map((i) => i.id);
 
     if (idsOfOverlappingSentences?.length === 0) {
@@ -255,28 +248,22 @@ export const LearningScreenProvider = ({
       return null;
     }
 
-    const fauxRef = {
-      currentTime: null,
-    };
-
     const timeNow = new Date();
 
     const { nextScheduledOptions } = srsCalculationAndText({
       contentType: srsRetentionKey.snippet,
       timeNow,
+      reviewData: null,
     });
     const startTime = currentTime - 1.5;
     const endTime = currentTime + 1.5;
 
     const reviewData = nextScheduledOptions['1'].card;
 
-    const resultOfThis = threeSecondLoopLogicLegacy({
-      refSeconds: fauxRef,
-      threeSecondLoopState: currentTime,
+    const resultOfThis = getSecondsLoopedTranscriptData({
       formattedTranscriptState: formattedTranscriptMemoized,
-      realStartTime: 0,
-      startTime,
-      endTime,
+      loopStartTime: startTime,
+      loopEndTime: endTime,
     });
 
     if (!resultOfThis || resultOfThis?.length === 0) {
@@ -1097,12 +1084,10 @@ export const LearningScreenProvider = ({
 
       const snippetStartTime = snippetTime - (snippetIsContracted ? 0.75 : 1.5);
       const snippetEndTime = snippetTime + (snippetIsContracted ? 0.75 : 1.5);
-      const overlappingSentenceData = threeSecondLoopLogicLegacy({
-        refSeconds: { currentTime: null },
-        threeSecondLoopState: snippetTime,
+      const overlappingSentenceData = getSecondsLoopedTranscriptData({
         formattedTranscriptState: formattedTranscriptMemoized,
-        startTime: snippetStartTime,
-        endTime: snippetEndTime,
+        loopStartTime: snippetStartTime,
+        loopEndTime: snippetEndTime,
       });
 
       if (!overlappingSentenceData) {
