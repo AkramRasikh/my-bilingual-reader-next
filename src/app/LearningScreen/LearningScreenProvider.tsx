@@ -37,6 +37,12 @@ type LearningScreenProviderProps = React.PropsWithChildren<{
   selectedContentStateMemoized: ContentTypes & { contentIndex: number };
 }>;
 
+type OverlappingTextTypes = {
+  targetLang: string;
+  baseLang: string;
+  suggestedFocusText: string;
+};
+
 export const LearningScreenProvider = ({
   selectedContentStateMemoized,
   children,
@@ -134,7 +140,7 @@ export const LearningScreenProvider = ({
           }
         }
 
-        const isDueNow = new Date(hasBeenReviewed) < now;
+        const isDueNow = hasBeenReviewed && new Date(hasBeenReviewed) < now;
         const dueStatus = !hasBeenReviewed ? '' : isDueNow ? 'now' : 'pending';
 
         const targetLangformatted = underlineWordsInSentence(
@@ -149,7 +155,8 @@ export const LearningScreenProvider = ({
         // Check if next item is due
         const nextItem = content[index + 1];
         const nextHasBeenReviewed = nextItem?.reviewData?.due;
-        const nextIsDueNow = new Date(nextHasBeenReviewed) < now;
+        const nextIsDueNow =
+          nextHasBeenReviewed && new Date(nextHasBeenReviewed) < now;
         const nextDueStatus = !nextHasBeenReviewed
           ? ''
           : nextIsDueNow
@@ -360,7 +367,7 @@ export const LearningScreenProvider = ({
     return boolReturn;
   };
 
-  const handleSaveSnippet = async (snippetArgs) => {
+  const handleSaveSnippet = async (snippetArgs: OverlappingTextTypes) => {
     const contentSnippets = selectedContentStateMemoized?.snippets || [];
     const hasThisSnippet =
       contentSnippets?.length === 0
@@ -458,7 +465,7 @@ export const LearningScreenProvider = ({
     });
   };
 
-  const handleJumpToFirstElInReviewTranscript = (isSecondIndex) => {
+  const handleJumpToFirstElInReviewTranscript = (isSecondIndex?: boolean) => {
     if (!isNumber(firstDueIndexMemoized) || !sentenceMapMemoized) {
       return;
     }
@@ -996,13 +1003,13 @@ export const LearningScreenProvider = ({
     firstSentenceDueTime,
   ]);
 
-  const overlappingTextMemoized = useMemo(() => {
+  const overlappingTextMemoized: OverlappingTextTypes | null = useMemo(() => {
     if (
       !threeSecondLoopState ||
       !overlappingSnippetDataMemoised ||
       overlappingSnippetDataMemoised.length === 0
     ) {
-      return;
+      return null;
     }
 
     const overlappingIds = overlappingSnippetDataMemoised.map(
