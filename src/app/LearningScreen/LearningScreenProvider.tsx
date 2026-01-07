@@ -396,6 +396,12 @@ export const LearningScreenProvider = ({
   };
 
   const handleDeleteSnippet = async (snippetId, wordsFromSentence) => {
+    if (
+      !selectedContentStateMemoized?.snippets ||
+      selectedContentStateMemoized?.snippets?.length === 0
+    ) {
+      return;
+    }
     let updatedSnippets = [];
     if (wordsFromSentence) {
       updatedSnippets = selectedContentStateMemoized.snippets.map((item) => {
