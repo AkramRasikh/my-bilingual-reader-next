@@ -1,3 +1,4 @@
+import { SentenceMapItemTypes } from '@/app/types/content-types';
 import { OverlappingSnippetData } from '@/app/types/shared-types';
 
 export const getSecondsLoopedTranscriptData = ({
@@ -6,7 +7,7 @@ export const getSecondsLoopedTranscriptData = ({
   loopEndTime,
   mediaDuration,
 }: {
-  formattedTranscriptState: any[];
+  formattedTranscriptState: SentenceMapItemTypes[];
   loopStartTime: number;
   loopEndTime: number;
   mediaDuration: number | null;
@@ -16,6 +17,9 @@ export const getSecondsLoopedTranscriptData = ({
   formattedTranscriptState.forEach((item) => {
     const start = item.time;
     const end = item?.nextSentence ? item.nextSentence : mediaDuration;
+    if (!end) {
+      return;
+    }
     const duration = end - start;
 
     const overlapStart = Math.max(start, loopStartTime);
