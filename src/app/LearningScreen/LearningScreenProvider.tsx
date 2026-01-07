@@ -21,7 +21,7 @@ import { WordTypes } from '../types/word-types';
 import { sliceTranscriptViaPercentageOverlap } from './utils/slice-transcript-via-percentage-overlap';
 import { isTrimmedLang } from '../languages';
 import useManageThreeSecondLoopMemo from './hooks/useManageThreeSecondLoopMemo';
-import { getSecondsLoopedTranscriptData } from './hooks/getSecondsLoopedTranscriptData';
+import { getSecondsLoopedTranscriptData } from './utils/get-seconds-looped-transcript-data';
 
 export const LearningScreenContext = createContext(null);
 

@@ -1,6 +1,6 @@
 import { isNumber } from '@/utils/is-number';
 import { useMemo, useRef } from 'react';
-import { getSecondsLoopedTranscriptData } from './getSecondsLoopedTranscriptData';
+import { getSecondsLoopedTranscriptData } from '../utils/get-seconds-looped-transcript-data';
 
 const useManageThreeSecondLoopMemo = ({
   threeSecondLoopState,
