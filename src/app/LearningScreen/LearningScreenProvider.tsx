@@ -221,15 +221,7 @@ export const LearningScreenProvider = ({
     const startTime = thisSnippetsTime - 1.5;
     const endTime = thisSnippetsTime + 1.5;
 
-    const idsOfOverlappingSentences = getSecondsLoopedTranscriptData({
-      formattedTranscriptState: getLoopTranscriptSegment({
-        startTime,
-        endTime,
-      }),
-      loopStartTime: startTime,
-      loopEndTime: endTime,
-      mediaDuration,
-    })?.map((i) => i.id);
+    const idsOfOverlappingSentences = getSlicedSecondsArray(startTime, endTime);
 
     if (idsOfOverlappingSentences?.length === 0) {
       return null;
