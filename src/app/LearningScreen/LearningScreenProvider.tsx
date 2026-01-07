@@ -28,6 +28,7 @@ import {
   SentenceMapItemTypes,
 } from '../types/content-types';
 import { getUniqueSegmentOfArray } from './utils/get-unique-segment-of-array';
+import { OverlappingSnippetData } from '../types/shared-types';
 
 export const LearningScreenContext = createContext(null);
 
@@ -325,8 +326,6 @@ export const LearningScreenProvider = ({
         contentId,
         contentIndex,
       });
-    } catch (error) {
-      console.log('## handleQuickSaveSnippet error', error);
     } finally {
       setIsGenericItemLoadingState((prev) =>
         prev.filter((item) => !overlappingIds.includes(item)),
@@ -335,7 +334,10 @@ export const LearningScreenProvider = ({
   };
 
   const handleUpdateSnippet = async (snippetToUpdate) => {
-    const contentSnippets = selectedContentStateMemoized.snippets;
+    const contentSnippets = selectedContentStateMemoized?.snippets;
+    if (!contentSnippets || contentSnippets.length === 0) {
+      return;
+    }
     const updatedSnippetArray = contentSnippets.map((item) => {
       if (snippetToUpdate.id === item.id) {
         return {
@@ -426,6 +428,12 @@ export const LearningScreenProvider = ({
   };
 
   const handleUpdateSnippetReview = async (snippetArgs) => {
+    if (
+      !selectedContentStateMemoized?.snippets ||
+      selectedContentStateMemoized.snippets.length === 0
+    ) {
+      return;
+    }
     const snippetId = snippetArgs.id;
     const fieldToUpdate = snippetArgs.fieldToUpdate;
     const updatedSnippets = selectedContentStateMemoized.snippets.map(
@@ -685,24 +693,20 @@ export const LearningScreenProvider = ({
       contentType: srsRetentionKeyTypes.sentences,
     });
 
-    try {
-      const result = await updateSentenceData({
-        topicName: selectedContentTitleState,
-        sentenceId,
-        fieldToUpdate: isRemoveReview
-          ? { removeReview: true }
-          : {
-              reviewData: nextDue || nextScheduledOptions['1'].card,
-            },
-        contentIndex: contentIndex,
-        isRemoveReview,
-        indexKey: selectedContentStateMemoized.id,
-      });
-      if (result) {
-        setSentenceRepsState(sentenceRepsState + 1);
-      }
-    } catch (error) {
-      console.log('## handleReviewFunc error', error);
+    const result = await updateSentenceData({
+      topicName: selectedContentTitleState,
+      sentenceId,
+      fieldToUpdate: isRemoveReview
+        ? { removeReview: true }
+        : {
+            reviewData: nextDue || nextScheduledOptions['1'].card,
+          },
+      contentIndex: contentIndex,
+      isRemoveReview,
+      indexKey: selectedContentStateMemoized.id,
+    });
+    if (result) {
+      setSentenceRepsState(sentenceRepsState + 1);
     }
   };
 
@@ -812,8 +816,6 @@ export const LearningScreenProvider = ({
         targetLang: masterPlayComprehensive.targetLang,
         contentIndex,
       });
-    } catch (error) {
-      console.log('## handleBreakdownMasterSentence error', error);
     } finally {
       setIsBreakingDownSentenceArrState((prev) =>
         prev.filter((item) => item !== masterPlayComprehensive.id),
@@ -870,8 +872,6 @@ export const LearningScreenProvider = ({
         nextDue: nextReviewData,
       });
       setSentenceRepsState(sentenceRepsState + 1);
-    } catch (error) {
-      console.log('## handleIsEasyReviewShortCut', error);
     } finally {
       setIsGenericItemLoadingState((prev) =>
         prev.filter((item) => item !== masterPlayComprehensive.id),
@@ -992,7 +992,6 @@ export const LearningScreenProvider = ({
     }, [selectedContentStateMemoized, enableSnippetReviewState]);
 
   const firstTime = useMemo(() => {
-    // Combine potential candidates from both arrays, normalized to a common structure
     if (!isInReviewMode) {
       return null;
     }
@@ -1106,7 +1105,7 @@ export const LearningScreenProvider = ({
       return null;
     }
 
-    const allSentenceIntervals = [];
+    const allSentenceIntervals = [] as OverlappingSnippetData[];
 
     contentSnippets.forEach((snippetEl) => {
       const snippetTime = snippetEl.time;
@@ -1181,7 +1180,6 @@ export const LearningScreenProvider = ({
         sentenceIds: overlappedSentencesViableForReviewMemoized.keyArray,
       });
       setSentenceRepsState((prev) => prev + sentenceIds.length);
-    } catch (error) {
     } finally {
       setIsGenericItemLoadingState((prev) =>
         prev.filter((item) => !sentenceIds.includes(item)),
