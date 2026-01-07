@@ -2,7 +2,7 @@ import { isNumber } from '@/utils/is-number';
 import { useEffect, useRef } from 'react';
 import { OverlappingSnippetData } from '@/app/types/shared-types';
 
-export const threeSecondLoopLogic = ({
+export const threeSecondLoopLogicLegacy = ({
   refSeconds,
   threeSecondLoopState,
   formattedTranscriptState,
@@ -104,7 +104,7 @@ const useManageThreeSecondLoopLegacy = ({
       const endTime =
         threeSecondLoopState + (contractThreeSecondLoopState ? 0.75 : 1.5);
 
-      threeSecondLoopLogic({
+      threeSecondLoopLogicLegacy({
         refSeconds,
         threeSecondLoopState,
         formattedTranscriptState,

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { threeSecondLoopLogic } from './useManageThreeSecondLoopLegacy';
+import { threeSecondLoopLogicLegacy } from './useManageThreeSecondLoopLegacy';
 
 export const useSavedSnippetsMemoized = (
   snippets: any[] | undefined,
@@ -19,7 +19,7 @@ export const useSavedSnippetsMemoized = (
       const endTime =
         snippetData.time + (snippetData?.isContracted ? 0.75 : 1.5);
 
-      const resultOfThis = threeSecondLoopLogic({
+      const resultOfThis = threeSecondLoopLogicLegacy({
         refSeconds: loopDataRef,
         threeSecondLoopState: snippetData.time,
         formattedTranscriptState: formattedTranscriptMemoized,

@@ -9,7 +9,7 @@ import {
   srsRetentionKey,
   srsRetentionKeyTypes,
 } from '../srs-utils/srs-algo';
-import { threeSecondLoopLogic } from './hooks/useManageThreeSecondLoopLegacy';
+import { threeSecondLoopLogicLegacy } from './hooks/useManageThreeSecondLoopLegacy';
 import useManageLoopInit from './hooks/useManageLoopInit';
 import { useLoopSecondsHook } from './hooks/useMapTranscriptToSeconds';
 import { useSavedSnippetsMemoized } from './hooks/useSavedSnippetsMemoized';
@@ -217,7 +217,7 @@ export const LearningScreenProvider = ({
       currentTime: null,
     };
 
-    const idsOfOverlappingSentences = threeSecondLoopLogic({
+    const idsOfOverlappingSentences = threeSecondLoopLogicLegacy({
       refSeconds: fauxRef,
       threeSecondLoopState: currentTime,
       formattedTranscriptState: formattedTranscriptMemoized,
@@ -270,7 +270,7 @@ export const LearningScreenProvider = ({
 
     const reviewData = nextScheduledOptions['1'].card;
 
-    const resultOfThis = threeSecondLoopLogic({
+    const resultOfThis = threeSecondLoopLogicLegacy({
       refSeconds: fauxRef,
       threeSecondLoopState: currentTime,
       formattedTranscriptState: formattedTranscriptMemoized,
@@ -1097,7 +1097,7 @@ export const LearningScreenProvider = ({
 
       const snippetStartTime = snippetTime - (snippetIsContracted ? 0.75 : 1.5);
       const snippetEndTime = snippetTime + (snippetIsContracted ? 0.75 : 1.5);
-      const overlappingSentenceData = threeSecondLoopLogic({
+      const overlappingSentenceData = threeSecondLoopLogicLegacy({
         refSeconds: { currentTime: null },
         threeSecondLoopState: snippetTime,
         formattedTranscriptState: formattedTranscriptMemoized,
