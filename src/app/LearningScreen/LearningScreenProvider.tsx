@@ -9,11 +9,8 @@ import {
   srsRetentionKey,
   srsRetentionKeyTypes,
 } from '../srs-utils/srs-algo';
-import useManageThreeSecondLoop, {
-  threeSecondLoopLogic,
-} from './hooks/useManageThreeSecondLoop';
+import { threeSecondLoopLogic } from './hooks/useManageThreeSecondLoop';
 import useManageLoopInit from './hooks/useManageLoopInit';
-import { OverlappingSnippetData } from '../types/shared-types';
 import { useLoopSecondsHook } from './hooks/useMapTranscriptToSeconds';
 import { useSavedSnippetsMemoized } from './hooks/useSavedSnippetsMemoized';
 import { isDueCheck } from '@/utils/is-due-check';
@@ -24,6 +21,7 @@ import { useFetchData } from '../Providers/FetchDataProvider';
 import { WordTypes } from '../types/word-types';
 import { sliceTranscriptViaPercentageOverlap } from './utils/slice-transcript-via-percentage-overlap';
 import { isTrimmedLang } from '../languages';
+import useManageThreeSecondLoopMemo from './hooks/useManageThreeSecondLoopMemo';
 
 export const LearningScreenContext = createContext(null);
 
@@ -57,13 +55,11 @@ export const LearningScreenProvider = ({
   const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
     [],
   );
-  const [overlappingSnippetDataState, setOverlappingSnippetDataState] =
-    useState<OverlappingSnippetData[]>([]);
 
   const [loopTranscriptState, setLoopTranscriptState] = useState([]);
   const [threeSecondLoopState, setThreeSecondLoopState] = useState<
     number | null
-  >();
+  >(null);
   const [progress, setProgress] = useState(0);
   const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
     useState(false);
@@ -511,13 +507,10 @@ export const LearningScreenProvider = ({
     }
   }, [isInReviewMode, studyFromHereTimeState]);
 
-  useManageThreeSecondLoop({
+  const overlappingSnippetDataMemoised = useManageThreeSecondLoopMemo({
     threeSecondLoopState,
     contractThreeSecondLoopState,
     formattedTranscriptState: loopedTranscriptMemoized,
-    realStartTime: 0,
-    setOverlappingSnippetDataState,
-    overlappingSnippetDataState,
     isRealEndTime: ref.current?.duration,
   });
 
@@ -1005,13 +998,15 @@ export const LearningScreenProvider = ({
   const overlappingTextMemoized = useMemo(() => {
     if (
       !threeSecondLoopState ||
-      !overlappingSnippetDataState ||
-      overlappingSnippetDataState.length === 0
+      !overlappingSnippetDataMemoised ||
+      overlappingSnippetDataMemoised.length === 0
     ) {
       return;
     }
 
-    const overlappingIds = overlappingSnippetDataState.map((item) => item.id);
+    const overlappingIds = overlappingSnippetDataMemoised.map(
+      (item) => item.id,
+    );
     const entries = loopedTranscriptMemoized.filter((x) =>
       overlappingIds.includes(x.id),
     );
@@ -1023,11 +1018,11 @@ export const LearningScreenProvider = ({
       targetLang,
       baseLang,
       suggestedFocusText: sliceTranscriptViaPercentageOverlap(
-        overlappingSnippetDataState,
+        overlappingSnippetDataMemoised,
       ),
     };
   }, [
-    overlappingSnippetDataState,
+    overlappingSnippetDataMemoised,
     threeSecondLoopState,
     loopedTranscriptMemoized,
   ]);
@@ -1194,8 +1189,7 @@ export const LearningScreenProvider = ({
         setIsGenericItemLoadingState,
         breakdownSentencesArrState,
         setBreakdownSentencesArrState,
-        overlappingSnippetDataState,
-        setOverlappingSnippetDataState,
+        overlappingSnippetDataState: overlappingSnippetDataMemoised,
         loopTranscriptState,
         setLoopTranscriptState,
         threeSecondLoopState,
