@@ -26,6 +26,7 @@ import {
   ContentTypes,
   FormattedTranscriptTypes,
   SentenceMapItemTypes,
+  Snippet,
 } from '../types/content-types';
 import { getUniqueSegmentOfArray } from './utils/get-unique-segment-of-array';
 import { OverlappingSnippetData } from '../types/shared-types';
@@ -942,21 +943,6 @@ export const LearningScreenProvider = ({
     return sentencesForReviewMemoized;
   }, [learnFormattedTranscript, isInReviewMode, wordsForSelectedTopicMemoized]);
 
-  const groupedByContextBySentence = useMemo(() => {
-    if (!isInReviewMode || wordsForSelectedTopicMemoized?.length === 0) {
-      return [];
-    }
-
-    return sentencesForReviewMemoized.reduce((acc, obj) => {
-      const key = obj.contexts[0];
-      if (!acc[key]) {
-        acc[key] = [];
-      }
-      acc[key].push(obj);
-      return acc;
-    }, {});
-  }, [sentencesForReviewMemoized]);
-
   const { snippetsWithDueStatusMemoized, earliestSnippetDueTime } =
     useMemo(() => {
       if (
@@ -971,9 +957,9 @@ export const LearningScreenProvider = ({
       }
       const now = new Date();
 
-      const snippetsWithDueStatusMemoized = [];
+      const snippetsWithDueStatusMemoized = [] as Snippet[];
       selectedContentStateMemoized?.snippets?.forEach((item) => {
-        if (new Date(item?.reviewData?.due) < now) {
+        if (isDueCheck(item, now)) {
           snippetsWithDueStatusMemoized.push(item);
         }
       });
@@ -1259,7 +1245,6 @@ export const LearningScreenProvider = ({
         setErrorVideoState,
         handleJumpToFirstElInReviewTranscript,
         learnFormattedTranscript,
-        groupedByContextBySentence,
         sentencesForReviewMemoized,
         firstTime,
         handleSaveSnippet,
