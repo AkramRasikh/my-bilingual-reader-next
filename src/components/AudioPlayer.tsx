@@ -5,6 +5,7 @@ const AudioPlayer = ({
   audioUrl,
   setIsVideoPlaying,
   handleTimeUpdate,
+  onLoadedMetadata,
 }) => {
   useEffect(() => {
     const video = ref?.current;
@@ -31,6 +32,7 @@ const AudioPlayer = ({
           controls
           className='w-full'
           onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={onLoadedMetadata}
         />
       </div>
     </div>

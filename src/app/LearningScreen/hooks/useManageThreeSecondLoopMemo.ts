@@ -6,18 +6,18 @@ const useManageThreeSecondLoopMemo = ({
   threeSecondLoopState,
   contractThreeSecondLoopState,
   formattedTranscriptState,
-  isRealEndTime,
+  mediaDuration,
 }: {
   threeSecondLoopState: number | null;
   contractThreeSecondLoopState: boolean;
   formattedTranscriptState: any[];
-  isRealEndTime?: number;
+  mediaDuration: number | null;
 }) => {
   const refSeconds = useRef<number | null>(null);
   const prevContractThreeSecondLoopState = useRef(contractThreeSecondLoopState);
 
   return useMemo(() => {
-    if (!threeSecondLoopState) {
+    if (!threeSecondLoopState || !mediaDuration) {
       return [];
     }
     if (!formattedTranscriptState || formattedTranscriptState.length === 0) {
@@ -47,13 +47,13 @@ const useManageThreeSecondLoopMemo = ({
       formattedTranscriptState,
       loopStartTime,
       loopEndTime,
-      isRealEndTime,
+      mediaDuration,
     });
   }, [
     threeSecondLoopState,
     contractThreeSecondLoopState,
     formattedTranscriptState,
-    isRealEndTime,
+    mediaDuration,
   ]);
 };
 

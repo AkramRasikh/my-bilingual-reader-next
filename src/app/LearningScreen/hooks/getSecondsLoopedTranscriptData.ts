@@ -4,12 +4,12 @@ export const getSecondsLoopedTranscriptData = ({
   formattedTranscriptState,
   loopStartTime,
   loopEndTime,
-  isRealEndTime,
+  mediaDuration,
 }: {
   formattedTranscriptState: any[];
   loopStartTime: number;
   loopEndTime: number;
-  isRealEndTime?: number;
+  mediaDuration?: number;
 }): OverlappingSnippetData[] | void => {
   const results: OverlappingSnippetData[] = [];
 
@@ -17,8 +17,8 @@ export const getSecondsLoopedTranscriptData = ({
     const start = item.time;
     const end = item?.nextSentence
       ? item.nextSentence
-      : isRealEndTime
-      ? isRealEndTime
+      : mediaDuration
+      ? mediaDuration
       : index < formattedTranscriptState.length - 1
       ? formattedTranscriptState[index + 1].time
       : start;

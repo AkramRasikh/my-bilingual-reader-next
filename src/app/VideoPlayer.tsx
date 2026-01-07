@@ -10,6 +10,7 @@ const VideoPlayer = ({
   url,
   ref,
   handleTimeUpdate,
+  onLoadedMetadata,
   setIsVideoPlaying,
   threeSecondLoopState,
   handleSaveSnippet,
@@ -82,6 +83,7 @@ const VideoPlayer = ({
         controls
         className='w-full rounded-lg shadow-lg m-auto'
         onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={onLoadedMetadata}
       >
         Your browser does not support the video tag.
       </video>

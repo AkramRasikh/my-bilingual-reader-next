@@ -1075,14 +1075,26 @@ describe('LearningScreen', () => {
     jest.clearAllMocks();
   });
 
-  const renderWithProvider = (selectedContent = mockSelectedContent) => {
-    return render(
+  const renderWithProvider = async (selectedContent = mockSelectedContent) => {
+    const result = render(
       <FetchDataProvider>
         <LearningScreenProvider selectedContentStateMemoized={selectedContent}>
           <ContentScreen />
         </LearningScreenProvider>
       </FetchDataProvider>,
     );
+
+    // Wait for video/audio element to be mounted and trigger loadedmetadata event
+    await waitFor(() => {
+      const videoElement =
+        document.querySelector('video') || document.querySelector('audio');
+      expect(videoElement).toBeInTheDocument();
+      if (videoElement) {
+        fireEvent.loadedMetadata(videoElement);
+      }
+    });
+
+    return result;
   };
 
   describe('studying new content', () => {
@@ -1105,7 +1117,7 @@ describe('LearningScreen', () => {
 
     describe('Review sentences', () => {
       it('should render a blank project with no previously reviewed content', async () => {
-        renderWithProvider();
+        await renderWithProvider();
         expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
 
         checkMetaDataOnLoad();
@@ -1125,7 +1137,7 @@ describe('LearningScreen', () => {
 
     describe('Review words', () => {
       it('should allow to add and remove words from transcript', async () => {
-        renderWithProvider();
+        await renderWithProvider();
         expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
         await saveWordFirstInTranscript();
         await saveWordSecondInTranscript();
@@ -1148,7 +1160,7 @@ describe('LearningScreen', () => {
           },
         });
 
-        renderWithProvider();
+        await renderWithProvider();
         expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
         expect(
           screen.queryByTestId('video-player-snippet-text'),
@@ -1538,7 +1550,7 @@ describe('LearningScreen', () => {
         });
     });
     it('should allow user to review words/sentences/snippets', async () => {
-      renderWithProvider(mockSelectedContentWithDueData);
+      await renderWithProvider(mockSelectedContentWithDueData);
       const onLoadTitle = await screen.findByText(mockTitle);
       expect(onLoadTitle).toBeDefined();
       checkForDefaultReviewModeMetaData();

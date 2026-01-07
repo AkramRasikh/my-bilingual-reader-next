@@ -10,7 +10,7 @@ export const threeSecondLoopLogicLegacy = ({
   setState,
   startTime,
   endTime,
-  isRealEndTime,
+  mediaDuration,
 }: {
   refSeconds: React.MutableRefObject<number | null>;
   threeSecondLoopState: number;
@@ -19,7 +19,7 @@ export const threeSecondLoopLogicLegacy = ({
   setState?: (data: OverlappingSnippetData[]) => void;
   startTime: number;
   endTime: number;
-  isRealEndTime?: number;
+  mediaDuration?: number;
 }): OverlappingSnippetData[] | void => {
   const results: OverlappingSnippetData[] = [];
 
@@ -27,8 +27,8 @@ export const threeSecondLoopLogicLegacy = ({
     const start = item.time + realStartTime;
     const end = item?.nextSentence
       ? item.nextSentence
-      : isRealEndTime
-      ? isRealEndTime
+      : mediaDuration
+      ? mediaDuration
       : index < formattedTranscriptState.length - 1
       ? formattedTranscriptState[index + 1].time + realStartTime
       : start;
@@ -71,7 +71,7 @@ const useManageThreeSecondLoopLegacy = ({
   realStartTime,
   setOverlappingSnippetDataState,
   overlappingSnippetDataState,
-  isRealEndTime,
+  mediaDuration,
 }: {
   threeSecondLoopState: number | null;
   contractThreeSecondLoopState: boolean;
@@ -79,7 +79,7 @@ const useManageThreeSecondLoopLegacy = ({
   realStartTime: number;
   setOverlappingSnippetDataState: (data: OverlappingSnippetData[]) => void;
   overlappingSnippetDataState: OverlappingSnippetData[];
-  isRealEndTime?: number;
+  mediaDuration?: number;
 }) => {
   const refSeconds = useRef<number | null>(null);
   const prevContractThreeSecondLoopState = useRef(contractThreeSecondLoopState);
@@ -112,7 +112,7 @@ const useManageThreeSecondLoopLegacy = ({
         setState: setOverlappingSnippetDataState,
         startTime,
         endTime,
-        isRealEndTime,
+        mediaDuration,
       });
     }
 
@@ -122,7 +122,7 @@ const useManageThreeSecondLoopLegacy = ({
     contractThreeSecondLoopState,
     realStartTime,
     formattedTranscriptState,
-    isRealEndTime,
+    mediaDuration,
   ]);
 };
 

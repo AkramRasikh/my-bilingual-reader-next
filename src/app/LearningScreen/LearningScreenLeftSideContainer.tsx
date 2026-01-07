@@ -21,6 +21,8 @@ const LearningScreenLeftSideContainer = () => {
     threeSecondLoopState,
     ref,
     handleTimeUpdate,
+    handleLoadedMetadata,
+    mediaDuration,
     selectedContentState,
     errorVideoState,
     setErrorVideoState,
@@ -62,6 +64,7 @@ const LearningScreenLeftSideContainer = () => {
           ref={ref}
           url={videoUrl}
           handleTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
           setIsVideoPlaying={setIsVideoPlaying}
           threeSecondLoopState={threeSecondLoopState}
           handleSaveSnippet={handleSaveSnippet}
@@ -72,6 +75,7 @@ const LearningScreenLeftSideContainer = () => {
           <AudioPlayer
             ref={ref}
             handleTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={handleLoadedMetadata}
             audioUrl={audioUrl}
             setIsVideoPlaying={setIsVideoPlaying}
           />
@@ -90,9 +94,9 @@ const LearningScreenLeftSideContainer = () => {
           </div>
         </div>
       )}
-      {ref?.current?.duration ? (
+      {mediaDuration ? (
         <TranscriptTimeline
-          videoDuration={ref.current.duration}
+          videoDuration={mediaDuration}
           words={words}
           sentences={sentences}
           snippets={snippetsWithDueStatusMemoized}

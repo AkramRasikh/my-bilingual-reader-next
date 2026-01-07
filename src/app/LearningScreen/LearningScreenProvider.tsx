@@ -72,6 +72,7 @@ export const LearningScreenProvider = ({
   const [enableSnippetReviewState, setEnableSnippetReviewState] =
     useState(true);
   const [reviewIntervalState, setReviewIntervalState] = useState(60);
+  const [mediaDuration, setMediaDuration] = useState<number | null>(null);
 
   const {
     pureWordsMemoized,
@@ -196,6 +197,12 @@ export const LearningScreenProvider = ({
   const handleTimeUpdate = () => {
     if (ref.current) {
       setCurrentTime(ref.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (ref.current?.duration) {
+      setMediaDuration(ref.current.duration);
     }
   };
 
@@ -440,18 +447,18 @@ export const LearningScreenProvider = ({
   };
 
   const secondsStateMemoized = useMemo(() => {
-    if (!ref.current?.duration) {
+    if (!mediaDuration) {
       return [];
     }
     const arrOfSeconds = mapSentenceIdsToSeconds({
       content: selectedContentStateMemoized.content,
-      duration: ref.current?.duration,
+      duration: mediaDuration,
       isVideoModeState: true,
       realStartTime: 0,
     });
 
     return arrOfSeconds;
-  }, [ref.current?.duration, selectedContentStateMemoized]);
+  }, [mediaDuration, selectedContentStateMemoized]);
 
   const loopedTranscriptMemoized = useMemo(() => {
     if (!threeSecondLoopState || secondsStateMemoized.length === 0) {
@@ -497,7 +504,7 @@ export const LearningScreenProvider = ({
     threeSecondLoopState,
     contractThreeSecondLoopState,
     formattedTranscriptState: loopedTranscriptMemoized,
-    isRealEndTime: ref.current?.duration,
+    mediaDuration,
   });
 
   const masterPlay =
@@ -712,7 +719,7 @@ export const LearningScreenProvider = ({
         ...masterPlayComprehensive,
         nextTime:
           thisIndex === formattedTranscriptMemoized.length - 1
-            ? ref.current.duration - 0.05
+            ? mediaDuration - 0.05
             : thisIndex === 0
             ? 0
             : formattedTranscriptMemoized[thisIndex - 1].time,
@@ -1159,6 +1166,8 @@ export const LearningScreenProvider = ({
       value={{
         handlePlayFromHere,
         handleTimeUpdate,
+        handleLoadedMetadata,
+        mediaDuration,
         ref,
         currentTime,
         formattedTranscriptState: formattedTranscriptMemoized,
