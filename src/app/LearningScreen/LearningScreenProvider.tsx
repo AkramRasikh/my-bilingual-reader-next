@@ -225,6 +225,7 @@ export const LearningScreenProvider = ({
       formattedTranscriptState: formattedTranscriptMemoized,
       loopStartTime: startTime,
       loopEndTime: endTime,
+      mediaDuration,
     })?.map((i) => i.id);
 
     if (idsOfOverlappingSentences?.length === 0) {
@@ -271,6 +272,7 @@ export const LearningScreenProvider = ({
       formattedTranscriptState: formattedTranscriptMemoized,
       loopStartTime: startTime,
       loopEndTime: endTime,
+      mediaDuration,
     });
 
     if (!resultOfThis || resultOfThis?.length === 0) {
@@ -1095,6 +1097,7 @@ export const LearningScreenProvider = ({
         formattedTranscriptState: formattedTranscriptMemoized,
         loopStartTime: snippetStartTime,
         loopEndTime: snippetEndTime,
+        mediaDuration,
       });
 
       if (!overlappingSentenceData) {
@@ -1124,6 +1127,7 @@ export const LearningScreenProvider = ({
     selectedContentStateMemoized,
     sentenceMapMemoized,
     formattedTranscriptMemoized,
+    mediaDuration,
   ]);
 
   const handleAddOverlappedSnippetsToReview = async () => {

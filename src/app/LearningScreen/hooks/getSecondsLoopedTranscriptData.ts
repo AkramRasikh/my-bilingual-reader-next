@@ -9,19 +9,13 @@ export const getSecondsLoopedTranscriptData = ({
   formattedTranscriptState: any[];
   loopStartTime: number;
   loopEndTime: number;
-  mediaDuration?: number;
+  mediaDuration: number | null;
 }): OverlappingSnippetData[] | void => {
   const results: OverlappingSnippetData[] = [];
 
-  formattedTranscriptState.forEach((item, index) => {
+  formattedTranscriptState.forEach((item) => {
     const start = item.time;
-    const end = item?.nextSentence
-      ? item.nextSentence
-      : mediaDuration
-      ? mediaDuration
-      : index < formattedTranscriptState.length - 1
-      ? formattedTranscriptState[index + 1].time
-      : start;
+    const end = item?.nextSentence ? item.nextSentence : mediaDuration;
     const duration = end - start;
 
     const overlapStart = Math.max(start, loopStartTime);
