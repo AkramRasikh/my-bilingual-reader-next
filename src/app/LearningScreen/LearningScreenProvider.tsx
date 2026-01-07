@@ -104,7 +104,7 @@ export const LearningScreenProvider = ({
     firstSentenceDueTime,
   } = useMemo(() => {
     const now = new Date();
-    let firstDueIndexMemoized;
+    let firstDueIndexMemoized: number | null = null;
     let sentencesNeedReview = 0;
     let sentencesPendingOrDue = 0;
     let firstSentenceDueTime = null;
@@ -123,7 +123,7 @@ export const LearningScreenProvider = ({
               firstSentenceDueTime = item.time;
             }
             firstDueIndexMemoized = index;
-            if (firstDueIndexMemoized > 0) {
+            if (isNumber(firstDueIndexMemoized) && firstDueIndexMemoized > 0) {
               firstDueIndexMemoized = firstDueIndexMemoized - 1;
             }
           }
