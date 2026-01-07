@@ -23,6 +23,7 @@ import { isTrimmedLang } from '../languages';
 import useManageThreeSecondLoopMemo from './hooks/useManageThreeSecondLoopMemo';
 import { getSecondsLoopedTranscriptData } from './utils/get-seconds-looped-transcript-data';
 import {
+  ContentTypes,
   FormattedTranscriptTypes,
   SentenceMapItemTypes,
 } from '../types/content-types';
@@ -30,12 +31,14 @@ import { getUniqueSegmentOfArray } from './utils/get-unique-segment-of-array';
 
 export const LearningScreenContext = createContext(null);
 
-// type time
+type LearningScreenProviderProps = React.PropsWithChildren<{
+  selectedContentStateMemoized: ContentTypes & { contentIndex: number };
+}>;
 
 export const LearningScreenProvider = ({
   selectedContentStateMemoized,
   children,
-}: PropsWithChildren<object>) => {
+}: LearningScreenProviderProps) => {
   const ref = useRef<HTMLVideoElement>(null);
   const transcriptRef = useRef(null);
   const loopDataRef = useRef(null);
