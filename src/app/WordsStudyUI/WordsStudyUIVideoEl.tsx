@@ -8,7 +8,7 @@ import { useWordsStudyUIScreen } from './WordsStudyUIProvider';
 import { mapSentenceIdsToSeconds } from '../LearningScreen/utils/map-sentence-ids-to-seconds';
 import { useEffect, useRef, useState } from 'react';
 import WordsStudyUIKeyListener from './WordsStudyUIKeyListener';
-import useManageThreeSecondLoop from '../LearningScreen/hooks/useManageThreeSecondLoop';
+import useManageThreeSecondLoopLegacy from '../LearningScreen/hooks/useManageThreeSecondLoopLegacy';
 import useManageLoopInit from '../LearningScreen/hooks/useManageLoopInit';
 import LoopIndicatorWithProgress from '@/components/custom/LoopIndicatorWithProgress';
 import LoopBtn from '@/components/custom/LoopBtn';
@@ -63,7 +63,7 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
     ? 0
     : contextDataEl.realStartTime; // fix to mirror learningProvider
 
-  useManageThreeSecondLoop({
+  useManageThreeSecondLoopLegacy({
     threeSecondLoopState,
     contractThreeSecondLoopState,
     formattedTranscriptState: transcriptArr,

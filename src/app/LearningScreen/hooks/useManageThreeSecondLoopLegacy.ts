@@ -64,7 +64,7 @@ export const threeSecondLoopLogic = ({
   }
 };
 
-const useManageThreeSecondLoop = ({
+const useManageThreeSecondLoopLegacy = ({
   threeSecondLoopState,
   contractThreeSecondLoopState,
   formattedTranscriptState,
@@ -126,4 +126,4 @@ const useManageThreeSecondLoop = ({
   ]);
 };
 
-export default useManageThreeSecondLoop;
+export default useManageThreeSecondLoopLegacy;

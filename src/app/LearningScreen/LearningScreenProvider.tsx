@@ -9,7 +9,7 @@ import {
   srsRetentionKey,
   srsRetentionKeyTypes,
 } from '../srs-utils/srs-algo';
-import { threeSecondLoopLogic } from './hooks/useManageThreeSecondLoop';
+import { threeSecondLoopLogic } from './hooks/useManageThreeSecondLoopLegacy';
 import useManageLoopInit from './hooks/useManageLoopInit';
 import { useLoopSecondsHook } from './hooks/useMapTranscriptToSeconds';
 import { useSavedSnippetsMemoized } from './hooks/useSavedSnippetsMemoized';

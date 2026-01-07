@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { threeSecondLoopLogic } from './useManageThreeSecondLoop';
+import { threeSecondLoopLogic } from './useManageThreeSecondLoopLegacy';
 
 export const useSavedSnippetsMemoized = (
   snippets: any[] | undefined,
