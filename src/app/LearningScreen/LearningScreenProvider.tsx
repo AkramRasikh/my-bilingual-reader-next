@@ -368,6 +368,7 @@ export const LearningScreenProvider = ({
     const { nextScheduledOptions } = srsCalculationAndText({
       contentType: srsRetentionKey.snippet,
       timeNow,
+      reviewData: null,
     });
 
     const reviewData = nextScheduledOptions['1'].card;
