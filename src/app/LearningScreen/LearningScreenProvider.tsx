@@ -22,6 +22,10 @@ import { sliceTranscriptViaPercentageOverlap } from './utils/slice-transcript-vi
 import { isTrimmedLang } from '../languages';
 import useManageThreeSecondLoopMemo from './hooks/useManageThreeSecondLoopMemo';
 import { getSecondsLoopedTranscriptData } from './utils/get-seconds-looped-transcript-data';
+import {
+  FormattedTranscriptTypes,
+  SentenceMapItemTypes,
+} from '../types/content-types';
 
 export const LearningScreenContext = createContext(null);
 
@@ -104,60 +108,62 @@ export const LearningScreenProvider = ({
     let sentencesPendingOrDue = 0;
     let firstSentenceDueTime = null;
 
-    const formattedTranscriptMemoized = content.map((item, index) => {
-      const hasBeenReviewed = item?.reviewData?.due;
-      if (hasBeenReviewed) {
-        sentencesPendingOrDue += 1;
-      }
+    const formattedTranscriptMemoized: FormattedTranscriptTypes[] = content.map(
+      (item, index) => {
+        const hasBeenReviewed = item?.reviewData?.due;
+        if (hasBeenReviewed) {
+          sentencesPendingOrDue += 1;
+        }
 
-      if (isDueCheck(item, now)) {
-        sentencesNeedReview += 1;
-        if (!isNumber(firstDueIndexMemoized)) {
-          if (enableTranscriptReviewState) {
-            firstSentenceDueTime = item.time;
-          }
-          firstDueIndexMemoized = index;
-          if (firstDueIndexMemoized > 0) {
-            firstDueIndexMemoized = firstDueIndexMemoized - 1;
+        if (isDueCheck(item, now)) {
+          sentencesNeedReview += 1;
+          if (!isNumber(firstDueIndexMemoized)) {
+            if (enableTranscriptReviewState) {
+              firstSentenceDueTime = item.time;
+            }
+            firstDueIndexMemoized = index;
+            if (firstDueIndexMemoized > 0) {
+              firstDueIndexMemoized = firstDueIndexMemoized - 1;
+            }
           }
         }
-      }
 
-      const isDueNow = new Date(hasBeenReviewed) < now;
-      const dueStatus = !hasBeenReviewed ? '' : isDueNow ? 'now' : 'pending';
+        const isDueNow = new Date(hasBeenReviewed) < now;
+        const dueStatus = !hasBeenReviewed ? '' : isDueNow ? 'now' : 'pending';
 
-      const targetLangformatted = underlineWordsInSentence(
-        item.targetLang,
-        pureWordsMemoized,
-      );
-      const wordsFromSentence = findAllInstancesOfWordsInSentence(
-        item.targetLang,
-        wordsState,
-      );
+        const targetLangformatted = underlineWordsInSentence(
+          item.targetLang,
+          pureWordsMemoized,
+        );
+        const wordsFromSentence = findAllInstancesOfWordsInSentence(
+          item.targetLang,
+          wordsState,
+        );
 
-      // Check if next item is due
-      const nextItem = content[index + 1];
-      const nextHasBeenReviewed = nextItem?.reviewData?.due;
-      const nextIsDueNow = new Date(nextHasBeenReviewed) < now;
-      const nextDueStatus = !nextHasBeenReviewed
-        ? ''
-        : nextIsDueNow
-        ? 'now'
-        : 'pending';
-      const helperReviewSentence = index > 0 && nextDueStatus === 'now';
+        // Check if next item is due
+        const nextItem = content[index + 1];
+        const nextHasBeenReviewed = nextItem?.reviewData?.due;
+        const nextIsDueNow = new Date(nextHasBeenReviewed) < now;
+        const nextDueStatus = !nextHasBeenReviewed
+          ? ''
+          : nextIsDueNow
+          ? 'now'
+          : 'pending';
+        const helperReviewSentence = index > 0 && nextDueStatus === 'now';
 
-      return {
-        ...item,
-        dueStatus,
-        isDue: isDueNow,
-        targetLangformatted,
-        wordsFromSentence,
-        ...(helperReviewSentence && { helperReviewSentence: true }),
-      };
-    });
+        return {
+          ...item,
+          dueStatus,
+          isDue: isDueNow,
+          targetLangformatted,
+          wordsFromSentence,
+          ...(helperReviewSentence && { helperReviewSentence: true }),
+        };
+      },
+    );
 
     // Step 3: Build prev/next lookup map
-    const sentenceMapMemoized = {};
+    const sentenceMapMemoized: Record<string, SentenceMapItemTypes> = {};
     for (let i = 0; i < formattedTranscriptMemoized.length; i++) {
       const current = formattedTranscriptMemoized[i];
       const prev = formattedTranscriptMemoized[i - 1];

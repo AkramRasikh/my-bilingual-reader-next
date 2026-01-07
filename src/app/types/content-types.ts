@@ -1,4 +1,5 @@
 import { ReviewDataTypes } from './shared-types';
+import { WordTypes } from './word-types';
 
 export interface ContentTypes {
   id: string;
@@ -22,6 +23,22 @@ export interface ContentTranscriptTypes {
   reviewData?: ReviewDataTypes;
   sentenceStructure?: string;
   vocab?: Vocab[];
+}
+
+export interface FormattedTranscriptTypes extends ContentTranscriptTypes {
+  dueStatus: '' | 'now' | 'pending';
+  isDue: boolean;
+  targetLangformatted: React.ReactNode;
+  wordsFromSentence?: WordTypes[];
+  helperReviewSentence?: boolean;
+}
+
+export interface SentenceMapItemTypes extends FormattedTranscriptTypes {
+  index: number;
+  prevSentence: number | null;
+  thisSentence: number;
+  isUpForReview: boolean;
+  nextSentence: number | null;
 }
 
 export interface Vocab {
