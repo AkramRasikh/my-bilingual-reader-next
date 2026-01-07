@@ -271,8 +271,13 @@ export const LearningScreenProvider = ({
 
     const reviewData = nextScheduledOptions['1'].card;
 
+    const loopedTranscriptSegment = getLoopTranscriptSegment({
+      startTime,
+      endTime,
+    });
+
     const resultOfThis = getSecondsLoopedTranscriptData({
-      formattedTranscriptState: formattedTranscriptMemoized,
+      formattedTranscriptState: loopedTranscriptSegment,
       loopStartTime: startTime,
       loopEndTime: endTime,
       mediaDuration,
@@ -283,7 +288,7 @@ export const LearningScreenProvider = ({
     }
 
     const overlappingIds = resultOfThis.map((item) => item.id);
-    const entries = formattedTranscriptMemoized.filter((x) =>
+    const entries = loopedTranscriptSegment.filter((x) =>
       overlappingIds.includes(x.id),
     );
 
