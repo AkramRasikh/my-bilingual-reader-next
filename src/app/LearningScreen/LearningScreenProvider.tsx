@@ -26,6 +26,7 @@ import {
   FormattedTranscriptTypes,
   SentenceMapItemTypes,
 } from '../types/content-types';
+import { getUniqueSegmentOfArray } from './utils/get-unique-segment-of-array';
 
 export const LearningScreenContext = createContext(null);
 
@@ -227,7 +228,11 @@ export const LearningScreenProvider = ({
     const startTime = thisSnippetsTime - 1.5;
     const endTime = thisSnippetsTime + 1.5;
 
-    const idsOfOverlappingSentences = getSlicedSecondsArray(startTime, endTime);
+    const idsOfOverlappingSentences = getUniqueSegmentOfArray(
+      secondsStateMemoized,
+      startTime,
+      endTime,
+    );
 
     if (idsOfOverlappingSentences?.length === 0) {
       return null;
@@ -468,23 +473,12 @@ export const LearningScreenProvider = ({
     return arrOfSeconds;
   }, [mediaDuration, selectedContentStateMemoized]);
 
-  const getSlicedSecondsArray = (startTime, endTime) => {
-    const firstElInArray = secondsStateMemoized[Math.floor(startTime)];
-    const lastElInArray = secondsStateMemoized[Math.ceil(endTime)];
-
-    const secondsStateSliceArr = [
-      ...new Set(
-        secondsStateMemoized.slice(
-          secondsStateMemoized.indexOf(firstElInArray),
-          secondsStateMemoized.indexOf(lastElInArray) + 1,
-        ),
-      ),
-    ];
-    return secondsStateSliceArr;
-  };
-
   const getLoopTranscriptSegment = ({ startTime, endTime }) => {
-    const secondsStateSliceArr = getSlicedSecondsArray(startTime, endTime);
+    const secondsStateSliceArr = getUniqueSegmentOfArray(
+      secondsStateMemoized,
+      startTime,
+      endTime,
+    );
 
     const filtered = secondsStateSliceArr.map(
       (secondsSentenceId) => sentenceMapMemoized[secondsSentenceId],

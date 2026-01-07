@@ -15,7 +15,7 @@ const LearningScreen = () => {
     <div className='flex gap-5 w-fit mx-auto mt-4'>
       <LearningScreenContentChapterNavigation />
       <LearningScreenLeftSideContainer />
-      {secondsState && <LearningScreenContentContainer />}
+      {secondsState.length > 0 && <LearningScreenContentContainer />}
     </div>
   );
 };
