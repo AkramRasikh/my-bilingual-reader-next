@@ -222,7 +222,10 @@ export const LearningScreenProvider = ({
     const endTime = thisSnippetsTime + 1.5;
 
     const idsOfOverlappingSentences = getSecondsLoopedTranscriptData({
-      formattedTranscriptState: formattedTranscriptMemoized,
+      formattedTranscriptState: getLoopTranscriptSegment({
+        startTime,
+        endTime,
+      }),
       loopStartTime: startTime,
       loopEndTime: endTime,
       mediaDuration,
@@ -462,6 +465,31 @@ export const LearningScreenProvider = ({
     return arrOfSeconds;
   }, [mediaDuration, selectedContentStateMemoized]);
 
+  const getSlicedSecondsArray = (startTime, endTime) => {
+    const firstElInArray = secondsStateMemoized[Math.floor(startTime)];
+    const lastElInArray = secondsStateMemoized[Math.ceil(endTime)];
+
+    const secondsStateSliceArr = [
+      ...new Set(
+        secondsStateMemoized.slice(
+          secondsStateMemoized.indexOf(firstElInArray),
+          secondsStateMemoized.indexOf(lastElInArray) + 1,
+        ),
+      ),
+    ];
+    return secondsStateSliceArr;
+  };
+
+  const getLoopTranscriptSegment = ({ startTime, endTime }) => {
+    const secondsStateSliceArr = getSlicedSecondsArray(startTime, endTime);
+
+    const filtered = secondsStateSliceArr.map(
+      (secondsSentenceId) => sentenceMapMemoized[secondsSentenceId],
+    );
+
+    return filtered;
+  };
+
   const loopedTranscriptMemoized = useMemo(() => {
     if (!threeSecondLoopState || secondsStateMemoized.length === 0) {
       return [];
@@ -472,26 +500,12 @@ export const LearningScreenProvider = ({
     const endTime =
       threeSecondLoopState + (contractThreeSecondLoopState ? 0.75 : 1.5);
 
-    const firstElInArray = secondsStateMemoized[Math.floor(startTime)];
-    const lastElInArray = secondsStateMemoized[Math.ceil(endTime)];
-
-    const secondsStateMemoizedSlice = [
-      ...new Set(
-        secondsStateMemoized.slice(
-          secondsStateMemoized.indexOf(firstElInArray),
-          secondsStateMemoized.indexOf(lastElInArray) + 1,
-        ),
-      ),
-    ];
-
-    const filtered = secondsStateMemoizedSlice.map(
-      (secondsSentenceId) => sentenceMapMemoized[secondsSentenceId],
-    );
-
-    return filtered;
+    return getLoopTranscriptSegment({
+      startTime,
+      endTime,
+    });
   }, [
     secondsStateMemoized,
-    sentenceMapMemoized,
     contractThreeSecondLoopState,
     threeSecondLoopState,
   ]);
@@ -1094,7 +1108,10 @@ export const LearningScreenProvider = ({
       const snippetStartTime = snippetTime - (snippetIsContracted ? 0.75 : 1.5);
       const snippetEndTime = snippetTime + (snippetIsContracted ? 0.75 : 1.5);
       const overlappingSentenceData = getSecondsLoopedTranscriptData({
-        formattedTranscriptState: formattedTranscriptMemoized,
+        formattedTranscriptState: getLoopTranscriptSegment({
+          startTime: snippetStartTime,
+          endTime: snippetEndTime,
+        }),
         loopStartTime: snippetStartTime,
         loopEndTime: snippetEndTime,
         mediaDuration,
