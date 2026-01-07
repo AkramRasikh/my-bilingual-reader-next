@@ -85,12 +85,11 @@ const useManageThreeSecondLoop = ({
   const prevContractThreeSecondLoopState = useRef(contractThreeSecondLoopState);
 
   useEffect(() => {
-    if (!formattedTranscriptState || formattedTranscriptState.length === 0)
-      return;
-
     if (!threeSecondLoopState && overlappingSnippetDataState?.length > 0) {
       setOverlappingSnippetDataState([]);
     }
+    if (!formattedTranscriptState || formattedTranscriptState.length === 0)
+      return;
 
     const threeSecondChanged =
       isNumber(threeSecondLoopState) &&
