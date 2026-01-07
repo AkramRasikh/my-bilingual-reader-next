@@ -14,6 +14,10 @@ export const getSecondsLoopedTranscriptData = ({
 }): OverlappingSnippetData[] | void => {
   const results: OverlappingSnippetData[] = [];
 
+  if (formattedTranscriptState.length === 0) {
+    return [];
+  }
+
   formattedTranscriptState.forEach((item) => {
     const start = item.time;
     const end = item?.nextSentence ? item.nextSentence : mediaDuration;
