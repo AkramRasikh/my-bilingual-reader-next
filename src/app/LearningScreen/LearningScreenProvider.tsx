@@ -587,7 +587,7 @@ export const LearningScreenProvider = ({
         ? masterPlayComprehensive?.thisSentence
         : masterPlayComprehensive?.prevSentence;
 
-    if (nextTimeToFollow >= 0) {
+    if (isNumber(nextTimeToFollow) && nextTimeToFollow >= 0) {
       handleFromHere(nextTimeToFollow);
     }
   };
