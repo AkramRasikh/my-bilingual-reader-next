@@ -28,7 +28,7 @@ beforeAll(() => {
   Object.defineProperty(HTMLMediaElement.prototype, 'duration', {
     configurable: true,
     get() {
-      return 5;
+      return 15;
     },
   });
 
