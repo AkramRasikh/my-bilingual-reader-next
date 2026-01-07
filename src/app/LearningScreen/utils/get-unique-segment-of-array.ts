@@ -1,18 +1,3 @@
-// const getSlicedSecondsArray = (startTime, endTime) => {
-//   const firstElInArray = secondsStateMemoized[Math.floor(startTime)];
-//   const lastElInArray = secondsStateMemoized[Math.ceil(endTime)];
-
-//   const secondsStateSliceArr = [
-//     ...new Set(
-//       secondsStateMemoized.slice(
-//         secondsStateMemoized.indexOf(firstElInArray),
-//         secondsStateMemoized.indexOf(lastElInArray) + 1,
-//       ),
-//     ),
-//   ];
-//   return secondsStateSliceArr;
-// };
-
 export const getUniqueSegmentOfArray = (
   array: string[],
   startTime: number,
