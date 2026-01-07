@@ -26,7 +26,6 @@ export const useSavedSnippetsMemoized = (
         realStartTime: 0,
         startTime,
         endTime,
-        setState: null,
       });
 
       if (!resultOfThis) {

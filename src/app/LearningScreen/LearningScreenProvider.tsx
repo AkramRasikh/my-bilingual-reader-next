@@ -277,7 +277,6 @@ export const LearningScreenProvider = ({
       realStartTime: 0,
       startTime,
       endTime,
-      setState: null,
     });
 
     if (!resultOfThis || resultOfThis?.length === 0) {
@@ -1104,7 +1103,6 @@ export const LearningScreenProvider = ({
         formattedTranscriptState: formattedTranscriptMemoized,
         startTime: snippetStartTime,
         endTime: snippetEndTime,
-        setState: null,
       });
 
       if (!overlappingSentenceData) {
