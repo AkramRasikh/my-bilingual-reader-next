@@ -2,6 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 import { setupApiMocks } from './helpers/mock-api';
 import { landingMetaData } from './helpers/landing-meta-data';
 import { mockEasyLinguisticsRadioSignLangIslandSnippets } from './mock-data/easy-linguistics-radio-sign-lang-island';
+import { waitForMediaMetadata } from './helpers/wait-for-media';
 
 const contentData = landingMetaData[0]; // Using the first content item for navigation test
 const contentTitle = contentData.title; // Using the first content item for navigation test
@@ -2028,6 +2029,9 @@ test.describe('Keyboard actions', () => {
     // Wait for the content to load
     await page.waitForLoadState('networkidle');
 
+    // Wait for media metadata to load
+    await waitForMediaMetadata(page);
+
     // Use specific content ID for reliable targeting
 
     // Scope to transcript tab to avoid confusion with TranscriptItemSecondary
@@ -2063,9 +2067,7 @@ test.describe('Keyboard actions', () => {
   });
 
   test.describe('Loop(s)', () => {
-    test('sentence(s) loop using Shift+Down keyboard shortcut', async ({
-      page,
-    }) => {
+    const loadContentAndWaitForMedia = async (page: Page) => {
       await page.goto('/');
 
       // Wait for page to be loaded
@@ -2081,11 +2083,16 @@ test.describe('Keyboard actions', () => {
       // Wait for the content to load
       await page.waitForLoadState('networkidle');
 
-      // Use specific content IDs for first and second transcript items
+      // Wait for media metadata to load
+      await waitForMediaMetadata(page);
 
       // Wait for audio/video to load
       await page.waitForTimeout(1000);
-
+    };
+    test('sentence(s) loop using Shift+Down keyboard shortcut', async ({
+      page,
+    }) => {
+      await loadContentAndWaitForMedia(page);
       // Click play on the second transcript item
       const secondPlayButton = page.getByTestId(
         `transcript-play-button-${secondContentId}`,
@@ -2220,6 +2227,7 @@ test.describe('Keyboard actions', () => {
       // Wait for the content to load
       await page.waitForLoadState('networkidle');
 
+      await waitForMediaMetadata(page);
       // Use specific content ID (third item with ~12 second duration)
 
       // Wait for audio/video to load
@@ -2367,6 +2375,8 @@ test.describe('Keyboard actions', () => {
       // Verify the save button is now enabled
       await expect(saveButton).toBeEnabled();
 
+      const trackCurrentSwitch = page.getByTestId('track-current-switch');
+      await trackCurrentSwitch.click();
       const thirdMultiIndicatorContainer = page.getByTestId(
         `transcript-time-overlap-indicator-multi-${thirdContentId}`,
       );
@@ -2473,7 +2483,10 @@ test.describe('Keyboard actions', () => {
 
       // Wait for page to be loaded
       await page.waitForLoadState('networkidle');
+      await waitForMediaMetadata(page);
 
+      // Wait for audio/video to load
+      await page.waitForTimeout(1000);
       // Navigate to content screen
       const contentButton = page.getByTestId(`content-item-${contentTitle}`);
       await contentButton.click();
@@ -2704,6 +2717,10 @@ test.describe('Keyboard actions', () => {
 
       // Wait for page to be loaded
       await page.waitForLoadState('networkidle');
+      await waitForMediaMetadata(page);
+
+      // Wait for audio/video to load
+      await page.waitForTimeout(1000);
       // Navigate to content screen
       const contentButton = page.getByTestId(`content-item-${contentTitle}`);
       await contentButton.click();
