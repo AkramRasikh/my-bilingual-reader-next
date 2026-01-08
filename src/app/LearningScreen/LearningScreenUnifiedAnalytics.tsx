@@ -19,17 +19,14 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
     handleAddOverlappedSnippetsToReview,
   } = useLearningScreen();
 
-  const overlappedSentencesViableForReviewMemoizedKeyArray =
-    overlappedSentencesViableForReviewMemoized?.keyArray;
-
   const handleClearReps = () => {
     setSentenceRepsState(0);
   };
 
   const handleBulkAddToReviews = async () => {
     if (
-      !overlappedSentencesViableForReviewMemoizedKeyArray ||
-      overlappedSentencesViableForReviewMemoizedKeyArray?.length === 0
+      !overlappedSentencesViableForReviewMemoized ||
+      overlappedSentencesViableForReviewMemoized?.length === 0
     ) {
       return;
     }
@@ -87,8 +84,7 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
             </div>
           )}
           <span className='m-auto mr-2'>
-            Bulk Review:{' '}
-            {overlappedSentencesViableForReviewMemoizedKeyArray?.length}
+            Bulk Review: {overlappedSentencesViableForReviewMemoized?.length}
           </span>
 
           <Button
@@ -98,8 +94,8 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
             onDoubleClick={handleBulkAddToReviews}
             disabled={
               isLoadingBulkState ||
-              !overlappedSentencesViableForReviewMemoizedKeyArray?.length ||
-              overlappedSentencesViableForReviewMemoizedKeyArray?.length === 0
+              !overlappedSentencesViableForReviewMemoized?.length ||
+              overlappedSentencesViableForReviewMemoized?.length === 0
             }
           >
             <SaveAllIcon />

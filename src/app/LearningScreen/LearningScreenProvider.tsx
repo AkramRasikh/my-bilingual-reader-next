@@ -1135,10 +1135,7 @@ export const LearningScreenProvider = ({
     const allOverlappingDataReviewEligible =
       accumulateSentenceOverlap(allSentenceIntervals);
 
-    return {
-      keyMap: allOverlappingDataReviewEligible,
-      keyArray: Object.keys(allOverlappingDataReviewEligible),
-    };
+    return Object.keys(allOverlappingDataReviewEligible);
   }, [
     selectedContentStateMemoized,
     sentenceMapMemoized,
@@ -1157,20 +1154,20 @@ export const LearningScreenProvider = ({
     const nextDueCard = nextScheduledOptions['2'].card;
 
     if (
-      !overlappedSentencesViableForReviewMemoized?.keyArray ||
-      overlappedSentencesViableForReviewMemoized?.keyArray?.length === 0
+      !overlappedSentencesViableForReviewMemoized ||
+      overlappedSentencesViableForReviewMemoized.length === 0
     ) {
       return null;
     }
 
-    const sentenceIds = overlappedSentencesViableForReviewMemoized.keyArray;
+    const sentenceIds = overlappedSentencesViableForReviewMemoized;
     try {
       setIsGenericItemLoadingState((prev) => [...prev, ...sentenceIds]);
       await sentenceReviewBulk({
         contentId,
         reviewData: nextDueCard,
         contentIndex,
-        sentenceIds: overlappedSentencesViableForReviewMemoized.keyArray,
+        sentenceIds,
       });
       setSentenceRepsState((prev) => prev + sentenceIds.length);
     } finally {
