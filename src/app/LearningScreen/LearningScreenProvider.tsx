@@ -12,6 +12,7 @@ import {
 import useManageLoopInit from './hooks/useManageLoopInit';
 import { useLoopSecondsHook } from './hooks/useMapTranscriptToSeconds';
 import { useSavedSnippetsMemoized } from './hooks/useSavedSnippetsMemoized';
+import { useOverlappedSentencesViableForReview } from './hooks/useOverlappedSentencesViableForReview';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
@@ -29,7 +30,6 @@ import {
   Snippet,
 } from '../types/content-types';
 import { getUniqueSegmentOfArray } from './utils/get-unique-segment-of-array';
-import { OverlappingSnippetData } from '../types/shared-types';
 
 export const LearningScreenContext = createContext(null);
 
@@ -1041,107 +1041,14 @@ export const LearningScreenProvider = ({
     loopDataRef,
   );
 
-  function accumulateSentenceOverlap(snippetsBySentence) {
-    const sentenceMap = {};
-
-    for (const snip of snippetsBySentence) {
-      const { id, percentageOverlap, startPoint } = snip;
-
-      const start = Math.max(0, startPoint);
-      const end = Math.min(100, startPoint + percentageOverlap);
-
-      if (!sentenceMap[id]) sentenceMap[id] = [];
-      sentenceMap[id].push([start, end]);
-    }
-
-    // Merge intervals for each sentence
-    const results = {};
-
-    for (const [sentenceId, intervals] of Object.entries(sentenceMap)) {
-      // Sort by start position
-      intervals.sort((a, b) => a[0] - b[0]);
-
-      const merged = [];
-      let [currStart, currEnd] = intervals[0];
-
-      for (let i = 1; i < intervals.length; i++) {
-        const [nextStart, nextEnd] = intervals[i];
-
-        if (nextStart <= currEnd) {
-          // Overlapping → extend
-          currEnd = Math.max(currEnd, nextEnd);
-        } else {
-          // No overlap → push previous
-          merged.push([currStart, currEnd]);
-          [currStart, currEnd] = [nextStart, nextEnd];
-        }
-      }
-      merged.push([currStart, currEnd]);
-
-      // Total coverage
-      const total = merged.reduce((sum, [s, e]) => sum + (e - s), 0);
-
-      if (total > 50) {
-        results[sentenceId] = {
-          mergedRanges: merged,
-          totalOverlap: total, // in %
-        };
-      }
-    }
-
-    return results;
-  }
-
-  const overlappedSentencesViableForReviewMemoized = useMemo(() => {
-    const contentSnippets = selectedContentStateMemoized?.snippets;
-    if (!contentSnippets || contentSnippets?.length === 0) {
-      return null;
-    }
-
-    const allSentenceIntervals = [] as OverlappingSnippetData[];
-
-    contentSnippets.forEach((snippetEl) => {
-      const snippetTime = snippetEl.time;
-      const snippetIsContracted = snippetEl.isContracted;
-
-      const snippetStartTime = snippetTime - (snippetIsContracted ? 0.75 : 1.5);
-      const snippetEndTime = snippetTime + (snippetIsContracted ? 0.75 : 1.5);
-      const overlappingSentenceData = getSecondsLoopedTranscriptData({
-        formattedTranscriptState: getLoopTranscriptSegment({
-          startTime: snippetStartTime,
-          endTime: snippetEndTime,
-        }),
-        loopStartTime: snippetStartTime,
-        loopEndTime: snippetEndTime,
-        mediaDuration,
-      });
-
-      if (!overlappingSentenceData) {
-        return;
-      }
-      overlappingSentenceData.forEach((item) => {
-        const sentenceIsUpForReview =
-          sentenceMapMemoized[item.id].isUpForReview;
-        if (!sentenceIsUpForReview) {
-          allSentenceIntervals.push(item);
-        }
-      });
-    });
-
-    if (allSentenceIntervals.length === 0) {
-      return null;
-    }
-
-    const allOverlappingDataReviewEligible =
-      accumulateSentenceOverlap(allSentenceIntervals);
-
-    return Object.keys(allOverlappingDataReviewEligible);
-  }, [
-    selectedContentStateMemoized,
-    sentenceMapMemoized,
-    formattedTranscriptMemoized,
-    mediaDuration,
-  ]);
+  const overlappedSentencesViableForReviewMemoized =
+    useOverlappedSentencesViableForReview(
+      selectedContentStateMemoized?.snippets,
+      sentenceMapMemoized,
+      formattedTranscriptMemoized,
+      mediaDuration,
+      getLoopTranscriptSegment,
+    );
 
   const handleAddOverlappedSnippetsToReview = async () => {
     const emptyCard = getEmptyCard();
