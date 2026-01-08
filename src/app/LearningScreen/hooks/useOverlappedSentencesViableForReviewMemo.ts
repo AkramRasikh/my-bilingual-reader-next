@@ -6,9 +6,8 @@ import {
   Snippet,
 } from '../../types/content-types';
 import { OverlappingSnippetData } from '../../types/shared-types';
-import { accumulateSentenceOverlap } from '../utils/accumulate-sentence-overlap';
 
-export const useOverlappedSentencesViableForReview = (
+export const useOverlappedSentencesViableForReviewMemo = (
   snippets: Snippet[] | undefined,
   sentenceMapMemoized: Record<string, SentenceMapItemTypes>,
   formattedTranscriptMemoized: FormattedTranscriptTypes[],
@@ -35,14 +34,17 @@ export const useOverlappedSentencesViableForReview = (
 
       const snippetStartTime = snippetTime - (snippetIsContracted ? 0.75 : 1.5);
       const snippetEndTime = snippetTime + (snippetIsContracted ? 0.75 : 1.5);
+
+      const formattedSnippedTranscriptSegment = getLoopTranscriptSegment({
+        startTime: snippetStartTime,
+        endTime: snippetEndTime,
+      });
       const overlappingSentenceData = getSecondsLoopedTranscriptData({
-        formattedTranscriptState: getLoopTranscriptSegment({
-          startTime: snippetStartTime,
-          endTime: snippetEndTime,
-        }),
+        formattedTranscriptState: formattedSnippedTranscriptSegment,
         loopStartTime: snippetStartTime,
         loopEndTime: snippetEndTime,
         mediaDuration,
+        includeSecondsArrays: true,
       });
 
       if (!overlappingSentenceData) {
@@ -61,10 +63,48 @@ export const useOverlappedSentencesViableForReview = (
       return null;
     }
 
-    const allOverlappingDataReviewEligible =
-      accumulateSentenceOverlap(allSentenceIntervals);
+    // Build coverage map: track which seconds are NOT overlapped
+    const sentenceCoverageMap: Record<
+      string,
+      {
+        sentenceSeconds: number[];
+        secondsNotOverlapped: Set<number>;
+      }
+    > = {};
 
-    return Object.keys(allOverlappingDataReviewEligible);
+    allSentenceIntervals.forEach((item) => {
+      // Initialize if doesn't exist
+      if (!sentenceCoverageMap[item.id]) {
+        sentenceCoverageMap[item.id] = {
+          sentenceSeconds: item.sentenceSeconds || [],
+          secondsNotOverlapped: new Set(item.sentenceSeconds || []), // Start with all seconds as "not overlapped"
+        };
+      }
+
+      // Remove overlapped seconds from the "not overlapped" set
+      item.overlappedSeconds?.forEach((second) => {
+        sentenceCoverageMap[item.id].secondsNotOverlapped.delete(second);
+      });
+    });
+
+    // Filter to sentences where >50% is overlapped
+    const viableSentenceIds: string[] = [];
+
+    for (const [
+      sentenceId,
+      { sentenceSeconds, secondsNotOverlapped },
+    ] of Object.entries(sentenceCoverageMap)) {
+      const totalSeconds = sentenceSeconds.length;
+      const notOverlappedCount = secondsNotOverlapped.size;
+      const overlappedCount = totalSeconds - notOverlappedCount;
+      const overlapPercentage = (overlappedCount / totalSeconds) * 100;
+
+      if (overlapPercentage > 50) {
+        viableSentenceIds.push(sentenceId);
+      }
+    }
+
+    return viableSentenceIds;
   }, [
     snippets,
     sentenceMapMemoized,

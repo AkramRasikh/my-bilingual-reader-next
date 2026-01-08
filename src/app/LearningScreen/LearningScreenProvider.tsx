@@ -12,7 +12,7 @@ import {
 import useManageLoopInit from './hooks/useManageLoopInit';
 import { useLoopSecondsHook } from './hooks/useMapTranscriptToSeconds';
 import { useSavedSnippetsMemoized } from './hooks/useSavedSnippetsMemoized';
-import { useOverlappedSentencesViableForReview } from './hooks/useOverlappedSentencesViableForReview';
+import { useOverlappedSentencesViableForReviewMemo } from './hooks/useOverlappedSentencesViableForReviewMemo';
 import { isDueCheck } from '@/utils/is-due-check';
 import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
 import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
@@ -1042,7 +1042,7 @@ export const LearningScreenProvider = ({
   );
 
   const overlappedSentencesViableForReviewMemoized =
-    useOverlappedSentencesViableForReview(
+    useOverlappedSentencesViableForReviewMemo(
       selectedContentStateMemoized?.snippets,
       sentenceMapMemoized,
       formattedTranscriptMemoized,

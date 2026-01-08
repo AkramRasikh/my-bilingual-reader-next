@@ -6,11 +6,13 @@ export const getSecondsLoopedTranscriptData = ({
   loopStartTime,
   loopEndTime,
   mediaDuration,
+  includeSecondsArrays = false,
 }: {
   formattedTranscriptState: SentenceMapItemTypes[];
   loopStartTime: number;
   loopEndTime: number;
   mediaDuration: number | null;
+  includeSecondsArrays?: boolean;
 }): OverlappingSnippetData[] | void => {
   const results: OverlappingSnippetData[] = [];
 
@@ -33,6 +35,27 @@ export const getSecondsLoopedTranscriptData = ({
       const overlapDuration = overlapEnd - overlapStart;
       const percentageOverlap = (overlapDuration / duration) * 100;
       const startPoint = ((overlapStart - start) / duration) * 100;
+      const sentenceSeconds: number[] = [];
+      let filteredOverlappedSeconds: number[] = [];
+
+      if (includeSecondsArrays) {
+        // Create sentence seconds array
+        const step = duration / 9; // Divide into 10 blocks (9 intervals)
+        for (let i = 0; i < 10; i++) {
+          sentenceSeconds.push(start + i * step);
+        }
+
+        // Create overlapped seconds array (same as sentence, then filter)
+        const overlappedSeconds: number[] = [];
+        for (let i = 0; i < 10; i++) {
+          overlappedSeconds.push(start + i * step);
+        }
+
+        // Filter to only include values within overlap range
+        filteredOverlappedSeconds = overlappedSeconds.filter(
+          (time) => time >= overlapStart && time <= overlapEnd,
+        );
+      }
 
       results.push({
         id: item.id,
@@ -41,6 +64,8 @@ export const getSecondsLoopedTranscriptData = ({
         percentageOverlap: Number(percentageOverlap.toFixed(2)),
         targetLang: item.targetLang,
         startPoint: Number(startPoint.toFixed(2)),
+        sentenceSeconds,
+        overlappedSeconds: filteredOverlappedSeconds,
       });
     }
   });

@@ -19,4 +19,6 @@ export interface OverlappingSnippetData {
   percentageOverlap: number;
   targetLang: string;
   startPoint: number;
+  overlappedSeconds?: number[];
+  sentenceSeconds?: number[];
 }
