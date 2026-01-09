@@ -6,6 +6,7 @@ import {
   checkingTimelineMarkers,
   renderWithProvider,
 } from './test-utils';
+import { DEFAULT_REVIEW_DATA, mockUpdateSentenceReview } from './api-mocks';
 
 jest.mock('../../Providers/useDataSaveToLocalStorage', () => () => {});
 
@@ -198,31 +199,7 @@ const addSecondSentenceToReview = async () => {
   const reviewMenuItem = screen.getByTestId(
     'transcript-menu-review-sentence-2',
   );
-  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
-    if (params.url === '/api/updateSentence') {
-      const dueTime = new Date();
-      const lastReviewTime = new Date();
-      const reviewData = {
-        due: dueTime.toISOString(),
-        stability: 0.40255,
-        difficulty: 7.1949,
-        elapsed_days: 0,
-        scheduled_days: 0,
-        reps: 1,
-        lapses: 0,
-        state: 1,
-        last_review: lastReviewTime.toISOString(),
-        ease: 2.5,
-        interval: 0,
-      };
-
-      return {
-        reviewData,
-      };
-    }
-    // Default mock response
-    return {};
-  });
+  await mockUpdateSentenceReview(DEFAULT_REVIEW_DATA);
   reviewMenuItem.click();
   await waitFor(() => {
     expect(screen.getAllByText('Sentence reviewed ✅')).toHaveLength(2);
