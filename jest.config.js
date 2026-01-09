@@ -6,7 +6,7 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
-  testPathIgnorePatterns: ['/node_modules/', '/.next/', '.*\\.spec\\..*'],
+  testPathIgnorePatterns: ['/node_modules/', '/.next/', '.*\\.spec\\..*', '/test-helpers/'],
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
     '^.+\\.(js|jsx)$': 'ts-jest',
