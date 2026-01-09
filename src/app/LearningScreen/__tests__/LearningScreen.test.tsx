@@ -583,19 +583,6 @@ const deleteSnippet = async () => {
 describe('LearningScreen - studying new content', () => {
   beforeAll(() => {
     mockGetOnLoadData([mockSelectedContent], [], []);
-    // jest
-    //   .spyOn(apiLib, 'apiRequestWrapper')
-    //   .mockImplementation(async (params) => {
-    //     if (params.url === '/api/getOnLoadData') {
-    //       return {
-    //         contentData: [mockSelectedContent],
-    //         wordsData: [],
-    //         sentencesData: [],
-    //       };
-    //     }
-    //     // Default mock response
-    //     return {};
-    //   });
   });
   beforeEach(() => {
     jest.clearAllMocks();
@@ -662,8 +649,6 @@ describe('LearningScreen - studying new content', () => {
       await checkForRemovalOfPreSnippetUIComponents();
       await checkNewStableSnippetUIComponents();
       await deleteSnippet();
-
-      // check snippet present in timeline
     });
   });
 });
