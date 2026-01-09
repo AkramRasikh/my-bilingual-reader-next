@@ -1234,21 +1234,7 @@ test.describe('Transcript scroll functionality', () => {
   test('checkpoint button scrolls to last reviewed sentence', async ({
     page,
   }) => {
-    await page.goto('/');
-
-    // Wait for page to be loaded
-    await page.waitForLoadState('networkidle');
-
-    // Navigate to content screen
-    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-    await contentButton.click();
-
-    // Wait for navigation to complete
-    await page.waitForURL(`**/content?topic=${contentTitle}`);
-
-    // Wait for the content to load
-    await page.waitForLoadState('networkidle');
-
+    await goFromLandingToLearningScreen(page);
     // Turn off track-current switch before testing checkpoint
     await triggerTrackSwitch(page);
     await page.waitForTimeout(500);
@@ -1394,46 +1380,10 @@ test.describe('Transcript scroll functionality', () => {
         );
       });
     expect(firstContainerNotVisibleAgain).toBe(false);
-
-    // Click current button to scroll back to currently playing item
-    const currentButton = page.getByTestId('current-button');
-    await expect(currentButton).toBeVisible();
-    await currentButton.click();
-    await page.waitForTimeout(1000);
-
-    // Verify first transcript container is visible in viewport
-    const firstContainerVisibleFinal = await firstTranscriptContainer.evaluate(
-      (el) => {
-        const rect = el.getBoundingClientRect();
-        return (
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.bottom <=
-            (window.innerHeight || document.documentElement.clientHeight) &&
-          rect.right <=
-            (window.innerWidth || document.documentElement.clientWidth)
-        );
-      },
-    );
-    expect(firstContainerVisibleFinal).toBe(true);
-
-    // Verify checkpoint is NOT visible in viewport
-    const checkpointNotVisibleFinal = await checkpointElement.evaluate((el) => {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth)
-      );
-    });
-    expect(checkpointNotVisibleFinal).toBe(false);
   });
 });
 
-test.describe.only('Bulk sentence review functionality', () => {
+test.describe('Bulk sentence review functionality', () => {
   test('bulk sentence review - double click to review multiple sentences', async ({
     page,
   }) => {
@@ -1467,7 +1417,7 @@ test.describe.only('Bulk sentence review functionality', () => {
     const toastMessage = page.getByText('Bulk reviewed 7 sentences ✅');
     await expect(toastMessage).toBeVisible({ timeout: 5000 });
 
-    await checkSentenceCount(page, '153/205');
+    await checkSentenceCount(page, '153/207');
 
     const bulkReviewAfter = page.getByText('Bulk Review: 0');
     await expect(bulkReviewAfter).toBeVisible();

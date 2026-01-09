@@ -141,6 +141,8 @@ export async function setupApiMocks(page: Page) {
       contentType: 'application/json',
       body: JSON.stringify({
         updatedSentenceIds: [
+          'b7b19fec-aba9-4ed3-bae6-a8150f99f415',
+          '2cb4ff62-1826-4e76-adb4-f3bd2700c90b',
           'e9cb0b45-5794-47f8-8a05-9e8323dc0cce',
           'b460a5ea-587e-4632-924e-1e6379708d59',
           'cf0d93be-aca9-4889-989f-7148b80bff30',
