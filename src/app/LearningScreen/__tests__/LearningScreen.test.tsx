@@ -571,7 +571,6 @@ const deleteSnippet = async () => {
 };
 
 beforeAll(() => {
-  mockGetOnLoadData([mockSelectedContent], [], []);
   Object.defineProperty(HTMLMediaElement.prototype, 'duration', {
     configurable: true,
     get() {
@@ -583,7 +582,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  mockGetOnLoadData([mockSelectedContent], [], []);
 });
 describe('LearningScreen - studying new content', () => {
   describe('new sentences', () => {
