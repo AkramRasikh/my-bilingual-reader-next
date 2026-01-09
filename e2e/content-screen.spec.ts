@@ -381,7 +381,7 @@ test('landing screen -> learning content screen navigation -> general toggle act
   await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
   await checkProgressHeader(page, '0/153');
 
-  const bulkReviewBefore = page.getByText('Bulk Review: 5');
+  const bulkReviewBefore = page.getByText('Bulk Review: 7');
   await expect(bulkReviewBefore).toBeVisible();
 
   const repsCount = page.getByTestId('analytics-reps-count');
@@ -1740,10 +1740,10 @@ test('bulk sentence review - double click to review multiple sentences', async (
 
   // Verify the bulk review count is initially 5
   const bulkReviewButton = page.getByTestId('bulk-review-button');
-  await expect(page.getByText('Bulk Review: 5')).toBeVisible();
+  await expect(page.getByText('Bulk Review: 7')).toBeVisible();
   await expect(bulkReviewButton).toBeEnabled();
   await checkSentenceCount(page, '153/200');
-  const bulkReviewBefore = page.getByText('Bulk Review: 5');
+  const bulkReviewBefore = page.getByText('Bulk Review: 7');
   await expect(bulkReviewBefore).toBeVisible();
 
   // Double-click the bulk review button
@@ -1753,7 +1753,7 @@ test('bulk sentence review - double click to review multiple sentences', async (
   await page.waitForResponse('**/api/bulkSentenceReview');
 
   // Wait for and verify the toast message appears
-  const toastMessage = page.getByText('Bulk reviewed 5 sentences ✅');
+  const toastMessage = page.getByText('Bulk reviewed 7 sentences ✅');
   await expect(toastMessage).toBeVisible({ timeout: 5000 });
 
   await checkSentenceCount(page, '153/205');
@@ -2304,7 +2304,7 @@ test.describe('Keyboard actions', () => {
       await expect(snippetsDue).toBeVisible();
 
       // Verify bulk review count before save
-      const bulkReviewBefore = page.getByText('Bulk Review: 5');
+      const bulkReviewBefore = page.getByText('Bulk Review: 7');
       await expect(bulkReviewBefore).toBeVisible();
 
       // Get the highlighted text length (yellow span) before contraction
@@ -2403,7 +2403,7 @@ test.describe('Keyboard actions', () => {
       await expect(snippetsDueAfter).toBeVisible();
 
       // Verify bulk review count increased after save
-      const bulkReviewAfter = page.getByText('Bulk Review: 6');
+      const bulkReviewAfter = page.getByText('Bulk Review: 8');
       await expect(bulkReviewAfter).toBeVisible();
       await expect(thirdMultiIndicatorItems).toHaveCount(2);
       // Setup route for delete operation
@@ -2573,7 +2573,7 @@ test.describe('Keyboard actions', () => {
       await expect(snippetsDue).toBeVisible();
 
       // Verify bulk review count before save
-      const bulkReviewBefore = page.getByText('Bulk Review: 5');
+      const bulkReviewBefore = page.getByText('Bulk Review: 7');
       await expect(bulkReviewBefore).toBeVisible();
       // Get the highlighted text length (yellow span) before contraction
       const highlightedSpan = loopingSentence.locator('span.bg-yellow-200');
