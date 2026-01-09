@@ -5,9 +5,9 @@ import {
   mockSelectedContent,
   checkingTimelineMarkers,
   renderWithProvider,
-} from './__tests__/test-utils';
+} from './test-utils';
 
-jest.mock('../Providers/useDataSaveToLocalStorage', () => () => {});
+jest.mock('../../Providers/useDataSaveToLocalStorage', () => () => {});
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
