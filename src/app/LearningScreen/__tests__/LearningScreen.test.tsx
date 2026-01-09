@@ -31,16 +31,6 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-beforeAll(() => {
-  Object.defineProperty(HTMLMediaElement.prototype, 'duration', {
-    configurable: true,
-    get() {
-      return 15;
-    },
-  });
-
-  process.env.NEXT_PUBLIC_CLOUDFLARE_ASSETS_URL = 'https://mocked-url/';
-});
 const checkMetaDataOnLoad = () => {
   expect(screen.getByText('Sentences: 0/0')).toBeInTheDocument();
   expect(screen.getByText('Words Due: 0')).toBeInTheDocument();
@@ -580,14 +570,22 @@ const deleteSnippet = async () => {
   );
 };
 
-describe('LearningScreen - studying new content', () => {
-  beforeAll(() => {
-    mockGetOnLoadData([mockSelectedContent], [], []);
-  });
-  beforeEach(() => {
-    jest.clearAllMocks();
+beforeAll(() => {
+  mockGetOnLoadData([mockSelectedContent], [], []);
+  Object.defineProperty(HTMLMediaElement.prototype, 'duration', {
+    configurable: true,
+    get() {
+      return 15;
+    },
   });
 
+  process.env.NEXT_PUBLIC_CLOUDFLARE_ASSETS_URL = 'https://mocked-url/';
+});
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+describe('LearningScreen - studying new content', () => {
   describe('new sentences', () => {
     it('should render a blank project with no previously reviewed content', async () => {
       await renderWithProvider();
