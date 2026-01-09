@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { LearningScreenProvider } from '../LearningScreenProvider';
-import { FetchDataProvider } from '../../Providers/FetchDataProvider';
-import ContentScreen from '../../content/page';
+import { LearningScreenProvider } from '../../LearningScreenProvider';
+import { FetchDataProvider } from '../../../Providers/FetchDataProvider';
+import ContentScreen from '../../../content/page';
 
 export const mockTitle = 'Test-Content-title';
 

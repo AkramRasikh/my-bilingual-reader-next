@@ -1,5 +1,4 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-import * as apiLib from '@/lib/api-request-wrapper';
 import {
   mockTitle,
   mockSelectedContentWithDueData,
@@ -7,13 +6,14 @@ import {
   checkWordsMetaData,
   checkingTimelineMarkers,
   renderWithProvider,
-} from './test-utils';
+} from './test-helpers/test-utils';
 import {
   mockGetOnLoadData,
   mockUpdateContentMetaData,
   mockUpdateSentenceReview,
+  mockUpdateWord,
   REVIEW_DATA_2_DAYS_AWAY,
-} from './api-mocks';
+} from './test-helpers/api-mocks';
 
 jest.mock('../../Providers/useDataSaveToLocalStorage', () => () => {});
 
@@ -247,16 +247,7 @@ describe('LearningScreen - Review Mode', () => {
 
   const reviewWordsInReviewMode = async () => {
     checkWordsMetaData(3, '3/3');
-    jest
-      .spyOn(apiLib, 'apiRequestWrapper')
-      .mockImplementation(async (params) => {
-        if (params.url === '/api/updateWord') {
-          return {
-            reviewData: { ...mockWordsData[0].reviewData, due: dueIn2Days() },
-          };
-        }
-        return {};
-      });
+    mockUpdateWord(mockWordsData[0].reviewData, 2);
 
     const firstWord = screen.getByTestId('easy-mocked-id-tenki');
     firstWord.click();

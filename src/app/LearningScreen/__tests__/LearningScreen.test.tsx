@@ -4,7 +4,7 @@ import {
   mockSelectedContent,
   checkingTimelineMarkers,
   renderWithProvider,
-} from './test-utils';
+} from './test-helpers/test-utils';
 import {
   DEFAULT_REVIEW_DATA,
   JAPANESE_WORD_FOR_REVIEW_1,
@@ -16,7 +16,7 @@ import {
   mockUpdateContentMetaData,
   mockUpdateSentenceReview,
   REVIEW_DATA_2_DAYS_AWAY,
-} from './api-mocks';
+} from './test-helpers/api-mocks';
 
 jest.mock('../../Providers/useDataSaveToLocalStorage', () => () => {});
 
