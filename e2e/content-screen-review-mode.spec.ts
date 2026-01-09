@@ -1,12 +1,12 @@
 import { test, expect, Page } from '@playwright/test';
 import { setupApiMocks } from './helpers/mock-api';
 import { landingMetaData } from './helpers/landing-meta-data';
+import { mockEasyLinguisticsRadioSignLangIslandSnippets } from './mock-data/easy-linguistics-radio-sign-lang-island';
 import {
   checkSentenceCount,
   checkSnippetsDueMeta,
   checkWordsDueMeta,
-} from './content-screen.spec';
-import { mockEasyLinguisticsRadioSignLangIslandSnippets } from './mock-data/easy-linguistics-radio-sign-lang-island';
+} from './helpers/content-screen-helpers';
 
 const contentData = landingMetaData[0];
 const contentTitle = contentData.title;
