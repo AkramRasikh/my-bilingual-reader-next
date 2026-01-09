@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import * as apiLib from '@/lib/api-request-wrapper';
 import {
   mockTitle,
@@ -8,6 +8,12 @@ import {
   checkingTimelineMarkers,
   renderWithProvider,
 } from './test-utils';
+import {
+  mockGetOnLoadData,
+  mockUpdateContentMetaData,
+  mockUpdateSentenceReview,
+  REVIEW_DATA_2_DAYS_AWAY,
+} from './api-mocks';
 
 jest.mock('../../Providers/useDataSaveToLocalStorage', () => () => {});
 
@@ -33,13 +39,19 @@ beforeAll(() => {
   process.env.NEXT_PUBLIC_CLOUDFLARE_ASSETS_URL = 'https://mocked-url/';
 });
 
+beforeEach(() => {
+  mockGetOnLoadData([mockSelectedContentWithDueData], mockWordsData, []);
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe('LearningScreen - Review Mode', () => {
   const checkForDefaultReviewModeMetaData = () => {
     const wordsDueText = screen.getByTestId('analytics-words-due');
     const snippetsDueText = screen.getByTestId('analytics-snippets-due');
-    const sentencesCountText = screen.getByTestId(
-      'analytics-sentences-count',
-    );
+    const sentencesCountText = screen.getByTestId('analytics-sentences-count');
     const wordsBtnLink = screen.getByTestId('breadcrumb-words-button');
     expect(wordsBtnLink).toHaveTextContent('Words (3)');
     expect(wordsDueText).toHaveTextContent('Words Due: 3');
@@ -96,9 +108,7 @@ describe('LearningScreen - Review Mode', () => {
     const sentenceToggleLabelPost = screen.getByTestId(
       'sentences-toggle-label',
     );
-    const snippetToggleLabelPost = screen.getByTestId(
-      'snippets-toggle-label',
-    );
+    const snippetToggleLabelPost = screen.getByTestId('snippets-toggle-label');
     expect(wordToggleLabelPost).toHaveTextContent('🔤 (3)');
     expect(sentenceToggleLabelPost).toHaveTextContent('📝 (3)');
     expect(snippetToggleLabelPost).toHaveTextContent('✂️ (3)');
@@ -145,118 +155,90 @@ describe('LearningScreen - Review Mode', () => {
     );
     expect(snippetReviewToggle3).toHaveTextContent('公園に行きましょう');
 
-    jest
-      .spyOn(apiLib, 'apiRequestWrapper')
-      .mockImplementation(async (params) => {
-        if (params.url === '/api/updateContentMetaData') {
-          return {
-            ...mockSelectedContentWithDueData,
-            snippets: [
-              {
-                ...mockSelectedContentWithDueData.snippets[0],
-                reviewData: {
-                  ...mockSelectedContentWithDueData.snippets[0].reviewData,
-                  due: dueIn2Days(),
-                },
-              },
-              mockSelectedContentWithDueData.snippets[1],
-              mockSelectedContentWithDueData.snippets[2],
-            ],
-          };
-        }
-        return {};
-      });
+    mockUpdateContentMetaData({
+      ...mockSelectedContentWithDueData,
+      snippets: [
+        {
+          ...mockSelectedContentWithDueData.snippets[0],
+          reviewData: {
+            ...mockSelectedContentWithDueData.snippets[0].reviewData,
+            due: dueIn2Days(),
+          },
+        },
+        mockSelectedContentWithDueData.snippets[1],
+        mockSelectedContentWithDueData.snippets[2],
+      ],
+    });
 
     const reviewFirstSnippetBtn = screen.getByTestId('easy-snippet-due-1');
     reviewFirstSnippetBtn.click();
     await waitFor(() => {
-      expect(
-        screen.getByText('Updated content data ✅!'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Updated content data ✅!')).toBeInTheDocument();
     });
 
     checkForReviewLabelText(2, 3, 3);
     checkingTimelineMarkers(2, 3, 3);
 
-    jest
-      .spyOn(apiLib, 'apiRequestWrapper')
-      .mockImplementation(async (params) => {
-        if (params.url === '/api/updateContentMetaData') {
-          return {
-            ...mockSelectedContentWithDueData,
-            snippets: [
-              {
-                ...mockSelectedContentWithDueData.snippets[0],
-                reviewData: {
-                  ...mockSelectedContentWithDueData.snippets[0].reviewData,
-                  due: dueIn2Days(),
-                },
-              },
-              {
-                ...mockSelectedContentWithDueData.snippets[1],
-                reviewData: {
-                  ...mockSelectedContentWithDueData.snippets[1].reviewData,
-                  due: dueIn2Days(),
-                },
-              },
-              mockSelectedContentWithDueData.snippets[2],
-            ],
-          };
-        }
-        return {};
-      });
-
+    mockUpdateContentMetaData({
+      ...mockSelectedContentWithDueData,
+      snippets: [
+        {
+          ...mockSelectedContentWithDueData.snippets[0],
+          reviewData: {
+            ...mockSelectedContentWithDueData.snippets[0].reviewData,
+            due: dueIn2Days(),
+          },
+        },
+        {
+          ...mockSelectedContentWithDueData.snippets[1],
+          reviewData: {
+            ...mockSelectedContentWithDueData.snippets[1].reviewData,
+            due: dueIn2Days(),
+          },
+        },
+        mockSelectedContentWithDueData.snippets[2],
+      ],
+    });
     const reviewSecondSnippetBtn = screen.getByTestId('easy-snippet-due-2');
     reviewSecondSnippetBtn.click();
     await waitFor(() => {
-      expect(
-        screen.getByText('Updated content data ✅!'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Updated content data ✅!')).toBeInTheDocument();
     });
 
     checkForReviewLabelText(1, 3, 3);
     checkingTimelineMarkers(1, 3, 3);
 
-    jest
-      .spyOn(apiLib, 'apiRequestWrapper')
-      .mockImplementation(async (params) => {
-        if (params.url === '/api/updateContentMetaData') {
-          return {
-            ...mockSelectedContentWithDueData,
-            snippets: [
-              {
-                ...mockSelectedContentWithDueData.snippets[0],
-                reviewData: {
-                  ...mockSelectedContentWithDueData.snippets[0].reviewData,
-                  due: dueIn2Days(),
-                },
-              },
-              {
-                ...mockSelectedContentWithDueData.snippets[1],
-                reviewData: {
-                  ...mockSelectedContentWithDueData.snippets[1].reviewData,
-                  due: dueIn2Days(),
-                },
-              },
-              {
-                ...mockSelectedContentWithDueData.snippets[2],
-                reviewData: {
-                  ...mockSelectedContentWithDueData.snippets[2].reviewData,
-                  due: dueIn2Days(),
-                },
-              },
-            ],
-          };
-        }
-        return {};
-      });
+    mockUpdateContentMetaData({
+      ...mockSelectedContentWithDueData,
+      snippets: [
+        {
+          ...mockSelectedContentWithDueData.snippets[0],
+          reviewData: {
+            ...mockSelectedContentWithDueData.snippets[0].reviewData,
+            due: dueIn2Days(),
+          },
+        },
+        {
+          ...mockSelectedContentWithDueData.snippets[1],
+          reviewData: {
+            ...mockSelectedContentWithDueData.snippets[1].reviewData,
+            due: dueIn2Days(),
+          },
+        },
+        {
+          ...mockSelectedContentWithDueData.snippets[2],
+          reviewData: {
+            ...mockSelectedContentWithDueData.snippets[2].reviewData,
+            due: dueIn2Days(),
+          },
+        },
+      ],
+    });
 
     const reviewThirdSnippetBtn = screen.getByTestId('easy-snippet-due-3');
     reviewThirdSnippetBtn.click();
     await waitFor(() => {
-      expect(
-        screen.getByText('Updated content data ✅!'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Updated content data ✅!')).toBeInTheDocument();
     });
 
     checkForReviewLabelText(0, 3, 3);
@@ -319,33 +301,7 @@ describe('LearningScreen - Review Mode', () => {
   const reviewSentencesInReviewMode = async () => {
     expect(screen.queryByText('Done!')).not.toBeInTheDocument();
     checkSentenceMetaData(3, 3, 0);
-    jest
-      .spyOn(apiLib, 'apiRequestWrapper')
-      .mockImplementation(async (params) => {
-        if (params.url === '/api/updateSentence') {
-          const dueTime = new Date();
-          dueTime.setDate(dueTime.getDate() + 2);
-          const lastReviewTime = new Date();
-          const reviewData = {
-            due: dueTime.toISOString(),
-            stability: 0.7,
-            difficulty: 6.5,
-            elapsed_days: 0,
-            scheduled_days: 2,
-            reps: 2,
-            lapses: 0,
-            state: 1,
-            last_review: lastReviewTime.toISOString(),
-            ease: 2.6,
-            interval: 2,
-          };
-
-          return {
-            reviewData,
-          };
-        }
-        return {};
-      });
+    mockUpdateSentenceReview(REVIEW_DATA_2_DAYS_AWAY);
     const firstSentenceDueTime = screen.getByTestId('easy-sentence-due-1');
 
     firstSentenceDueTime.click();
@@ -380,21 +336,6 @@ describe('LearningScreen - Review Mode', () => {
 
     expect(screen.getByText('Done!')).toBeInTheDocument();
   };
-
-  beforeAll(() => {
-    jest
-      .spyOn(apiLib, 'apiRequestWrapper')
-      .mockImplementation(async (params) => {
-        if (params.url === '/api/getOnLoadData') {
-          return {
-            contentData: [mockSelectedContentWithDueData],
-            wordsData: mockWordsData,
-            sentencesData: [],
-          };
-        }
-        return {};
-      });
-  });
 
   it('should allow user to review words/sentences/snippets', async () => {
     await renderWithProvider(mockSelectedContentWithDueData);

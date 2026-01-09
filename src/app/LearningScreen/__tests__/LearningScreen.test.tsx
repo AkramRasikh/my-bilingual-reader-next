@@ -584,6 +584,10 @@ beforeAll(() => {
 beforeEach(() => {
   mockGetOnLoadData([mockSelectedContent], [], []);
 });
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 describe('LearningScreen - studying new content', () => {
   describe('new sentences', () => {
     it('should render a blank project with no previously reviewed content', async () => {
