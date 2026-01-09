@@ -1,12 +1,22 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
-import * as apiLib from '@/lib/api-request-wrapper';
 import {
   mockTitle,
   mockSelectedContent,
   checkingTimelineMarkers,
   renderWithProvider,
 } from './test-utils';
-import { DEFAULT_REVIEW_DATA, mockUpdateSentenceReview } from './api-mocks';
+import {
+  DEFAULT_REVIEW_DATA,
+  JAPANESE_WORD_FOR_REVIEW_1,
+  JAPANESE_WORD_FOR_REVIEW_2,
+  MOCK_SNIPPET_1,
+  mockDeleteWord,
+  mockGetOnLoadData,
+  mockSaveWord,
+  mockUpdateContentMetaData,
+  mockUpdateSentenceReview,
+  REVIEW_DATA_2_DAYS_AWAY,
+} from './api-mocks';
 
 jest.mock('../../Providers/useDataSaveToLocalStorage', () => () => {});
 
@@ -145,31 +155,7 @@ const addFirstSentenceToReview = async () => {
     'transcript-menu-review-sentence-1',
   );
   expect(screen.queryByText('Sentence reviewed ✅')).not.toBeInTheDocument();
-  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
-    if (params.url === '/api/updateSentence') {
-      const dueTime = new Date();
-      const lastReviewTime = new Date();
-      const reviewData = {
-        due: dueTime.toISOString(),
-        stability: 0.40255,
-        difficulty: 7.1949,
-        elapsed_days: 0,
-        scheduled_days: 0,
-        reps: 1,
-        lapses: 0,
-        state: 1,
-        last_review: lastReviewTime.toISOString(),
-        ease: 2.5,
-        interval: 0,
-      };
-
-      return {
-        reviewData,
-      };
-    }
-    // Default mock response
-    return {};
-  });
+  mockUpdateSentenceReview(DEFAULT_REVIEW_DATA);
   reviewMenuItem.click();
   await waitFor(() => {
     expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
@@ -225,32 +211,7 @@ const reviewFirstSentenceAgain = async () => {
   );
   expect(srsTogglesFirstSentence).toBeInTheDocument();
   const easyButton = within(srsTogglesFirstSentence).getByText('2 days');
-  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
-    if (params.url === '/api/updateSentence') {
-      const dueTime = new Date();
-      dueTime.setDate(dueTime.getDate() + 2);
-      const lastReviewTime = new Date();
-      const reviewData = {
-        due: dueTime.toISOString(),
-        stability: 0.7,
-        difficulty: 6.5,
-        elapsed_days: 0,
-        scheduled_days: 2,
-        reps: 2,
-        lapses: 0,
-        state: 1,
-        last_review: lastReviewTime.toISOString(),
-        ease: 2.6,
-        interval: 2,
-      };
-
-      return {
-        reviewData,
-      };
-    }
-    // Default mock response
-    return {};
-  });
+  mockUpdateSentenceReview(REVIEW_DATA_2_DAYS_AWAY);
   fireEvent.click(easyButton);
   await waitFor(() => {
     expect(screen.getAllByText('Sentence reviewed ✅')).toHaveLength(3);
@@ -270,29 +231,7 @@ const removeSecondSentenceFromReview = async () => {
   const removeButton = screen.getByTestId(
     `review-srs-toggles-remove-sentence-2`,
   );
-  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
-    if (params.url === '/api/updateSentence') {
-      const reviewData = {
-        due: null,
-        stability: null,
-        difficulty: null,
-        elapsed_days: null,
-        scheduled_days: null,
-        reps: 0,
-        lapses: 0,
-        state: 0,
-        last_review: null,
-        ease: 2.5,
-        interval: null,
-      };
-
-      return {
-        reviewData,
-      };
-    }
-    // Default mock response
-    return {};
-  });
+  mockUpdateSentenceReview({ reviewData: {} });
   fireEvent.click(removeButton);
   await waitFor(() => {
     expect(
@@ -331,40 +270,7 @@ const saveWordFirstInTranscript = async () => {
   });
 
   // Spy for api/saveWord
-  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
-    if (params.url === '/api/saveWord') {
-      const dueTime = new Date();
-      const lastReviewTime = new Date();
-      return {
-        word: {
-          baseForm: '世界',
-          surfaceForm: '世界',
-          contexts: ['sentence-1'],
-          definition: 'world',
-          id: 'mocked-id-sekai',
-          notes:
-            'In this context, 世界 refers to the world or universe as a whole.',
-          phonetic: 'せかい',
-          reviewData: {
-            difficulty: 7.1949,
-            due: dueTime.toISOString(),
-            ease: 2.5,
-            elapsed_days: 0,
-            interval: 0,
-            lapses: 0,
-            last_review: lastReviewTime.toISOString(),
-            reps: 1,
-            scheduled_days: 0,
-            stability: 0.40255,
-            state: 1,
-          },
-          transliteration: 'sekai',
-        },
-      };
-    }
-    // fallback to previous mocks
-    return {};
-  });
+  mockSaveWord(JAPANESE_WORD_FOR_REVIEW_1);
 
   const saveWordButton = screen.getByTestId('save-word-openai-button');
   const genericFirstSentenceSpinnerNotPresent = screen.queryByTestId(
@@ -412,40 +318,7 @@ const saveWordSecondInTranscript = async () => {
   });
 
   // Spy for api/saveWord
-  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
-    if (params.url === '/api/saveWord') {
-      const dueTime = new Date();
-      const lastReviewTime = new Date();
-      return {
-        word: {
-          baseForm: '元気',
-          surfaceForm: '元気',
-          contexts: ['sentence-2'],
-          definition: 'healthy; energetic',
-          id: 'mocked-id-genki',
-          notes: 'In this context, 元気 refers to being healthy or energetic.',
-          phonetic: 'げんき',
-          reviewData: {
-            difficulty: 7.1949,
-            due: dueTime.toISOString(),
-            ease: 2.5,
-            elapsed_days: 0,
-            interval: 0,
-            lapses: 0,
-            last_review: lastReviewTime.toISOString(),
-            reps: 1,
-            scheduled_days: 0,
-            stability: 0.40255,
-            state: 1,
-          },
-          transliteration: 'genki',
-        },
-      };
-    }
-    // fallback to previous mocks
-    return {};
-  });
-
+  mockSaveWord(JAPANESE_WORD_FOR_REVIEW_2);
   const saveWordButton = screen.getByTestId('save-word-openai-button');
   const genericFirstSentenceSpinnerNotPresent = screen.queryByTestId(
     'transcript-action-loading-sentence-2',
@@ -494,13 +367,7 @@ const deleteFirstWord = async () => {
   );
 
   expect(genericFirstSentenceSpinnerNotPresent).not.toBeInTheDocument();
-  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
-    if (params.url === '/api/deleteWord') {
-      return {
-        id: 'mocked-id-sekai',
-      };
-    }
-  });
+  mockDeleteWord('mocked-id-sekai');
 
   deleteButton.click();
   const confirmDeleteButton =
@@ -638,48 +505,15 @@ const saveSnippet = async () => {
     'save-snippet-button-sentence-4',
   );
 
-  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
-    if (params.url === '/api/updateContentMetaData') {
-      const dueTime = new Date();
-      const lastReviewTime = new Date();
-      const reviewData = {
-        due: dueTime.toISOString(),
-        stability: 0.40255,
-        difficulty: 7.1949,
-        elapsed_days: 0,
-        scheduled_days: 0,
-        reps: 1,
-        lapses: 0,
-        state: 1,
-        last_review: lastReviewTime.toISOString(),
-        ease: 2.5,
-        interval: 0,
-      };
-
-      return {
-        ...mockSelectedContent,
-        snippets: [
-          {
-            id: 'mocked-snippet-id-1',
-            time: 10,
-            reviewData,
-            isContracted: true,
-            contentId: 'content-1',
-            targetLang: 'またね、友達！また公園ですぐに会いましょう。',
-            baseLang:
-              'See you later, friend! Let us meet again soon at the park.',
-            suggestedFocusText: '！また公園ですぐ',
-            focusedText: '！また公園ですぐ',
-          },
-        ],
-      };
-    }
-    // Default mock response
-    return {};
+  mockUpdateContentMetaData({
+    ...mockSelectedContent,
+    snippets: [
+      {
+        ...MOCK_SNIPPET_1,
+      },
+    ],
   });
-
   saveSnippetTranscriptBtn.click();
-
   await waitFor(() => {
     expect(screen.getByText('Updated content data ✅!')).toBeInTheDocument();
   });
@@ -728,17 +562,10 @@ const deleteSnippet = async () => {
   const multiSnippetActionsContainer = screen.getByTestId(
     `transcript-time-overlap-indicator-multi-sentence-4`,
   );
-  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
-    if (params.url === '/api/updateContentMetaData') {
-      return {
-        ...mockSelectedContent,
-        snippets: [],
-      };
-    }
-    // Default mock response
-    return {};
+  mockUpdateContentMetaData({
+    ...mockSelectedContent,
+    snippets: [],
   });
-
   const deleteButton = within(multiSnippetActionsContainer).getByRole(
     'button',
     { name: '❌' },
@@ -755,19 +582,20 @@ const deleteSnippet = async () => {
 
 describe('LearningScreen - studying new content', () => {
   beforeAll(() => {
-    jest
-      .spyOn(apiLib, 'apiRequestWrapper')
-      .mockImplementation(async (params) => {
-        if (params.url === '/api/getOnLoadData') {
-          return {
-            contentData: [mockSelectedContent],
-            wordsData: [],
-            sentencesData: [],
-          };
-        }
-        // Default mock response
-        return {};
-      });
+    mockGetOnLoadData([mockSelectedContent], [], []);
+    // jest
+    //   .spyOn(apiLib, 'apiRequestWrapper')
+    //   .mockImplementation(async (params) => {
+    //     if (params.url === '/api/getOnLoadData') {
+    //       return {
+    //         contentData: [mockSelectedContent],
+    //         wordsData: [],
+    //         sentencesData: [],
+    //       };
+    //     }
+    //     // Default mock response
+    //     return {};
+    //   });
   });
   beforeEach(() => {
     jest.clearAllMocks();
