@@ -4,32 +4,23 @@ import { landingMetaData } from './helpers/landing-meta-data';
 import {
   firstContentId,
   secondContentId,
-  thirdContentId,
-  checkPointContentId,
   firstDueWordId,
   firstNonDueWordId,
   checkSentenceCount,
-  // checkWordsTabCount,
-  // checkWordsDueMeta,
-  // checkSnippetsDueMeta,
-  // checkProgressHeader,
-  // checkLearningScreenTab,
-  // checkVideoControl,
-  // checkEnglishTranscriptToggles,
-  // checkPrePostReviewToggle,
-  // checkActionBarButtons,
+  checkActionBarButtons,
+  testCurrentButtonNavigation,
+  testStudyHereMode,
+  checkPrePostReviewToggle,
+  triggerTrackSwitch,
+  goFromLandingToLearningScreen,
+  checkWordsTabCount,
 } from './helpers/content-screen-helpers';
+import { waitForMediaMetadata } from './helpers/wait-for-media';
 
 const contentData = landingMetaData[0]; // Using the first content item for navigation test
 const contentTitle = contentData.title; // Using the first content item for navigation test
 
 // Helper function to check words count
-async function checkWordsTabCount(page: Page, expectedText: string) {
-  const wordsTabTrigger = page.getByTestId('words-tab-trigger');
-  await expect(wordsTabTrigger).toBeVisible();
-  await expect(wordsTabTrigger).toContainText(expectedText);
-  return wordsTabTrigger;
-}
 
 // Helper function to check words due count
 export async function checkWordsDueMeta(page: Page, expectedText: string) {
@@ -124,1813 +115,1677 @@ async function checkEnglishTranscriptToggles(page: Page) {
   await expect(secondTranscriptEnglish).toBeVisible();
 }
 
-// Helper function to check pre/post review toggle state
-async function checkPrePostReviewToggle(page: Page) {
-  // Before toggling review mode, verify checkboxes are disabled with 0 counts
-  const wordsToggle = page.locator('#words-toggle');
-  const sentencesToggle = page.locator('#sentences-toggle');
-  const snippetsToggle = page.locator('#snippets-toggle');
+// // Helper function to check pre/post review toggle state
+// async function checkPrePostReviewToggle(page: Page) {
+//   // Before toggling review mode, verify checkboxes are disabled with 0 counts
+//   const wordsToggle = page.locator('#words-toggle');
+//   const sentencesToggle = page.locator('#sentences-toggle');
+//   const snippetsToggle = page.locator('#snippets-toggle');
 
-  await expect(wordsToggle).toBeDisabled();
-  await expect(sentencesToggle).toBeDisabled();
-  await expect(snippetsToggle).toBeDisabled();
+//   await expect(wordsToggle).toBeDisabled();
+//   await expect(sentencesToggle).toBeDisabled();
+//   await expect(snippetsToggle).toBeDisabled();
 
-  // Verify counts are 0 before review mode
-  const wordsLabel = page.locator('label[for="words-toggle"]');
-  const sentencesLabel = page.locator('label[for="sentences-toggle"]');
-  const snippetsLabel = page.locator('label[for="snippets-toggle"]');
+//   // Verify counts are 0 before review mode
+//   const wordsLabel = page.locator('label[for="words-toggle"]');
+//   const sentencesLabel = page.locator('label[for="sentences-toggle"]');
+//   const snippetsLabel = page.locator('label[for="snippets-toggle"]');
 
-  await expect(wordsLabel).toContainText('🔤 (0)');
-  await expect(sentencesLabel).toContainText('📝 (0)');
-  await expect(snippetsLabel).toContainText('✂️ (0)');
+//   await expect(wordsLabel).toContainText('🔤 (0)');
+//   await expect(sentencesLabel).toContainText('📝 (0)');
+//   await expect(snippetsLabel).toContainText('✂️ (0)');
 
-  // toggle review mode on
-  const reviewSwitch = page.getByTestId('review-switch');
-  await reviewSwitch.click();
-  await page.waitForTimeout(500);
+//   // toggle review mode on
+//   const reviewSwitch = page.getByTestId('review-switch');
+//   await reviewSwitch.click();
+//   await page.waitForTimeout(500);
 
-  // After toggling review mode, verify checkboxes are enabled with proper counts
-  await expect(wordsToggle).not.toBeDisabled();
-  await expect(sentencesToggle).not.toBeDisabled();
-  await expect(snippetsToggle).not.toBeDisabled();
+//   // After toggling review mode, verify checkboxes are enabled with proper counts
+//   await expect(wordsToggle).not.toBeDisabled();
+//   await expect(sentencesToggle).not.toBeDisabled();
+//   await expect(snippetsToggle).not.toBeDisabled();
 
-  // Verify counts are updated after review mode
-  await expect(wordsLabel).toContainText('🔤 (5)');
-  await expect(sentencesLabel).toContainText('📝 (0)');
-  await expect(snippetsLabel).toContainText('✂️ (0)');
-}
-
-// Helper function to check action bar buttons in non-review state
-async function checkActionBarButtons(page: Page) {
-  // Check Study here button is visible
-  const studyHereButton = page.getByTestId('study-here-button');
-  await expect(studyHereButton).toBeVisible();
-  await expect(studyHereButton).toContainText('Study here');
-
-  // Check Current button is visible
-  const currentButton = page.getByTestId('current-button');
-  await expect(currentButton).toBeVisible();
-  await expect(currentButton).toContainText('Current');
-
-  // Check Checkpoint button is visible
-  const checkpointButton = page.getByTestId('checkpoint-button');
-  await expect(checkpointButton).toBeVisible();
-  await expect(checkpointButton).toContainText('Checkpoint');
-
-  // Verify checkpoint transcript item is NOT in viewport before clicking
-  const checkpointTranscriptItem = page.getByTestId(
-    `transcript-target-lang-${checkPointContentId}`,
-  );
-  const checkpointNotVisibleInitially = await checkpointTranscriptItem.evaluate(
-    (el) => {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth)
-      );
-    },
-  );
-  expect(checkpointNotVisibleInitially).toBe(false);
-
-  // Click Checkpoint button
-  await checkpointButton.click();
-
-  // Wait for 2 seconds
-  await page.waitForTimeout(2000);
-
-  // Verify checkpoint transcript item IS in viewport after scroll
-  const checkpointVisibleAfterScroll = await checkpointTranscriptItem.evaluate(
-    (el) => {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth)
-      );
-    },
-  );
-  expect(checkpointVisibleAfterScroll).toBe(true);
-
-  // Verify first transcript item is NOT in viewport after scroll
-  const firstTranscriptItem = page.getByTestId(
-    `transcript-target-lang-${firstContentId}`,
-  );
-  const firstNotVisibleAfterScroll = await firstTranscriptItem.evaluate(
-    (el) => {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth)
-      );
-    },
-  );
-  expect(firstNotVisibleAfterScroll).toBe(false);
-
-  // Click play on the first transcript item
-  const firstPlayButton = page.getByTestId(
-    `transcript-play-button-${firstContentId}`,
-  );
-  await expect(firstPlayButton).toBeVisible();
-  await firstPlayButton.click();
-
-  // Wait for play action to register
-  await page.waitForTimeout(1000);
-
-  // Click Current button to scroll to the playing item
-  await currentButton.click();
-
-  // Wait for scroll animation
-  await page.waitForTimeout(2000);
-
-  // Verify first transcript item IS in viewport after clicking Current
-  const firstVisibleAfterCurrent = await firstTranscriptItem.evaluate((el) => {
-    const rect = el.getBoundingClientRect();
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <=
-        (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-  });
-  expect(firstVisibleAfterCurrent).toBe(true);
-
-  // Verify checkpoint transcript item is NOT in viewport after clicking Current
-  const checkpointNotVisibleAfterCurrent =
-    await checkpointTranscriptItem.evaluate((el) => {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth)
-      );
-    });
-  expect(checkpointNotVisibleAfterCurrent).toBe(false);
-
-  // Click play on the third transcript item
-  const thirdPlayButton = page.getByTestId(
-    `transcript-play-button-${thirdContentId}`,
-  );
-  await expect(thirdPlayButton).toBeVisible();
-  await thirdPlayButton.click();
-
-  // Wait for play action to register
-  await page.waitForTimeout(1000);
-
-  // Click Study here button
-  await studyHereButton.click();
-
-  // Wait for study mode to activate
-  await page.waitForTimeout(500);
-
-  // Verify Study here button text becomes "Study here 3"
-  await expect(studyHereButton).toContainText('Study here 3');
-
-  // Verify Clear button is visible
-  const clearButton = page.getByTestId('clear-button');
-  await expect(clearButton).toBeVisible();
-  await expect(clearButton).toContainText('Clear');
-
-  // Verify first transcript item is NOT visible in UI
-  const firstTranscriptItemAfterStudy = page.getByTestId(
-    `transcript-target-lang-${firstContentId}`,
-  );
-  await expect(firstTranscriptItemAfterStudy).not.toBeVisible();
-
-  // Verify second transcript item is NOT visible in UI
-  const secondTranscriptItem = page.getByTestId(
-    `transcript-target-lang-${secondContentId}`,
-  );
-  await expect(secondTranscriptItem).not.toBeVisible();
-
-  // Verify TranscriptItemSecondary shows the third content
-  const thirdContentJapaneseText = page.getByText(
-    '堀/はい。はい。水/『目で見ることばで話をさせて』という小説なんですけど、これあらすじを話しますと',
-  );
-  await expect(thirdContentJapaneseText).toHaveCount(2);
-
-  const thirdContentEnglishTextShort = page.getByText(
-    'Hori/Yes. Yes. Mizu/It\'s called "Let Me Speak with the Language of My Eyes." Here\'s the synopsis:',
-  );
-  await expect(thirdContentEnglishTextShort).toHaveCount(2);
-
-  // Check for the long English text (may have special quotes)
-  const transcriptSecondary = page.getByTestId('transcript-item-secondary');
-  await expect(transcriptSecondary).toBeVisible();
-  await expect(transcriptSecondary).toContainText('Hori: Yes, yes. Mizuki:');
-  await expect(transcriptSecondary).toContainText(
-    'but if I talk about this summary',
-  );
-
-  const thirdContentEnglishTextLong = page.getByText(
-    'Hori: Yes, yes. Mizuki: It is a novel called ‘Let’s talk with words seen by the eyes,’ but if I talk about this summary,',
-  );
-  await expect(thirdContentEnglishTextLong).toBeVisible();
-}
+//   // Verify counts are updated after review mode
+//   await expect(wordsLabel).toContainText('🔤 (5)');
+//   await expect(sentencesLabel).toContainText('📝 (0)');
+//   await expect(snippetsLabel).toContainText('✂️ (0)');
+// }
 
 test.beforeEach(async ({ page }) => {
   // Setup API mocking for all tests
   await setupApiMocks(page);
 });
+test.describe.only('General toggles & verify UI elements', () => {
+  test('initial actions and checkpoint buttons', async ({ page }) => {
+    await goFromLandingToLearningScreen(page);
 
-test('landing screen -> learning content screen navigation -> general toggle actions', async ({
-  page,
-}) => {
-  await page.goto('/');
+    // Verify the URL includes the topic query parameter
 
-  // Wait for page to be loaded
-  await page.waitForLoadState('networkidle');
+    await waitForMediaMetadata(page);
 
-  // Check that the page loaded successfully
-  expect(page.url()).toContain('/');
+    // Verify the content title appears as a header
+    const subHeading = page.getByTestId('breadcrumb-subheading');
+    await expect(subHeading).toBeVisible();
+    await expect(subHeading).toContainText(contentTitle);
 
-  // Click on the specific content item
-  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-  await contentButton.click();
+    // home header
+    const heading = page.getByTestId('breadcrumb-heading');
+    await expect(heading).toContainText('Home');
+    // left side meta data
+    await checkSentenceCount(page, '153/200');
+    await checkWordsDueMeta(page, 'Words Due: 55');
+    await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
+    await checkProgressHeader(page, '0/153');
 
-  // Wait for navigation to complete
-  await page.waitForURL(`**/content?topic=${contentTitle}`);
+    const bulkReviewBefore = page.getByText('Bulk Review: 7');
+    await expect(bulkReviewBefore).toBeVisible();
 
-  // Verify the URL includes the topic query parameter
-  expect(page.url()).toContain(`/content?topic=${contentTitle}`);
+    const repsCount = page.getByTestId('analytics-reps-count');
+    await expect(repsCount).toContainText('Reps: 0');
 
-  // Verify the content title appears as a header
-  const subHeading = page.getByTestId('breadcrumb-subheading');
-  await expect(subHeading).toBeVisible();
-  await expect(subHeading).toContainText(contentTitle);
+    // tab data
+    await checkWordsTabCount(page, 'Words 55/84');
+    await checkLearningScreenTab(
+      page,
+      'transcript-tab-trigger',
+      'Transcript',
+      false,
+    );
+    await checkLearningScreenTab(
+      page,
+      'words-tab-trigger',
+      'Words 55/84',
+      false,
+    );
+    await checkLearningScreenTab(page, 'meta-tab-trigger', 'Meta', false);
 
-  // home header
-  const heading = page.getByTestId('breadcrumb-heading');
-  await expect(heading).toContainText('Home');
-  // left side meta data
-  await checkSentenceCount(page, '153/200');
-  await checkWordsDueMeta(page, 'Words Due: 55');
-  await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
-  await checkProgressHeader(page, '0/153');
+    // video controls
+    await checkVideoControl(page, 'review-label', 'review-switch', 'Review');
+    await checkVideoControl(page, 'english-label', 'english-switch', '🇬🇧');
+    // test English toggle functionality
+    await checkEnglishTranscriptToggles(page);
+    await triggerTrackSwitch(page);
+    await page.waitForTimeout(2000);
 
-  const bulkReviewBefore = page.getByText('Bulk Review: 7');
-  await expect(bulkReviewBefore).toBeVisible();
+    // check action bar buttons (non-review state)
+    await checkActionBarButtons(page);
+  });
+  test('study from here', async ({ page }) => {
+    await goFromLandingToLearningScreen(page);
+    await waitForMediaMetadata(page);
+    await triggerTrackSwitch(page);
+    // Verify the URL includes the topic query parameter
+    await testCurrentButtonNavigation(page);
+    await testStudyHereMode(page);
+  });
+  test('pre-post review toggles', async ({ page }) => {
+    await goFromLandingToLearningScreen(page);
+    await checkPrePostReviewToggle(page);
+  });
+});
+test.describe('Transcript item menu interactions and review', () => {
+  test('successfully add to review', async ({ page }) => {
+    await page.goto('/');
 
-  const repsCount = page.getByTestId('analytics-reps-count');
-  await expect(repsCount).toContainText('Reps: 0');
+    // Wait for page to be loaded
+    await page.waitForLoadState('networkidle');
 
-  // tab data
-  await checkWordsTabCount(page, 'Words 55/84');
-  await checkLearningScreenTab(
+    // Navigate to content screen
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+    // Wait for the content to load and find the first transcript item
+    await page.waitForLoadState('networkidle');
+
+    // Verify initial sentence count and reps
+    const sentencesCount = page.getByTestId('analytics-sentences-count');
+    await expect(sentencesCount).toBeVisible();
+
+    const repsCount = page.getByTestId('analytics-reps-count');
+    await expect(repsCount).toBeVisible();
+    await expect(repsCount).toContainText('Reps: 0');
+
+    const firstMenuToggle = page.getByTestId(/transcript-menu-toggle-/).first();
+    await expect(firstMenuToggle).toBeVisible();
+    await firstMenuToggle.click();
+    const menuOptions = page.getByTestId(/transcript-menu-options-/).first();
+    const reviewButton = page.getByTestId(/transcript-menu-review-/).first();
+    await reviewButton.click();
+
+    // Verify loading spinner appears in the action bar
+    const loadingSpinner = page
+      .getByTestId(/transcript-action-loading-/)
+      .first();
+    await expect(loadingSpinner).toBeVisible();
+
+    // Verify toast message appears
+    const toastMessage = page.getByText('Sentence reviewed ✅');
+    await expect(toastMessage).toBeVisible({ timeout: 3000 });
+
+    // Wait for the loading to complete and menu to close
+    await expect(menuOptions).not.toBeVisible({ timeout: 5000 });
+
+    // Verify loading spinner is no longer visible
+    await expect(loadingSpinner).not.toBeVisible();
+
+    // Verify review button is no longer visible since menu collapsed
+    await expect(reviewButton).not.toBeVisible();
+
+    // Verify reps count increased to 1
+    await expect(repsCount).toContainText('Reps: 1');
+
+    // Verify sentence count increased by 1 in the denominator
+    const finalSentencesText = await sentencesCount.textContent();
+    expect(finalSentencesText).toContain('/201');
+
+    // Click the menu toggle again to reopen the menu
+    await firstMenuToggle.click();
+    // Click review button again to remove the review
+    const reviewButtonSecond = page
+      .getByTestId(/transcript-menu-review-/)
+      .first();
+    await reviewButtonSecond.click();
+
+    // Verify loading spinner appears again
+    await expect(loadingSpinner).toBeVisible();
+
+    // Verify toast message appears for learning sentence
+    const toastMessageLearned = page.getByText(
+      'Successful learned sentence ✅',
+    );
+    await expect(toastMessageLearned).toBeVisible({ timeout: 3000 });
+
+    // Wait for the loading to complete
+    await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+    // Verify reps count increased to 2
+    await expect(repsCount).toContainText('Reps: 2');
+
+    // Verify sentence count reverted back to original
+    const revertedSentencesText = await sentencesCount.textContent();
+    expect(revertedSentencesText).toContain('/200');
+  });
+
+  test('error handling', async ({ page }) => {
+    // Setup API mocking with error response for updateSentence
+    await page.route('**/api/updateSentence', async (route) => {
+      // Wait 1 second to make loading spinner visible
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          error: 'Internal server error',
+        }),
+      });
+    });
+
+    await page.goto('/');
+
+    // Wait for page to be loaded
+    await page.waitForLoadState('networkidle');
+
+    // Navigate to content screen
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+    // Wait for the content to load
+    await page.waitForLoadState('networkidle');
+
+    // Verify initial sentence count and reps
+    await checkSentenceCount(page, '/200');
+    const sentencesCount = page.getByTestId('analytics-sentences-count');
+    const initialSentencesText = await sentencesCount.textContent();
+
+    const repsCount = page.getByTestId('analytics-reps-count');
+    await expect(repsCount).toBeVisible();
+    await expect(repsCount).toContainText('Reps: 0');
+
+    // Open menu and click review button
+    const firstMenuToggle = page.getByTestId(/transcript-menu-toggle-/).first();
+    await expect(firstMenuToggle).toBeVisible();
+    await firstMenuToggle.click();
+
+    const reviewButton = page.getByTestId(/transcript-menu-review-/).first();
+    await reviewButton.click();
+
+    // Verify loading spinner appears in the action bar
+    const loadingSpinner = page
+      .getByTestId(/transcript-action-loading-/)
+      .first();
+    await expect(loadingSpinner).toBeVisible();
+
+    // Verify error toast message appears
+    const errorToastMessage = page.getByText(
+      'Error updating sentence review ❌',
+    );
+    await expect(errorToastMessage).toBeVisible({ timeout: 3000 });
+
+    // Verify loading spinner disappears after error
+    await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+    // Verify reps count remained at 0 (no increment due to error)
+    await expect(repsCount).toContainText('Reps: 0');
+
+    // Verify sentence count remained unchanged
+    const finalSentencesText = await sentencesCount.textContent();
+    expect(finalSentencesText).toContain('/200');
+    expect(finalSentencesText).toBe(initialSentencesText);
+  });
+});
+
+test.describe('Word(s) from transcript item', () => {
+  test('successfully save word', async ({ page }) => {
+    // Setup API mocking for saveWord
+    await page.route('**/api/saveWord', async (route) => {
+      // Wait 1 second to make loading spinner visible
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          word: {
+            id: '83b75769-a67d-4f8a-9baa-9716bdd78219',
+            contexts: ['f378ec1d-c885-4e6a-9821-405b0ff9aa24'],
+            surfaceForm: '言語学',
+            definition: 'linguistics',
+            transliteration: 'gengogaku',
+            baseForm: '言語学',
+            phonetic: 'げんごがく',
+            notes:
+              '言語学 (gengogaku) specifically refers to the scientific study of language, encompassing various aspects such as syntax, semantics, and phonetics. In the context of ゆる言語学ラジオ, it suggests a more relaxed or informal approach to discussing topics related to linguistics.',
+            reviewData: {
+              due: '2025-12-16T20:17:44.113Z',
+              stability: 0.40255,
+              difficulty: 7.1949,
+              elapsed_days: 0,
+              scheduled_days: 0,
+              reps: 1,
+              lapses: 0,
+              state: 1,
+              last_review: '2025-12-16T20:16:44.113Z',
+              ease: 2.5,
+              interval: 0,
+            },
+          },
+        }),
+      });
+    });
+
+    // Setup API mocking for deleteWord
+    await page.route('**/api/deleteWord', async (route) => {
+      // Wait 1 second to make loading spinner visible
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: '83b75769-a67d-4f8a-9baa-9716bdd78219',
+        }),
+      });
+    });
+
+    await page.goto('/');
+
+    // Wait for page to be loaded
+    await page.waitForLoadState('networkidle');
+
+    // Navigate to content screen
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+    // Wait for the content to load
+    await page.waitForLoadState('networkidle');
+
+    // Use specific content ID for reliable targeting
+    const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+
+    // Verify initial Words count
+    await checkWordsTabCount(page, 'Words 55/84');
+
+    // Find the transcript item with text "ゆる言語学ラジオ"
+    const transcriptTargetLang = page.getByTestId(
+      `transcript-target-lang-${contentId}`,
+    );
+    await expect(transcriptTargetLang).toBeVisible();
+
+    // Get the text content to verify it contains "言語学"
+    const transcriptText = await transcriptTargetLang.textContent();
+    expect(transcriptText).toContain('言語学');
+
+    // Select/highlight the text "言語学" using page.evaluate
+    // Since text is split into individual character spans, we need to select across multiple elements
+    const selectionSuccess = await page.evaluate((id) => {
+      const container = document.querySelector(
+        `[data-testid="transcript-target-lang-${id}"]`,
+      );
+      if (!container) {
+        console.log('Container not found');
+        return false;
+      }
+
+      // Get all span elements (each contains one character)
+      const spans = Array.from(container.querySelectorAll('span'));
+      const targetChars = ['言', '語', '学'];
+
+      // Find the spans containing our target characters in sequence
+      let startSpan = null;
+      let endSpan = null;
+
+      for (let i = 0; i < spans.length - 2; i++) {
+        if (
+          spans[i].textContent === targetChars[0] &&
+          spans[i + 1].textContent === targetChars[1] &&
+          spans[i + 2].textContent === targetChars[2]
+        ) {
+          startSpan = spans[i];
+          endSpan = spans[i + 2];
+          break;
+        }
+      }
+
+      if (!startSpan || !endSpan) {
+        return false;
+      }
+
+      // Create a range spanning from start of first span to end of last span
+      const range = document.createRange();
+      const startTextNode = startSpan.firstChild || startSpan;
+      const endTextNode = endSpan.firstChild || endSpan;
+
+      range.setStart(startTextNode, 0);
+      range.setEnd(endTextNode, endTextNode.textContent?.length || 1);
+
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+
+      // Trigger mouseup event to trigger the selection handler
+      const mouseUpEvent = new MouseEvent('mouseup', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      });
+      document.dispatchEvent(mouseUpEvent);
+
+      return true;
+    }, contentId);
+
+    console.log('Selection success:', selectionSuccess);
+
+    // Wait for the state to update
+    await page.waitForTimeout(1000);
+
+    // Verify that HighlightedText component is rendered by checking for save buttons
+    const openaiButton = page.getByTestId('save-word-openai-button');
+    await expect(openaiButton).toBeVisible();
+
+    const googleButton = page.getByTestId('save-word-google-button');
+    await expect(googleButton).toBeVisible();
+
+    // Verify that the highlighted text displays "言語学"
+    const highlightedTextFocus = page.getByTestId('highlighted-text-focus');
+    await expect(highlightedTextFocus).toBeVisible();
+    await expect(highlightedTextFocus).toContainText('言語学');
+
+    // Click the OpenAI save button
+    await openaiButton.click();
+
+    // Verify loading spinner appears in the action bar
+    const loadingSpinner = page.getByTestId(
+      `transcript-action-loading-${contentId}`,
+    );
+    await expect(loadingSpinner).toBeVisible();
+
+    // Verify toast message appears
+    const toastMessage = page.getByText('言語学 saved!');
+    await expect(toastMessage).toBeVisible({ timeout: 3000 });
+
+    // Verify loading spinner disappears after save
+    await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+    // Verify highlighted text is cleared (buttons should disappear)
+    await expect(openaiButton).not.toBeVisible();
+    await expect(googleButton).not.toBeVisible();
+
+    // Verify Words count increased from 55/84 to 55/85
+    await checkWordsTabCount(page, 'Words 55/85');
+
+    // Now hover over the saved word to verify it shows in hover card
+    // The word should now be underlined in the transcript
+    // Find an underlined span within the transcript (using CSS selector for underline style)
+    const underlinedWord = transcriptTargetLang
+      .locator('span')
+      .filter({ hasText: '語' })
+      .first();
+    await expect(underlinedWord).toBeVisible();
+
+    // Move mouse to trigger hover - use mouse.move for more reliable hovering
+    const boundingBox = await underlinedWord.boundingBox();
+    if (boundingBox) {
+      await page.mouse.move(
+        boundingBox.x + boundingBox.width / 2,
+        boundingBox.y + boundingBox.height / 2,
+      );
+    }
+
+    // Wait for hover card to appear
+    await page.waitForTimeout(1000);
+
+    // Verify hover card shows the word info
+    const hoverWordInfo = page.getByTestId('hover-word-info');
+    await expect(hoverWordInfo).toBeVisible();
+    await expect(hoverWordInfo).toContainText('言語学, 言語学, linguistics');
+    await expect(hoverWordInfo).toContainText('げんごがく, gengogaku');
+
+    // Verify Delete button is present
+    const deleteButton = page.getByTestId('delete-button');
+    await expect(deleteButton).toBeVisible();
+    await expect(deleteButton).toContainText('Delete');
+
+    // Click the Delete button
+    await deleteButton.click();
+
+    // Verify "Confirm Delete" button appears
+    const confirmDeleteButton = page.getByRole('button', {
+      name: 'Confirm Delete',
+    });
+    await expect(confirmDeleteButton).toBeVisible();
+
+    // Click "Confirm Delete"
+    await confirmDeleteButton.click();
+
+    // Verify loading spinner appears in the ClickAndConfirm component
+    const clickAndConfirmLoading = page.getByTestId(
+      'click-and-confirm-loading',
+    );
+    await expect(clickAndConfirmLoading).toBeVisible();
+
+    // Verify toast message appears
+    const deleteToastMessage = page.getByText('Word deleted!');
+    await expect(deleteToastMessage).toBeVisible({ timeout: 3000 });
+
+    // Verify loading spinner disappears after delete
+    await expect(clickAndConfirmLoading).not.toBeVisible({ timeout: 5000 });
+
+    // Verify Words count went back to 55/84
+    await checkWordsTabCount(page, 'Words 55/84');
+
+    // Verify the word is no longer underlined
+    // The underlined word should not be visible anymore
+    const underlinedWordAfterDelete = transcriptTargetLang
+      .locator('span')
+      .filter({ hasText: '語' })
+      .first();
+    // Check that it's either not visible or doesn't have underline styling
+    // Since the word text will still be there, we can check that the hover card doesn't appear
+    const boundingBoxAfter = await underlinedWordAfterDelete.boundingBox();
+    if (boundingBoxAfter) {
+      await page.mouse.move(
+        boundingBoxAfter.x + boundingBoxAfter.width / 2,
+        boundingBoxAfter.y + boundingBoxAfter.height / 2,
+      );
+    }
+    await page.waitForTimeout(1000);
+
+    // Verify hover card is no longer visible
+    await expect(hoverWordInfo).not.toBeVisible();
+  });
+  test('save word - error handling', async ({ page }) => {
+    // Setup API mocking for saveWord with error response
+    await page.route('**/api/saveWord', async (route) => {
+      // Wait 1 second to make loading spinner visible
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          error: 'Internal server error',
+        }),
+      });
+    });
+
+    await page.goto('/');
+
+    // Wait for page to be loaded
+    await page.waitForLoadState('networkidle');
+
+    // Navigate to content screen
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+    // Wait for the content to load
+    await page.waitForLoadState('networkidle');
+
+    // Use specific content ID for reliable targeting
+    const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+
+    // Verify initial Words count
+    const wordsTabTrigger = page.getByTestId('words-tab-trigger');
+    await expect(wordsTabTrigger).toBeVisible();
+    await expect(wordsTabTrigger).toContainText('Words 55/84');
+
+    // Find the transcript item
+    const transcriptTargetLang = page.getByTestId(
+      `transcript-target-lang-${contentId}`,
+    );
+    await expect(transcriptTargetLang).toBeVisible();
+
+    // Get the text content to verify it contains "言語学"
+    const transcriptText = await transcriptTargetLang.textContent();
+    expect(transcriptText).toContain('言語学');
+
+    // Select/highlight the text "言語学" using page.evaluate
+    const selectionSuccess = await page.evaluate((id) => {
+      const container = document.querySelector(
+        `[data-testid="transcript-target-lang-${id}"]`,
+      );
+      if (!container) {
+        return false;
+      }
+
+      const spans = Array.from(container.querySelectorAll('span'));
+      const targetChars = ['言', '語', '学'];
+
+      let startSpan = null;
+      let endSpan = null;
+
+      for (let i = 0; i < spans.length - 2; i++) {
+        if (
+          spans[i].textContent === targetChars[0] &&
+          spans[i + 1].textContent === targetChars[1] &&
+          spans[i + 2].textContent === targetChars[2]
+        ) {
+          startSpan = spans[i];
+          endSpan = spans[i + 2];
+          break;
+        }
+      }
+
+      if (!startSpan || !endSpan) {
+        return false;
+      }
+
+      const range = document.createRange();
+      const startTextNode = startSpan.firstChild || startSpan;
+      const endTextNode = endSpan.firstChild || endSpan;
+
+      range.setStart(startTextNode, 0);
+      range.setEnd(endTextNode, endTextNode.textContent?.length || 1);
+
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+
+      const mouseUpEvent = new MouseEvent('mouseup', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      });
+      document.dispatchEvent(mouseUpEvent);
+
+      return true;
+    }, contentId);
+
+    expect(selectionSuccess).toBe(true);
+
+    // Wait for the state to update
+    await page.waitForTimeout(1000);
+
+    // Verify that HighlightedText component is rendered
+    const openaiButton = page.getByTestId('save-word-openai-button');
+    await expect(openaiButton).toBeVisible();
+
+    // Click the OpenAI save button
+    await openaiButton.click();
+
+    // Verify loading spinner appears
+    const loadingSpinner = page.getByTestId(
+      `transcript-action-loading-${contentId}`,
+    );
+    await expect(loadingSpinner).toBeVisible();
+
+    // Verify error toast message appears
+    const errorToastMessage = page.getByText('Failed to save word 🫤❌');
+    await expect(errorToastMessage).toBeVisible({ timeout: 3000 });
+
+    // Verify loading spinner disappears after error
+    await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+    // Verify highlighted text is cleared (buttons should disappear)
+    await expect(openaiButton).not.toBeVisible();
+
+    // Verify Words count remained at 55/84 (no change due to error)
+    await checkWordsTabCount(page, 'Words 55/84');
+
+    // Verify the word is NOT underlined (since save failed)
+    const underlinedWord = transcriptTargetLang
+      .locator('span')
+      .filter({ hasText: '語' })
+      .first();
+
+    // Move mouse to the word location
+    const boundingBox = await underlinedWord.boundingBox();
+    if (boundingBox) {
+      await page.mouse.move(
+        boundingBox.x + boundingBox.width / 2,
+        boundingBox.y + boundingBox.height / 2,
+      );
+    }
+    await page.waitForTimeout(1000);
+
+    // Verify hover card does NOT appear (word was not saved)
+    const hoverWordInfo = page.getByTestId('hover-word-info');
+    await expect(hoverWordInfo).not.toBeVisible();
+  });
+
+  test('delete word - error handling', async ({ page }) => {
+    // Setup API mocking for saveWord (success)
+    await page.route('**/api/saveWord', async (route) => {
+      // Wait 1 second to make loading spinner visible
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          word: {
+            id: '83b75769-a67d-4f8a-9baa-9716bdd78219',
+            contexts: ['f378ec1d-c885-4e6a-9821-405b0ff9aa24'],
+            surfaceForm: '言語学',
+            definition: 'linguistics',
+            transliteration: 'gengogaku',
+            baseForm: '言語学',
+            phonetic: 'げんごがく',
+            notes:
+              '言語学 (gengogaku) specifically refers to the scientific study of language, encompassing various aspects such as syntax, semantics, and phonetics. In the context of ゆる言語学ラジオ, it suggests a more relaxed or informal approach to discussing topics related to linguistics.',
+            reviewData: {
+              due: '2025-12-16T20:17:44.113Z',
+              stability: 0.40255,
+              difficulty: 7.1949,
+              elapsed_days: 0,
+              scheduled_days: 0,
+              reps: 1,
+              lapses: 0,
+              state: 1,
+              last_review: '2025-12-16T20:16:44.113Z',
+              ease: 2.5,
+              interval: 0,
+            },
+          },
+        }),
+      });
+    });
+
+    // Setup API mocking for deleteWord (error)
+    await page.route('**/api/deleteWord', async (route) => {
+      // Wait 1 second to make loading spinner visible
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          error: 'Internal server error',
+        }),
+      });
+    });
+
+    await page.goto('/');
+
+    // Wait for page to be loaded
+    await page.waitForLoadState('networkidle');
+
+    // Navigate to content screen
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+    // Wait for the content to load
+    await page.waitForLoadState('networkidle');
+
+    // Use specific content ID for reliable targeting
+    const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+
+    // Verify initial Words count
+    const wordsTabTrigger = page.getByTestId('words-tab-trigger');
+    await expect(wordsTabTrigger).toBeVisible();
+    await expect(wordsTabTrigger).toContainText('Words 55/84');
+
+    // Find the transcript item
+    const transcriptTargetLang = page.getByTestId(
+      `transcript-target-lang-${contentId}`,
+    );
+    await expect(transcriptTargetLang).toBeVisible();
+
+    // Select and save the word "言語学" (same as previous test)
+    const selectionSuccess = await page.evaluate((id) => {
+      const container = document.querySelector(
+        `[data-testid="transcript-target-lang-${id}"]`,
+      );
+      if (!container) {
+        return false;
+      }
+
+      const spans = Array.from(container.querySelectorAll('span'));
+      const targetChars = ['言', '語', '学'];
+
+      let startSpan = null;
+      let endSpan = null;
+
+      for (let i = 0; i < spans.length - 2; i++) {
+        if (
+          spans[i].textContent === targetChars[0] &&
+          spans[i + 1].textContent === targetChars[1] &&
+          spans[i + 2].textContent === targetChars[2]
+        ) {
+          startSpan = spans[i];
+          endSpan = spans[i + 2];
+          break;
+        }
+      }
+
+      if (!startSpan || !endSpan) {
+        return false;
+      }
+
+      const range = document.createRange();
+      const startTextNode = startSpan.firstChild || startSpan;
+      const endTextNode = endSpan.firstChild || endSpan;
+
+      range.setStart(startTextNode, 0);
+      range.setEnd(endTextNode, endTextNode.textContent?.length || 1);
+
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+
+      const mouseUpEvent = new MouseEvent('mouseup', {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      });
+      document.dispatchEvent(mouseUpEvent);
+
+      return true;
+    }, contentId);
+
+    expect(selectionSuccess).toBe(true);
+    await page.waitForTimeout(1000);
+
+    // Click save button
+    const openaiButton = page.getByTestId('save-word-openai-button');
+    await expect(openaiButton).toBeVisible();
+    await openaiButton.click();
+
+    // Wait for save to complete
+    const loadingSpinner = page.getByTestId(
+      `transcript-action-loading-${contentId}`,
+    );
+    await expect(loadingSpinner).toBeVisible();
+    const toastMessage = page.getByText('言語学 saved!');
+    await expect(toastMessage).toBeVisible({ timeout: 3000 });
+    await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+    // Verify Words count increased to 55/85
+    await checkWordsTabCount(page, 'Words 55/85');
+
+    // Now hover over the saved word to open hover card
+    const underlinedWord = transcriptTargetLang
+      .locator('span')
+      .filter({ hasText: '語' })
+      .first();
+    await expect(underlinedWord).toBeVisible();
+
+    const boundingBox = await underlinedWord.boundingBox();
+    if (boundingBox) {
+      await page.mouse.move(
+        boundingBox.x + boundingBox.width / 2,
+        boundingBox.y + boundingBox.height / 2,
+      );
+    }
+
+    await page.waitForTimeout(1000);
+
+    // Verify hover card appears
+    const hoverWordInfo = page.getByTestId('hover-word-info');
+    await expect(hoverWordInfo).toBeVisible();
+
+    // Click Delete button
+    const deleteButton = page.getByTestId('delete-button');
+    await expect(deleteButton).toBeVisible();
+    await deleteButton.click();
+
+    // Click Confirm Delete
+    const confirmDeleteButton = page.getByRole('button', {
+      name: 'Confirm Delete',
+    });
+    await expect(confirmDeleteButton).toBeVisible();
+    await confirmDeleteButton.click();
+
+    // Verify loading spinner appears
+    const clickAndConfirmLoading = page.getByTestId(
+      'click-and-confirm-loading',
+    );
+    await expect(clickAndConfirmLoading).toBeVisible();
+
+    // Verify error toast message appears
+    const errorToastMessage = page.getByText('Error deleting word ❌');
+    await expect(errorToastMessage).toBeVisible({ timeout: 3000 });
+
+    // Verify loading spinner disappears after error
+    await expect(clickAndConfirmLoading).not.toBeVisible({ timeout: 5000 });
+
+    // Verify Words count remained at 55/85 (no change due to error)
+    await checkWordsTabCount(page, 'Words 55/85');
+
+    // Verify the word is still underlined (deletion failed)
+    // Move mouse away first to close hover card
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(500);
+
+    // Move mouse back to the word to verify it's still interactive
+    const boundingBoxAfter = await underlinedWord.boundingBox();
+    if (boundingBoxAfter) {
+      await page.mouse.move(
+        boundingBoxAfter.x + boundingBoxAfter.width / 2,
+        boundingBoxAfter.y + boundingBoxAfter.height / 2,
+      );
+    }
+    await page.waitForTimeout(1000);
+
+    // Verify hover card still appears (word was not deleted)
+    await expect(hoverWordInfo).toBeVisible();
+    await expect(hoverWordInfo).toContainText('言語学, 言語学, linguistics');
+  });
+});
+
+test.describe('Transcript item sentence breakdown', () => {
+  test('breakdown sentence - success', async ({ page }) => {
+    // Setup API mocking for saveWord
+    await page.route('**/api/saveWord', async (route) => {
+      // Wait 1 second to make loading spinner visible
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          word: {
+            id: '83b75769-a67d-4f8a-9baa-9716bdd78219',
+            contexts: ['f378ec1d-c885-4e6a-9821-405b0ff9aa24'],
+            surfaceForm: '言語学',
+            definition: 'linguistics',
+            transliteration: 'gengogaku',
+            baseForm: '言語学',
+            phonetic: 'げんごがく',
+            notes:
+              '言語学 (gengogaku) specifically refers to the scientific study of language, encompassing various aspects such as syntax, semantics, and phonetics. In the context of ゆる言語学ラジオ, it suggests a more relaxed or informal approach to discussing topics related to linguistics.',
+            reviewData: {
+              due: '2025-12-16T20:17:44.113Z',
+              stability: 0.40255,
+              difficulty: 7.1949,
+              elapsed_days: 0,
+              scheduled_days: 0,
+              reps: 1,
+              lapses: 0,
+              state: 1,
+              last_review: '2025-12-16T20:16:44.113Z',
+              ease: 2.5,
+              interval: 0,
+            },
+          },
+        }),
+      });
+    });
+
+    await page.goto('/');
+
+    // Wait for page to be loaded
+    await page.waitForLoadState('networkidle');
+
+    // Navigate to content screen
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+    // Wait for the content to load
+    await page.waitForLoadState('networkidle');
+
+    // Use specific content ID for reliable targeting
+    const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+
+    // Scope to transcript tab to avoid confusion with TranscriptItemSecondary
+    const transcriptTab = page.locator(
+      '[role="tabpanel"][data-state="active"]',
+    );
+
+    // Open the menu
+    const menuToggle = transcriptTab.getByTestId(
+      `transcript-menu-toggle-${contentId}`,
+    );
+    await expect(menuToggle).toBeVisible();
+    await menuToggle.click();
+
+    // Verify menu is open
+    const menuOptions = transcriptTab.getByTestId(
+      `transcript-menu-options-${contentId}`,
+    );
+    // await expect(menuOptions).toBeVisible();
+
+    // Click the breakdown sentence button (hammer icon)
+    const breakdownButton = transcriptTab.getByTestId(
+      `transcript-breakdown-button-${contentId}`,
+    );
+    // await expect(breakdownButton).toBeVisible();
+    await breakdownButton.click();
+
+    // Verify loading hammer icon appears
+    const loadingHammer = transcriptTab.getByTestId(
+      `transcript-breakdown-loading-${contentId}`,
+    );
+    await expect(loadingHammer).toBeVisible();
+
+    // Verify toast message appears
+    const toastMessage = page.getByText('Sentence broken down 🧱🔨!');
+    await expect(toastMessage).toBeVisible({ timeout: 3000 });
+
+    // Wait for loading to complete
+    await expect(loadingHammer).not.toBeVisible({ timeout: 5000 });
+
+    // Verify menu closes after breakdown
+    await expect(menuOptions).not.toBeVisible();
+
+    // Verify brick emoji appears indicating sentence is broken down
+    const brickEmoji = transcriptTab.getByTestId(
+      `transcript-breakdown-complete-${contentId}`,
+    );
+    await expect(brickEmoji).toBeVisible();
+    await expect(brickEmoji).toContainText('🧱');
+
+    // Verify breakdown button is no longer visible
+    await expect(breakdownButton).not.toBeVisible();
+
+    // Now click the brick emoji to open the breakdown view
+    await brickEmoji.click();
+
+    // Wait for the breakdown view to render
+    await page.waitForTimeout(500);
+
+    // Verify SentenceBreakdown component is visible within transcript tab
+    const sentenceBreakdownContainer = transcriptTab.getByTestId(
+      'sentence-breakdown-container',
+    );
+    await expect(sentenceBreakdownContainer).toBeVisible();
+
+    // Verify the standard target language text is NOT visible (replaced by breakdown)
+    const transcriptTargetLang = transcriptTab.getByTestId(
+      `transcript-target-lang-${contentId}`,
+    );
+    await expect(transcriptTargetLang).not.toBeVisible();
+
+    // Verify SentenceBreakdownTargetLang shows vocab with spaces: "ゆる 言語学 ラジオ"
+    const sentenceBreakdownTargetLang = transcriptTab.getByTestId(
+      'sentence-breakdown-target-lang',
+    );
+    await expect(sentenceBreakdownTargetLang).toBeVisible();
+    const targetLangText = await sentenceBreakdownTargetLang.textContent();
+    // Should have vocab words: ゆる, 言語学, ラジオ (with spaces between)
+    expect(targetLangText).toContain('ゆる');
+    expect(targetLangText).toContain('言語学');
+    expect(targetLangText).toContain('ラジオ');
+
+    // Verify SentenceBreakdownSyntacticStructure shows meanings joined
+    const sentenceBreakdownStructure = transcriptTab.getByTestId(
+      'sentence-breakdown-structure',
+    );
+    await expect(sentenceBreakdownStructure).toBeVisible();
+    const structureText = await sentenceBreakdownStructure.textContent();
+    expect(structureText).toContain('loose or relaxed');
+    expect(structureText).toContain('linguistics');
+    expect(structureText).toContain('radio');
+
+    // Verify the bottom meaning shows "Loose Linguistics Radio"
+    const sentenceBreakdownMeaning = transcriptTab.getByTestId(
+      'sentence-breakdown-meaning',
+    );
+    await expect(sentenceBreakdownMeaning).toBeVisible();
+    await expect(sentenceBreakdownMeaning).toContainText(
+      'Loose Linguistics Radio',
+    );
+
+    // Verify the close icon ❌ is now showing instead of brick
+    await expect(brickEmoji).toContainText('❌');
+
+    // Click the close icon to close the breakdown view
+    await brickEmoji.click();
+    await page.waitForTimeout(500);
+
+    // Verify breakdown container is no longer visible
+    await expect(sentenceBreakdownContainer).not.toBeVisible();
+
+    // Verify standard target language text is visible again
+    await expect(transcriptTargetLang).toBeVisible();
+
+    // Verify brick emoji is showing again (not close icon)
+    await expect(brickEmoji).toContainText('🧱');
+
+    // Re-open breakdown view to test hover interaction
+    await brickEmoji.click();
+    await page.waitForTimeout(500);
+    await expect(sentenceBreakdownContainer).toBeVisible();
+
+    // Hover over the word 言語学 in the breakdown view
+    const vocabWord = sentenceBreakdownTargetLang
+      .locator('span')
+      .filter({ hasText: '言語学' })
+      .first();
+    await expect(vocabWord).toBeVisible();
+
+    // Move mouse to the vocab word
+    const vocabBoundingBox = await vocabWord.boundingBox();
+    if (vocabBoundingBox) {
+      await page.mouse.move(
+        vocabBoundingBox.x + vocabBoundingBox.width / 2,
+        vocabBoundingBox.y + vocabBoundingBox.height / 2,
+      );
+    }
+
+    // Wait for hover card to appear
+    await page.waitForTimeout(500);
+
+    // Verify SentenceBreakdownHover content is visible
+    const breakdownHoverContent = page.getByTestId(
+      'sentence-breakdown-hover-content',
+    );
+    await expect(breakdownHoverContent).toBeVisible();
+
+    // Verify the save buttons are visible
+    const deepseekButton = page.getByTestId(
+      'breakdown-save-word-deepseek-button',
+    );
+    const googleButton = page.getByTestId('breakdown-save-word-google-button');
+    await expect(deepseekButton).toBeVisible();
+    await expect(googleButton).toBeVisible();
+
+    // Click the Deepseek save button
+    await deepseekButton.click();
+
+    // Verify loading spinner appears in the action bar
+    const loadingSpinner = transcriptTab.getByTestId(
+      `transcript-action-loading-${contentId}`,
+    );
+    await expect(loadingSpinner).toBeVisible();
+
+    // Verify toast message appears
+    const saveToastMessage = page.getByText('言語学 saved!');
+    await expect(saveToastMessage).toBeVisible({ timeout: 3000 });
+
+    // Verify loading spinner disappears after save
+    await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
+
+    // Verify the hover card is no longer visible after save
+    await expect(breakdownHoverContent).not.toBeVisible();
+
+    // Now verify the word is underlined (saved words are rendered differently)
+    // The word should now be rendered by SentenceBreakdownTargetLangWord with underline
+    const underlinedVocabWord = sentenceBreakdownTargetLang
+      .locator('span')
+      .filter({ hasText: '言語学' })
+      .first();
+    await expect(underlinedVocabWord).toBeVisible();
+
+    // Hover over the saved word again
+    const savedVocabBoundingBox = await underlinedVocabWord.boundingBox();
+    if (savedVocabBoundingBox) {
+      await page.mouse.move(
+        savedVocabBoundingBox.x + savedVocabBoundingBox.width / 2,
+        savedVocabBoundingBox.y + savedVocabBoundingBox.height / 2,
+      );
+    }
+
+    // Wait to see if hover card appears
+    await page.waitForTimeout(1000);
+
+    // Verify that the hover card does NOT appear (saved words don't show hover card)
+    await expect(breakdownHoverContent).not.toBeVisible();
+  });
+
+  test('sentence breakdown - error handling', async ({ page }) => {
+    // Setup API mocking with error response for breakdownSentence
+    await page.route('**/api/breakdownSentence', async (route) => {
+      // Wait 1 second to make loading spinner visible
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          error: 'Internal server error',
+        }),
+      });
+    });
+
+    await page.goto('/');
+
+    // Wait for page to be loaded
+    await page.waitForLoadState('networkidle');
+
+    // Navigate to content screen
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+    // Wait for the content to load
+    await page.waitForLoadState('networkidle');
+
+    // Use specific content ID for reliable targeting
+    const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
+
+    // Scope to transcript tab to avoid confusion with TranscriptItemSecondary
+    const transcriptTab = page.locator(
+      '[role="tabpanel"][data-state="active"]',
+    );
+
+    // Open the menu within the transcript tab
+    const menuToggle = transcriptTab.getByTestId(
+      `transcript-menu-toggle-${contentId}`,
+    );
+    await expect(menuToggle).toBeVisible();
+    await menuToggle.click();
+
+    // Verify menu is open
+    const menuOptions = transcriptTab.getByTestId(
+      `transcript-menu-options-${contentId}`,
+    );
+    // await expect(menuOptions).toBeVisible();
+
+    // Click the breakdown sentence button (hammer icon)
+    const breakdownButton = transcriptTab.getByTestId(
+      `transcript-breakdown-button-${contentId}`,
+    );
+    await expect(breakdownButton).toBeVisible();
+    await breakdownButton.click();
+
+    // Verify loading hammer icon appears
+    const loadingHammer = transcriptTab.getByTestId(
+      `transcript-breakdown-loading-${contentId}`,
+    );
+    await expect(loadingHammer).toBeVisible();
+
+    // Verify error toast message appears
+    const errorToastMessage = page.getByText('Sentence breakdown error 🧱🔨❌');
+    await expect(errorToastMessage).toBeVisible({ timeout: 3000 });
+
+    // Verify loading hammer disappears after error
+    await expect(loadingHammer).not.toBeVisible({ timeout: 5000 });
+
+    // Verify menu closes even after error
+    await expect(menuOptions).not.toBeVisible();
+
+    // Verify breakdown button is still visible (since breakdown failed)
+    await expect(breakdownButton).toBeVisible();
+
+    // Verify brick emoji does NOT appear (since breakdown failed)
+    const brickEmoji = transcriptTab.getByTestId(
+      `transcript-breakdown-complete-${contentId}`,
+    );
+    await expect(brickEmoji).not.toBeVisible();
+  });
+});
+
+test.describe('Transcript scroll functionality', () => {
+  test('checkpoint button scrolls to last reviewed sentence', async ({
     page,
-    'transcript-tab-trigger',
-    'Transcript',
-    false,
-  );
-  await checkLearningScreenTab(page, 'words-tab-trigger', 'Words 55/84', false);
-  await checkLearningScreenTab(page, 'meta-tab-trigger', 'Meta', false);
+  }) => {
+    await page.goto('/');
 
-  // video controls
-  await checkVideoControl(page, 'review-label', 'review-switch', 'Review');
-  await checkVideoControl(page, 'english-label', 'english-switch', '🇬🇧');
-  // test English toggle functionality
-  await checkEnglishTranscriptToggles(page);
+    // Wait for page to be loaded
+    await page.waitForLoadState('networkidle');
 
-  // check action bar buttons (non-review state)
-  await checkActionBarButtons(page);
+    // Navigate to content screen
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
 
-  // check pre/post review toggle state
-  await checkPrePostReviewToggle(page);
-});
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
 
-test('transcript item menu interactions and review', async ({ page }) => {
-  await page.goto('/');
+    // Wait for the content to load
+    await page.waitForLoadState('networkidle');
 
-  // Wait for page to be loaded
-  await page.waitForLoadState('networkidle');
+    // Turn off track-current switch before testing checkpoint
+    const trackCurrentSwitch = page.getByTestId('track-current-switch');
+    await expect(trackCurrentSwitch).toBeVisible();
+    await trackCurrentSwitch.click();
+    await page.waitForTimeout(500);
 
-  // Navigate to content screen
-  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-  await contentButton.click();
+    // The checkpoint text from the last reviewed sentence
+    const checkpointText =
+      'Hori/In the meantime, we look forward to everyone continuing to subscribe, like, and leave comments with their thoughts, so please feel free to send in whatever you think. Wed/Yes.';
 
-  // Wait for navigation to complete
-  await page.waitForURL(`**/content?topic=${contentTitle}`);
+    // Find the checkpoint element by text
+    const checkpointElement = page.getByText(checkpointText);
 
-  // Wait for the content to load and find the first transcript item
-  await page.waitForLoadState('networkidle');
-
-  // Verify initial sentence count and reps
-  const sentencesCount = page.getByTestId('analytics-sentences-count');
-  await expect(sentencesCount).toBeVisible();
-
-  const repsCount = page.getByTestId('analytics-reps-count');
-  await expect(repsCount).toBeVisible();
-  await expect(repsCount).toContainText('Reps: 0');
-
-  const firstMenuToggle = page.getByTestId(/transcript-menu-toggle-/).first();
-  await expect(firstMenuToggle).toBeVisible();
-  await firstMenuToggle.click();
-  const menuOptions = page.getByTestId(/transcript-menu-options-/).first();
-  const reviewButton = page.getByTestId(/transcript-menu-review-/).first();
-  await reviewButton.click();
-
-  // Verify loading spinner appears in the action bar
-  const loadingSpinner = page.getByTestId(/transcript-action-loading-/).first();
-  await expect(loadingSpinner).toBeVisible();
-
-  // Verify toast message appears
-  const toastMessage = page.getByText('Sentence reviewed ✅');
-  await expect(toastMessage).toBeVisible({ timeout: 3000 });
-
-  // Wait for the loading to complete and menu to close
-  await expect(menuOptions).not.toBeVisible({ timeout: 5000 });
-
-  // Verify loading spinner is no longer visible
-  await expect(loadingSpinner).not.toBeVisible();
-
-  // Verify review button is no longer visible since menu collapsed
-  await expect(reviewButton).not.toBeVisible();
-
-  // Verify reps count increased to 1
-  await expect(repsCount).toContainText('Reps: 1');
-
-  // Verify sentence count increased by 1 in the denominator
-  const finalSentencesText = await sentencesCount.textContent();
-  expect(finalSentencesText).toContain('/201');
-
-  // Click the menu toggle again to reopen the menu
-  await firstMenuToggle.click();
-  // Click review button again to remove the review
-  const reviewButtonSecond = page
-    .getByTestId(/transcript-menu-review-/)
-    .first();
-  await reviewButtonSecond.click();
-
-  // Verify loading spinner appears again
-  await expect(loadingSpinner).toBeVisible();
-
-  // Verify toast message appears for learning sentence
-  const toastMessageLearned = page.getByText('Successful learned sentence ✅');
-  await expect(toastMessageLearned).toBeVisible({ timeout: 3000 });
-
-  // Wait for the loading to complete
-  await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
-
-  // Verify reps count increased to 2
-  await expect(repsCount).toContainText('Reps: 2');
-
-  // Verify sentence count reverted back to original
-  const revertedSentencesText = await sentencesCount.textContent();
-  expect(revertedSentencesText).toContain('/200');
-});
-
-test('transcript item review error handling', async ({ page }) => {
-  // Setup API mocking with error response for updateSentence
-  await page.route('**/api/updateSentence', async (route) => {
-    // Wait 1 second to make loading spinner visible
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    await route.fulfill({
-      status: 500,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        error: 'Internal server error',
-      }),
-    });
-  });
-
-  await page.goto('/');
-
-  // Wait for page to be loaded
-  await page.waitForLoadState('networkidle');
-
-  // Navigate to content screen
-  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-  await contentButton.click();
-
-  // Wait for navigation to complete
-  await page.waitForURL(`**/content?topic=${contentTitle}`);
-
-  // Wait for the content to load
-  await page.waitForLoadState('networkidle');
-
-  // Verify initial sentence count and reps
-  await checkSentenceCount(page, '/200');
-  const sentencesCount = page.getByTestId('analytics-sentences-count');
-  const initialSentencesText = await sentencesCount.textContent();
-
-  const repsCount = page.getByTestId('analytics-reps-count');
-  await expect(repsCount).toBeVisible();
-  await expect(repsCount).toContainText('Reps: 0');
-
-  // Open menu and click review button
-  const firstMenuToggle = page.getByTestId(/transcript-menu-toggle-/).first();
-  await expect(firstMenuToggle).toBeVisible();
-  await firstMenuToggle.click();
-
-  const reviewButton = page.getByTestId(/transcript-menu-review-/).first();
-  await reviewButton.click();
-
-  // Verify loading spinner appears in the action bar
-  const loadingSpinner = page.getByTestId(/transcript-action-loading-/).first();
-  await expect(loadingSpinner).toBeVisible();
-
-  // Verify error toast message appears
-  const errorToastMessage = page.getByText('Error updating sentence review ❌');
-  await expect(errorToastMessage).toBeVisible({ timeout: 3000 });
-
-  // Verify loading spinner disappears after error
-  await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
-
-  // Verify reps count remained at 0 (no increment due to error)
-  await expect(repsCount).toContainText('Reps: 0');
-
-  // Verify sentence count remained unchanged
-  const finalSentencesText = await sentencesCount.textContent();
-  expect(finalSentencesText).toContain('/200');
-  expect(finalSentencesText).toBe(initialSentencesText);
-});
-
-test('save word from transcript item - error handling', async ({ page }) => {
-  // Setup API mocking for saveWord with error response
-  await page.route('**/api/saveWord', async (route) => {
-    // Wait 1 second to make loading spinner visible
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    await route.fulfill({
-      status: 500,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        error: 'Internal server error',
-      }),
-    });
-  });
-
-  await page.goto('/');
-
-  // Wait for page to be loaded
-  await page.waitForLoadState('networkidle');
-
-  // Navigate to content screen
-  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-  await contentButton.click();
-
-  // Wait for navigation to complete
-  await page.waitForURL(`**/content?topic=${contentTitle}`);
-
-  // Wait for the content to load
-  await page.waitForLoadState('networkidle');
-
-  // Use specific content ID for reliable targeting
-  const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
-
-  // Verify initial Words count
-  const wordsTabTrigger = page.getByTestId('words-tab-trigger');
-  await expect(wordsTabTrigger).toBeVisible();
-  await expect(wordsTabTrigger).toContainText('Words 55/84');
-
-  // Find the transcript item
-  const transcriptTargetLang = page.getByTestId(
-    `transcript-target-lang-${contentId}`,
-  );
-  await expect(transcriptTargetLang).toBeVisible();
-
-  // Get the text content to verify it contains "言語学"
-  const transcriptText = await transcriptTargetLang.textContent();
-  expect(transcriptText).toContain('言語学');
-
-  // Select/highlight the text "言語学" using page.evaluate
-  const selectionSuccess = await page.evaluate((id) => {
-    const container = document.querySelector(
-      `[data-testid="transcript-target-lang-${id}"]`,
+    // Verify checkpoint element is NOT in viewport initially
+    const checkpointNotVisibleInitially = await checkpointElement.evaluate(
+      (el) => {
+        const rect = el.getBoundingClientRect();
+        return (
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <=
+            (window.innerHeight || document.documentElement.clientHeight) &&
+          rect.right <=
+            (window.innerWidth || document.documentElement.clientWidth)
+        );
+      },
     );
-    if (!container) {
-      return false;
-    }
+    expect(checkpointNotVisibleInitially).toBe(false);
 
-    const spans = Array.from(container.querySelectorAll('span'));
-    const targetChars = ['言', '語', '学'];
+    // Click checkpoint button
+    const checkpointButton = page.getByTestId('checkpoint-button');
+    await expect(checkpointButton).toBeVisible();
+    await checkpointButton.click();
 
-    let startSpan = null;
-    let endSpan = null;
+    // Wait for scroll animation to complete
+    await page.waitForTimeout(1500);
 
-    for (let i = 0; i < spans.length - 2; i++) {
-      if (
-        spans[i].textContent === targetChars[0] &&
-        spans[i + 1].textContent === targetChars[1] &&
-        spans[i + 2].textContent === targetChars[2]
-      ) {
-        startSpan = spans[i];
-        endSpan = spans[i + 2];
-        break;
-      }
-    }
-
-    if (!startSpan || !endSpan) {
-      return false;
-    }
-
-    const range = document.createRange();
-    const startTextNode = startSpan.firstChild || startSpan;
-    const endTextNode = endSpan.firstChild || endSpan;
-
-    range.setStart(startTextNode, 0);
-    range.setEnd(endTextNode, endTextNode.textContent?.length || 1);
-
-    const selection = window.getSelection();
-    selection?.removeAllRanges();
-    selection?.addRange(range);
-
-    const mouseUpEvent = new MouseEvent('mouseup', {
-      bubbles: true,
-      cancelable: true,
-      view: window,
+    // Verify checkpoint text is now in viewport
+    const checkpointVisible = await checkpointElement.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
     });
-    document.dispatchEvent(mouseUpEvent);
+    expect(checkpointVisible).toBe(true);
 
-    return true;
-  }, contentId);
+    // Scroll to the top of the page manually
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(1000);
 
-  expect(selectionSuccess).toBe(true);
-
-  // Wait for the state to update
-  await page.waitForTimeout(1000);
-
-  // Verify that HighlightedText component is rendered
-  const openaiButton = page.getByTestId('save-word-openai-button');
-  await expect(openaiButton).toBeVisible();
-
-  // Click the OpenAI save button
-  await openaiButton.click();
-
-  // Verify loading spinner appears
-  const loadingSpinner = page.getByTestId(
-    `transcript-action-loading-${contentId}`,
-  );
-  await expect(loadingSpinner).toBeVisible();
-
-  // Verify error toast message appears
-  const errorToastMessage = page.getByText('Failed to save word 🫤❌');
-  await expect(errorToastMessage).toBeVisible({ timeout: 3000 });
-
-  // Verify loading spinner disappears after error
-  await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
-
-  // Verify highlighted text is cleared (buttons should disappear)
-  await expect(openaiButton).not.toBeVisible();
-
-  // Verify Words count remained at 55/84 (no change due to error)
-  await checkWordsTabCount(page, 'Words 55/84');
-
-  // Verify the word is NOT underlined (since save failed)
-  const underlinedWord = transcriptTargetLang
-    .locator('span')
-    .filter({ hasText: '語' })
-    .first();
-
-  // Move mouse to the word location
-  const boundingBox = await underlinedWord.boundingBox();
-  if (boundingBox) {
-    await page.mouse.move(
-      boundingBox.x + boundingBox.width / 2,
-      boundingBox.y + boundingBox.height / 2,
+    // Define the first transcript container element
+    const firstTranscriptContainer = page.getByTestId(
+      `transcript-target-lang-${firstContentId}`,
     );
-  }
-  await page.waitForTimeout(1000);
 
-  // Verify hover card does NOT appear (word was not saved)
-  const hoverWordInfo = page.getByTestId('hover-word-info');
-  await expect(hoverWordInfo).not.toBeVisible();
+    // Verify first transcript container is NOT visible before clicking play
+    const firstContainerNotVisibleBeforePlay =
+      await firstTranscriptContainer.evaluate((el) => {
+        const rect = el.getBoundingClientRect();
+        return (
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <=
+            (window.innerHeight || document.documentElement.clientHeight) &&
+          rect.right <=
+            (window.innerWidth || document.documentElement.clientWidth)
+        );
+      });
+    expect(firstContainerNotVisibleBeforePlay).toBe(false);
+
+    // Click play on the first transcript item
+    const playButton = page.getByTestId(
+      `transcript-play-button-${firstContentId}`,
+    );
+    await expect(playButton).toBeVisible();
+    await playButton.click();
+
+    // Wait for play action to register
+    await page.waitForTimeout(1000);
+
+    // Verify first transcript container is visible in viewport
+    const firstContainerVisible = await firstTranscriptContainer.evaluate(
+      (el) => {
+        const rect = el.getBoundingClientRect();
+        return (
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <=
+            (window.innerHeight || document.documentElement.clientHeight) &&
+          rect.right <=
+            (window.innerWidth || document.documentElement.clientWidth)
+        );
+      },
+    );
+    expect(firstContainerVisible).toBe(true);
+
+    // Verify checkpoint text is NOT visible in viewport
+    const checkpointNotVisibleNow = await checkpointElement.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
+    });
+    expect(checkpointNotVisibleNow).toBe(false);
+
+    // Click checkpoint button again to scroll back to checkpoint
+    await checkpointButton.click();
+    await page.waitForTimeout(1000);
+
+    // Verify checkpoint is visible in viewport
+    const checkpointVisibleAgain = await checkpointElement.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
+    });
+    expect(checkpointVisibleAgain).toBe(true);
+
+    // Verify first transcript container is NOT visible in viewport
+    const firstContainerNotVisibleAgain =
+      await firstTranscriptContainer.evaluate((el) => {
+        const rect = el.getBoundingClientRect();
+        return (
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <=
+            (window.innerHeight || document.documentElement.clientHeight) &&
+          rect.right <=
+            (window.innerWidth || document.documentElement.clientWidth)
+        );
+      });
+    expect(firstContainerNotVisibleAgain).toBe(false);
+
+    // Click current button to scroll back to currently playing item
+    const currentButton = page.getByTestId('current-button');
+    await expect(currentButton).toBeVisible();
+    await currentButton.click();
+    await page.waitForTimeout(1000);
+
+    // Verify first transcript container is visible in viewport
+    const firstContainerVisibleFinal = await firstTranscriptContainer.evaluate(
+      (el) => {
+        const rect = el.getBoundingClientRect();
+        return (
+          rect.top >= 0 &&
+          rect.left >= 0 &&
+          rect.bottom <=
+            (window.innerHeight || document.documentElement.clientHeight) &&
+          rect.right <=
+            (window.innerWidth || document.documentElement.clientWidth)
+        );
+      },
+    );
+    expect(firstContainerVisibleFinal).toBe(true);
+
+    // Verify checkpoint is NOT visible in viewport
+    const checkpointNotVisibleFinal = await checkpointElement.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <=
+          (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <=
+          (window.innerWidth || document.documentElement.clientWidth)
+      );
+    });
+    expect(checkpointNotVisibleFinal).toBe(false);
+  });
 });
 
-test('delete word from transcript item - error handling', async ({ page }) => {
-  // Setup API mocking for saveWord (success)
-  await page.route('**/api/saveWord', async (route) => {
-    // Wait 1 second to make loading spinner visible
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+test.describe('Bulk sentence review functionality', () => {
+  test('bulk sentence review - double click to review multiple sentences', async ({
+    page,
+  }) => {
+    await setupApiMocks(page);
 
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        word: {
-          id: '83b75769-a67d-4f8a-9baa-9716bdd78219',
-          contexts: ['f378ec1d-c885-4e6a-9821-405b0ff9aa24'],
-          surfaceForm: '言語学',
-          definition: 'linguistics',
-          transliteration: 'gengogaku',
-          baseForm: '言語学',
-          phonetic: 'げんごがく',
-          notes:
-            '言語学 (gengogaku) specifically refers to the scientific study of language, encompassing various aspects such as syntax, semantics, and phonetics. In the context of ゆる言語学ラジオ, it suggests a more relaxed or informal approach to discussing topics related to linguistics.',
+    // Navigate to home page
+    await page.goto('/');
+
+    // Click on the specific content item
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+    // Verify the bulk review count is initially 5
+    const bulkReviewButton = page.getByTestId('bulk-review-button');
+    await expect(page.getByText('Bulk Review: 7')).toBeVisible();
+    await expect(bulkReviewButton).toBeEnabled();
+    await checkSentenceCount(page, '153/200');
+    const bulkReviewBefore = page.getByText('Bulk Review: 7');
+    await expect(bulkReviewBefore).toBeVisible();
+
+    // Double-click the bulk review button
+    await bulkReviewButton.dblclick();
+
+    // Wait for the API call to complete
+    await page.waitForResponse('**/api/bulkSentenceReview');
+
+    // Wait for and verify the toast message appears
+    const toastMessage = page.getByText('Bulk reviewed 7 sentences ✅');
+    await expect(toastMessage).toBeVisible({ timeout: 5000 });
+
+    await checkSentenceCount(page, '153/205');
+
+    const bulkReviewAfter = page.getByText('Bulk Review: 0');
+    await expect(bulkReviewAfter).toBeVisible();
+  });
+});
+
+test.describe('Word tab section', () => {
+  test('successfully edit & review words', async ({ page }) => {
+    await page.goto('/');
+
+    // Click on the specific content item
+    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
+    await contentButton.click();
+
+    // Wait for navigation to complete
+    await page.waitForURL(`**/content?topic=${contentTitle}`);
+
+    // Verify word cards are not visible before clicking words tab
+    const firstDueWordCard = page.getByTestId(
+      `word-card-wrapper-${firstDueWordId}`,
+    );
+    const firstNonDueWordCard = page.getByTestId(
+      `word-card-wrapper-${firstNonDueWordId}`,
+    );
+    await expect(firstDueWordCard).not.toBeVisible();
+    await expect(firstNonDueWordCard).not.toBeVisible();
+
+    // Click on words-tab-trigger
+    const firstTranscriptEnglish = page.getByTestId(
+      `transcript-base-lang-${firstContentId}`,
+    );
+    await expect(firstTranscriptEnglish).toBeVisible();
+    const wordsTabTrigger = page.getByTestId('words-tab-trigger');
+    await expect(wordsTabTrigger).toBeVisible();
+    await wordsTabTrigger.click();
+    await expect(firstTranscriptEnglish).not.toBeVisible();
+
+    await page.waitForTimeout(2000);
+
+    // Verify word cards are now visible after clicking words tab
+    await expect(firstDueWordCard).toBeVisible();
+    await expect(firstNonDueWordCard).toBeVisible();
+
+    // Click play button on the first due word card
+    const firstDueWordPlayButton = page.getByTestId(
+      `word-card-play-button-${firstDueWordId}`,
+    );
+    await expect(firstDueWordPlayButton).toBeVisible();
+    await firstDueWordPlayButton.click();
+
+    // Wait for video to start playing
+    await page.waitForTimeout(1000);
+
+    // Verify the specific Japanese text is visible
+    const japaneseText = page.getByText(
+      '堀/え、音声言語は使わなかったってこと？水/音声言語はね、使われていたみたいです。',
+    );
+    await expect(japaneseText).toBeVisible();
+
+    // Click the play button again to pause
+    await firstDueWordPlayButton.click();
+
+    // Wait for pause to take effect
+    await page.waitForTimeout(500);
+
+    // Click the more button to expand word details
+    const firstDueWordMoreButton = page.getByTestId(
+      `word-card-more-button-${firstDueWordId}`,
+    );
+    await expect(firstDueWordMoreButton).toBeVisible();
+    await firstDueWordMoreButton.click();
+
+    // Wait for details to expand
+    await page.waitForTimeout(500);
+
+    // Verify word information is visible within the word card container
+    await expect(
+      firstDueWordCard.getByText('1) Spoken Language'),
+    ).toBeVisible();
+    await expect(firstDueWordCard.getByText('Base Form:')).toBeVisible();
+    await expect(firstDueWordCard.getByText('Surface Form:')).toBeVisible();
+    await expect(firstDueWordCard.getByText('Phonetic:')).toBeVisible();
+    await expect(firstDueWordCard.getByText('Transliteration:')).toBeVisible();
+    await expect(firstDueWordCard.getByText('Definition:')).toBeVisible();
+
+    // Verify values - 音声言語 appears twice (Base Form and Surface Form)
+    await expect(firstDueWordCard.getByText('音声言語')).toHaveCount(3);
+    await expect(firstDueWordCard.getByText('おんせいげんご')).toBeVisible();
+    await expect(firstDueWordCard.getByText('Onsei gengo')).toBeVisible();
+    await expect(firstDueWordCard.getByText('Spoken Language')).toHaveCount(2);
+
+    // Click on the Definition label to enter edit mode
+    const definitionLabel = page.getByTestId('word-card-edit-label-definition');
+    await expect(definitionLabel).toBeVisible();
+    await definitionLabel.click();
+
+    // Wait for edit mode to activate
+    await page.waitForTimeout(300);
+
+    // Verify check and X buttons are now visible
+    const saveButton = page.getByTestId('word-card-save-button-definition');
+    const cancelButton = page.getByTestId('word-card-cancel-button-definition');
+    await expect(saveButton).toBeVisible();
+    await expect(cancelButton).toBeVisible();
+
+    // Find the textarea and change the value from "Spoken Language" to "Spoken Gengo"
+    const textarea = firstDueWordCard.locator('textarea');
+    await expect(textarea).toBeVisible();
+    await textarea.fill('Spoken Gengo');
+
+    // Mock the API call to /api/updateWord
+    await page.route('**/api/updateWord', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          definition: 'Spoken Gengo',
+        }),
+      });
+    });
+
+    // Click the save button
+    await saveButton.click();
+
+    // Wait for the API call and verify toast message
+    const toastMessage = page.getByText('Word updated ✅');
+    await expect(toastMessage).toBeVisible({ timeout: 3000 });
+
+    // Verify the new value is displayed
+    await expect(firstDueWordCard.getByText('Spoken Gengo')).toHaveCount(2);
+
+    // Find the review SRS toggles container
+    const reviewSRSToggles = page.getByTestId(
+      `review-srs-toggles-${firstDueWordId}`,
+    );
+    await expect(reviewSRSToggles).toBeVisible();
+
+    // Find and click the "2 days" button
+    const twoDaysButton = reviewSRSToggles.getByRole('button', {
+      name: /2 days/i,
+    });
+    await expect(twoDaysButton).toBeVisible();
+
+    // Mock the /api/updateWord call for the SRS review
+    const twoDaysFromNow = new Date();
+    twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
+
+    await page.route('**/api/updateWord', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
           reviewData: {
-            due: '2025-12-16T20:17:44.113Z',
-            stability: 0.40255,
             difficulty: 7.1949,
-            elapsed_days: 0,
-            scheduled_days: 0,
-            reps: 1,
-            lapses: 0,
-            state: 1,
-            last_review: '2025-12-16T20:16:44.113Z',
+            due: twoDaysFromNow.toISOString(),
             ease: 2.5,
+            elapsed_days: 0,
             interval: 0,
-          },
-        },
-      }),
-    });
-  });
-
-  // Setup API mocking for deleteWord (error)
-  await page.route('**/api/deleteWord', async (route) => {
-    // Wait 1 second to make loading spinner visible
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    await route.fulfill({
-      status: 500,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        error: 'Internal server error',
-      }),
-    });
-  });
-
-  await page.goto('/');
-
-  // Wait for page to be loaded
-  await page.waitForLoadState('networkidle');
-
-  // Navigate to content screen
-  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-  await contentButton.click();
-
-  // Wait for navigation to complete
-  await page.waitForURL(`**/content?topic=${contentTitle}`);
-
-  // Wait for the content to load
-  await page.waitForLoadState('networkidle');
-
-  // Use specific content ID for reliable targeting
-  const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
-
-  // Verify initial Words count
-  const wordsTabTrigger = page.getByTestId('words-tab-trigger');
-  await expect(wordsTabTrigger).toBeVisible();
-  await expect(wordsTabTrigger).toContainText('Words 55/84');
-
-  // Find the transcript item
-  const transcriptTargetLang = page.getByTestId(
-    `transcript-target-lang-${contentId}`,
-  );
-  await expect(transcriptTargetLang).toBeVisible();
-
-  // Select and save the word "言語学" (same as previous test)
-  const selectionSuccess = await page.evaluate((id) => {
-    const container = document.querySelector(
-      `[data-testid="transcript-target-lang-${id}"]`,
-    );
-    if (!container) {
-      return false;
-    }
-
-    const spans = Array.from(container.querySelectorAll('span'));
-    const targetChars = ['言', '語', '学'];
-
-    let startSpan = null;
-    let endSpan = null;
-
-    for (let i = 0; i < spans.length - 2; i++) {
-      if (
-        spans[i].textContent === targetChars[0] &&
-        spans[i + 1].textContent === targetChars[1] &&
-        spans[i + 2].textContent === targetChars[2]
-      ) {
-        startSpan = spans[i];
-        endSpan = spans[i + 2];
-        break;
-      }
-    }
-
-    if (!startSpan || !endSpan) {
-      return false;
-    }
-
-    const range = document.createRange();
-    const startTextNode = startSpan.firstChild || startSpan;
-    const endTextNode = endSpan.firstChild || endSpan;
-
-    range.setStart(startTextNode, 0);
-    range.setEnd(endTextNode, endTextNode.textContent?.length || 1);
-
-    const selection = window.getSelection();
-    selection?.removeAllRanges();
-    selection?.addRange(range);
-
-    const mouseUpEvent = new MouseEvent('mouseup', {
-      bubbles: true,
-      cancelable: true,
-      view: window,
-    });
-    document.dispatchEvent(mouseUpEvent);
-
-    return true;
-  }, contentId);
-
-  expect(selectionSuccess).toBe(true);
-  await page.waitForTimeout(1000);
-
-  // Click save button
-  const openaiButton = page.getByTestId('save-word-openai-button');
-  await expect(openaiButton).toBeVisible();
-  await openaiButton.click();
-
-  // Wait for save to complete
-  const loadingSpinner = page.getByTestId(
-    `transcript-action-loading-${contentId}`,
-  );
-  await expect(loadingSpinner).toBeVisible();
-  const toastMessage = page.getByText('言語学 saved!');
-  await expect(toastMessage).toBeVisible({ timeout: 3000 });
-  await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
-
-  // Verify Words count increased to 55/85
-  await checkWordsTabCount(page, 'Words 55/85');
-
-  // Now hover over the saved word to open hover card
-  const underlinedWord = transcriptTargetLang
-    .locator('span')
-    .filter({ hasText: '語' })
-    .first();
-  await expect(underlinedWord).toBeVisible();
-
-  const boundingBox = await underlinedWord.boundingBox();
-  if (boundingBox) {
-    await page.mouse.move(
-      boundingBox.x + boundingBox.width / 2,
-      boundingBox.y + boundingBox.height / 2,
-    );
-  }
-
-  await page.waitForTimeout(1000);
-
-  // Verify hover card appears
-  const hoverWordInfo = page.getByTestId('hover-word-info');
-  await expect(hoverWordInfo).toBeVisible();
-
-  // Click Delete button
-  const deleteButton = page.getByTestId('delete-button');
-  await expect(deleteButton).toBeVisible();
-  await deleteButton.click();
-
-  // Click Confirm Delete
-  const confirmDeleteButton = page.getByRole('button', {
-    name: 'Confirm Delete',
-  });
-  await expect(confirmDeleteButton).toBeVisible();
-  await confirmDeleteButton.click();
-
-  // Verify loading spinner appears
-  const clickAndConfirmLoading = page.getByTestId('click-and-confirm-loading');
-  await expect(clickAndConfirmLoading).toBeVisible();
-
-  // Verify error toast message appears
-  const errorToastMessage = page.getByText('Error deleting word ❌');
-  await expect(errorToastMessage).toBeVisible({ timeout: 3000 });
-
-  // Verify loading spinner disappears after error
-  await expect(clickAndConfirmLoading).not.toBeVisible({ timeout: 5000 });
-
-  // Verify Words count remained at 55/85 (no change due to error)
-  await checkWordsTabCount(page, 'Words 55/85');
-
-  // Verify the word is still underlined (deletion failed)
-  // Move mouse away first to close hover card
-  await page.mouse.move(0, 0);
-  await page.waitForTimeout(500);
-
-  // Move mouse back to the word to verify it's still interactive
-  const boundingBoxAfter = await underlinedWord.boundingBox();
-  if (boundingBoxAfter) {
-    await page.mouse.move(
-      boundingBoxAfter.x + boundingBoxAfter.width / 2,
-      boundingBoxAfter.y + boundingBoxAfter.height / 2,
-    );
-  }
-  await page.waitForTimeout(1000);
-
-  // Verify hover card still appears (word was not deleted)
-  await expect(hoverWordInfo).toBeVisible();
-  await expect(hoverWordInfo).toContainText('言語学, 言語学, linguistics');
-});
-
-test('save word from transcript item', async ({ page }) => {
-  // Setup API mocking for saveWord
-  await page.route('**/api/saveWord', async (route) => {
-    // Wait 1 second to make loading spinner visible
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        word: {
-          id: '83b75769-a67d-4f8a-9baa-9716bdd78219',
-          contexts: ['f378ec1d-c885-4e6a-9821-405b0ff9aa24'],
-          surfaceForm: '言語学',
-          definition: 'linguistics',
-          transliteration: 'gengogaku',
-          baseForm: '言語学',
-          phonetic: 'げんごがく',
-          notes:
-            '言語学 (gengogaku) specifically refers to the scientific study of language, encompassing various aspects such as syntax, semantics, and phonetics. In the context of ゆる言語学ラジオ, it suggests a more relaxed or informal approach to discussing topics related to linguistics.',
-          reviewData: {
-            due: '2025-12-16T20:17:44.113Z',
+            lapses: 0,
+            last_review: new Date().toISOString(),
+            reps: 1,
+            scheduled_days: 0,
             stability: 0.40255,
-            difficulty: 7.1949,
-            elapsed_days: 0,
-            scheduled_days: 0,
-            reps: 1,
-            lapses: 0,
             state: 1,
-            last_review: '2025-12-16T20:16:44.113Z',
-            ease: 2.5,
-            interval: 0,
           },
-        },
-      }),
+        }),
+      });
     });
-  });
 
-  // Setup API mocking for deleteWord
-  await page.route('**/api/deleteWord', async (route) => {
-    // Wait 1 second to make loading spinner visible
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        id: '83b75769-a67d-4f8a-9baa-9716bdd78219',
-      }),
-    });
-  });
-
-  await page.goto('/');
-
-  // Wait for page to be loaded
-  await page.waitForLoadState('networkidle');
-
-  // Navigate to content screen
-  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-  await contentButton.click();
-
-  // Wait for navigation to complete
-  await page.waitForURL(`**/content?topic=${contentTitle}`);
-
-  // Wait for the content to load
-  await page.waitForLoadState('networkidle');
-
-  // Use specific content ID for reliable targeting
-  const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
-
-  // Verify initial Words count
-  await checkWordsTabCount(page, 'Words 55/84');
-
-  // Find the transcript item with text "ゆる言語学ラジオ"
-  const transcriptTargetLang = page.getByTestId(
-    `transcript-target-lang-${contentId}`,
-  );
-  await expect(transcriptTargetLang).toBeVisible();
-
-  // Get the text content to verify it contains "言語学"
-  const transcriptText = await transcriptTargetLang.textContent();
-  expect(transcriptText).toContain('言語学');
-
-  // Select/highlight the text "言語学" using page.evaluate
-  // Since text is split into individual character spans, we need to select across multiple elements
-  const selectionSuccess = await page.evaluate((id) => {
-    const container = document.querySelector(
-      `[data-testid="transcript-target-lang-${id}"]`,
+    await checkWordsDueMeta(page, 'Words Due: 55');
+    await checkLearningScreenTab(
+      page,
+      'words-tab-trigger',
+      'Words 55/84',
+      false,
     );
-    if (!container) {
-      console.log('Container not found');
-      return false;
-    }
 
-    // Get all span elements (each contains one character)
-    const spans = Array.from(container.querySelectorAll('span'));
-    const targetChars = ['言', '語', '学'];
-
-    // Find the spans containing our target characters in sequence
-    let startSpan = null;
-    let endSpan = null;
-
-    for (let i = 0; i < spans.length - 2; i++) {
-      if (
-        spans[i].textContent === targetChars[0] &&
-        spans[i + 1].textContent === targetChars[1] &&
-        spans[i + 2].textContent === targetChars[2]
-      ) {
-        startSpan = spans[i];
-        endSpan = spans[i + 2];
-        break;
-      }
-    }
-
-    if (!startSpan || !endSpan) {
-      return false;
-    }
-
-    // Create a range spanning from start of first span to end of last span
-    const range = document.createRange();
-    const startTextNode = startSpan.firstChild || startSpan;
-    const endTextNode = endSpan.firstChild || endSpan;
-
-    range.setStart(startTextNode, 0);
-    range.setEnd(endTextNode, endTextNode.textContent?.length || 1);
-
-    const selection = window.getSelection();
-    selection?.removeAllRanges();
-    selection?.addRange(range);
-
-    // Trigger mouseup event to trigger the selection handler
-    const mouseUpEvent = new MouseEvent('mouseup', {
-      bubbles: true,
-      cancelable: true,
-      view: window,
-    });
-    document.dispatchEvent(mouseUpEvent);
-
-    return true;
-  }, contentId);
-
-  console.log('Selection success:', selectionSuccess);
-
-  // Wait for the state to update
-  await page.waitForTimeout(1000);
-
-  // Verify that HighlightedText component is rendered by checking for save buttons
-  const openaiButton = page.getByTestId('save-word-openai-button');
-  await expect(openaiButton).toBeVisible();
-
-  const googleButton = page.getByTestId('save-word-google-button');
-  await expect(googleButton).toBeVisible();
-
-  // Verify that the highlighted text displays "言語学"
-  const highlightedTextFocus = page.getByTestId('highlighted-text-focus');
-  await expect(highlightedTextFocus).toBeVisible();
-  await expect(highlightedTextFocus).toContainText('言語学');
-
-  // Click the OpenAI save button
-  await openaiButton.click();
-
-  // Verify loading spinner appears in the action bar
-  const loadingSpinner = page.getByTestId(
-    `transcript-action-loading-${contentId}`,
-  );
-  await expect(loadingSpinner).toBeVisible();
-
-  // Verify toast message appears
-  const toastMessage = page.getByText('言語学 saved!');
-  await expect(toastMessage).toBeVisible({ timeout: 3000 });
-
-  // Verify loading spinner disappears after save
-  await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
-
-  // Verify highlighted text is cleared (buttons should disappear)
-  await expect(openaiButton).not.toBeVisible();
-  await expect(googleButton).not.toBeVisible();
-
-  // Verify Words count increased from 55/84 to 55/85
-  await checkWordsTabCount(page, 'Words 55/85');
-
-  // Now hover over the saved word to verify it shows in hover card
-  // The word should now be underlined in the transcript
-  // Find an underlined span within the transcript (using CSS selector for underline style)
-  const underlinedWord = transcriptTargetLang
-    .locator('span')
-    .filter({ hasText: '語' })
-    .first();
-  await expect(underlinedWord).toBeVisible();
-
-  // Move mouse to trigger hover - use mouse.move for more reliable hovering
-  const boundingBox = await underlinedWord.boundingBox();
-  if (boundingBox) {
-    await page.mouse.move(
-      boundingBox.x + boundingBox.width / 2,
-      boundingBox.y + boundingBox.height / 2,
+    // Click the "2 days" button
+    await twoDaysButton.click();
+    await checkWordsDueMeta(page, 'Words Due: 54');
+    await checkLearningScreenTab(
+      page,
+      'words-tab-trigger',
+      'Words 54/84',
+      false,
     );
-  }
 
-  // Wait for hover card to appear
-  await page.waitForTimeout(1000);
-
-  // Verify hover card shows the word info
-  const hoverWordInfo = page.getByTestId('hover-word-info');
-  await expect(hoverWordInfo).toBeVisible();
-  await expect(hoverWordInfo).toContainText('言語学, 言語学, linguistics');
-  await expect(hoverWordInfo).toContainText('げんごがく, gengogaku');
-
-  // Verify Delete button is present
-  const deleteButton = page.getByTestId('delete-button');
-  await expect(deleteButton).toBeVisible();
-  await expect(deleteButton).toContainText('Delete');
-
-  // Click the Delete button
-  await deleteButton.click();
-
-  // Verify "Confirm Delete" button appears
-  const confirmDeleteButton = page.getByRole('button', {
-    name: 'Confirm Delete',
+    await expect(
+      firstDueWordCard.getByText('1) Spoken Gengo'),
+    ).not.toBeVisible();
+    await expect(firstDueWordCard.getByText('55) Spoken Gengo')).toBeVisible();
   });
-  await expect(confirmDeleteButton).toBeVisible();
-
-  // Click "Confirm Delete"
-  await confirmDeleteButton.click();
-
-  // Verify loading spinner appears in the ClickAndConfirm component
-  const clickAndConfirmLoading = page.getByTestId('click-and-confirm-loading');
-  await expect(clickAndConfirmLoading).toBeVisible();
-
-  // Verify toast message appears
-  const deleteToastMessage = page.getByText('Word deleted!');
-  await expect(deleteToastMessage).toBeVisible({ timeout: 3000 });
-
-  // Verify loading spinner disappears after delete
-  await expect(clickAndConfirmLoading).not.toBeVisible({ timeout: 5000 });
-
-  // Verify Words count went back to 55/84
-  await checkWordsTabCount(page, 'Words 55/84');
-
-  // Verify the word is no longer underlined
-  // The underlined word should not be visible anymore
-  const underlinedWordAfterDelete = transcriptTargetLang
-    .locator('span')
-    .filter({ hasText: '語' })
-    .first();
-  // Check that it's either not visible or doesn't have underline styling
-  // Since the word text will still be there, we can check that the hover card doesn't appear
-  const boundingBoxAfter = await underlinedWordAfterDelete.boundingBox();
-  if (boundingBoxAfter) {
-    await page.mouse.move(
-      boundingBoxAfter.x + boundingBoxAfter.width / 2,
-      boundingBoxAfter.y + boundingBoxAfter.height / 2,
-    );
-  }
-  await page.waitForTimeout(1000);
-
-  // Verify hover card is no longer visible
-  await expect(hoverWordInfo).not.toBeVisible();
-});
-
-test('transcript item sentence breakdown', async ({ page }) => {
-  // Setup API mocking for saveWord
-  await page.route('**/api/saveWord', async (route) => {
-    // Wait 1 second to make loading spinner visible
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        word: {
-          id: '83b75769-a67d-4f8a-9baa-9716bdd78219',
-          contexts: ['f378ec1d-c885-4e6a-9821-405b0ff9aa24'],
-          surfaceForm: '言語学',
-          definition: 'linguistics',
-          transliteration: 'gengogaku',
-          baseForm: '言語学',
-          phonetic: 'げんごがく',
-          notes:
-            '言語学 (gengogaku) specifically refers to the scientific study of language, encompassing various aspects such as syntax, semantics, and phonetics. In the context of ゆる言語学ラジオ, it suggests a more relaxed or informal approach to discussing topics related to linguistics.',
-          reviewData: {
-            due: '2025-12-16T20:17:44.113Z',
-            stability: 0.40255,
-            difficulty: 7.1949,
-            elapsed_days: 0,
-            scheduled_days: 0,
-            reps: 1,
-            lapses: 0,
-            state: 1,
-            last_review: '2025-12-16T20:16:44.113Z',
-            ease: 2.5,
-            interval: 0,
-          },
-        },
-      }),
-    });
-  });
-
-  await page.goto('/');
-
-  // Wait for page to be loaded
-  await page.waitForLoadState('networkidle');
-
-  // Navigate to content screen
-  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-  await contentButton.click();
-
-  // Wait for navigation to complete
-  await page.waitForURL(`**/content?topic=${contentTitle}`);
-
-  // Wait for the content to load
-  await page.waitForLoadState('networkidle');
-
-  // Use specific content ID for reliable targeting
-  const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
-
-  // Scope to transcript tab to avoid confusion with TranscriptItemSecondary
-  const transcriptTab = page.locator('[role="tabpanel"][data-state="active"]');
-
-  // Open the menu
-  const menuToggle = transcriptTab.getByTestId(
-    `transcript-menu-toggle-${contentId}`,
-  );
-  await expect(menuToggle).toBeVisible();
-  await menuToggle.click();
-
-  // Verify menu is open
-  const menuOptions = transcriptTab.getByTestId(
-    `transcript-menu-options-${contentId}`,
-  );
-  // await expect(menuOptions).toBeVisible();
-
-  // Click the breakdown sentence button (hammer icon)
-  const breakdownButton = transcriptTab.getByTestId(
-    `transcript-breakdown-button-${contentId}`,
-  );
-  // await expect(breakdownButton).toBeVisible();
-  await breakdownButton.click();
-
-  // Verify loading hammer icon appears
-  const loadingHammer = transcriptTab.getByTestId(
-    `transcript-breakdown-loading-${contentId}`,
-  );
-  await expect(loadingHammer).toBeVisible();
-
-  // Verify toast message appears
-  const toastMessage = page.getByText('Sentence broken down 🧱🔨!');
-  await expect(toastMessage).toBeVisible({ timeout: 3000 });
-
-  // Wait for loading to complete
-  await expect(loadingHammer).not.toBeVisible({ timeout: 5000 });
-
-  // Verify menu closes after breakdown
-  await expect(menuOptions).not.toBeVisible();
-
-  // Verify brick emoji appears indicating sentence is broken down
-  const brickEmoji = transcriptTab.getByTestId(
-    `transcript-breakdown-complete-${contentId}`,
-  );
-  await expect(brickEmoji).toBeVisible();
-  await expect(brickEmoji).toContainText('🧱');
-
-  // Verify breakdown button is no longer visible
-  await expect(breakdownButton).not.toBeVisible();
-
-  // Now click the brick emoji to open the breakdown view
-  await brickEmoji.click();
-
-  // Wait for the breakdown view to render
-  await page.waitForTimeout(500);
-
-  // Verify SentenceBreakdown component is visible within transcript tab
-  const sentenceBreakdownContainer = transcriptTab.getByTestId(
-    'sentence-breakdown-container',
-  );
-  await expect(sentenceBreakdownContainer).toBeVisible();
-
-  // Verify the standard target language text is NOT visible (replaced by breakdown)
-  const transcriptTargetLang = transcriptTab.getByTestId(
-    `transcript-target-lang-${contentId}`,
-  );
-  await expect(transcriptTargetLang).not.toBeVisible();
-
-  // Verify SentenceBreakdownTargetLang shows vocab with spaces: "ゆる 言語学 ラジオ"
-  const sentenceBreakdownTargetLang = transcriptTab.getByTestId(
-    'sentence-breakdown-target-lang',
-  );
-  await expect(sentenceBreakdownTargetLang).toBeVisible();
-  const targetLangText = await sentenceBreakdownTargetLang.textContent();
-  // Should have vocab words: ゆる, 言語学, ラジオ (with spaces between)
-  expect(targetLangText).toContain('ゆる');
-  expect(targetLangText).toContain('言語学');
-  expect(targetLangText).toContain('ラジオ');
-
-  // Verify SentenceBreakdownSyntacticStructure shows meanings joined
-  const sentenceBreakdownStructure = transcriptTab.getByTestId(
-    'sentence-breakdown-structure',
-  );
-  await expect(sentenceBreakdownStructure).toBeVisible();
-  const structureText = await sentenceBreakdownStructure.textContent();
-  expect(structureText).toContain('loose or relaxed');
-  expect(structureText).toContain('linguistics');
-  expect(structureText).toContain('radio');
-
-  // Verify the bottom meaning shows "Loose Linguistics Radio"
-  const sentenceBreakdownMeaning = transcriptTab.getByTestId(
-    'sentence-breakdown-meaning',
-  );
-  await expect(sentenceBreakdownMeaning).toBeVisible();
-  await expect(sentenceBreakdownMeaning).toContainText(
-    'Loose Linguistics Radio',
-  );
-
-  // Verify the close icon ❌ is now showing instead of brick
-  await expect(brickEmoji).toContainText('❌');
-
-  // Click the close icon to close the breakdown view
-  await brickEmoji.click();
-  await page.waitForTimeout(500);
-
-  // Verify breakdown container is no longer visible
-  await expect(sentenceBreakdownContainer).not.toBeVisible();
-
-  // Verify standard target language text is visible again
-  await expect(transcriptTargetLang).toBeVisible();
-
-  // Verify brick emoji is showing again (not close icon)
-  await expect(brickEmoji).toContainText('🧱');
-
-  // Re-open breakdown view to test hover interaction
-  await brickEmoji.click();
-  await page.waitForTimeout(500);
-  await expect(sentenceBreakdownContainer).toBeVisible();
-
-  // Hover over the word 言語学 in the breakdown view
-  const vocabWord = sentenceBreakdownTargetLang
-    .locator('span')
-    .filter({ hasText: '言語学' })
-    .first();
-  await expect(vocabWord).toBeVisible();
-
-  // Move mouse to the vocab word
-  const vocabBoundingBox = await vocabWord.boundingBox();
-  if (vocabBoundingBox) {
-    await page.mouse.move(
-      vocabBoundingBox.x + vocabBoundingBox.width / 2,
-      vocabBoundingBox.y + vocabBoundingBox.height / 2,
-    );
-  }
-
-  // Wait for hover card to appear
-  await page.waitForTimeout(500);
-
-  // Verify SentenceBreakdownHover content is visible
-  const breakdownHoverContent = page.getByTestId(
-    'sentence-breakdown-hover-content',
-  );
-  await expect(breakdownHoverContent).toBeVisible();
-
-  // Verify the save buttons are visible
-  const deepseekButton = page.getByTestId(
-    'breakdown-save-word-deepseek-button',
-  );
-  const googleButton = page.getByTestId('breakdown-save-word-google-button');
-  await expect(deepseekButton).toBeVisible();
-  await expect(googleButton).toBeVisible();
-
-  // Click the Deepseek save button
-  await deepseekButton.click();
-
-  // Verify loading spinner appears in the action bar
-  const loadingSpinner = transcriptTab.getByTestId(
-    `transcript-action-loading-${contentId}`,
-  );
-  await expect(loadingSpinner).toBeVisible();
-
-  // Verify toast message appears
-  const saveToastMessage = page.getByText('言語学 saved!');
-  await expect(saveToastMessage).toBeVisible({ timeout: 3000 });
-
-  // Verify loading spinner disappears after save
-  await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
-
-  // Verify the hover card is no longer visible after save
-  await expect(breakdownHoverContent).not.toBeVisible();
-
-  // Now verify the word is underlined (saved words are rendered differently)
-  // The word should now be rendered by SentenceBreakdownTargetLangWord with underline
-  const underlinedVocabWord = sentenceBreakdownTargetLang
-    .locator('span')
-    .filter({ hasText: '言語学' })
-    .first();
-  await expect(underlinedVocabWord).toBeVisible();
-
-  // Hover over the saved word again
-  const savedVocabBoundingBox = await underlinedVocabWord.boundingBox();
-  if (savedVocabBoundingBox) {
-    await page.mouse.move(
-      savedVocabBoundingBox.x + savedVocabBoundingBox.width / 2,
-      savedVocabBoundingBox.y + savedVocabBoundingBox.height / 2,
-    );
-  }
-
-  // Wait to see if hover card appears
-  await page.waitForTimeout(1000);
-
-  // Verify that the hover card does NOT appear (saved words don't show hover card)
-  await expect(breakdownHoverContent).not.toBeVisible();
-});
-
-test('transcript item sentence breakdown error handling', async ({ page }) => {
-  // Setup API mocking with error response for breakdownSentence
-  await page.route('**/api/breakdownSentence', async (route) => {
-    // Wait 1 second to make loading spinner visible
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    await route.fulfill({
-      status: 500,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        error: 'Internal server error',
-      }),
-    });
-  });
-
-  await page.goto('/');
-
-  // Wait for page to be loaded
-  await page.waitForLoadState('networkidle');
-
-  // Navigate to content screen
-  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-  await contentButton.click();
-
-  // Wait for navigation to complete
-  await page.waitForURL(`**/content?topic=${contentTitle}`);
-
-  // Wait for the content to load
-  await page.waitForLoadState('networkidle');
-
-  // Use specific content ID for reliable targeting
-  const contentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
-
-  // Scope to transcript tab to avoid confusion with TranscriptItemSecondary
-  const transcriptTab = page.locator('[role="tabpanel"][data-state="active"]');
-
-  // Open the menu within the transcript tab
-  const menuToggle = transcriptTab.getByTestId(
-    `transcript-menu-toggle-${contentId}`,
-  );
-  await expect(menuToggle).toBeVisible();
-  await menuToggle.click();
-
-  // Verify menu is open
-  const menuOptions = transcriptTab.getByTestId(
-    `transcript-menu-options-${contentId}`,
-  );
-  // await expect(menuOptions).toBeVisible();
-
-  // Click the breakdown sentence button (hammer icon)
-  const breakdownButton = transcriptTab.getByTestId(
-    `transcript-breakdown-button-${contentId}`,
-  );
-  await expect(breakdownButton).toBeVisible();
-  await breakdownButton.click();
-
-  // Verify loading hammer icon appears
-  const loadingHammer = transcriptTab.getByTestId(
-    `transcript-breakdown-loading-${contentId}`,
-  );
-  await expect(loadingHammer).toBeVisible();
-
-  // Verify error toast message appears
-  const errorToastMessage = page.getByText('Sentence breakdown error 🧱🔨❌');
-  await expect(errorToastMessage).toBeVisible({ timeout: 3000 });
-
-  // Verify loading hammer disappears after error
-  await expect(loadingHammer).not.toBeVisible({ timeout: 5000 });
-
-  // Verify menu closes even after error
-  await expect(menuOptions).not.toBeVisible();
-
-  // Verify breakdown button is still visible (since breakdown failed)
-  await expect(breakdownButton).toBeVisible();
-
-  // Verify brick emoji does NOT appear (since breakdown failed)
-  const brickEmoji = transcriptTab.getByTestId(
-    `transcript-breakdown-complete-${contentId}`,
-  );
-  await expect(brickEmoji).not.toBeVisible();
-});
-
-test('checkpoint button scrolls to last reviewed sentence', async ({
-  page,
-}) => {
-  await page.goto('/');
-
-  // Wait for page to be loaded
-  await page.waitForLoadState('networkidle');
-
-  // Navigate to content screen
-  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-  await contentButton.click();
-
-  // Wait for navigation to complete
-  await page.waitForURL(`**/content?topic=${contentTitle}`);
-
-  // Wait for the content to load
-  await page.waitForLoadState('networkidle');
-
-  // Turn off track-current switch before testing checkpoint
-  const trackCurrentSwitch = page.getByTestId('track-current-switch');
-  await expect(trackCurrentSwitch).toBeVisible();
-  await trackCurrentSwitch.click();
-  await page.waitForTimeout(500);
-
-  // The checkpoint text from the last reviewed sentence
-  const checkpointText =
-    'Hori/In the meantime, we look forward to everyone continuing to subscribe, like, and leave comments with their thoughts, so please feel free to send in whatever you think. Wed/Yes.';
-
-  // Find the checkpoint element by text
-  const checkpointElement = page.getByText(checkpointText);
-
-  // Verify checkpoint element is NOT in viewport initially
-  const checkpointNotVisibleInitially = await checkpointElement.evaluate(
-    (el) => {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth)
-      );
-    },
-  );
-  expect(checkpointNotVisibleInitially).toBe(false);
-
-  // Click checkpoint button
-  const checkpointButton = page.getByTestId('checkpoint-button');
-  await expect(checkpointButton).toBeVisible();
-  await checkpointButton.click();
-
-  // Wait for scroll animation to complete
-  await page.waitForTimeout(1500);
-
-  // Verify checkpoint text is now in viewport
-  const checkpointVisible = await checkpointElement.evaluate((el) => {
-    const rect = el.getBoundingClientRect();
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <=
-        (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-  });
-  expect(checkpointVisible).toBe(true);
-
-  // Scroll to the top of the page manually
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await page.waitForTimeout(1000);
-
-  // Define the first transcript container element
-  const firstTranscriptContainer = page.getByTestId(
-    `transcript-target-lang-${firstContentId}`,
-  );
-
-  // Verify first transcript container is NOT visible before clicking play
-  const firstContainerNotVisibleBeforePlay =
-    await firstTranscriptContainer.evaluate((el) => {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth)
-      );
-    });
-  expect(firstContainerNotVisibleBeforePlay).toBe(false);
-
-  // Click play on the first transcript item
-  const playButton = page.getByTestId(
-    `transcript-play-button-${firstContentId}`,
-  );
-  await expect(playButton).toBeVisible();
-  await playButton.click();
-
-  // Wait for play action to register
-  await page.waitForTimeout(1000);
-
-  // Verify first transcript container is visible in viewport
-  const firstContainerVisible = await firstTranscriptContainer.evaluate(
-    (el) => {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth)
-      );
-    },
-  );
-  expect(firstContainerVisible).toBe(true);
-
-  // Verify checkpoint text is NOT visible in viewport
-  const checkpointNotVisibleNow = await checkpointElement.evaluate((el) => {
-    const rect = el.getBoundingClientRect();
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <=
-        (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-  });
-  expect(checkpointNotVisibleNow).toBe(false);
-
-  // Click checkpoint button again to scroll back to checkpoint
-  await checkpointButton.click();
-  await page.waitForTimeout(1000);
-
-  // Verify checkpoint is visible in viewport
-  const checkpointVisibleAgain = await checkpointElement.evaluate((el) => {
-    const rect = el.getBoundingClientRect();
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <=
-        (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-  });
-  expect(checkpointVisibleAgain).toBe(true);
-
-  // Verify first transcript container is NOT visible in viewport
-  const firstContainerNotVisibleAgain = await firstTranscriptContainer.evaluate(
-    (el) => {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth)
-      );
-    },
-  );
-  expect(firstContainerNotVisibleAgain).toBe(false);
-
-  // Click current button to scroll back to currently playing item
-  const currentButton = page.getByTestId('current-button');
-  await expect(currentButton).toBeVisible();
-  await currentButton.click();
-  await page.waitForTimeout(1000);
-
-  // Verify first transcript container is visible in viewport
-  const firstContainerVisibleFinal = await firstTranscriptContainer.evaluate(
-    (el) => {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth)
-      );
-    },
-  );
-  expect(firstContainerVisibleFinal).toBe(true);
-
-  // Verify checkpoint is NOT visible in viewport
-  const checkpointNotVisibleFinal = await checkpointElement.evaluate((el) => {
-    const rect = el.getBoundingClientRect();
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <=
-        (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-  });
-  expect(checkpointNotVisibleFinal).toBe(false);
-});
-
-test('bulk sentence review - double click to review multiple sentences', async ({
-  page,
-}) => {
-  await setupApiMocks(page);
-
-  // Navigate to home page
-  await page.goto('/');
-
-  // Click on the specific content item
-  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-  await contentButton.click();
-
-  // Wait for navigation to complete
-  await page.waitForURL(`**/content?topic=${contentTitle}`);
-
-  // Verify the bulk review count is initially 5
-  const bulkReviewButton = page.getByTestId('bulk-review-button');
-  await expect(page.getByText('Bulk Review: 7')).toBeVisible();
-  await expect(bulkReviewButton).toBeEnabled();
-  await checkSentenceCount(page, '153/200');
-  const bulkReviewBefore = page.getByText('Bulk Review: 7');
-  await expect(bulkReviewBefore).toBeVisible();
-
-  // Double-click the bulk review button
-  await bulkReviewButton.dblclick();
-
-  // Wait for the API call to complete
-  await page.waitForResponse('**/api/bulkSentenceReview');
-
-  // Wait for and verify the toast message appears
-  const toastMessage = page.getByText('Bulk reviewed 7 sentences ✅');
-  await expect(toastMessage).toBeVisible({ timeout: 5000 });
-
-  await checkSentenceCount(page, '153/205');
-
-  const bulkReviewAfter = page.getByText('Bulk Review: 0');
-  await expect(bulkReviewAfter).toBeVisible();
-});
-
-test('Word tab section', async ({ page }) => {
-  await page.goto('/');
-
-  // Click on the specific content item
-  const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-  await contentButton.click();
-
-  // Wait for navigation to complete
-  await page.waitForURL(`**/content?topic=${contentTitle}`);
-
-  // Verify word cards are not visible before clicking words tab
-  const firstDueWordCard = page.getByTestId(
-    `word-card-wrapper-${firstDueWordId}`,
-  );
-  const firstNonDueWordCard = page.getByTestId(
-    `word-card-wrapper-${firstNonDueWordId}`,
-  );
-  await expect(firstDueWordCard).not.toBeVisible();
-  await expect(firstNonDueWordCard).not.toBeVisible();
-
-  // Click on words-tab-trigger
-  const firstTranscriptEnglish = page.getByTestId(
-    `transcript-base-lang-${firstContentId}`,
-  );
-  await expect(firstTranscriptEnglish).toBeVisible();
-  const wordsTabTrigger = page.getByTestId('words-tab-trigger');
-  await expect(wordsTabTrigger).toBeVisible();
-  await wordsTabTrigger.click();
-  await expect(firstTranscriptEnglish).not.toBeVisible();
-
-  await page.waitForTimeout(2000);
-
-  // Verify word cards are now visible after clicking words tab
-  await expect(firstDueWordCard).toBeVisible();
-  await expect(firstNonDueWordCard).toBeVisible();
-
-  // Click play button on the first due word card
-  const firstDueWordPlayButton = page.getByTestId(
-    `word-card-play-button-${firstDueWordId}`,
-  );
-  await expect(firstDueWordPlayButton).toBeVisible();
-  await firstDueWordPlayButton.click();
-
-  // Wait for video to start playing
-  await page.waitForTimeout(1000);
-
-  // Verify the specific Japanese text is visible
-  const japaneseText = page.getByText(
-    '堀/え、音声言語は使わなかったってこと？水/音声言語はね、使われていたみたいです。',
-  );
-  await expect(japaneseText).toBeVisible();
-
-  // Click the play button again to pause
-  await firstDueWordPlayButton.click();
-
-  // Wait for pause to take effect
-  await page.waitForTimeout(500);
-
-  // Click the more button to expand word details
-  const firstDueWordMoreButton = page.getByTestId(
-    `word-card-more-button-${firstDueWordId}`,
-  );
-  await expect(firstDueWordMoreButton).toBeVisible();
-  await firstDueWordMoreButton.click();
-
-  // Wait for details to expand
-  await page.waitForTimeout(500);
-
-  // Verify word information is visible within the word card container
-  await expect(firstDueWordCard.getByText('1) Spoken Language')).toBeVisible();
-  await expect(firstDueWordCard.getByText('Base Form:')).toBeVisible();
-  await expect(firstDueWordCard.getByText('Surface Form:')).toBeVisible();
-  await expect(firstDueWordCard.getByText('Phonetic:')).toBeVisible();
-  await expect(firstDueWordCard.getByText('Transliteration:')).toBeVisible();
-  await expect(firstDueWordCard.getByText('Definition:')).toBeVisible();
-
-  // Verify values - 音声言語 appears twice (Base Form and Surface Form)
-  await expect(firstDueWordCard.getByText('音声言語')).toHaveCount(3);
-  await expect(firstDueWordCard.getByText('おんせいげんご')).toBeVisible();
-  await expect(firstDueWordCard.getByText('Onsei gengo')).toBeVisible();
-  await expect(firstDueWordCard.getByText('Spoken Language')).toHaveCount(2);
-
-  // Click on the Definition label to enter edit mode
-  const definitionLabel = page.getByTestId('word-card-edit-label-definition');
-  await expect(definitionLabel).toBeVisible();
-  await definitionLabel.click();
-
-  // Wait for edit mode to activate
-  await page.waitForTimeout(300);
-
-  // Verify check and X buttons are now visible
-  const saveButton = page.getByTestId('word-card-save-button-definition');
-  const cancelButton = page.getByTestId('word-card-cancel-button-definition');
-  await expect(saveButton).toBeVisible();
-  await expect(cancelButton).toBeVisible();
-
-  // Find the textarea and change the value from "Spoken Language" to "Spoken Gengo"
-  const textarea = firstDueWordCard.locator('textarea');
-  await expect(textarea).toBeVisible();
-  await textarea.fill('Spoken Gengo');
-
-  // Mock the API call to /api/updateWord
-  await page.route('**/api/updateWord', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        definition: 'Spoken Gengo',
-      }),
-    });
-  });
-
-  // Click the save button
-  await saveButton.click();
-
-  // Wait for the API call and verify toast message
-  const toastMessage = page.getByText('Word updated ✅');
-  await expect(toastMessage).toBeVisible({ timeout: 3000 });
-
-  // Verify the new value is displayed
-  await expect(firstDueWordCard.getByText('Spoken Gengo')).toHaveCount(2);
-
-  // Find the review SRS toggles container
-  const reviewSRSToggles = page.getByTestId(
-    `review-srs-toggles-${firstDueWordId}`,
-  );
-  await expect(reviewSRSToggles).toBeVisible();
-
-  // Find and click the "2 days" button
-  const twoDaysButton = reviewSRSToggles.getByRole('button', {
-    name: /2 days/i,
-  });
-  await expect(twoDaysButton).toBeVisible();
-
-  // Mock the /api/updateWord call for the SRS review
-  const twoDaysFromNow = new Date();
-  twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
-
-  await page.route('**/api/updateWord', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        reviewData: {
-          difficulty: 7.1949,
-          due: twoDaysFromNow.toISOString(),
-          ease: 2.5,
-          elapsed_days: 0,
-          interval: 0,
-          lapses: 0,
-          last_review: new Date().toISOString(),
-          reps: 1,
-          scheduled_days: 0,
-          stability: 0.40255,
-          state: 1,
-        },
-      }),
-    });
-  });
-
-  await checkWordsDueMeta(page, 'Words Due: 55');
-  await checkLearningScreenTab(page, 'words-tab-trigger', 'Words 55/84', false);
-
-  // Click the "2 days" button
-  await twoDaysButton.click();
-  await checkWordsDueMeta(page, 'Words Due: 54');
-  await checkLearningScreenTab(page, 'words-tab-trigger', 'Words 54/84', false);
-
-  await expect(firstDueWordCard.getByText('1) Spoken Gengo')).not.toBeVisible();
-  await expect(firstDueWordCard.getByText('55) Spoken Gengo')).toBeVisible();
 });
