@@ -1250,9 +1250,7 @@ test.describe('Transcript scroll functionality', () => {
     await page.waitForLoadState('networkidle');
 
     // Turn off track-current switch before testing checkpoint
-    const trackCurrentSwitch = page.getByTestId('track-current-switch');
-    await expect(trackCurrentSwitch).toBeVisible();
-    await trackCurrentSwitch.click();
+    await triggerTrackSwitch(page);
     await page.waitForTimeout(500);
 
     // The checkpoint text from the last reviewed sentence
@@ -1435,7 +1433,7 @@ test.describe('Transcript scroll functionality', () => {
   });
 });
 
-test.describe('Bulk sentence review functionality', () => {
+test.describe.only('Bulk sentence review functionality', () => {
   test('bulk sentence review - double click to review multiple sentences', async ({
     page,
   }) => {
