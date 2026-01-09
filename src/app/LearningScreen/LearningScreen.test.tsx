@@ -1,23 +1,19 @@
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from '@testing-library/react';
-import { LearningScreenProvider } from './LearningScreenProvider';
-import { FetchDataProvider } from '../Providers/FetchDataProvider';
-import ContentScreen from '../content/page';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import * as apiLib from '@/lib/api-request-wrapper';
+import {
+  mockTitle,
+  mockSelectedContent,
+  checkingTimelineMarkers,
+  renderWithProvider,
+} from './__tests__/test-utils';
+
 jest.mock('../Providers/useDataSaveToLocalStorage', () => () => {});
 
-const mockTitle = 'Test-Content-title';
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
     replace: jest.fn(),
     prefetch: jest.fn(),
-    // add other router methods/properties as needed
   }),
   useSearchParams: () => ({
     get: (key: string) => (key === 'topic' ? mockTitle : null),
@@ -34,266 +30,6 @@ beforeAll(() => {
 
   process.env.NEXT_PUBLIC_CLOUDFLARE_ASSETS_URL = 'https://mocked-url/';
 });
-
-const mockSelectedContent = {
-  id: 'content-1',
-  title: mockTitle,
-  contentIndex: 0,
-  content: [
-    {
-      id: 'sentence-1',
-      baseLang: 'Hello world',
-      targetLang: 'こんにちは世界',
-      time: 0,
-    },
-    {
-      id: 'sentence-2',
-      baseLang: 'How are you?',
-      targetLang: 'お元気ですか？',
-      time: 2,
-    },
-    {
-      id: 'sentence-3',
-      baseLang: 'Nice to meet you.',
-      targetLang: 'はじめまして。',
-      time: 5,
-    },
-    {
-      id: 'sentence-4',
-      baseLang: 'See you later, friend! Let us meet again soon at the park.',
-      targetLang: 'またね、友達！また公園ですぐに会いましょう。',
-      time: 8,
-    },
-    {
-      id: 'sentence-5',
-      baseLang: 'Thank you very much.',
-      targetLang: 'どうもありがとうございます。',
-      time: 12,
-    },
-  ],
-  snippets: [],
-};
-
-const dueDateOneDayAgo = new Date();
-dueDateOneDayAgo.setDate(dueDateOneDayAgo.getDate() - 1);
-
-const lastReviewDateTwoDaysAgo = new Date();
-lastReviewDateTwoDaysAgo.setDate(lastReviewDateTwoDaysAgo.getDate() - 2);
-
-const mockSelectedContentWithDueData = {
-  id: 'content-1',
-  title: mockTitle,
-  contentIndex: 0,
-  content: [
-    {
-      id: 'sentence-due-1',
-      baseLang: 'The weather is nice today.',
-      targetLang: '今日は天気がいいですね。',
-      time: 0,
-      reviewData: {
-        difficulty: 6.8,
-        due: dueDateOneDayAgo.toISOString(),
-        ease: 2.5,
-        elapsed_days: 1,
-        interval: 1,
-        lapses: 0,
-        last_review: lastReviewDateTwoDaysAgo.toISOString(),
-        reps: 2,
-        scheduled_days: 1,
-        stability: 0.5,
-        state: 2,
-      },
-    },
-    {
-      id: 'sentence-due-2',
-      baseLang: 'I like reading books.',
-      targetLang: '私は本を読むのが好きです。',
-      time: 3,
-      reviewData: {
-        difficulty: 7.2,
-        due: dueDateOneDayAgo.toISOString(),
-        ease: 2.6,
-        elapsed_days: 1,
-        interval: 1,
-        lapses: 0,
-        last_review: lastReviewDateTwoDaysAgo.toISOString(),
-        reps: 3,
-        scheduled_days: 1,
-        stability: 0.6,
-        state: 2,
-      },
-    },
-    {
-      id: 'sentence-due-3',
-      baseLang: "Let's go to the park tomorrow.",
-      targetLang: '明日、公園に行きましょう。',
-      time: 7,
-      reviewData: {
-        difficulty: 6.5,
-        due: dueDateOneDayAgo.toISOString(),
-        ease: 2.7,
-        elapsed_days: 1,
-        interval: 1,
-        lapses: 0,
-        last_review: lastReviewDateTwoDaysAgo.toISOString(),
-        reps: 2,
-        scheduled_days: 1,
-        stability: 0.55,
-        state: 2,
-      },
-    },
-  ],
-  snippets: [
-    {
-      id: 'snippet-due-1',
-      baseLang: 'The weather is nice today.',
-      targetLang: '今日は天気がいいですね。',
-      time: 1.5,
-      focusedText: '天気がいい',
-      isContracted: false,
-      isPreSnippet: false,
-      reviewData: {
-        difficulty: 7.0,
-        due: dueDateOneDayAgo.toISOString(),
-        ease: 2.5,
-        elapsed_days: 1,
-        interval: 1,
-        lapses: 0,
-        last_review: lastReviewDateTwoDaysAgo.toISOString(),
-        reps: 1,
-        scheduled_days: 1,
-        stability: 0.45,
-        state: 2,
-      },
-    },
-    {
-      id: 'snippet-due-2',
-      baseLang: 'I like reading books.',
-      targetLang: '私は本を読むのが好きです。',
-      time: 4.5,
-      focusedText: '本を読む',
-      isContracted: false,
-      isPreSnippet: false,
-      reviewData: {
-        difficulty: 6.9,
-        due: dueDateOneDayAgo.toISOString(),
-        ease: 2.6,
-        elapsed_days: 1,
-        interval: 1,
-        lapses: 0,
-        last_review: lastReviewDateTwoDaysAgo.toISOString(),
-        reps: 2,
-        scheduled_days: 1,
-        stability: 0.5,
-        state: 2,
-      },
-    },
-    {
-      id: 'snippet-due-3',
-      baseLang: "Let's go to the park tomorrow.",
-      targetLang: '明日、公園に行きましょう。',
-      focusedText: '公園に行きましょう',
-      isContracted: false,
-      isPreSnippet: false,
-      time: 8.5,
-      reviewData: {
-        difficulty: 7.1,
-        due: dueDateOneDayAgo.toISOString(),
-        ease: 2.5,
-        elapsed_days: 1,
-        interval: 1,
-        lapses: 0,
-        last_review: lastReviewDateTwoDaysAgo.toISOString(),
-        reps: 1,
-        scheduled_days: 1,
-        stability: 0.48,
-        state: 2,
-      },
-    },
-  ],
-};
-
-const mockWordsData = [
-  {
-    baseForm: '天気',
-    surfaceForm: '天気',
-    contexts: ['sentence-due-1'],
-    definition: 'weather',
-    id: 'mocked-id-tenki',
-    notes:
-      'In this context, 天気 refers to the weather or atmospheric conditions.',
-    phonetic: 'てんき',
-    reviewData: {
-      difficulty: 6.8,
-      due: dueDateOneDayAgo.toISOString(),
-      ease: 2.5,
-      elapsed_days: 1,
-      interval: 1,
-      lapses: 0,
-      last_review: lastReviewDateTwoDaysAgo.toISOString(),
-      reps: 2,
-      scheduled_days: 1,
-      stability: 0.5,
-      state: 2,
-    },
-    transliteration: 'tenki',
-  },
-  {
-    baseForm: '本',
-    surfaceForm: '本',
-    contexts: ['sentence-due-2'],
-    definition: 'book',
-    id: 'mocked-id-hon',
-    notes: 'In this context, 本 refers to a book or written material.',
-    phonetic: 'ほん',
-    reviewData: {
-      difficulty: 7.0,
-      due: dueDateOneDayAgo.toISOString(),
-      ease: 2.6,
-      elapsed_days: 1,
-      interval: 1,
-      lapses: 0,
-      last_review: lastReviewDateTwoDaysAgo.toISOString(),
-      reps: 3,
-      scheduled_days: 1,
-      stability: 0.55,
-      state: 2,
-    },
-    transliteration: 'hon',
-  },
-  {
-    baseForm: '公園',
-    surfaceForm: '公園',
-    contexts: ['sentence-due-3'],
-    definition: 'park',
-    id: 'mocked-id-kouen',
-    notes: 'In this context, 公園 refers to a public park or garden.',
-    phonetic: 'こうえん',
-    reviewData: {
-      difficulty: 6.7,
-      due: dueDateOneDayAgo.toISOString(),
-      ease: 2.7,
-      elapsed_days: 1,
-      interval: 1,
-      lapses: 0,
-      last_review: lastReviewDateTwoDaysAgo.toISOString(),
-      reps: 2,
-      scheduled_days: 1,
-      stability: 0.52,
-      state: 2,
-    },
-    transliteration: 'kouen',
-  },
-];
-
-const checkWordsMetaData = (wordsNumber, wordTabText) => {
-  expect(screen.getByText(`Words Due: ${wordsNumber}`)).toBeInTheDocument();
-  const breadcrumbWordsButton = screen.getByTestId('breadcrumb-words-button');
-  expect(breadcrumbWordsButton).toHaveTextContent(`Words (${wordsNumber})`);
-  const wordsTabTrigger = screen.getByTestId('words-tab-trigger');
-
-  expect(wordsTabTrigger).toHaveTextContent(`Words ${wordTabText}`);
-};
 const checkMetaDataOnLoad = () => {
   expect(screen.getByText('Sentences: 0/0')).toBeInTheDocument();
   expect(screen.getByText('Words Due: 0')).toBeInTheDocument();
@@ -356,21 +92,6 @@ const checkingMainTranscriptContent = () => {
   within(mainTranscriptItem).getByText(
     mockSelectedContent.content[0].targetLang,
   );
-};
-
-const checkingTimelineMarkers = (snippets = 0, words = 0, sentence = 0) => {
-  expect(
-    document.querySelectorAll(`[data-testid^="timeline-sentence-${sentence}"]`),
-  ).toHaveLength(0);
-
-  expect(
-    document.querySelectorAll(`[data-testid^="timeline-word-marker-${words}"]`),
-  ).toHaveLength(0);
-  expect(
-    document.querySelectorAll(
-      `[data-testid^="timeline-snippet-marker-${snippets}"]`,
-    ),
-  ).toHaveLength(0);
 };
 
 const checkingMediaActionButtons = () => {
@@ -1055,7 +776,7 @@ const deleteSnippet = async () => {
   );
 };
 
-describe('LearningScreen', () => {
+describe('LearningScreen - studying new content', () => {
   beforeAll(() => {
     jest
       .spyOn(apiLib, 'apiRequestWrapper')
@@ -1075,489 +796,69 @@ describe('LearningScreen', () => {
     jest.clearAllMocks();
   });
 
-  const renderWithProvider = async (selectedContent = mockSelectedContent) => {
-    const result = render(
-      <FetchDataProvider>
-        <LearningScreenProvider selectedContentStateMemoized={selectedContent}>
-          <ContentScreen />
-        </LearningScreenProvider>
-      </FetchDataProvider>,
-    );
+  describe('new sentences', () => {
+    it('should render a blank project with no previously reviewed content', async () => {
+      await renderWithProvider();
+      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
 
-    // Wait for video/audio element to be mounted and trigger loadedmetadata event
-    await waitFor(() => {
-      const videoElement =
-        document.querySelector('video') || document.querySelector('audio');
-      expect(videoElement).toBeInTheDocument();
-      if (videoElement) {
-        fireEvent.loadedMetadata(videoElement);
-      }
-    });
-
-    return result;
-  };
-
-  describe('studying new content', () => {
-    beforeAll(() => {
-      jest
-        .spyOn(apiLib, 'apiRequestWrapper')
-        .mockImplementation(async (params) => {
-          if (params.url === '/api/getOnLoadData') {
-            return {
-              contentData: [mockSelectedContent],
-              wordsData: [],
-              sentencesData: [],
-            };
-          }
-
-          // Default mock response
-          return {};
-        });
-    });
-
-    describe('Review sentences', () => {
-      it('should render a blank project with no previously reviewed content', async () => {
-        await renderWithProvider();
-        expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
-
-        checkMetaDataOnLoad();
-        checkReviewTogglesOnLoad();
-        checkTabTriggersOnLoad();
-        checkingMainTranscriptContent();
-        checkingTimelineMarkers();
-        checkAllTranscriptItems();
-        checkingMediaActionButtons();
-        await addFirstSentenceToReview();
-        await addSecondSentenceToReview();
-        startReviewMode();
-        await reviewFirstSentenceAgain();
-        await removeSecondSentenceFromReview();
-      });
-    });
-
-    describe('Review words', () => {
-      it('should allow to add and remove words from transcript', async () => {
-        await renderWithProvider();
-        expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
-        await saveWordFirstInTranscript();
-        await saveWordSecondInTranscript();
-        await hoverOverSavedWord();
-        await deleteFirstWord();
-      });
-    });
-
-    describe('Review snippets', () => {
-      // just test for standard snippet and overlap snippet.
-      it('should allow snippet creation and removal snippets from transcript', async () => {
-        // Mock currentTime for this test
-        Object.defineProperty(HTMLMediaElement.prototype, 'currentTime', {
-          configurable: true,
-          get() {
-            return 10;
-          },
-          set() {
-            // Mock setter to prevent errors
-          },
-        });
-
-        await renderWithProvider();
-        expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
-        expect(
-          screen.queryByTestId('video-player-snippet-text'),
-        ).not.toBeInTheDocument();
-        expect(
-          screen.queryByTestId('transcript-looping-sentence-sentence-4'),
-        ).not.toBeInTheDocument();
-
-        await triggerSnippetViaKeyboard();
-        await triggerContractedSnippet();
-        await triggerMoveSnippetLeftAndRightExpandAndContract();
-        await saveSnippet();
-        await checkForRemovalOfPreSnippetUIComponents();
-        await checkNewStableSnippetUIComponents();
-        await deleteSnippet();
-
-        // check snippet present in timeline
-      });
+      checkMetaDataOnLoad();
+      checkReviewTogglesOnLoad();
+      checkTabTriggersOnLoad();
+      checkingMainTranscriptContent();
+      checkingTimelineMarkers();
+      checkAllTranscriptItems();
+      checkingMediaActionButtons();
+      await addFirstSentenceToReview();
+      await addSecondSentenceToReview();
+      startReviewMode();
+      await reviewFirstSentenceAgain();
+      await removeSecondSentenceFromReview();
     });
   });
 
-  describe('review mode', () => {
-    const checkForDefaultReviewModeMetaData = () => {
-      const wordsDueText = screen.getByTestId('analytics-words-due');
-      const snippetsDueText = screen.getByTestId('analytics-snippets-due');
-      const sentencesCountText = screen.getByTestId(
-        'analytics-sentences-count',
-      );
-      const wordsBtnLink = screen.getByTestId('breadcrumb-words-button');
-      expect(wordsBtnLink).toHaveTextContent('Words (3)');
-      expect(wordsDueText).toHaveTextContent('Words Due: 3');
-      expect(snippetsDueText).toHaveTextContent('Snippets Due: 3/3/3');
-      expect(sentencesCountText).toHaveTextContent('Sentences: 3/3');
-      expect(screen.getByText('Reps: 0')).toBeInTheDocument();
-
-      const wordsTabTrigger = screen.getByTestId('words-tab-trigger');
-      expect(wordsTabTrigger).toHaveTextContent('Words 3/3');
-      const progressHeader = screen.getByTestId('progress-header-text');
-      expect(progressHeader).toHaveTextContent('0/3');
-      expect(
-        document.querySelectorAll('[data-testid^="timeline-sentence-"]'),
-      ).toHaveLength(3);
-      expect(
-        document.querySelectorAll('[data-testid^="timeline-word-marker-"]'),
-      ).toHaveLength(3);
-      expect(
-        document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
-      ).toHaveLength(3);
-    };
-
-    const checkForReviewLabelText = (snippets, words, sentences) => {
-      const wordToggleLabel = screen.getByTestId('words-toggle-label');
-      const sentenceToggleLabel = screen.getByTestId('sentences-toggle-label');
-      const snippetToggleLabel = screen.getByTestId('snippets-toggle-label');
-
-      expect(snippetToggleLabel).toHaveTextContent(`✂️ (${snippets})`);
-      expect(wordToggleLabel).toHaveTextContent(`🔤 (${words})`);
-      expect(sentenceToggleLabel).toHaveTextContent(`📝 (${sentences})`);
-    };
-
-    const switchToReviewMode = async () => {
-      const wordToggleLabel = screen.getByTestId('words-toggle-label');
-      const sentenceToggleLabel = screen.getByTestId('sentences-toggle-label');
-      const snippetToggleLabel = screen.getByTestId('snippets-toggle-label');
-
-      const wordToggleCheckBoxes = screen.getByTestId('words-toggle');
-      const sentenceToggleCheckBoxes = screen.getByTestId('sentences-toggle');
-      const snippetToggleCheckBoxes = screen.getByTestId('snippets-toggle');
-      expect(wordToggleCheckBoxes).toBeDisabled();
-      expect(sentenceToggleCheckBoxes).toBeDisabled();
-      expect(snippetToggleCheckBoxes).toBeDisabled();
-      expect(wordToggleLabel).toHaveTextContent('🔤 (0)');
-      expect(sentenceToggleLabel).toHaveTextContent('📝 (0)');
-      expect(snippetToggleLabel).toHaveTextContent('✂️ (0)');
-      const reviewSwitch = screen.getByTestId('review-switch');
-      fireEvent.click(reviewSwitch);
-      const wordToggleLabelPost = screen.getByTestId('words-toggle-label');
-      const sentenceToggleLabelPost = screen.getByTestId(
-        'sentences-toggle-label',
-      );
-      const snippetToggleLabelPost = screen.getByTestId(
-        'snippets-toggle-label',
-      );
-      expect(wordToggleLabelPost).toHaveTextContent('🔤 (3)');
-      expect(sentenceToggleLabelPost).toHaveTextContent('📝 (3)');
-      expect(snippetToggleLabelPost).toHaveTextContent('✂️ (3)');
-      const reviewIntervalDecrement = screen.getByTestId(
-        'review-interval-decrement',
-      );
-      const reviewIntervalCount = screen.getByTestId('review-interval-count');
-      const reviewIntervalIncrement = screen.getByTestId(
-        'review-interval-increment',
-      );
-      expect(reviewIntervalDecrement).toBeEnabled();
-      expect(reviewIntervalCount).toHaveTextContent('60s');
-      expect(reviewIntervalIncrement).toBeEnabled();
-      await waitFor(() => {
-        // Re-query inside waitFor to get fresh references on each retry
-        const wordToggleCheckBoxes = screen.getByTestId('words-toggle');
-        const sentenceToggleCheckBoxes = screen.getByTestId('sentences-toggle');
-        const snippetToggleCheckBoxes = screen.getByTestId('snippets-toggle');
-        expect(wordToggleCheckBoxes).toBeEnabled();
-        expect(sentenceToggleCheckBoxes).toBeEnabled();
-        expect(snippetToggleCheckBoxes).toBeEnabled();
-      });
-    };
-
-    const dueIn2Days = () => {
-      const dueDate = new Date();
-      dueDate.setDate(dueDate.getDate() + 2);
-      return dueDate.toISOString();
-    };
-
-    const reviewSnippetsInReviewMode = async () => {
-      checkingTimelineMarkers(3, 3, 3);
-      const snippetReviewToggle1 = screen.getByTestId(
-        'snippet-review-item-snippet-due-1',
-      );
-
-      expect(snippetReviewToggle1).toHaveTextContent('天気がいい');
-      const snippetReviewToggle2 = screen.getByTestId(
-        'snippet-review-item-snippet-due-2',
-      );
-      expect(snippetReviewToggle2).toHaveTextContent('本を読む');
-      const snippetReviewToggle3 = screen.getByTestId(
-        'snippet-review-item-snippet-due-3',
-      );
-      expect(snippetReviewToggle3).toHaveTextContent('公園に行きましょう');
-
-      jest
-        .spyOn(apiLib, 'apiRequestWrapper')
-        .mockImplementation(async (params) => {
-          if (params.url === '/api/updateContentMetaData') {
-            // Clone the snippets array and update the due date of snippet-due-2
-            return {
-              ...mockSelectedContentWithDueData,
-              snippets: [
-                {
-                  ...mockSelectedContentWithDueData.snippets[0],
-                  reviewData: {
-                    ...mockSelectedContentWithDueData.snippets[0].reviewData,
-                    due: dueIn2Days(),
-                  },
-                },
-                mockSelectedContentWithDueData.snippets[1],
-                mockSelectedContentWithDueData.snippets[2],
-              ],
-            };
-          }
-          // Default mock response
-          return {};
-        });
-
-      const reviewFirstSnippetBtn = screen.getByTestId('easy-snippet-due-1');
-      reviewFirstSnippetBtn.click();
-      await waitFor(() => {
-        expect(
-          screen.getByText('Updated content data ✅!'),
-        ).toBeInTheDocument();
-      });
-
-      checkForReviewLabelText(2, 3, 3);
-      checkingTimelineMarkers(2, 3, 3);
-
-      jest
-        .spyOn(apiLib, 'apiRequestWrapper')
-        .mockImplementation(async (params) => {
-          if (params.url === '/api/updateContentMetaData') {
-            // Clone the snippets array and update the due date of snippet-due-2
-            return {
-              ...mockSelectedContentWithDueData,
-              snippets: [
-                {
-                  ...mockSelectedContentWithDueData.snippets[0],
-                  reviewData: {
-                    ...mockSelectedContentWithDueData.snippets[0].reviewData,
-                    due: dueIn2Days(),
-                  },
-                },
-                {
-                  ...mockSelectedContentWithDueData.snippets[1],
-                  reviewData: {
-                    ...mockSelectedContentWithDueData.snippets[1].reviewData,
-                    due: dueIn2Days(),
-                  },
-                },
-                mockSelectedContentWithDueData.snippets[2],
-              ],
-            };
-          }
-          // Default mock response
-          return {};
-        });
-
-      const reviewSecondSnippetBtn = screen.getByTestId('easy-snippet-due-2');
-      reviewSecondSnippetBtn.click();
-      await waitFor(() => {
-        expect(
-          screen.getByText('Updated content data ✅!'),
-        ).toBeInTheDocument();
-      });
-
-      checkForReviewLabelText(1, 3, 3);
-      checkingTimelineMarkers(1, 3, 3);
-
-      jest
-        .spyOn(apiLib, 'apiRequestWrapper')
-        .mockImplementation(async (params) => {
-          if (params.url === '/api/updateContentMetaData') {
-            // Clone the snippets array and update the due date of snippet-due-2
-            return {
-              ...mockSelectedContentWithDueData,
-              snippets: [
-                {
-                  ...mockSelectedContentWithDueData.snippets[0],
-                  reviewData: {
-                    ...mockSelectedContentWithDueData.snippets[0].reviewData,
-                    due: dueIn2Days(),
-                  },
-                },
-                {
-                  ...mockSelectedContentWithDueData.snippets[1],
-                  reviewData: {
-                    ...mockSelectedContentWithDueData.snippets[1].reviewData,
-                    due: dueIn2Days(),
-                  },
-                },
-                {
-                  ...mockSelectedContentWithDueData.snippets[2],
-                  reviewData: {
-                    ...mockSelectedContentWithDueData.snippets[2].reviewData,
-                    due: dueIn2Days(),
-                  },
-                },
-              ],
-            };
-          }
-          // Default mock response
-          return {};
-        });
-
-      const reviewThirdSnippetBtn = screen.getByTestId('easy-snippet-due-3');
-      reviewThirdSnippetBtn.click();
-      await waitFor(() => {
-        expect(
-          screen.getByText('Updated content data ✅!'),
-        ).toBeInTheDocument();
-      });
-
-      checkForReviewLabelText(0, 3, 3);
-      checkingTimelineMarkers(0, 3, 3);
-    };
-
-    const reviewWordsInReviewMode = async () => {
-      checkWordsMetaData(3, '3/3');
-      jest
-        .spyOn(apiLib, 'apiRequestWrapper')
-        .mockImplementation(async (params) => {
-          if (params.url === '/api/updateWord') {
-            // Clone the snippets array and update the due date of snippet-due-2
-            return {
-              reviewData: { ...mockWordsData[0].reviewData, due: dueIn2Days() },
-            };
-          }
-          // Default mock response
-          return {};
-        });
-
-      const firstWord = screen.getByTestId('easy-mocked-id-tenki');
-      firstWord.click();
-      await waitFor(() => {
-        expect(screen.getByText('Word updated ✅')).toBeInTheDocument();
-      });
-      checkForReviewLabelText(0, 2, 3);
-      checkingTimelineMarkers(0, 2, 3);
-      checkWordsMetaData(2, '2/3');
-      const secondWord = screen.getByTestId('easy-mocked-id-hon');
-
-      secondWord.click();
-      await waitFor(() => {
-        expect(screen.getByText('Word updated ✅')).toBeInTheDocument();
-      });
-      checkForReviewLabelText(0, 1, 3);
-      checkingTimelineMarkers(0, 1, 3);
-      checkWordsMetaData(1, '1/3');
-      const thirdWord = screen.getByTestId('easy-mocked-id-kouen');
-      thirdWord.click();
-      await waitFor(() => {
-        expect(screen.getByText('Word updated ✅')).toBeInTheDocument();
-      });
-      checkForReviewLabelText(0, 0, 3);
-      checkingTimelineMarkers(0, 0, 3);
-      checkWordsMetaData(0, '0/3');
-    };
-
-    const checkSentenceMetaData = (dueCount, pendingCountText, reps) => {
-      const sentenceDueText = screen.getByTestId('analytics-sentences-count');
-      expect(sentenceDueText).toHaveTextContent(
-        `Sentences: ${dueCount}/${pendingCountText}`,
-      );
-
-      expect(screen.getByText(`Reps: ${reps}`)).toBeInTheDocument();
-      // expect(screen.getByTestId('progress-header-text')).toHaveTextContent('1/2'); // come back to when fixing and testing progress header
-    };
-
-    const reviewSentencesInReviewMode = async () => {
-      expect(screen.queryByText('Done!')).not.toBeInTheDocument();
-      checkSentenceMetaData(3, 3, 0);
-      jest
-        .spyOn(apiLib, 'apiRequestWrapper')
-        .mockImplementation(async (params) => {
-          if (params.url === '/api/updateSentence') {
-            const dueTime = new Date();
-            dueTime.setDate(dueTime.getDate() + 2);
-            const lastReviewTime = new Date();
-            const reviewData = {
-              due: dueTime.toISOString(),
-              stability: 0.7,
-              difficulty: 6.5,
-              elapsed_days: 0,
-              scheduled_days: 2,
-              reps: 2,
-              lapses: 0,
-              state: 1,
-              last_review: lastReviewTime.toISOString(),
-              ease: 2.6,
-              interval: 2,
-            };
-
-            return {
-              reviewData,
-            };
-          }
-          // Default mock response
-          return {};
-        });
-      const firstSentenceDueTime = screen.getByTestId('easy-sentence-due-1');
-
-      firstSentenceDueTime.click();
-      await waitFor(() => {
-        expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
-      });
-      checkSentenceMetaData(2, 3, 1);
-      checkForReviewLabelText(0, 0, 2);
-      checkingTimelineMarkers(0, 0, 2);
-
-      const secondSentenceDueTime = screen.getByTestId('easy-sentence-due-2');
-
-      secondSentenceDueTime.click();
-      await waitFor(() => {
-        expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
-      });
-
-      checkSentenceMetaData(1, 3, 2);
-      checkForReviewLabelText(0, 0, 1);
-      checkingTimelineMarkers(0, 0, 1);
-
-      const thirdSentenceDueTime = screen.getByTestId('easy-sentence-due-3');
-
-      thirdSentenceDueTime.click();
-      await waitFor(() => {
-        expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
-      });
-
-      checkSentenceMetaData(0, 3, 3);
-      checkForReviewLabelText(0, 0, 0);
-      checkingTimelineMarkers(0, 0, 0);
-
-      expect(screen.getByText('Done!')).toBeInTheDocument();
-      // expect(screen.getByTestId('progress-header-text')).toHaveTextContent('1/2'); // come back to when fixing and testing progress header
-    };
-
-    beforeAll(() => {
-      jest
-        .spyOn(apiLib, 'apiRequestWrapper')
-        .mockImplementation(async (params) => {
-          if (params.url === '/api/getOnLoadData') {
-            return {
-              contentData: [mockSelectedContentWithDueData],
-              wordsData: mockWordsData,
-              sentencesData: [],
-            };
-          }
-
-          // Default mock response
-          return {};
-        });
+  describe('new words', () => {
+    it('should allow to add and remove words from transcript', async () => {
+      await renderWithProvider();
+      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+      await saveWordFirstInTranscript();
+      await saveWordSecondInTranscript();
+      await hoverOverSavedWord();
+      await deleteFirstWord();
     });
-    it('should allow user to review words/sentences/snippets', async () => {
-      await renderWithProvider(mockSelectedContentWithDueData);
-      const onLoadTitle = await screen.findByText(mockTitle);
-      expect(onLoadTitle).toBeDefined();
-      checkForDefaultReviewModeMetaData();
-      await switchToReviewMode();
-      await reviewSnippetsInReviewMode();
-      await reviewWordsInReviewMode();
-      await reviewSentencesInReviewMode();
+  });
+
+  describe('new snippets', () => {
+    // just test for standard snippet and overlap snippet.
+    it('should allow snippet creation and removal snippets from transcript', async () => {
+      // Mock currentTime for this test
+      Object.defineProperty(HTMLMediaElement.prototype, 'currentTime', {
+        configurable: true,
+        get() {
+          return 10;
+        },
+        set() {
+          // Mock setter to prevent errors
+        },
+      });
+
+      await renderWithProvider();
+      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+      expect(
+        screen.queryByTestId('video-player-snippet-text'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId('transcript-looping-sentence-sentence-4'),
+      ).not.toBeInTheDocument();
+
+      await triggerSnippetViaKeyboard();
+      await triggerContractedSnippet();
+      await triggerMoveSnippetLeftAndRightExpandAndContract();
+      await saveSnippet();
+      await checkForRemovalOfPreSnippetUIComponents();
+      await checkNewStableSnippetUIComponents();
+      await deleteSnippet();
+
+      // check snippet present in timeline
     });
   });
 });
