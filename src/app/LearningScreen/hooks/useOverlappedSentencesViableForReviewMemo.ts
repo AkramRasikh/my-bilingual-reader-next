@@ -20,8 +20,8 @@ export const useOverlappedSentencesViableForReviewMemo = (
     endTime: number;
   }) => FormattedTranscriptTypes[],
 ) => {
+  const contentSnippets = snippets;
   return useMemo(() => {
-    const contentSnippets = snippets;
     if (!contentSnippets || contentSnippets?.length === 0) {
       return null;
     }
@@ -106,9 +106,9 @@ export const useOverlappedSentencesViableForReviewMemo = (
 
     return viableSentenceIds;
   }, [
-    snippets,
-    sentenceMapMemoized,
     formattedTranscriptMemoized,
+    contentSnippets,
+    sentenceMapMemoized,
     mediaDuration,
     getLoopTranscriptSegment,
   ]);
