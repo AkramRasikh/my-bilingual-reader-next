@@ -1,9 +1,8 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { setupApiMocks } from './helpers/mock-api';
 import { landingMetaData } from './helpers/landing-meta-data';
 import {
   firstContentId,
-  secondContentId,
   firstDueWordId,
   firstNonDueWordId,
   checkSentenceCount,
@@ -14,148 +13,23 @@ import {
   triggerTrackSwitch,
   goFromLandingToLearningScreen,
   checkWordsTabCount,
+  checkSnippetsDueMeta,
+  checkWordsDueMeta,
+  checkLearningScreenTab,
+  checkProgressHeader,
+  checkVideoControl,
+  checkEnglishTranscriptToggles,
 } from './helpers/content-screen-helpers';
 import { waitForMediaMetadata } from './helpers/wait-for-media';
 
 const contentData = landingMetaData[0]; // Using the first content item for navigation test
 const contentTitle = contentData.title; // Using the first content item for navigation test
 
-// Helper function to check words count
-
-// Helper function to check words due count
-export async function checkWordsDueMeta(page: Page, expectedText: string) {
-  const wordsDue = page.getByTestId('analytics-words-due');
-  await expect(wordsDue).toBeVisible();
-  await expect(wordsDue).toContainText(expectedText);
-}
-
-// Helper function to check snippets due count
-export async function checkSnippetsDueMeta(page: Page, expectedText: string) {
-  const snippetsDue = page.getByTestId('analytics-snippets-due');
-  await expect(snippetsDue).toBeVisible();
-  await expect(snippetsDue).toContainText(expectedText);
-}
-
-// Helper function to check progress header text
-async function checkProgressHeader(page: Page, expectedText: string) {
-  const progressHeader = page.getByTestId('progress-header-text');
-  await expect(progressHeader).toBeVisible();
-  await expect(progressHeader).toContainText(expectedText);
-}
-
-// Helper function to check learning screen tab
-async function checkLearningScreenTab(
-  page: Page,
-  testId: string,
-  expectedText: string,
-  shouldBeDisabled?: boolean,
-) {
-  const tabTrigger = page.getByTestId(testId);
-  await expect(tabTrigger).toBeVisible();
-  await expect(tabTrigger).toContainText(expectedText);
-  if (shouldBeDisabled !== undefined) {
-    if (shouldBeDisabled) {
-      await expect(tabTrigger).toBeDisabled();
-    } else {
-      await expect(tabTrigger).toBeEnabled();
-    }
-  }
-}
-
-// Helper function to check video control toggle/button presence
-async function checkVideoControl(
-  page: Page,
-  labelTestId: string,
-  switchTestId: string,
-  expectedLabelText: string,
-) {
-  const label = page.getByTestId(labelTestId);
-  await expect(label).toBeVisible();
-  await expect(label).toContainText(expectedLabelText);
-
-  const toggle = page.getByTestId(switchTestId);
-  await expect(toggle).toBeVisible();
-}
-
-// Helper function to check English transcript toggles
-async function checkEnglishTranscriptToggles(page: Page) {
-  // Check that English text is visible for first transcript item
-  const firstTranscriptEnglish = page.getByTestId(
-    `transcript-base-lang-${firstContentId}`,
-  );
-  await expect(firstTranscriptEnglish).toBeVisible();
-  await expect(firstTranscriptEnglish).toContainText('Easy Linguistics Radio');
-
-  // Check that English text is visible for second transcript item
-  const secondTranscriptEnglish = page.getByTestId(
-    `transcript-base-lang-${secondContentId}`,
-  );
-  await expect(secondTranscriptEnglish).toBeVisible();
-  await expect(secondTranscriptEnglish).toContainText(
-    'Mizu/I read this novel recently.',
-  );
-
-  // Press the English toggle to hide English text
-  const englishToggle = page.getByTestId('english-switch');
-  await englishToggle.click();
-
-  // Wait for toggle to take effect
-  await page.waitForTimeout(500);
-
-  // Assert that English texts are no longer visible
-  await expect(firstTranscriptEnglish).not.toBeVisible();
-  await expect(secondTranscriptEnglish).not.toBeVisible();
-
-  // Toggle back to show English text again
-  await englishToggle.click();
-  await page.waitForTimeout(500);
-
-  // Verify English text is visible again
-  await expect(firstTranscriptEnglish).toBeVisible();
-  await expect(secondTranscriptEnglish).toBeVisible();
-}
-
-// // Helper function to check pre/post review toggle state
-// async function checkPrePostReviewToggle(page: Page) {
-//   // Before toggling review mode, verify checkboxes are disabled with 0 counts
-//   const wordsToggle = page.locator('#words-toggle');
-//   const sentencesToggle = page.locator('#sentences-toggle');
-//   const snippetsToggle = page.locator('#snippets-toggle');
-
-//   await expect(wordsToggle).toBeDisabled();
-//   await expect(sentencesToggle).toBeDisabled();
-//   await expect(snippetsToggle).toBeDisabled();
-
-//   // Verify counts are 0 before review mode
-//   const wordsLabel = page.locator('label[for="words-toggle"]');
-//   const sentencesLabel = page.locator('label[for="sentences-toggle"]');
-//   const snippetsLabel = page.locator('label[for="snippets-toggle"]');
-
-//   await expect(wordsLabel).toContainText('🔤 (0)');
-//   await expect(sentencesLabel).toContainText('📝 (0)');
-//   await expect(snippetsLabel).toContainText('✂️ (0)');
-
-//   // toggle review mode on
-//   const reviewSwitch = page.getByTestId('review-switch');
-//   await reviewSwitch.click();
-//   await page.waitForTimeout(500);
-
-//   // After toggling review mode, verify checkboxes are enabled with proper counts
-//   await expect(wordsToggle).not.toBeDisabled();
-//   await expect(sentencesToggle).not.toBeDisabled();
-//   await expect(snippetsToggle).not.toBeDisabled();
-
-//   // Verify counts are updated after review mode
-//   await expect(wordsLabel).toContainText('🔤 (5)');
-//   await expect(sentencesLabel).toContainText('📝 (0)');
-//   await expect(snippetsLabel).toContainText('✂️ (0)');
-// }
-
 test.beforeEach(async ({ page }) => {
   // Setup API mocking for all tests
   await setupApiMocks(page);
 });
-test.describe.only('General toggles & verify UI elements', () => {
+test.describe('General toggles & verify UI elements', () => {
   test('initial actions and checkpoint buttons', async ({ page }) => {
     await goFromLandingToLearningScreen(page);
 
