@@ -5,6 +5,11 @@ export const mapSentenceIdsToSeconds = ({
   content: { id: string; time: number }[];
   duration: number;
 }): string[] => {
+  // Handle invalid durations
+  if (!duration || duration <= 0 || !isFinite(duration)) {
+    return [];
+  }
+
   const totalSeconds = Math.ceil(duration);
   const result: string[] = new Array(totalSeconds);
 
