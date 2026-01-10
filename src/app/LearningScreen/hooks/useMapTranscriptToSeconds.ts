@@ -22,7 +22,6 @@ export const useLoopSecondsHook = ({
 const useMapTranscriptToSeconds = ({
   ref,
   content,
-  realStartTime,
   setSecondsState,
   secondsState,
   setLoopSecondsState,
@@ -48,12 +47,10 @@ const useMapTranscriptToSeconds = ({
     const arrOfSeconds = mapSentenceIdsToSeconds({
       content,
       duration: ref.current?.duration,
-      isVideoModeState: true,
-      realStartTime,
     });
 
     setSecondsState(arrOfSeconds);
-  }, [ref.current?.duration, secondsState, content, realStartTime]);
+  }, [ref.current?.duration, secondsState, content]);
 };
 
 export default useMapTranscriptToSeconds;

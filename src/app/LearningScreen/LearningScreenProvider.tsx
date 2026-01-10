@@ -492,8 +492,6 @@ export const LearningScreenProvider = ({
     const arrOfSeconds = mapSentenceIdsToSeconds({
       content: selectedContentStateMemoized.content,
       duration: mediaDuration,
-      isVideoModeState: true,
-      realStartTime: 0,
     });
 
     return arrOfSeconds;

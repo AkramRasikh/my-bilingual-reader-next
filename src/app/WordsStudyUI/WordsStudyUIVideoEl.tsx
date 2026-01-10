@@ -129,9 +129,6 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
       const secondsToArr = mapSentenceIdsToSeconds({
         content: transcriptArr,
         duration: ref?.current?.duration,
-        isVideoModeState: true,
-        // realStartTime: 0,
-        realStartTime: errorVideoState ? 0 : contextDataEl.realStartTime,
       });
       setSecondsState(secondsToArr);
       transcriptStringRef.current = idsOfTranscript;

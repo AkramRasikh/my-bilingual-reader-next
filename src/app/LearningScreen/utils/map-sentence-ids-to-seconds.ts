@@ -1,45 +1,26 @@
 export const mapSentenceIdsToSeconds = ({
   content,
   duration,
-  isVideoModeState,
-  realStartTime,
-}) => {
-  if (!content || !duration) {
-    return [];
+}: {
+  content: { id: string; time: number }[];
+  duration: number;
+}): string[] => {
+  const totalSeconds = Math.ceil(duration);
+  const result: string[] = new Array(totalSeconds);
+
+  // For each transcript item, fill in the range of seconds it covers
+  for (let i = 0; i < content.length; i++) {
+    const currentItem = content[i];
+    const startTime = currentItem.time;
+
+    // End time is either the start of the next item, or the total duration
+    const endTime = i < content.length - 1 ? content[i + 1].time : totalSeconds;
+
+    // Fill in all seconds from start to end with this item's ID
+    for (let second = startTime; second < endTime; second++) {
+      result[second] = currentItem.id;
+    }
   }
-  const arrOfSecondsMappedIds: string[] = isVideoModeState
-    ? Array.from({ length: realStartTime }, () => 'placeholderId')
-    : [];
 
-  const sortedAudios = content.map((audioItem, index) => {
-    const isLast = index + 1 === content.length;
-    const startAt = audioItem.time;
-    const thisDuration = !isLast
-      ? content[index + 1].time - startAt
-      : duration - startAt;
-    return {
-      ...audioItem,
-      startAt,
-      endAt: startAt + thisDuration,
-    };
-  });
-
-  sortedAudios.forEach((item, index) => {
-    const isFirst = index === 0;
-    const isLast = index + 1 === content.length;
-
-    const startAt = isFirst ? 0 : item.startAt;
-    const endAt = isLast ? duration : item.endAt - 1;
-    const arrayLength = Math.round(endAt - startAt + 1);
-    const secondsArr = Array.from({ length: arrayLength }, (_, i) => {
-      arrOfSecondsMappedIds.push(item.id);
-      return startAt + i;
-    });
-    return {
-      secondsArr,
-      id: item.id,
-    };
-  });
-
-  return arrOfSecondsMappedIds;
+  return result;
 };

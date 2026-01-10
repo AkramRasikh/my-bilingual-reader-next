@@ -59,7 +59,6 @@ export function YoutubeUploadProvider({ children }) {
   useMapTranscriptToSeconds({
     ref: youtubeMediaRef,
     content: transcriptState,
-    realStartTime: 0,
     secondsState,
     setSecondsState,
     setLoopSecondsState: () => {},
