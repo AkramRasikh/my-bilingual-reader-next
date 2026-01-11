@@ -96,7 +96,7 @@ test.describe('Keyboard actions', () => {
     await checkSentenceRepsCount(page, 'Reps: 2');
   });
 
-  test.only('breakdown sentence using Shift+B keyboard shortcut', async ({
+  test('breakdown sentence using Shift+B keyboard shortcut', async ({
     page,
   }) => {
     await goFromLandingToLearningScreen(page);
