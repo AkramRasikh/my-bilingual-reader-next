@@ -2,6 +2,7 @@ import { ContentTypes } from '@/app/types/content-types';
 import { Page } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
+import { mockEasyLinguisticsRadioSignLangIslandSnippets } from '../mock-data/easy-linguistics-radio-sign-lang-island';
 
 // Fixed date for consistent e2e testing
 // Set this to a date that makes sense for your mock data time comparisons
@@ -162,6 +163,79 @@ export async function setupApiMocks(page: Page) {
           ease: 2.5,
           interval: 0,
         },
+      }),
+    });
+  });
+}
+
+/**
+ * Sets up API mock for updateContentMetaData with new snippet
+ * @param page - Playwright page object
+ * @param newSnippet - The snippet object to add to the existing snippets
+ * @param existingSnippets - Array of existing snippets to include
+ * @param delay - Optional delay in ms for the mock response (default: 1000)
+ */
+export async function mockUpdateContentMetaDataWithSnippet(page: Page) {
+  return await page.route('**/api/updateContentMetaData', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        snippets: [
+          ...mockEasyLinguisticsRadioSignLangIslandSnippets,
+
+          {
+            baseLang:
+              'Hori/Yes. Yes. Mizu/It\'s called "Let Me Speak with the Language of My Eyes." Here\'s the synopsis:',
+            focusedText: 'だんですよ。堀/はい。はい。水/『目で見る',
+            id: '38d3e884-b050-46d6-ab0d-3d5a751be335',
+            isContracted: false,
+            reviewData: {
+              difficulty: 7.1949,
+              due: new Date().toISOString(),
+              ease: 2.5,
+              elapsed_days: 0,
+              interval: 0,
+              lapses: 0,
+              last_review: new Date().toISOString(),
+              reps: 1,
+              scheduled_days: 0,
+              stability: 0.40255,
+              state: 1,
+            },
+            suggestedFocusText: 'だんですよ。堀/はい。はい。水/『目で見る',
+            targetLang:
+              '堀/水/最近こんな小説を読んだんですよ。堀/はい。はい。水/『目で見ることばで話をさせて』という小説なんですけど、これあらすじを話しますと',
+            time: 6,
+          },
+        ],
+      }),
+    });
+  });
+}
+
+/**
+ * Sets up API mock for updateContentMetaData deletion
+ * @param page - Playwright page object
+ * @param snippets - Array of snippets after deletion
+ * @param delay - Optional delay in ms for the mock response (default: 500)
+ */
+export async function mockUpdateContentMetaDataDelete(
+  page: Page,
+  snippets: any[],
+  delay: number = 500,
+) {
+  await page.route('**/api/updateContentMetaData', async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, delay));
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        snippets,
       }),
     });
   });
