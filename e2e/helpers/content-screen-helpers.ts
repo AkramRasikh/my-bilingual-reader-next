@@ -11,11 +11,24 @@ export const firstNonDueWordId = '330a7f02-0971-4281-9be6-24b8d68114db';
 const contentData = landingMetaData[0]; // Using the first content item for navigation test
 const contentTitle = contentData.title; // Using the first content item for navigation test
 
+export async function sentenceToastMessage(page: Page, isLearned: boolean) {
+  const firstToastMessage = page.getByText(
+    isLearned ? 'Successful learned sentence ✅' : 'Sentence reviewed ✅',
+  );
+  await expect(firstToastMessage).toBeVisible();
+}
+
 // Helper function to check sentence count
 export async function checkSentenceCount(page: Page, expectedText: string) {
   const sentencesCount = page.getByTestId('analytics-sentences-count');
   await expect(sentencesCount).toBeVisible();
   await expect(sentencesCount).toContainText(expectedText);
+}
+
+export async function checkSentenceRepsCount(page: Page, expectedText: string) {
+  const repsCount = page.getByTestId('analytics-reps-count');
+  await expect(repsCount).toBeVisible();
+  await expect(repsCount).toContainText(expectedText);
 }
 
 // Helper function to check words count
@@ -121,18 +134,10 @@ export async function checkEnglishTranscriptToggles(page: Page) {
 
 export async function goFromLandingToLearningScreen(page: Page) {
   await page.goto('/');
-
-  // Wait for page to be loaded
   await page.waitForLoadState('networkidle');
-
-  // Check that the page loaded successfully
   expect(page.url()).toContain('/');
-
-  // Click on the specific content item
   const contentButton = page.getByTestId(`content-item-${contentTitle}`);
   await contentButton.click();
-
-  // Wait for navigation to complete
   await page.waitForURL(`**/content?topic=${contentTitle}`);
 }
 

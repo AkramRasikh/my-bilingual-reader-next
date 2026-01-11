@@ -83,7 +83,7 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
               <LoadingSpinner />
             </div>
           )}
-          <span className='m-auto mr-2'>
+          <span className='m-auto mr-2' data-testid='bulk-review-count'>
             Bulk Review: {overlappedSentencesViableForReviewMemoized?.length}
           </span>
 
