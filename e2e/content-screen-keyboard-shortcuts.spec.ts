@@ -74,11 +74,9 @@ test.describe('Keyboard actions', () => {
   }) => {
     await goFromLandingToLearningScreen(page);
     await triggerTrackSwitch(page);
-    await page.waitForTimeout(1000);
-    const transcriptTab = page.locator(
-      '[role="tabpanel"][data-state="active"]',
-    );
-    const brickEmoji = transcriptTab.getByTestId(
+    await checkSentenceCount(page, 'Sentences: 153/200');
+    await checkSentenceRepsCount(page, 'Reps: 0');
+    const brickEmoji = page.getByTestId(
       `transcript-breakdown-complete-${firstContentId}`,
     );
     await expect(brickEmoji).not.toBeVisible();
@@ -87,7 +85,7 @@ test.describe('Keyboard actions', () => {
     );
     await firstPlayButton.click();
     await page.keyboard.press('Shift+B');
-    const loadingHammer = transcriptTab.getByTestId(
+    const loadingHammer = page.getByTestId(
       `transcript-breakdown-loading-${firstContentId}`,
     );
     await expect(loadingHammer).toBeVisible();
