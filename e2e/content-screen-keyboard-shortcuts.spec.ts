@@ -3,23 +3,25 @@ import { landingMetaData } from './helpers/landing-meta-data';
 import {
   checkSentenceCount,
   checkSentenceRepsCount,
+  fourthContentId,
   goFromLandingToLearningScreen,
   secondContentId,
   sentenceToastMessage,
   thirdContentId,
   triggerTrackSwitch,
+  firstContentId,
 } from './helpers/content-screen-helpers';
 import {
   setupApiMocks,
   mockUpdateContentMetaDataWithSnippet,
   mockUpdateSentenceOneMinuteAPI,
+  mockGetOnLoadData,
+  mockGetOnLoadDataE2E,
 } from './helpers/mock-api';
 import { mockEasyLinguisticsRadioSignLangIslandSnippets } from './mock-data/easy-linguistics-radio-sign-lang-island';
 
 const contentData = landingMetaData[0];
 const contentTitle = contentData.title;
-
-const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
 
 const thirdPlayButtonAndShiftReview = async (page: Page) => {
   await page.evaluate(() => {
@@ -38,7 +40,8 @@ const thirdPlayButtonAndShiftReview = async (page: Page) => {
 };
 
 test.beforeEach(async ({ page }) => {
-  await setupApiMocks(page);
+  // await setupApiMocks(page);
+  await mockGetOnLoadDataE2E(page);
 });
 
 test.describe('Keyboard actions', () => {
@@ -97,90 +100,137 @@ test.describe('Keyboard actions', () => {
   });
 });
 test.describe('Loop(s)', () => {
-  test('sentence(s) loop using Shift+Down keyboard shortcut', async ({
+  test('sentence(s) loop using Shift+Down extends loops. Shift+ArrowUp retracts loops', async ({
     page,
   }) => {
     await goFromLandingToLearningScreen(page);
-    // Wait for audio/video to load
-    await page.waitForTimeout(1000);
     await triggerTrackSwitch(page);
 
+    const firstLoopIndicator = page.getByTestId(`stop-loop-${firstContentId}`);
+    const secondLoopIndicator = page.getByTestId(
+      `stop-loop-${secondContentId}`,
+    );
+    const thirdLoopIndicators = page.getByTestId(`stop-loop-${thirdContentId}`);
+    const fourthLoopIndicators = page.getByTestId(
+      `stop-loop-${fourthContentId}`,
+    );
+
+    const firstPlayButton = page.getByTestId(
+      `transcript-play-button-${firstContentId}`,
+    );
     // Click play on the second transcript item
     const secondPlayButton = page.getByTestId(
       `transcript-play-button-${secondContentId}`,
     );
-    await expect(secondPlayButton).toBeVisible();
+
+    await expect(firstLoopIndicator).not.toBeVisible();
+    await expect(secondLoopIndicator).not.toBeVisible();
+    await expect(thirdLoopIndicators).not.toBeVisible();
+    await expect(fourthLoopIndicators).not.toBeVisible();
+
     await secondPlayButton.click();
 
-    // Press Shift+Down to trigger loop
+    await page.keyboard.press('Shift+ArrowDown');
+    await page.keyboard.press('Shift+ArrowDown');
     await page.keyboard.press('Shift+ArrowDown');
 
-    // Wait for loop state to register
-    await page.waitForTimeout(500);
-
-    // Verify loop indicator (stop-loop button) is visible
-    const loopIndicator = page.getByTestId('stop-loop');
-    await expect(loopIndicator).toBeVisible();
-
-    // Try to play the first transcript item
-    const firstPlayButton = page.getByTestId(
-      `transcript-play-button-${firstContentId}`,
-    );
-    await expect(firstPlayButton).toBeVisible();
-    await firstPlayButton.click();
-
-    // Wait for click to register
-    await page.waitForTimeout(500);
-
-    // Verify first item still shows play icon (not playing)
-    const firstPlayIcon = firstPlayButton.locator('svg').first();
-    await expect(firstPlayIcon).toBeVisible();
-    // Play icon should be LucidePlayCircle (not LucidePauseCircle)
-
-    // Verify second item shows pause icon (still playing/looping)
-    const secondPauseIcon = secondPlayButton.locator('svg').first();
-    await expect(secondPauseIcon).toBeVisible();
-    // Pause icon should be LucidePauseCircle
-
-    // Press Shift+Down again to extend the loop to include more sentences
-    await page.keyboard.press('Shift+ArrowDown');
-    await page.waitForTimeout(500);
-    await page.keyboard.press('Shift+ArrowDown');
-
-    // Verify there are now two loop indicators visible
-    const loopIndicators = page.getByTestId('stop-loop');
-    await expect(loopIndicators).toHaveCount(3);
-
-    // Press Shift+Right to remove the first element in the loop (second element)
-    await page.keyboard.press('Shift+ArrowRight');
-    await page.waitForTimeout(500);
-
-    // Verify there are now 2 loop indicators (third and fourth)
-    await expect(loopIndicators).toHaveCount(2);
+    await expect(firstLoopIndicator).not.toBeVisible();
+    await expect(secondLoopIndicator).toBeVisible();
+    await expect(thirdLoopIndicators).toBeVisible();
+    await expect(fourthLoopIndicators).toBeVisible();
 
     await page.keyboard.press('Shift+ArrowUp');
+    await page.keyboard.press('Shift+ArrowUp');
+    await page.keyboard.press('Shift+ArrowUp');
 
-    await page.waitForTimeout(500);
+    await expect(firstLoopIndicator).not.toBeVisible();
+    await expect(secondLoopIndicator).not.toBeVisible();
+    await expect(thirdLoopIndicators).not.toBeVisible();
+    await expect(fourthLoopIndicators).not.toBeVisible();
 
-    // // Verify there is now only 1 loop indicator (third element only)
-    await expect(loopIndicators).toHaveCount(1);
+    await firstPlayButton.click();
+    await page.waitForTimeout(200);
+    await expect(firstPlayButton).toHaveClass(/bg-yellow-200/);
+  });
+  test('sentence(s) loop using Shift+Right slices existing loop by one', async ({
+    page,
+  }) => {
+    await goFromLandingToLearningScreen(page);
+    await triggerTrackSwitch(page);
 
-    // Click on the third element's loop indicator to remove it from loop state
-    const thirdLoopIndicator = page.getByTestId(`stop-loop-${thirdContentId}`);
-    await expect(thirdLoopIndicator).toBeVisible();
-    await thirdLoopIndicator.click();
-    await page.waitForTimeout(500);
-
-    await expect(loopIndicators).toHaveCount(0);
-
-    const firstPlayButtonRefreshed = page.getByTestId(
-      `transcript-play-button-${firstContentId}`,
+    const firstLoopIndicator = page.getByTestId(`stop-loop-${firstContentId}`);
+    const secondLoopIndicator = page.getByTestId(
+      `stop-loop-${secondContentId}`,
     );
-    // Click on the first element's play button
-    await firstPlayButtonRefreshed.click();
-    // // Verify first element shows pause button (it is playing)
-    await expect(firstPlayButtonRefreshed).toHaveClass(/bg-yellow-200/);
-    //
+    const thirdLoopIndicators = page.getByTestId(`stop-loop-${thirdContentId}`);
+    const fourthLoopIndicators = page.getByTestId(
+      `stop-loop-${fourthContentId}`,
+    );
+
+    const secondPlayButton = page.getByTestId(
+      `transcript-play-button-${secondContentId}`,
+    );
+
+    await expect(firstLoopIndicator).not.toBeVisible();
+    await expect(secondLoopIndicator).not.toBeVisible();
+    await expect(thirdLoopIndicators).not.toBeVisible();
+    await expect(fourthLoopIndicators).not.toBeVisible();
+
+    await secondPlayButton.click();
+
+    await page.keyboard.press('Shift+ArrowDown');
+    await page.keyboard.press('Shift+ArrowDown');
+    await page.keyboard.press('Shift+ArrowDown');
+
+    await expect(firstLoopIndicator).not.toBeVisible();
+    await expect(secondLoopIndicator).toBeVisible();
+    await expect(thirdLoopIndicators).toBeVisible();
+    await expect(fourthLoopIndicators).toBeVisible();
+
+    await page.keyboard.press('Shift+ArrowRight');
+    await page.keyboard.press('Shift+ArrowRight');
+
+    await expect(firstLoopIndicator).not.toBeVisible();
+    await expect(secondLoopIndicator).not.toBeVisible();
+    await expect(thirdLoopIndicators).not.toBeVisible();
+    await expect(fourthLoopIndicators).toBeVisible();
+  });
+  test('sentence(s) clicking on any stop loop button ends stops the loop', async ({
+    page,
+  }) => {
+    await goFromLandingToLearningScreen(page);
+    await triggerTrackSwitch(page);
+
+    const firstLoopIndicator = page.getByTestId(`stop-loop-${firstContentId}`);
+    const secondLoopIndicator = page.getByTestId(
+      `stop-loop-${secondContentId}`,
+    );
+    const thirdLoopIndicators = page.getByTestId(`stop-loop-${thirdContentId}`);
+    const fourthLoopIndicators = page.getByTestId(
+      `stop-loop-${fourthContentId}`,
+    );
+
+    const secondPlayButton = page.getByTestId(
+      `transcript-play-button-${secondContentId}`,
+    );
+
+    await secondPlayButton.click();
+
+    await page.keyboard.press('Shift+ArrowDown');
+    await page.keyboard.press('Shift+ArrowDown');
+    await page.keyboard.press('Shift+ArrowDown');
+
+    await expect(firstLoopIndicator).not.toBeVisible();
+    await expect(secondLoopIndicator).toBeVisible();
+    await expect(thirdLoopIndicators).toBeVisible();
+    await expect(fourthLoopIndicators).toBeVisible();
+
+    await secondLoopIndicator.click({ force: true });
+
+    await expect(firstLoopIndicator).not.toBeVisible();
+    await expect(secondLoopIndicator).not.toBeVisible();
+    await expect(thirdLoopIndicators).not.toBeVisible();
+    await expect(fourthLoopIndicators).not.toBeVisible();
   });
 
   test('3 second loop using Shift+" keyboard shortcut', async ({ page }) => {

@@ -5,6 +5,7 @@ import { landingMetaData } from './landing-meta-data';
 export const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
 export const secondContentId = '9007135c-20a0-4481-9ba7-53f7866e962e';
 export const thirdContentId = '814797e3-2a33-4654-a754-3cf3754592cc';
+export const fourthContentId = '2cb4ff62-1826-4e76-adb4-f3bd2700c90b';
 export const checkPointContentId = '97d7e891-a669-4bb4-abe6-a4cb60631666';
 export const firstDueWordId = '2c08d190-1e96-4147-955a-79620e210c37';
 export const firstNonDueWordId = '330a7f02-0971-4281-9be6-24b8d68114db';

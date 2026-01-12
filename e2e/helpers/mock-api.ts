@@ -281,3 +281,32 @@ export const mockUpdateSentenceOneMinuteAPI = async (page: Page) => {
     });
   });
 };
+
+export const mockGetOnLoadDataE2E = async (page: Page) => {
+  // Load mock data
+  const mockDataPath = path.join(__dirname, '../mock-data/base-mock-data.json');
+  const mockData = JSON.parse(fs.readFileSync(mockDataPath, 'utf-8'));
+
+  // Intercept the API call
+  return await page.route('**/api/getOnLoadData', async (route) => {
+    const [contentData, wordsData, sentencesData] = mockData;
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        contentData: contentData?.content.map(
+          (contentWidget: ContentTypes, contentIndex: number) => {
+            return {
+              ...contentWidget,
+              contentIndex,
+              generalTopicName: contentWidget.title,
+            };
+          },
+        ),
+        wordsData: wordsData.words,
+        sentencesData: sentencesData?.sentences,
+      }),
+    });
+  });
+};
