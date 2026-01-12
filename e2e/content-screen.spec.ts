@@ -1426,14 +1426,7 @@ test.describe('Bulk sentence review functionality', () => {
 
 test.describe('Word tab section', () => {
   test('successfully edit & review words', async ({ page }) => {
-    await page.goto('/');
-
-    // Click on the specific content item
-    const contentButton = page.getByTestId(`content-item-${contentTitle}`);
-    await contentButton.click();
-
-    // Wait for navigation to complete
-    await page.waitForURL(`**/content?topic=${contentTitle}`);
+    await goFromLandingToLearningScreen(page);
 
     // Verify word cards are not visible before clicking words tab
     const firstDueWordCard = page.getByTestId(
