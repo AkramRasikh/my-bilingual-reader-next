@@ -29,7 +29,6 @@ export const TranscriptItemTimeOverlappingIndicatorMulti = ({
     try {
       setTranscriptItemLoadingState(id);
       await handleDeleteSnippet(id);
-    } catch (error) {
     } finally {
       setTranscriptItemLoadingState('');
     }

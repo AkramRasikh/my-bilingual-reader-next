@@ -310,3 +310,57 @@ export const mockGetOnLoadDataE2E = async (page: Page) => {
     });
   });
 };
+
+export const mockAddSnippetAPIE2E = async (page: Page) => {
+  await page.route('**/api/updateContentMetaData', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        snippets: [
+          ...mockEasyLinguisticsRadioSignLangIslandSnippets,
+          {
+            baseLang:
+              'Hori/Yes. Yes. Mizu/It\'s called "Let Me Speak with the Language of My Eyes." Here\'s the synopsis:',
+            focusedText: '目で見ること',
+            id: '38d3e884-b050-46d6-ab0d-3d5a751be335',
+            isContracted: true,
+            reviewData: {
+              difficulty: 7.1949,
+              due: new Date().toISOString(),
+              ease: 2.5,
+              elapsed_days: 0,
+              interval: 0,
+              lapses: 0,
+              last_review: new Date().toISOString(),
+              reps: 1,
+              scheduled_days: 0,
+              stability: 0.40255,
+              state: 1,
+            },
+            suggestedFocusText: 'とばで話をさせて』という',
+            targetLang:
+              '堀/はい。はい。水/『目で見ることばで話をさせて』という小説なんですけど、これあらすじを話しますと',
+            time: 8.785492,
+          },
+        ],
+      }),
+    });
+  });
+};
+
+export const mockDeleteSnippetAPIE2E = async (page: Page) => {
+  await page.route('**/api/updateContentMetaData', async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        snippets: mockEasyLinguisticsRadioSignLangIslandSnippets,
+      }),
+    });
+  });
+};
