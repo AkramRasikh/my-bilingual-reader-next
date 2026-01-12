@@ -21,7 +21,7 @@ const contentTitle = contentData.title;
 
 const firstContentId = 'f378ec1d-c885-4e6a-9821-405b0ff9aa24';
 
-const thirdPlayButtonAndShift = async (page: Page) => {
+const thirdPlayButtonAndShiftReview = async (page: Page) => {
   await page.evaluate(() => {
     const video = document.querySelector('video');
     if (video) {
@@ -49,7 +49,7 @@ test.describe('Keyboard actions', () => {
     await checkSentenceCount(page, 'Sentences: 153/200');
     await checkSentenceRepsCount(page, 'Reps: 0');
     await page.waitForTimeout(2000);
-    await thirdPlayButtonAndShift(page);
+    await thirdPlayButtonAndShiftReview(page);
     await sentenceToastMessage(page, false);
     await checkSentenceRepsCount(page, 'Reps: 1');
     await checkSentenceCount(page, 'Sentences: 153/201');
@@ -63,7 +63,7 @@ test.describe('Keyboard actions', () => {
         }),
       });
     });
-    await thirdPlayButtonAndShift(page);
+    await thirdPlayButtonAndShiftReview(page);
     await sentenceToastMessage(page, true);
     await checkSentenceCount(page, 'Sentences: 153/200');
     await checkSentenceRepsCount(page, 'Reps: 2');
