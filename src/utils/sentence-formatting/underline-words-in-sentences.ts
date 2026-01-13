@@ -29,11 +29,11 @@ export const underlineWordsInSentenceLegacy = (
   return targetLangformatted;
 };
 
-export const underlineWordsInSentenceNew = (
+export const underlineWordsInSentence = (
   sentence: string,
   wordsFromThisSentence: WordTypes[],
 ) => {
-  if (wordsFromThisSentence?.length === 0) {
+  if (wordsFromThisSentence?.length === 0 || sentence.length === 0) {
     return [{ text: sentence, savedWords: [] }];
   }
 
@@ -49,7 +49,9 @@ export const underlineWordsInSentenceNew = (
     while (index !== -1) {
       // Mark all character positions covered by this word
       for (let i = index; i < index + wordForm.length; i++) {
-        splitSentence[i].savedWords.push(wordId);
+        if (!splitSentence[i].savedWords.includes(wordId)) {
+          splitSentence[i].savedWords.push(wordId);
+        }
       }
       index = sentence.indexOf(wordForm, index + 1);
     }
