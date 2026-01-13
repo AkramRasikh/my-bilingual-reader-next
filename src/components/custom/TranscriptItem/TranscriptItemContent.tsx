@@ -4,8 +4,8 @@ import useTranscriptItem from './useTranscriptItem';
 import SentenceBreakdown from '../SentenceBreakdown';
 import { arabic } from '@/app/languages';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
-import { expandWordsIntoChunks } from '@/app/LearningScreen/experimental/LearningScreenSnippetReview';
 import { useMemo } from 'react';
+import { expandWordsIntoChunks } from '@/utils/sentence-formatting/expand-words-into-chunks';
 
 const TranscriptItemContent = () => {
   const {
