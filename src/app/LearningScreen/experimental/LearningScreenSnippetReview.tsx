@@ -177,7 +177,7 @@ const LearningScreenSnippetReview = ({
       const targetLangformatted = underlineWordsInSentence(
         item.targetLang,
         wordsFromSentence,
-        isPreSnippet,
+        true,
       );
 
       return {
@@ -185,7 +185,7 @@ const LearningScreenSnippetReview = ({
         wordsFromSentence,
         wordsInSuggestedText,
       };
-    }, [item, pureWordsMemoized, wordsState]);
+    }, [item, wordsState]);
 
   const handleReviewSnippetsFinal = async (args) => {
     await handleReviewSnippets({
