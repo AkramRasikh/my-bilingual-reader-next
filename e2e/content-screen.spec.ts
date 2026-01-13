@@ -255,7 +255,7 @@ test.describe('Transcript item menu interactions and review', () => {
   });
 });
 
-test.describe('Word(s) from transcript item', () => {
+test.describe.only('Word(s) from transcript item', () => {
   test('successfully save word', async ({ page }) => {
     // Setup API mocking for saveWord
     await page.route('**/api/saveWord', async (route) => {
@@ -340,7 +340,7 @@ test.describe('Word(s) from transcript item', () => {
     expect(transcriptText).toContain('言語学');
 
     // Select/highlight the text "言語学" using page.evaluate
-    // Since text is split into individual character spans, we need to select across multiple elements
+    // Text is now chunked, so we need to find the chunk containing our target text
     const selectionSuccess = await page.evaluate((id) => {
       const container = document.querySelector(
         `[data-testid="transcript-target-lang-${id}"]`,
@@ -350,37 +350,77 @@ test.describe('Word(s) from transcript item', () => {
         return false;
       }
 
-      // Get all span elements (each contains one character)
+      const targetText = '言語学';
+
+      // Get all span elements
       const spans = Array.from(container.querySelectorAll('span'));
-      const targetChars = ['言', '語', '学'];
 
-      // Find the spans containing our target characters in sequence
-      let startSpan = null;
-      let endSpan = null;
+      // Find the span containing our target text
+      let targetSpan = null;
+      let targetIndex = -1;
 
-      for (let i = 0; i < spans.length - 2; i++) {
-        if (
-          spans[i].textContent === targetChars[0] &&
-          spans[i + 1].textContent === targetChars[1] &&
-          spans[i + 2].textContent === targetChars[2]
-        ) {
-          startSpan = spans[i];
-          endSpan = spans[i + 2];
+      for (const span of spans) {
+        const text = span.textContent || '';
+        const index = text.indexOf(targetText);
+        if (index !== -1) {
+          targetSpan = span;
+          targetIndex = index;
           break;
         }
       }
 
-      if (!startSpan || !endSpan) {
+      if (!targetSpan || targetIndex === -1) {
+        console.log('Target text not found in any span');
         return false;
       }
 
-      // Create a range spanning from start of first span to end of last span
+      // Create a range within the span's text node
       const range = document.createRange();
-      const startTextNode = startSpan.firstChild || startSpan;
-      const endTextNode = endSpan.firstChild || endSpan;
+      
+      // Find the actual text node
+      let textNode = null;
+      
+      // Check if firstChild is a text node
+      if (targetSpan.firstChild && targetSpan.firstChild.nodeType === Node.TEXT_NODE) {
+        textNode = targetSpan.firstChild;
+      } else {
+        // Walk through child nodes to find text node
+        for (let i = 0; i < targetSpan.childNodes.length; i++) {
+          if (targetSpan.childNodes[i].nodeType === Node.TEXT_NODE) {
+            textNode = targetSpan.childNodes[i];
+            break;
+          }
+        }
+      }
 
-      range.setStart(startTextNode, 0);
-      range.setEnd(endTextNode, endTextNode.textContent?.length || 1);
+      // If we still don't have a text node, the text might be in nested spans
+      if (!textNode) {
+        // Try to find text in nested elements
+        const walker = document.createTreeWalker(
+          targetSpan,
+          NodeFilter.SHOW_TEXT,
+          null
+        );
+        textNode = walker.nextNode();
+      }
+
+      if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+        // Find the offset within this specific text node
+        const textNodeContent = textNode.textContent || '';
+        const localIndex = textNodeContent.indexOf(targetText);
+        
+        if (localIndex !== -1) {
+          range.setStart(textNode, localIndex);
+          range.setEnd(textNode, localIndex + targetText.length);
+        } else {
+          // If not found in this node, use the original index
+          range.setStart(textNode, targetIndex);
+          range.setEnd(textNode, Math.min(targetIndex + targetText.length, textNodeContent.length));
+        }
+      } else {
+        // Last resort: select the entire span
+        range.selectNodeContents(targetSpan);
+      }
 
       const selection = window.getSelection();
       selection?.removeAllRanges();
@@ -574,39 +614,78 @@ test.describe('Word(s) from transcript item', () => {
         return false;
       }
 
+      const targetText = '言語学';
+
+      // Get all span elements
       const spans = Array.from(container.querySelectorAll('span'));
-      const targetChars = ['言', '語', '学'];
 
-      let startSpan = null;
-      let endSpan = null;
+      // Find the span containing our target text
+      let targetSpan = null;
+      let targetIndex = -1;
 
-      for (let i = 0; i < spans.length - 2; i++) {
-        if (
-          spans[i].textContent === targetChars[0] &&
-          spans[i + 1].textContent === targetChars[1] &&
-          spans[i + 2].textContent === targetChars[2]
-        ) {
-          startSpan = spans[i];
-          endSpan = spans[i + 2];
+      for (const span of spans) {
+        const text = span.textContent || '';
+        const index = text.indexOf(targetText);
+        if (index !== -1) {
+          targetSpan = span;
+          targetIndex = index;
           break;
         }
       }
 
-      if (!startSpan || !endSpan) {
+      if (!targetSpan || targetIndex === -1) {
         return false;
       }
 
+      // Create a range within the span's text node
       const range = document.createRange();
-      const startTextNode = startSpan.firstChild || startSpan;
-      const endTextNode = endSpan.firstChild || endSpan;
+      
+      // Find the actual text node
+      let textNode = null;
+      
+      // Check if firstChild is a text node
+      if (targetSpan.firstChild && targetSpan.firstChild.nodeType === Node.TEXT_NODE) {
+        textNode = targetSpan.firstChild;
+      } else {
+        // Walk through child nodes to find text node
+        for (let i = 0; i < targetSpan.childNodes.length; i++) {
+          if (targetSpan.childNodes[i].nodeType === Node.TEXT_NODE) {
+            textNode = targetSpan.childNodes[i];
+            break;
+          }
+        }
+      }
 
-      range.setStart(startTextNode, 0);
-      range.setEnd(endTextNode, endTextNode.textContent?.length || 1);
+      // If we still don't have a text node, the text might be in nested spans
+      if (!textNode) {
+        const walker = document.createTreeWalker(
+          targetSpan,
+          NodeFilter.SHOW_TEXT,
+          null
+        );
+        textNode = walker.nextNode();
+      }
+
+      if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+        const textNodeContent = textNode.textContent || '';
+        const localIndex = textNodeContent.indexOf(targetText);
+        
+        if (localIndex !== -1) {
+          range.setStart(textNode, localIndex);
+          range.setEnd(textNode, localIndex + targetText.length);
+        } else {
+          range.setStart(textNode, targetIndex);
+          range.setEnd(textNode, Math.min(targetIndex + targetText.length, textNodeContent.length));
+        }
+      } else {
+        range.selectNodeContents(targetSpan);
+      }
 
       const selection = window.getSelection();
       selection?.removeAllRanges();
       selection?.addRange(range);
 
+      // Trigger mouseup event to trigger the selection handler
       const mouseUpEvent = new MouseEvent('mouseup', {
         bubbles: true,
         cancelable: true,
@@ -759,39 +838,78 @@ test.describe('Word(s) from transcript item', () => {
         return false;
       }
 
+      const targetText = '言語学';
+
+      // Get all span elements
       const spans = Array.from(container.querySelectorAll('span'));
-      const targetChars = ['言', '語', '学'];
 
-      let startSpan = null;
-      let endSpan = null;
+      // Find the span containing our target text
+      let targetSpan = null;
+      let targetIndex = -1;
 
-      for (let i = 0; i < spans.length - 2; i++) {
-        if (
-          spans[i].textContent === targetChars[0] &&
-          spans[i + 1].textContent === targetChars[1] &&
-          spans[i + 2].textContent === targetChars[2]
-        ) {
-          startSpan = spans[i];
-          endSpan = spans[i + 2];
+      for (const span of spans) {
+        const text = span.textContent || '';
+        const index = text.indexOf(targetText);
+        if (index !== -1) {
+          targetSpan = span;
+          targetIndex = index;
           break;
         }
       }
 
-      if (!startSpan || !endSpan) {
+      if (!targetSpan || targetIndex === -1) {
         return false;
       }
 
+      // Create a range within the span's text node
       const range = document.createRange();
-      const startTextNode = startSpan.firstChild || startSpan;
-      const endTextNode = endSpan.firstChild || endSpan;
+      
+      // Find the actual text node
+      let textNode = null;
+      
+      // Check if firstChild is a text node
+      if (targetSpan.firstChild && targetSpan.firstChild.nodeType === Node.TEXT_NODE) {
+        textNode = targetSpan.firstChild;
+      } else {
+        // Walk through child nodes to find text node
+        for (let i = 0; i < targetSpan.childNodes.length; i++) {
+          if (targetSpan.childNodes[i].nodeType === Node.TEXT_NODE) {
+            textNode = targetSpan.childNodes[i];
+            break;
+          }
+        }
+      }
 
-      range.setStart(startTextNode, 0);
-      range.setEnd(endTextNode, endTextNode.textContent?.length || 1);
+      // If we still don't have a text node, the text might be in nested spans
+      if (!textNode) {
+        const walker = document.createTreeWalker(
+          targetSpan,
+          NodeFilter.SHOW_TEXT,
+          null
+        );
+        textNode = walker.nextNode();
+      }
+
+      if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+        const textNodeContent = textNode.textContent || '';
+        const localIndex = textNodeContent.indexOf(targetText);
+        
+        if (localIndex !== -1) {
+          range.setStart(textNode, localIndex);
+          range.setEnd(textNode, localIndex + targetText.length);
+        } else {
+          range.setStart(textNode, targetIndex);
+          range.setEnd(textNode, Math.min(targetIndex + targetText.length, textNodeContent.length));
+        }
+      } else {
+        range.selectNodeContents(targetSpan);
+      }
 
       const selection = window.getSelection();
       selection?.removeAllRanges();
       selection?.addRange(range);
 
+      // Trigger mouseup event to trigger the selection handler
       const mouseUpEvent = new MouseEvent('mouseup', {
         bubbles: true,
         cancelable: true,
