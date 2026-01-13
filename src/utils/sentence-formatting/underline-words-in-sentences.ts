@@ -9,11 +9,10 @@ export const underlineWordsInSentence = (sentence, pureWordsMemoized) => {
     if (segment.match(pattern)) {
       targetLangformatted.push({
         text: segment,
-        style: { textDecorationLine: 'underline' },
-        id: 'targetWord',
+        isSaved: true,
       });
     } else {
-      targetLangformatted.push({ text: segment, style: {} });
+      targetLangformatted.push({ text: segment, isSaved: false });
     }
   });
 

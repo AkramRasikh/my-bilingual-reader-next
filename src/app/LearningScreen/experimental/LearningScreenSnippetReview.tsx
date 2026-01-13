@@ -24,17 +24,17 @@ export function expandWordsIntoChunks(words) {
   let globalIdx = 0;
 
   return words.flatMap((word) => {
-    const underline = word.style?.textDecorationLine === 'underline';
+    const underlined = word.isSaved;
 
     return word.text.split('').map((char) => {
       const chunk = {
         text: char,
-        style: word.style,
+        underlined,
         index: globalIdx,
       };
 
       // Only if this word has underline, attach its full text
-      if (underline) {
+      if (underlined) {
         chunk.originalText = word.text;
       }
 

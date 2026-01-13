@@ -32,8 +32,8 @@ const TranscriptItemContent = () => {
 
   const thisSentenceIsPlaying = contentItem.id === masterPlay;
 
-  const thisSentencesSavedWords = contentItem.targetLangformatted.filter(
-    (item) => item?.id === 'targetWord',
+  const thisSentencesSavedWords = targetLangformatted.filter(
+    (item) => item.isSaved,
   );
 
   const isArabic = languageSelectedState === arabic;

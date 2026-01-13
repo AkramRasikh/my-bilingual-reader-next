@@ -25,7 +25,7 @@ const FormattedSentence = ({
       dir={isArabic ? 'rtl' : 'ltr'}
     >
       {targetLangformatted?.map((item, indexNested) => {
-        const isUnderlined = item?.style?.textDecorationLine;
+        const isUnderlined = item?.underlined;
         const text = item?.text;
         const hasHighlightedBackground =
           indexNested >= matchStartKey && indexNested <= matchEndKey;
