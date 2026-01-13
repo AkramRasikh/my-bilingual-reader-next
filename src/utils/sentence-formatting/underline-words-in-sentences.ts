@@ -40,30 +40,26 @@ export const underlineWordsInSentenceNew = (
   const splitSentence = sentence.split('').map((char, charIndex) => ({
     text: char,
     index: charIndex,
-    savedWords: [] as string[],
+    savedWords: [] as WordTypes['id'][],
   }));
 
-  wordsFromThisSentence.forEach((wordData) => {
-    // Check baseForm
-    let index = sentence.indexOf(wordData.baseForm);
+  // Helper function to mark word occurrences
+  const markWordOccurrences = (wordForm: string, wordId: WordTypes['id']) => {
+    let index = sentence.indexOf(wordForm);
     while (index !== -1) {
       // Mark all character positions covered by this word
-      for (let i = index; i < index + wordData.baseForm.length; i++) {
-        splitSentence[i].savedWords.push(wordData.id);
+      for (let i = index; i < index + wordForm.length; i++) {
+        splitSentence[i].savedWords.push(wordId);
       }
-      index = sentence.indexOf(wordData.baseForm, index + 1);
+      index = sentence.indexOf(wordForm, index + 1);
     }
+  };
 
-    // Check surfaceForm (if different from baseForm)
+  wordsFromThisSentence.forEach((wordData) => {
+    markWordOccurrences(wordData.baseForm, wordData.id);
+
     if (wordData.surfaceForm !== wordData.baseForm) {
-      let index = sentence.indexOf(wordData.surfaceForm);
-      while (index !== -1) {
-        // Mark all character positions covered by this word
-        for (let i = index; i < index + wordData.surfaceForm.length; i++) {
-          splitSentence[i].savedWords.push(wordData.id);
-        }
-        index = sentence.indexOf(wordData.surfaceForm, index + 1);
-      }
+      markWordOccurrences(wordData.surfaceForm, wordData.id);
     }
   });
 
@@ -71,15 +67,11 @@ export const underlineWordsInSentenceNew = (
   const chunked: Array<{
     text: string;
     savedWords: string[];
-    startIndex: number;
-    endIndex: number;
   }> = [];
 
   let currentChunk = {
     text: splitSentence[0].text,
     savedWords: splitSentence[0].savedWords,
-    startIndex: 0,
-    endIndex: 0,
   };
 
   for (let i = 1; i < splitSentence.length; i++) {
@@ -94,20 +86,16 @@ export const underlineWordsInSentenceNew = (
     if (isSameWords) {
       // Merge into current chunk
       currentChunk.text += current.text;
-      currentChunk.endIndex = i;
     } else {
       // Save current chunk and start new one
       chunked.push(currentChunk);
       currentChunk = {
         text: current.text,
         savedWords: current.savedWords,
-        startIndex: i,
-        endIndex: i,
       };
     }
   }
 
-  // Don't forget the last chunk
   chunked.push(currentChunk);
 
   return chunked;
