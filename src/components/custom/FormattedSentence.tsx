@@ -50,6 +50,7 @@ const FormattedSentence = ({
         return (
           <span
             key={indexNested}
+            data-testid={`formatted-chunk-${indexNested}`}
             onMouseEnter={
               isUnderlined ? () => handleMouseEnter?.(text) : () => {}
             }

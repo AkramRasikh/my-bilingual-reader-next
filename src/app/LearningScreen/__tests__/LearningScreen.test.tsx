@@ -240,10 +240,20 @@ const saveWordFirstInTranscript = async () => {
     'highlighted-text-container',
   );
   expect(highlightedTextContainer).not.toBeInTheDocument();
-  const textNode = element.firstChild; // Get the text node inside the element
+
+  // When there are no saved words, the entire sentence is in a single chunk
+  const sentenceChunk = element.querySelector(
+    '[data-testid="formatted-chunk-0"]',
+  );
+  expect(sentenceChunk).toBeDefined();
+  expect(sentenceChunk.textContent).toBe('こんにちは世界');
+
+  // Select '世界' from within the chunk (characters 5-7)
+  const textNode = sentenceChunk.firstChild;
   const range = document.createRange();
-  range.setStart(textNode, 5); // start after 'こんにちは' (position 5)
-  range.setEnd(textNode, 7); // end after '世界' (position 7)
+  range.setStart(textNode, 5);
+  range.setEnd(textNode, 7);
+
   const selection = window.getSelection();
   selection.removeAllRanges();
   selection.addRange(range);
@@ -288,7 +298,16 @@ const saveWordSecondInTranscript = async () => {
     'highlighted-text-container',
   );
   expect(highlightedTextContainer).not.toBeInTheDocument();
-  const textNode = element.firstChild; // Get the text node inside the element
+
+  // When there are no saved words, the entire sentence is in a single chunk
+  const sentenceChunk = element.querySelector(
+    '[data-testid="formatted-chunk-0"]',
+  );
+  expect(sentenceChunk).toBeDefined();
+  expect(sentenceChunk.textContent).toBe('お元気ですか？');
+
+  // Select '元気' from within the chunk (characters 1-3)
+  const textNode = sentenceChunk.firstChild;
   const range = document.createRange();
   range.setStart(textNode, 1);
   range.setEnd(textNode, 3);
@@ -336,7 +355,9 @@ const hoverOverSavedWord = async () => {
   const firstSentenceElTargetLang = screen.getByTestId(
     'transcript-target-lang-sentence-1',
   );
-  const savedWordElement = within(firstSentenceElTargetLang).getByText('世');
+  const savedWordElement = within(firstSentenceElTargetLang).getByTestId(
+    'underlined-word-世界',
+  );
 
   // Trigger hover events - HoverCard needs multiple events to open
   fireEvent.pointerEnter(savedWordElement);
