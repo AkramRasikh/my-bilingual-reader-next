@@ -284,6 +284,141 @@ describe('underlineWordsInSentence', () => {
       expect(reconstructed).toBe(sentence);
     });
   });
+  describe('skipChunking flag tests', () => {
+    it('should return character-by-character data when skipChunking is true', () => {
+      const sentence = 'I am running';
+      const words = [createMockWord('1', 'run', 'running')];
+
+      const result = underlineWordsInSentence(sentence, words, true);
+
+      expect(result).toHaveLength(sentence.length);
+      expect(result[0]).toEqual({ text: 'I', index: 0, savedWords: [] });
+      expect(result[1]).toEqual({ text: ' ', index: 1, savedWords: [] });
+      expect(result[5]).toEqual({ text: 'r', index: 5, savedWords: ['1'] });
+    });
+
+    it('should include index property for each character when skipChunking is true', () => {
+      const sentence = 'run';
+      const words = [createMockWord('1', 'run', 'run')];
+
+      const result = underlineWordsInSentence(sentence, words, true);
+
+      result.forEach((char, idx) => {
+        expect(char).toHaveProperty('index');
+        expect(char.index).toBe(idx);
+        expect(char).toHaveProperty('text');
+        expect(char).toHaveProperty('savedWords');
+      });
+    });
+
+    it('should return chunked data by default when skipChunking is false', () => {
+      const sentence = 'I am running';
+      const words = [createMockWord('1', 'run', 'running')];
+
+      const result = underlineWordsInSentence(sentence, words, false);
+
+      expect(result.length).toBeLessThan(sentence.length);
+      const runningChunk = result.find((chunk) => chunk.text === 'running');
+      expect(runningChunk).toBeDefined();
+      expect(runningChunk?.savedWords).toEqual(['1']);
+    });
+
+    it('should return chunked data by default when skipChunking is omitted', () => {
+      const sentence = 'I am running';
+      const words = [createMockWord('1', 'run', 'running')];
+
+      const result = underlineWordsInSentence(sentence, words);
+
+      expect(result.length).toBeLessThan(sentence.length);
+      const runningChunk = result.find((chunk) => chunk.text === 'running');
+      expect(runningChunk).toBeDefined();
+    });
+
+    it('should show overlapping word IDs per character when skipChunking is true', () => {
+      const sentence = 'running';
+      const words = [
+        createMockWord('1', 'run', 'run'),
+        createMockWord('2', 'running', 'running'),
+      ];
+
+      const result = underlineWordsInSentence(sentence, words, true);
+
+      // Characters 0-2 ('run') should have both word IDs
+      expect(result[0].savedWords).toContain('1');
+      expect(result[0].savedWords).toContain('2');
+      expect(result[1].savedWords).toContain('1');
+      expect(result[1].savedWords).toContain('2');
+      expect(result[2].savedWords).toContain('1');
+      expect(result[2].savedWords).toContain('2');
+
+      // Characters 3-6 ('ning') should only have word ID '2'
+      expect(result[3].savedWords).toEqual(['2']);
+      expect(result[4].savedWords).toEqual(['2']);
+      expect(result[5].savedWords).toEqual(['2']);
+      expect(result[6].savedWords).toEqual(['2']);
+    });
+
+    it('should handle Japanese character-by-character with skipChunking', () => {
+      const sentence = '私は走っています';
+      const words = [createMockWord('1', '私', '私')];
+
+      const result = underlineWordsInSentence(sentence, words, true);
+
+      expect(result).toHaveLength(sentence.length);
+      expect(result[0]).toEqual({ text: '私', index: 0, savedWords: ['1'] });
+      expect(result[1]).toEqual({ text: 'は', index: 1, savedWords: [] });
+    });
+
+    it('should handle Arabic RTL character-by-character with skipChunking', () => {
+      const sentence = 'أنا أركض';
+      const words = [createMockWord('1', 'أنا', 'أنا')];
+
+      const result = underlineWordsInSentence(sentence, words, true);
+
+      expect(result).toHaveLength(sentence.length);
+      expect(result[0].text).toBe('أ');
+      expect(result[0].savedWords).toEqual(['1']);
+      expect(result[1].text).toBe('ن');
+      expect(result[1].savedWords).toEqual(['1']);
+    });
+
+    it('should allow granular control for each character position', () => {
+      const sentence = 'test';
+      const words = [
+        createMockWord('1', 't', 't'),
+        createMockWord('2', 'test', 'test'),
+      ];
+
+      const result = underlineWordsInSentence(sentence, words, true);
+
+      // First 't' has both word IDs
+      expect(result[0].text).toBe('t');
+      expect(result[0].index).toBe(0);
+      expect(result[0].savedWords).toContain('1');
+      expect(result[0].savedWords).toContain('2');
+
+      // 'e' only has word ID '2'
+      expect(result[1].text).toBe('e');
+      expect(result[1].index).toBe(1);
+      expect(result[1].savedWords).toEqual(['2']);
+
+      // Last 't' has both word IDs
+      expect(result[3].text).toBe('t');
+      expect(result[3].index).toBe(3);
+      expect(result[3].savedWords).toContain('1');
+      expect(result[3].savedWords).toContain('2');
+    });
+
+    it('should reconstruct original sentence from character-by-character data', () => {
+      const sentence = 'Complex sentence with words';
+      const words = [createMockWord('1', 'word', 'words')];
+
+      const result = underlineWordsInSentence(sentence, words, true);
+
+      const reconstructed = result.map((char) => char.text).join('');
+      expect(reconstructed).toBe(sentence);
+    });
+  });
 
   describe('edge cases', () => {
     it('should return sentence with empty savedWords when wordtypes array is empty', () => {

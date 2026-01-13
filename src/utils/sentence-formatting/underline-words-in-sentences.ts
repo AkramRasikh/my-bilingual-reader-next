@@ -32,6 +32,7 @@ export const underlineWordsInSentenceLegacy = (
 export const underlineWordsInSentence = (
   sentence: string,
   wordsFromThisSentence: WordTypes[],
+  skipChunking: boolean = false,
 ) => {
   if (wordsFromThisSentence?.length === 0 || sentence.length === 0) {
     return [{ text: sentence, savedWords: [] }];
@@ -65,10 +66,16 @@ export const underlineWordsInSentence = (
     }
   });
 
+  // Return character-by-character if skipChunking is true
+  if (skipChunking) {
+    return splitSentence;
+  }
+
   // POST-PROCESSING: Chunk adjacent characters with identical savedWords
   const chunked: Array<{
     text: string;
     savedWords: string[];
+    index?: number;
   }> = [];
 
   let currentChunk = {
