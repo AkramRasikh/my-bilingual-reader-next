@@ -1,6 +1,6 @@
 import { WordTypes } from '@/app/types/word-types';
 
-export const underlineWordsInSentence = (
+export const underlineWordsInSentenceLegacy = (
   sentence: string,
   pureWordsMemoized: string[],
 ) => {

@@ -148,7 +148,7 @@ export const LearningScreenProvider = ({
           wordsState,
         );
 
-        const targetLangformatted = underlineWordsInSentenceNew(
+        const targetLangformatted = underlineWordsInSentence(
           item.targetLang,
           wordsFromSentence,
         );

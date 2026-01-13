@@ -25,7 +25,7 @@ import { WordActions, wordsReducer } from '../reducers/words-reducer';
 import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { isDueCheck } from '@/utils/is-due-check';
-import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
+import { underlineWordsInSentenceLegacy } from '@/utils/sentence-formatting/underline-words-in-sentences';
 import {
   getEmptyCard,
   getNextScheduledOptions,
@@ -330,7 +330,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     const formatSentence = dueCardsNow?.map((item) => {
       return {
         ...item,
-        targetLangformatted: underlineWordsInSentence(
+        targetLangformatted: underlineWordsInSentenceLegacy(
           item.targetLang,
           pureWordsMemoized,
         ), // should all be moved eventually to new sentence sphere

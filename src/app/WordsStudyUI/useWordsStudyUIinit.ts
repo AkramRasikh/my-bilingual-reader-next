@@ -1,5 +1,8 @@
 import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
-import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
+import {
+  underlineWordsInSentence,
+  underlineWordsInSentenceLegacy,
+} from '@/utils/sentence-formatting/underline-words-in-sentences';
 import { useEffect } from 'react';
 
 const useWordsStudyUIinit = ({
@@ -41,7 +44,7 @@ const useWordsStudyUIinit = ({
               contextSentenceDataIndex > 0
                 ? {
                     ...thisContent[contextSentenceDataIndex - 1],
-                    targetLangformatted: underlineWordsInSentence(
+                    targetLangformatted: underlineWordsInSentenceLegacy(
                       thisContent[contextSentenceDataIndex - 1].targetLang,
                       pureWordsMemoized,
                     ),
@@ -52,7 +55,7 @@ const useWordsStudyUIinit = ({
               contextSentenceDataIndex + 1 < thisContent.length
                 ? {
                     ...thisContent[contextSentenceDataIndex + 1],
-                    targetLangformatted: underlineWordsInSentence(
+                    targetLangformatted: underlineWordsInSentenceLegacy(
                       thisContent[contextSentenceDataIndex + 1].targetLang,
                       pureWordsMemoized,
                     ),
@@ -64,7 +67,7 @@ const useWordsStudyUIinit = ({
               title: contentItem?.title,
               generalTopicName: contentItem?.generalTopicName,
               isMedia: contentItem?.origin === 'youtube',
-              targetLangformatted: underlineWordsInSentence(
+              targetLangformatted: underlineWordsInSentenceLegacy(
                 contextSentenceData.targetLang,
                 pureWordsMemoized,
               ),

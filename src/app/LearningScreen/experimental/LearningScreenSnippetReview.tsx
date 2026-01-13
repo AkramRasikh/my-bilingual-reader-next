@@ -174,7 +174,7 @@ const LearningScreenSnippetReview = ({
         wordsState,
       );
 
-      const targetLangformatted = underlineWordsInSentenceNew(
+      const targetLangformatted = underlineWordsInSentence(
         item.targetLang,
         wordsFromSentence,
       );
