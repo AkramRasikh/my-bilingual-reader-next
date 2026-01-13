@@ -14,12 +14,11 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useLearningScreen from '../useLearningScreen';
 import FormattedSentence from '@/components/custom/FormattedSentence';
-import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
+import { underlineWordsInSentenceNew } from '@/utils/sentence-formatting/underline-words-in-sentences';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
 import HighlightedText from '@/components/custom/HighlightedText';
 import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
-import { expandWordsIntoChunks } from '@/utils/sentence-formatting/expand-words-into-chunks';
 
 const LearningScreenSnippetReview = ({
   item,
@@ -163,25 +162,25 @@ const LearningScreenSnippetReview = ({
     };
   }, []);
 
-  const { granularFormattedSentence, wordsFromSentence, wordsInSuggestedText } =
+  const { targetLangformatted, wordsFromSentence, wordsInSuggestedText } =
     useMemo(() => {
-      const targetLangformatted = underlineWordsInSentence(
-        item.targetLang,
-        pureWordsMemoized,
-      );
       const wordsInSuggestedText = findAllInstancesOfWordsInSentence(
         item.focusedText || item.suggestedFocusText,
         wordsState,
       );
-      const granularFormattedSentence =
-        expandWordsIntoChunks(targetLangformatted);
+
       const wordsFromSentence = findAllInstancesOfWordsInSentence(
         item.targetLang,
         wordsState,
       );
 
+      const targetLangformatted = underlineWordsInSentenceNew(
+        item.targetLang,
+        wordsFromSentence,
+      );
+
       return {
-        granularFormattedSentence,
+        targetLangformatted,
         wordsFromSentence,
         wordsInSuggestedText,
       };
@@ -224,7 +223,7 @@ const LearningScreenSnippetReview = ({
           <div>
             <FormattedSentence
               ref={ulRef}
-              targetLangformatted={granularFormattedSentence}
+              targetLangformatted={targetLangformatted}
               handleMouseLeave={handleMouseLeave}
               handleMouseEnter={handleMouseEnter}
               wordPopUpState={wordPopUpState}
