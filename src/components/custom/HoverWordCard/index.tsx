@@ -15,7 +15,7 @@ const HoverWordCard = ({
   handleDeleteWordDataProvider,
   wordsFromSentence,
   hasHighlightedBackground,
-  originalText,
+  savedWords,
 }) => {
   const isOriginalWordSettingState = useMemo(() => {
     return (
@@ -26,19 +26,9 @@ const HoverWordCard = ({
   }, [wordsForSelectedTopic, text]);
 
   const onHoverTrigger = () => {
-    const hoverTings = wordsFromSentence?.filter((item) => {
-      const baseForm = item.baseForm;
-      const surfaceForm = item.surfaceForm;
-      if (originalText) {
-        return (
-          originalText.includes(baseForm) || originalText.includes(surfaceForm)
-        );
-      }
-      if (text.includes(baseForm) || text.includes(surfaceForm)) {
-        return true;
-      }
-    });
-
+    const hoverTings = wordsFromSentence?.filter((item) =>
+      savedWords?.includes(item.id),
+    );
     setWordPopUpState(hoverTings);
   };
 

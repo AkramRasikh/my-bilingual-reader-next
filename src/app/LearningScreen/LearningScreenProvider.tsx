@@ -14,8 +14,8 @@ import { useLoopSecondsHook } from './hooks/useMapTranscriptToSeconds';
 import { useSavedSnippetsMemoized } from './hooks/useSavedSnippetsMemoized';
 import { useOverlappedSentencesViableForReviewMemo } from './hooks/useOverlappedSentencesViableForReviewMemo';
 import { isDueCheck } from '@/utils/is-due-check';
-import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
 import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
+import { underlineWordsInSentenceNew } from '@/utils/sentence-formatting/underline-words-in-sentences';
 import { mapSentenceIdsToSeconds } from './utils/map-sentence-ids-to-seconds';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { WordTypes } from '../types/word-types';
@@ -143,13 +143,14 @@ export const LearningScreenProvider = ({
         const isDueNow = hasBeenReviewed && new Date(hasBeenReviewed) < now;
         const dueStatus = !hasBeenReviewed ? '' : isDueNow ? 'now' : 'pending';
 
-        const targetLangformatted = underlineWordsInSentence(
-          item.targetLang,
-          pureWordsMemoized,
-        );
         const wordsFromSentence = findAllInstancesOfWordsInSentence(
           item.targetLang,
           wordsState,
+        );
+
+        const targetLangformatted = underlineWordsInSentenceNew(
+          item.targetLang,
+          wordsFromSentence,
         );
 
         // Check if next item is due

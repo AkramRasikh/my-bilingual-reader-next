@@ -23,7 +23,8 @@ const SentenceBreakdownTargetLang = ({
     >
       {vocab.map(({ surfaceForm, meaning }, index) => {
         const wordIsSaved = thisSentencesSavedWords?.some(
-          (item) => item.text === surfaceForm,
+          (item) =>
+            item.surfaceForm === surfaceForm || item.baseForm === surfaceForm,
         );
 
         const color = getColorByIndex(index);

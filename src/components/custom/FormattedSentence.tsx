@@ -25,7 +25,7 @@ const FormattedSentence = ({
       dir={isArabic ? 'rtl' : 'ltr'}
     >
       {targetLangformatted?.map((item, indexNested) => {
-        const isUnderlined = item?.underlined;
+        const isUnderlined = item?.savedWords?.length > 0;
         const text = item?.text;
         const hasHighlightedBackground =
           indexNested >= matchStartKey && indexNested <= matchEndKey;
@@ -42,11 +42,11 @@ const FormattedSentence = ({
               wordsFromSentence={wordsFromSentence}
               hasHighlightedBackground={hasHighlightedBackground}
               originalText={item?.originalText}
+              savedWords={item?.savedWords}
             />
           );
         }
 
-        // bg-yellow-200 shadow-yellow-500 shadow-sm px-1 rounded ${opacityClass}
         return (
           <span
             key={indexNested}

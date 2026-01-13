@@ -1,5 +1,10 @@
-export const findAllInstancesOfWordsInSentence = (sentence, wordState) => {
-  const results = [];
+import { WordTypes } from '@/app/types/word-types';
+
+export const findAllInstancesOfWordsInSentence = (
+  sentence: string,
+  wordState: WordTypes[],
+) => {
+  const results = [] as WordTypes[];
 
   wordState.forEach((wordData) => {
     if (

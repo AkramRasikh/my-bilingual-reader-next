@@ -106,6 +106,7 @@ const TranscriptItemSecondary = ({ contentItem, handleSaveWord }) => {
             meaning={contentItem.meaning}
             sentenceStructure={contentItem.sentenceStructure}
             handleSaveFunc={handleSaveFunc}
+            thisSentencesSavedWords={wordsFromSentence}
           />
         </>
       )}

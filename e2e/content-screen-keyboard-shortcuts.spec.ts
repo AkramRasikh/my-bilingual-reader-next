@@ -11,6 +11,7 @@ import {
 import {
   mockUpdateSentenceOneMinuteAPI,
   mockGetOnLoadDataE2E,
+  mockSentenceBrekadownAPIE2E,
 } from './helpers/mock-api';
 import { initScriptsE2e } from './helpers/init-scripts';
 
@@ -67,6 +68,7 @@ test.describe('Keyboard actions', () => {
   test('breakdown sentence using Shift+B keyboard shortcut', async ({
     page,
   }) => {
+    await mockSentenceBrekadownAPIE2E(page);
     await goFromLandingToLearningScreen(page);
     await triggerTrackSwitch(page);
     await checkSentenceCount(page, 'Sentences: 153/200');
