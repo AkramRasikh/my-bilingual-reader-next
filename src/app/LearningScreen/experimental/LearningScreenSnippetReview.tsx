@@ -14,9 +14,9 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useLearningScreen from '../useLearningScreen';
 import FormattedSentence from '@/components/custom/FormattedSentence';
-import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
+import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
-import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
+import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
 import HighlightedText from '@/components/custom/HighlightedText';
 import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
 

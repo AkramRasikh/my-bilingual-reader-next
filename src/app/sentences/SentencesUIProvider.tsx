@@ -7,7 +7,7 @@ import {
   useEffect,
   useMemo,
 } from 'react';
-import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
+import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { getAudioURL } from '@/utils/get-media-url';
 

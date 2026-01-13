@@ -25,7 +25,7 @@ import { WordActions, wordsReducer } from '../reducers/words-reducer';
 import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { isDueCheck } from '@/utils/is-due-check';
-import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
+import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
 import {
   getEmptyCard,
   getNextScheduledOptions,

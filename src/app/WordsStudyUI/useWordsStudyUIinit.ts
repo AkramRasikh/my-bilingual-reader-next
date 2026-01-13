@@ -1,5 +1,5 @@
-import { findAllInstancesOfWordsInSentence } from '@/utils/find-all-instances-of-words-in-sentences';
-import { underlineWordsInSentence } from '@/utils/underline-words-in-sentences';
+import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
+import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
 import { useEffect } from 'react';
 
 const useWordsStudyUIinit = ({
