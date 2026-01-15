@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import LearningScreenWordCard from './LearningScreenWordCard';
 
 const LearningScreenTabTranscriptNestedWordsReview = ({
-  sentencesForReviewMemoized,
+  topicWordsForReviewMemoized,
   withToggle = true,
 }) => {
   const [showNestedRelevantWordsState, setShowNestedRelevantWordsState] =
@@ -23,7 +23,7 @@ const LearningScreenTabTranscriptNestedWordsReview = ({
       {showNestedRelevantWordsState && (
         <div className='text-center m-auto p-1.5'>
           <ul className='flex flex-wrap gap-2.5 m-auto'>
-            {sentencesForReviewMemoized.map((word, index) => {
+            {topicWordsForReviewMemoized.map((word, index) => {
               return (
                 <LearningScreenWordCard
                   word={word}

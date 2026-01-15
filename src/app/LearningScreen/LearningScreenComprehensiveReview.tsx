@@ -20,8 +20,6 @@ const LearningScreenComprehensiveReview = () => {
   const {
     threeSecondLoopState,
     overlappingSnippetDataState,
-    setSentenceHighlightingState,
-    sentenceHighlightingState,
     breakdownSentencesArrState,
     masterPlay,
     isGenericItemLoadingState,
@@ -244,7 +242,7 @@ const LearningScreenComprehensiveReview = () => {
       ) : null}
       {postWordsState?.length > 0 && (
         <LearningScreenTabTranscriptNestedWordsReview
-          sentencesForReviewMemoized={postWordsState}
+          topicWordsForReviewMemoized={postWordsState}
           withToggle={false}
         />
       )}
@@ -263,8 +261,6 @@ const LearningScreenComprehensiveReview = () => {
               indexNum={index}
               threeSecondLoopState={threeSecondLoopState}
               overlappingSnippetDataState={overlappingSnippetDataState}
-              setSentenceHighlightingState={setSentenceHighlightingState}
-              sentenceHighlightingState={sentenceHighlightingState}
               contentItem={contentItem}
               breakdownSentencesArrState={breakdownSentencesArrState}
               masterPlay={masterPlay}

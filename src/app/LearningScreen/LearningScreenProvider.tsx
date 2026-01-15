@@ -61,7 +61,7 @@ interface HandleUpdateSnippetReviewParams {
   fieldToUpdate: Partial<Snippet>;
 }
 
-interface SentencesForReviewMemoizedProps extends WordTypes {
+interface TopicWordsForReviewMemoizedProps extends WordTypes {
   time?: number;
 }
 
@@ -87,7 +87,7 @@ export interface LearningScreenContextTypes {
   setBreakdownSentencesArrState: React.Dispatch<
     React.SetStateAction<SentenceMapItemTypes['id'][]>
   >;
-  overlappingSnippetDataState: [] | OverlappingSnippetData[];
+  overlappingSnippetDataState: OverlappingSnippetData[];
   loopTranscriptState: FormattedTranscriptTypes[];
   setLoopTranscriptState: React.Dispatch<
     React.SetStateAction<FormattedTranscriptTypes[]>
@@ -147,7 +147,7 @@ export interface LearningScreenContextTypes {
   setErrorVideoState: React.Dispatch<React.SetStateAction<boolean>>;
   handleJumpToFirstElInReviewTranscript: (isSecondIndex?: boolean) => void;
   learnFormattedTranscript: FormattedTranscriptTypes[];
-  sentencesForReviewMemoized: SentencesForReviewMemoizedProps[];
+  topicWordsForReviewMemoized: TopicWordsForReviewMemoizedProps[];
   firstTime: number | null;
   handleSaveSnippet: (snippetArgs: OverlappingTextTypes) => Promise<void>;
   overlappingTextMemoized: OverlappingTextTypes | null;
@@ -1057,7 +1057,7 @@ export const LearningScreenProvider = ({
     ? formattedTranscriptMemoized.slice(studyFromHereTimeState)
     : formattedTranscriptMemoized;
 
-  const sentencesForReviewMemoized = useMemo(() => {
+  const topicWordsForReviewMemoized = useMemo(() => {
     if (!isInReviewMode || wordsForSelectedTopicMemoized?.length === 0) {
       return [];
     }
@@ -1074,7 +1074,8 @@ export const LearningScreenProvider = ({
       return [];
     }
     const now = new Date();
-    const sentencesForReviewMemoized = [] as SentencesForReviewMemoizedProps[];
+    const topicWordsForReviewMemoized =
+      [] as TopicWordsForReviewMemoizedProps[];
     wordsForSelectedTopicMemoized.forEach((wordItem) => {
       const firstContext = wordItem.contexts[0];
 
@@ -1082,7 +1083,7 @@ export const LearningScreenProvider = ({
         sentenceIdsForReview.includes(firstContext) &&
         isDueCheck(wordItem, now)
       ) {
-        sentencesForReviewMemoized.push({
+        topicWordsForReviewMemoized.push({
           ...wordItem,
           time: learnFormattedTranscript.find(
             (item) => item.id === firstContext,
@@ -1091,7 +1092,7 @@ export const LearningScreenProvider = ({
       }
     });
 
-    return sentencesForReviewMemoized;
+    return topicWordsForReviewMemoized;
   }, [learnFormattedTranscript, isInReviewMode, wordsForSelectedTopicMemoized]);
 
   const { snippetsWithDueStatusMemoized, earliestSnippetDueTime } =
@@ -1248,7 +1249,7 @@ export const LearningScreenProvider = ({
         setIsGenericItemLoadingState,
         breakdownSentencesArrState,
         setBreakdownSentencesArrState,
-        overlappingSnippetDataState: overlappingSnippetDataMemoised,
+        overlappingSnippetDataState: overlappingSnippetDataMemoised || [],
         loopTranscriptState,
         setLoopTranscriptState,
         threeSecondLoopState,
@@ -1300,20 +1301,15 @@ export const LearningScreenProvider = ({
         setErrorVideoState,
         handleJumpToFirstElInReviewTranscript,
         learnFormattedTranscript,
-        sentencesForReviewMemoized,
+        topicWordsForReviewMemoized,
         firstTime,
-        handleSaveSnippet,
         overlappingTextMemoized,
         savedSnippetsMemoized,
         handleUpdateSnippetReview,
-        handleDeleteSnippet,
         contentSnippets: selectedContentStateMemoized?.snippets || [],
         sentenceMapMemoized,
-        handleQuickSaveSnippet,
         handleUpdateSnippet,
         getSentenceDataOfOverlappingWordsDuringSave,
-        overlappedSentencesViableForReviewMemoized,
-        handleAddOverlappedSnippetsToReview,
         setScrollToElState,
         enableWordReviewState,
         setEnableWordReviewState,
@@ -1324,6 +1320,11 @@ export const LearningScreenProvider = ({
         reviewIntervalState,
         setReviewIntervalState,
         snippetsWithDueStatusMemoized,
+        handleSaveSnippet,
+        handleDeleteSnippet,
+        handleQuickSaveSnippet,
+        overlappedSentencesViableForReviewMemoized,
+        handleAddOverlappedSnippetsToReview,
       }}
     >
       {children}
