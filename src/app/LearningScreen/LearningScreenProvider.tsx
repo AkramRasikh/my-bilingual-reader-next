@@ -52,7 +52,7 @@ interface HandleReviewFuncParams {
 }
 
 interface HandleBreakdownSentenceParams {
-  sentenceId: string | number;
+  sentenceId: string;
   targetLang: string;
 }
 
@@ -145,26 +145,28 @@ export interface LearningScreenContextTypes {
   learnFormattedTranscript: FormattedTranscriptTypes[];
   topicWordsForReviewMemoized: TopicWordsForReviewMemoizedProps[];
   firstTime: number | null;
-  handleSaveSnippet: (snippetArgs: OverlappingTextTypes) => Promise<void>;
+  handleSaveSnippet: (
+    snippetArgs: OverlappingTextTypes,
+  ) => Promise<void | null>;
   overlappingTextMemoized: OverlappingTextTypes | null;
   savedSnippetsMemoized: SavedSnippetsMemoizedProps[];
   handleUpdateSnippetReview: (
     snippetArgs: HandleUpdateSnippetReviewParams,
   ) => Promise<void>;
   handleDeleteSnippet: (
-    snippetId: string | number,
-    wordsFromSentence: boolean,
-  ) => Promise<void>;
+    snippetId: Snippet['id'],
+    wordsFromSentence?: WordTypes[],
+  ) => Promise<void | null>;
   contentSnippets: Snippet[];
   sentenceMapMemoized: Record<string, SentenceMapItemTypes>;
-  handleQuickSaveSnippet: () => Promise<void>;
+  handleQuickSaveSnippet: () => Promise<void | null>;
   handleUpdateSnippet: (snippetToUpdate: Snippet) => Promise<void>;
   getSentenceDataOfOverlappingWordsDuringSave: (
     thisSnippetsTime: number,
     highlightedTextFromSnippet: string,
   ) => string | number | null;
-  overlappedSentencesViableForReviewMemoized: SentenceMapItemTypes['id'][];
-  handleAddOverlappedSnippetsToReview: () => Promise<void>;
+  overlappedSentencesViableForReviewMemoized: string[] | null;
+  handleAddOverlappedSnippetsToReview: () => Promise<void | null>;
   setScrollToElState: React.Dispatch<React.SetStateAction<string>>;
   enableWordReviewState: boolean;
   setEnableWordReviewState: React.Dispatch<React.SetStateAction<boolean>>;
@@ -999,7 +1001,13 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const handleBreakdownSentence = async ({ sentenceId, targetLang }) => {
+  const handleBreakdownSentence = async ({
+    sentenceId,
+    targetLang,
+  }: {
+    sentenceId: string;
+    targetLang: string;
+  }) => {
     try {
       setIsBreakingDownSentenceArrState((prev) => [...prev, sentenceId]);
       await breakdownSentence({
