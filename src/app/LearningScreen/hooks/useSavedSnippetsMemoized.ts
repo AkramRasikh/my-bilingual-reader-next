@@ -1,9 +1,13 @@
 import { useMemo } from 'react';
 import { threeSecondLoopLogicLegacy } from './useManageThreeSecondLoopLegacy';
+import {
+  ContentTypes,
+  FormattedTranscriptTypes,
+} from '@/app/types/content-types';
 
 export const useSavedSnippetsMemoized = (
-  snippets: any[] | undefined,
-  formattedTranscriptMemoized: any[],
+  snippets: ContentTypes['snippets'] | undefined,
+  formattedTranscriptMemoized: FormattedTranscriptTypes[],
   loopDataRef: React.RefObject<any>,
 ) => {
   return useMemo(() => {

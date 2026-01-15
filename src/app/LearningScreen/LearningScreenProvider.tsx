@@ -71,15 +71,19 @@ export interface LearningScreenContextTypes {
   currentTime: number;
   formattedTranscriptState: FormattedTranscriptTypes[];
   secondsState: number[];
-  masterPlayComprehensive: any;
+  masterPlayComprehensive: SentenceMapItemTypes | null;
   isVideoPlaying: boolean;
   setIsVideoPlaying: React.Dispatch<React.SetStateAction<boolean>>;
   isInReviewMode: boolean;
   setIsInReviewMode: React.Dispatch<React.SetStateAction<boolean>>;
-  isGenericItemLoadingState: any[];
-  setIsGenericItemLoadingState: React.Dispatch<React.SetStateAction<any[]>>;
-  breakdownSentencesArrState: any[];
-  setBreakdownSentencesArrState: React.Dispatch<React.SetStateAction<any[]>>;
+  isGenericItemLoadingState: SentenceMapItemTypes['id'][];
+  setIsGenericItemLoadingState: React.Dispatch<
+    React.SetStateAction<SentenceMapItemTypes['id'][]>
+  >;
+  breakdownSentencesArrState: SentenceMapItemTypes['id'][];
+  setBreakdownSentencesArrState: React.Dispatch<
+    React.SetStateAction<SentenceMapItemTypes['id'][]>
+  >;
   overlappingSnippetDataState: any;
   loopTranscriptState: any[];
   setLoopTranscriptState: React.Dispatch<React.SetStateAction<any[]>>;
@@ -97,7 +101,7 @@ export interface LearningScreenContextTypes {
   setContractThreeSecondLoopState: React.Dispatch<
     React.SetStateAction<boolean>
   >;
-  masterPlay: any;
+  masterPlay: SentenceMapItemTypes['id'] | null;
   handleFromHere: (time: number) => void;
   handlePause: () => void;
   handleRewind: () => void;
@@ -114,10 +118,12 @@ export interface LearningScreenContextTypes {
   handleBreakdownSentence: (
     params: HandleBreakdownSentenceParams,
   ) => Promise<void>;
-  isBreakingDownSentenceArrState: any[];
+  isBreakingDownSentenceArrState: SentenceMapItemTypes['id'][];
   handleStudyFromHere: () => void;
-  setStudyFromHereTimeState: React.Dispatch<React.SetStateAction<any>>;
-  studyFromHereTimeState: any;
+  setStudyFromHereTimeState: React.Dispatch<
+    React.SetStateAction<number | null>
+  >;
+  studyFromHereTimeState: number | null;
   transcriptRef: React.RefObject<any>;
   scrollToElState: string;
   selectedContentTitleState: string;
@@ -126,21 +132,21 @@ export interface LearningScreenContextTypes {
   sentenceRepsState: number;
   elapsed: number;
   setElapsed: React.Dispatch<React.SetStateAction<number>>;
-  playFromThisContext: any;
+  playFromThisContext: SentenceMapItemTypes['id'] | null;
   setSentenceRepsState: React.Dispatch<React.SetStateAction<number>>;
-  sentencesNeedReview: any[];
-  sentencesPendingOrDue: any[];
-  contentMetaWordMemoized: any;
+  sentencesNeedReview: number;
+  sentencesPendingOrDue: number;
+  contentMetaWordMemoized: WordTypes[];
   initialSentenceCount: number | null;
   errorVideoState: boolean;
   setErrorVideoState: React.Dispatch<React.SetStateAction<boolean>>;
   handleJumpToFirstElInReviewTranscript: (isSecondIndex?: boolean) => void;
-  learnFormattedTranscript: any[];
-  sentencesForReviewMemoized: any[];
+  learnFormattedTranscript: FormattedTranscriptTypes[];
+  sentencesForReviewMemoized: SentenceMapItemTypes[];
   firstTime: number | null;
   handleSaveSnippet: (snippetArgs: OverlappingTextTypes) => Promise<void>;
   overlappingTextMemoized: OverlappingTextTypes | null;
-  savedSnippetsMemoized: any;
+  savedSnippetsMemoized: Snippet;
   handleUpdateSnippetReview: (
     snippetArgs: HandleUpdateSnippetReviewParams,
   ) => Promise<void>;
@@ -151,12 +157,12 @@ export interface LearningScreenContextTypes {
   contentSnippets: Snippet[];
   sentenceMapMemoized: Record<string, SentenceMapItemTypes>;
   handleQuickSaveSnippet: () => Promise<void>;
-  handleUpdateSnippet: (snippetToUpdate: any) => Promise<void>;
+  handleUpdateSnippet: (snippetToUpdate: Snippet) => Promise<void>;
   getSentenceDataOfOverlappingWordsDuringSave: (
     thisSnippetsTime: number,
     highlightedTextFromSnippet: string,
   ) => string | number | null;
-  overlappedSentencesViableForReviewMemoized: any[];
+  overlappedSentencesViableForReviewMemoized: SentenceMapItemTypes['id'][];
   handleAddOverlappedSnippetsToReview: () => Promise<void>;
   setScrollToElState: React.Dispatch<React.SetStateAction<string>>;
   enableWordReviewState: boolean;
@@ -456,7 +462,7 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const handleUpdateSnippet = async (snippetToUpdate) => {
+  const handleUpdateSnippet = async (snippetToUpdate: Snippet) => {
     const contentSnippets = selectedContentStateMemoized?.snippets;
     if (!contentSnippets || contentSnippets.length === 0) {
       return;
@@ -520,7 +526,10 @@ export const LearningScreenProvider = ({
     setContractThreeSecondLoopState(false);
   };
 
-  const handleDeleteSnippet = async (snippetId, wordsFromSentence) => {
+  const handleDeleteSnippet = async (
+    snippetId: Snippet['id'],
+    wordsFromSentence?: WordTypes[],
+  ) => {
     if (
       !selectedContentStateMemoized?.snippets ||
       selectedContentStateMemoized?.snippets?.length === 0
@@ -703,7 +712,7 @@ export const LearningScreenProvider = ({
   const handleRewind = () =>
     (ref.current.currentTime = ref.current.currentTime - 3);
 
-  const playFromThisContext = (contextId) => {
+  const playFromThisContext = (contextId: SentenceMapItemTypes['id']) => {
     const contextSentence = sentenceMapMemoized[contextId];
     if (contextSentence) {
       handleFromHere(contextSentence.time);
