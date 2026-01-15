@@ -8,8 +8,6 @@ export const TranscriptItemProvider = ({
   threeSecondLoopState,
   overlappingSnippetDataState,
   contentItem,
-  breakdownSentencesArrState,
-  setBreakdownSentencesArrState,
   loopTranscriptState,
   masterPlay,
   isGenericItemLoadingState,
@@ -61,10 +59,6 @@ export const TranscriptItemProvider = ({
   ] = useState(false);
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
-
-  const isInSentenceBreakdown = breakdownSentencesArrState.includes(
-    contentItem.id,
-  );
 
   const hasSentenceBreakdown = contentItem?.sentenceStructure;
 
@@ -179,10 +173,6 @@ export const TranscriptItemProvider = ({
   }, []);
 
   useEffect(() => {
-    setShowSentenceBreakdownState(isInSentenceBreakdown);
-  }, [isInSentenceBreakdown]);
-
-  useEffect(() => {
     if (showThisSentenceBreakdownPreviewState) {
       setShowThisSentenceBreakdownPreviewState(false);
     }
@@ -214,12 +204,6 @@ export const TranscriptItemProvider = ({
     }
   };
 
-  const closeBreakdown = () => {
-    setBreakdownSentencesArrState((prev) =>
-      prev.filter((item) => item !== contentItem.id),
-    );
-  };
-
   const handleSaveFunc = async (isGoogle, thisWord, thisWordMeaning) => {
     try {
       setIsLoadingState(true);
@@ -241,13 +225,17 @@ export const TranscriptItemProvider = ({
   };
 
   const handleBreakdownSentenceTranscriptItem = async () => {
+    const hasSentenceBreakdown = contentItem?.sentenceStructure;
+    if (hasSentenceBreakdown) {
+      setShowSentenceBreakdownState(true);
+      return;
+    }
     try {
       setIsBreakdownSentenceLoadingState(true);
       await handleBreakdownSentence({
         sentenceId: contentItem.id,
         targetLang: contentItem.targetLang,
       });
-    } catch (error) {
     } finally {
       setIsBreakdownSentenceLoadingState(false);
     }
@@ -310,10 +298,8 @@ export const TranscriptItemProvider = ({
         setShowThisSentenceBreakdownPreviewState,
         wordPopUpState,
         setWordPopUpState,
-        breakdownSentencesArrState,
         handleMouseEnter,
         handleMouseLeave,
-        closeBreakdown,
         isSentenceLooping,
         masterPlay,
         isGenericItemLoadingState,
@@ -322,7 +308,6 @@ export const TranscriptItemProvider = ({
         handleOnMouseEnterSentence,
         isInReviewMode,
         onlyShowEngState,
-        setBreakdownSentencesArrState,
         setLoopTranscriptState,
         handleReviewFunc,
         isVideoPlaying,

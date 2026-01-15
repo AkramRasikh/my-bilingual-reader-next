@@ -211,9 +211,6 @@ export const LearningScreenProvider = ({
   >([]);
   const [isBreakingDownSentenceArrState, setIsBreakingDownSentenceArrState] =
     useState<SentenceMapItemTypes['id'][]>([]);
-  const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState<
-    SentenceMapItemTypes['id'][]
-  >([]);
 
   const [loopTranscriptState, setLoopTranscriptState] = useState<
     FormattedTranscriptTypes[]
@@ -926,35 +923,10 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const handleOpenBreakdownSentence = () => {
-    if (!masterPlayComprehensive) return null;
-
-    const alreadyHasBreakdown = masterPlayComprehensive?.sentenceStructure;
-    if (!alreadyHasBreakdown) return null;
-
-    const isOpen = breakdownSentencesArrState.includes(
-      masterPlayComprehensive.id,
-    );
-
-    if (isOpen) {
-      const updatedList = breakdownSentencesArrState.filter(
-        (i) => i !== masterPlayComprehensive.id,
-      );
-      setBreakdownSentencesArrState(updatedList);
-    } else {
-      const updatedList = [
-        ...breakdownSentencesArrState,
-        masterPlayComprehensive.id,
-      ];
-      setBreakdownSentencesArrState(updatedList);
-    }
-  };
-
   const handleBreakdownMasterSentence = async () => {
     if (!masterPlayComprehensive) return null;
     const alreadyHasBreakdown = masterPlayComprehensive?.sentenceStructure;
     if (alreadyHasBreakdown) {
-      handleOpenBreakdownSentence();
       return null;
     }
 
@@ -1247,8 +1219,6 @@ export const LearningScreenProvider = ({
         setIsInReviewMode,
         isGenericItemLoadingState,
         setIsGenericItemLoadingState,
-        breakdownSentencesArrState,
-        setBreakdownSentencesArrState,
         overlappingSnippetDataState: overlappingSnippetDataMemoised || [],
         loopTranscriptState,
         setLoopTranscriptState,

@@ -14,16 +14,15 @@ const TranscriptItemActionBar = () => {
     showSentenceBreakdownState,
     isLoadingState,
     contentItem,
-    closeBreakdown,
     isSentenceLooping,
     masterPlay,
     isGenericItemLoadingState,
-    setBreakdownSentencesArrState,
     setLoopTranscriptState,
     isVideoPlaying,
     handlePause,
     handleFromHere,
     isBreakdownSentenceLoadingState,
+    setShowSentenceBreakdownState,
   } = useTranscriptItem();
 
   const thisTime = contentItem.time;
@@ -41,11 +40,7 @@ const TranscriptItemActionBar = () => {
       : handleFromHere(thisTime);
 
   const handleBreakdownClick = () => {
-    if (showSentenceBreakdownState) {
-      closeBreakdown();
-    } else {
-      setBreakdownSentencesArrState((prev) => [...prev, contentItem.id]);
-    }
+    setShowSentenceBreakdownState(!showSentenceBreakdownState);
   };
 
   return (
