@@ -1,20 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import useLearningScreen from './useLearningScreen';
+import { isWithinInterval } from '@/utils/is-within-interval';
 import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningScreenTabTranscriptNestedWordsReview';
 import LearningScreenSnippetReview from './experimental/LearningScreenSnippetReview';
 import ReviewTypeToggles from './components/ReviewTypeToggles';
-const isWithinInterval = (
-  item: { time?: number },
-  firstTime: number,
-  interval: number,
-): boolean =>
-  item?.time !== undefined &&
-  item.time >= firstTime &&
-  item.time <= firstTime + interval;
 
 const LearningScreenComprehensiveReview = () => {
   const {
