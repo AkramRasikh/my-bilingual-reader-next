@@ -57,7 +57,7 @@ interface HandleBreakdownSentenceParams {
 }
 
 interface HandleUpdateSnippetReviewParams {
-  id: string | number;
+  id: string;
   fieldToUpdate: Partial<Snippet>;
 }
 
