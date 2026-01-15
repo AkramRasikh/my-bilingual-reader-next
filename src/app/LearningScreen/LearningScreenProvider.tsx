@@ -33,6 +33,7 @@ import {
   Snippet,
 } from '../types/content-types';
 import { getUniqueSegmentOfArray } from './utils/get-unique-segment-of-array';
+import { OverlappingSnippetData, ReviewDataTypes } from '../types/shared-types';
 
 type LearningScreenProviderProps = React.PropsWithChildren<{
   selectedContentStateMemoized: ContentTypes & { contentIndex: number };
@@ -45,9 +46,9 @@ type OverlappingTextTypes = {
 };
 
 interface HandleReviewFuncParams {
-  sentenceId: string | number;
+  sentenceId: string;
   isRemoveReview?: boolean;
-  nextDue: any;
+  nextDue?: ReviewDataTypes;
 }
 
 interface HandleBreakdownSentenceParams {
@@ -57,12 +58,7 @@ interface HandleBreakdownSentenceParams {
 
 interface HandleUpdateSnippetReviewParams {
   id: string | number;
-  fieldToUpdate: any;
-}
-
-interface GetLoopTranscriptSegmentParams {
-  startTime: number;
-  endTime: number;
+  fieldToUpdate: Partial<Snippet>;
 }
 
 export interface LearningScreenContextTypes {
@@ -70,10 +66,10 @@ export interface LearningScreenContextTypes {
   handleTimeUpdate: () => void;
   handleLoadedMetadata: () => void;
   mediaDuration: number | null;
-  ref: React.RefObject<HTMLVideoElement>;
+  ref: React.RefObject<HTMLVideoElement | HTMLAudioElement | null>;
   currentTime: number;
   formattedTranscriptState: FormattedTranscriptTypes[];
-  secondsState: number[];
+  secondsState: string[];
   masterPlayComprehensive: SentenceMapItemTypes | null;
   isVideoPlaying: boolean;
   setIsVideoPlaying: React.Dispatch<React.SetStateAction<boolean>>;
@@ -87,9 +83,11 @@ export interface LearningScreenContextTypes {
   setBreakdownSentencesArrState: React.Dispatch<
     React.SetStateAction<SentenceMapItemTypes['id'][]>
   >;
-  overlappingSnippetDataState: any;
-  loopTranscriptState: any[];
-  setLoopTranscriptState: React.Dispatch<React.SetStateAction<any[]>>;
+  overlappingSnippetDataState: [] | OverlappingSnippetData[];
+  loopTranscriptState: FormattedTranscriptTypes[];
+  setLoopTranscriptState: React.Dispatch<
+    React.SetStateAction<FormattedTranscriptTypes[]>
+  >;
   threeSecondLoopState: number | null;
   setThreeSecondLoopState: React.Dispatch<React.SetStateAction<number | null>>;
   progress: number;
@@ -113,7 +111,7 @@ export interface LearningScreenContextTypes {
   handleShiftLoopSentence: (shiftForward: boolean) => void;
   handleLoopThisSentence: () => void;
   handleUpdateLoopedSentence: (extendSentenceLoop: boolean) => void;
-  handleBreakdownMasterSentence: () => Promise<void>;
+  handleBreakdownMasterSentence: () => Promise<void | null>;
   handleAddMasterToReview: () => Promise<void>;
   handleIsEasyReviewShortCut: () => Promise<void>;
   handleBulkReviews: () => Promise<void>;
@@ -127,7 +125,7 @@ export interface LearningScreenContextTypes {
     React.SetStateAction<number | null>
   >;
   studyFromHereTimeState: number | null;
-  transcriptRef: React.RefObject<any>;
+  transcriptRef: React.RefObject<HTMLElement | null>;
   scrollToElState: string;
   selectedContentTitleState: string;
   wordsForSelectedTopic: WordTypes[];
@@ -135,7 +133,7 @@ export interface LearningScreenContextTypes {
   sentenceRepsState: number;
   elapsed: number;
   setElapsed: React.Dispatch<React.SetStateAction<number>>;
-  playFromThisContext: SentenceMapItemTypes['id'] | null;
+  playFromThisContext: (contextId: FormattedTranscriptTypes['id']) => void;
   setSentenceRepsState: React.Dispatch<React.SetStateAction<number>>;
   sentencesNeedReview: number;
   sentencesPendingOrDue: number;
@@ -186,8 +184,8 @@ export const LearningScreenProvider = ({
   selectedContentStateMemoized,
   children,
 }: LearningScreenProviderProps) => {
-  const ref = useRef<HTMLVideoElement>(null);
-  const transcriptRef = useRef(null);
+  const ref = useRef<HTMLVideoElement | HTMLAudioElement>(null);
+  const transcriptRef = useRef<HTMLElement | null>(null);
   const loopDataRef = useRef(null);
 
   const [currentTime, setCurrentTime] = useState(0);
@@ -201,7 +199,9 @@ export const LearningScreenProvider = ({
 
   const [scrollToElState, setScrollToElState] = useState('');
   const [sentenceRepsState, setSentenceRepsState] = useState(0);
-  const [studyFromHereTimeState, setStudyFromHereTimeState] = useState(null);
+  const [studyFromHereTimeState, setStudyFromHereTimeState] = useState<
+    number | null
+  >(null);
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
     [],
   );
@@ -211,7 +211,9 @@ export const LearningScreenProvider = ({
     [],
   );
 
-  const [loopTranscriptState, setLoopTranscriptState] = useState([]);
+  const [loopTranscriptState, setLoopTranscriptState] = useState<
+    FormattedTranscriptTypes[]
+  >([]);
   const [threeSecondLoopState, setThreeSecondLoopState] = useState<
     number | null
   >(null);
@@ -350,6 +352,9 @@ export const LearningScreenProvider = ({
   };
 
   const handleStudyFromHere = () => {
+    if (!masterPlayComprehensive) {
+      return;
+    }
     const masterPlayIndex = masterPlayComprehensive.index;
     setStudyFromHereTimeState(masterPlayIndex);
     if (transcriptRef.current) {
@@ -358,8 +363,8 @@ export const LearningScreenProvider = ({
   };
 
   const getSentenceDataOfOverlappingWordsDuringSave = (
-    thisSnippetsTime,
-    highlightedTextFromSnippet,
+    thisSnippetsTime: number,
+    highlightedTextFromSnippet: string,
   ) => {
     const startTime = thisSnippetsTime - 1.5;
     const endTime = thisSnippetsTime + 1.5;
@@ -403,7 +408,6 @@ export const LearningScreenProvider = ({
     const { nextScheduledOptions } = srsCalculationAndText({
       contentType: srsRetentionKey.snippet,
       timeNow,
-      reviewData: null,
     });
     const startTime = currentTime - 1.5;
     const endTime = currentTime + 1.5;
@@ -505,7 +509,6 @@ export const LearningScreenProvider = ({
     const { nextScheduledOptions } = srsCalculationAndText({
       contentType: srsRetentionKey.snippet,
       timeNow,
-      reviewData: null,
     });
 
     const reviewData = nextScheduledOptions['1'].card;
@@ -562,7 +565,9 @@ export const LearningScreenProvider = ({
     });
   };
 
-  const handleUpdateSnippetReview = async (snippetArgs) => {
+  const handleUpdateSnippetReview = async (
+    snippetArgs: HandleUpdateSnippetReviewParams,
+  ) => {
     if (
       !selectedContentStateMemoized?.snippets ||
       selectedContentStateMemoized.snippets.length === 0
@@ -703,19 +708,28 @@ export const LearningScreenProvider = ({
     loopTranscriptState,
   });
 
-  const handleFromHere = (time) => {
+  const handleFromHere = (time: number) => {
     if (!isNumber(time)) {
       return null;
     }
 
     handlePlayFromHere(time);
   };
-  const handlePause = () => ref.current.pause();
+  const handlePause = () => {
+    if (!ref.current) {
+      return;
+    }
+    ref.current.pause();
+  };
 
-  const handleRewind = () =>
-    (ref.current.currentTime = ref.current.currentTime - 3);
+  const handleRewind = () => {
+    if (!ref.current) {
+      return;
+    }
+    ref.current.currentTime = ref.current.currentTime - 3;
+  };
 
-  const playFromThisContext = (contextId: SentenceMapItemTypes['id']) => {
+  const playFromThisContext = (contextId: FormattedTranscriptTypes['id']) => {
     const contextSentence = sentenceMapMemoized[contextId];
     if (contextSentence) {
       handleFromHere(contextSentence.time);
@@ -825,7 +839,11 @@ export const LearningScreenProvider = ({
     // }
   };
 
-  const handleReviewFunc = async ({ sentenceId, isRemoveReview, nextDue }) => {
+  const handleReviewFunc = async ({
+    sentenceId,
+    isRemoveReview,
+    nextDue,
+  }: HandleReviewFuncParams) => {
     const cardDataRelativeToNow = getEmptyCard();
     const nextScheduledOptions = getNextScheduledOptions({
       card: cardDataRelativeToNow,
@@ -851,49 +869,41 @@ export const LearningScreenProvider = ({
 
   const handleLoopThis3Second = () => {
     if (loopTranscriptState) {
-      setLoopTranscriptState(null);
+      setLoopTranscriptState([]);
     }
     if (isNumber(threeSecondLoopState)) {
       setThreeSecondLoopState(null);
       return;
     }
 
+    if (!ref.current) {
+      return;
+    }
     setThreeSecondLoopState(ref.current.currentTime);
     // account for the three seconds on both extremes
   };
 
-  const handleShiftLoopSentence = (shiftForward) => {
+  const handleShiftLoopSentence = (shiftForward: boolean) => {
     if (shiftForward) {
       setLoopTranscriptState((prev) => prev.slice(1));
     }
   };
 
   const handleLoopThisSentence = () => {
-    if (!masterPlayComprehensive) return null;
-    const thisIndex = masterPlayComprehensive.index;
+    if (!masterPlayComprehensive || !mediaDuration) return null;
 
     if (
       loopTranscriptState?.length === 1 &&
       loopTranscriptState[0]?.id === masterPlayComprehensive.id
     ) {
-      setLoopTranscriptState(null);
+      setLoopTranscriptState([]);
       return;
     }
 
-    setLoopTranscriptState([
-      {
-        ...masterPlayComprehensive,
-        nextTime:
-          thisIndex === formattedTranscriptMemoized.length - 1
-            ? mediaDuration - 0.05
-            : thisIndex === 0
-            ? 0
-            : formattedTranscriptMemoized[thisIndex - 1].time,
-      },
-    ]);
+    setLoopTranscriptState([masterPlayComprehensive]);
   };
 
-  const handleUpdateLoopedSentence = (extendSentenceLoop) => {
+  const handleUpdateLoopedSentence = (extendSentenceLoop: boolean) => {
     if (extendSentenceLoop) {
       const lastSentenceId =
         loopTranscriptState[loopTranscriptState.length - 1]?.id;
@@ -935,6 +945,12 @@ export const LearningScreenProvider = ({
       setBreakdownSentencesArrState(updatedList);
     }
   };
+
+  console.log('## breakdownSentencesArrState 1', breakdownSentencesArrState);
+  console.log(
+    '## isBreakingDownSentenceArrState 2',
+    isBreakingDownSentenceArrState,
+  );
 
   const handleBreakdownMasterSentence = async () => {
     if (!masterPlayComprehensive) return null;
@@ -1049,7 +1065,7 @@ export const LearningScreenProvider = ({
       return [];
     }
 
-    const sentenceIdsForReview = [];
+    const sentenceIdsForReview = [] as FormattedTranscriptTypes['id'][];
 
     learnFormattedTranscript.forEach((transcriptEl) => {
       if (transcriptEl.isDue) {

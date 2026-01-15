@@ -27,7 +27,6 @@ describe('underlineWordsInSentence', () => {
       const result = underlineWordsInSentence(sentence, words);
 
       const runningChunk = result.find((chunk) => chunk.text === 'running');
-      console.log('## result', result);
 
       expect(runningChunk).toBeDefined();
       expect(runningChunk?.savedWords).toEqual(['1']);

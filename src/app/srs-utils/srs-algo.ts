@@ -29,13 +29,15 @@ export const srsCalculationAndText = ({
   contentType,
   timeNow,
 }: {
-  reviewData: ReviewDataTypes;
   contentType: keyof SRSContentTypeOptions;
   timeNow: Date;
+  reviewData?: ReviewDataTypes;
 }) => {
   const hasDueDate = reviewData?.due ? new Date(reviewData?.due) : null; // check if due yet
 
-  const cardDataRelativeToNow = hasDueDate ? reviewData : getEmptyCard();
+  const cardDataRelativeToNow = hasDueDate
+    ? reviewData
+    : (getEmptyCard() as ReviewDataTypes);
 
   const nextScheduledOptions = getNextScheduledOptions({
     card: cardDataRelativeToNow,
@@ -85,21 +87,22 @@ export const srsRetentionKey = {
   topic: 0.95,
   media: 0.93,
   snippet: 0.93,
-};
+} as Record<keyof SRSContentTypeOptions, number>;
+
 export const srsRetentionKeyTypes = {
   vocab: 'vocab',
   sentences: 'sentences',
   topic: 'topic',
   media: 'media',
   snippet: 'snippet',
-};
+} as SRSContentTypeOptions;
 
 const initFsrs = ({
   contentType,
 }: {
   contentType: keyof SRSContentTypeOptions;
 }) => {
-  const retentionKey = srsRetentionKey[contentType];
+  const retentionKey = srsRetentionKey[contentType] as number;
   const params = generatorParameters({
     maximum_interval: 1000,
     request_retention: retentionKey,
