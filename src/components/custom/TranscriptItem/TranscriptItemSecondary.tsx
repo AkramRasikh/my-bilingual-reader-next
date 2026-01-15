@@ -66,14 +66,14 @@ const TranscriptItemSecondary = ({ contentItem, handleSaveWord }) => {
 
   const hasBeenReviewed = contentItem?.reviewData?.due;
 
-  const dueStatus = contentItem?.dueStatus;
+  const isDue = contentItem?.isDue;
 
   return (
     <div
       data-testid='transcript-item-secondary'
       className={clsx(
         'rounded-2xl border-2 p-2 mt-2 flex flex-col gap-2 relative',
-        dueStatus === 'now'
+        isDue
           ? 'border-red-500'
           : hasBeenReviewed
           ? 'border-amber-500'

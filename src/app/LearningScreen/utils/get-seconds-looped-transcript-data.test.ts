@@ -26,10 +26,10 @@ describe('getSecondsLoopedTranscriptData', () => {
         prevSentence: null,
         thisSentence: 0,
         isUpForReview: false,
-        dueStatus: '',
         isDue: false,
         targetLangformatted: 'First sentence',
         wordsFromSentence: [],
+        helperReviewSentence: false,
       } as SentenceMapItemTypes,
       {
         id: '2',
@@ -41,10 +41,10 @@ describe('getSecondsLoopedTranscriptData', () => {
         prevSentence: 0,
         thisSentence: 5,
         isUpForReview: false,
-        dueStatus: '',
         isDue: false,
         targetLangformatted: 'Second sentence',
         wordsFromSentence: [],
+        helperReviewSentence: false,
       } as SentenceMapItemTypes,
       {
         id: '3',
@@ -56,10 +56,10 @@ describe('getSecondsLoopedTranscriptData', () => {
         prevSentence: 5,
         thisSentence: 10,
         isUpForReview: false,
-        dueStatus: '',
         isDue: false,
         targetLangformatted: 'Third sentence',
         wordsFromSentence: [],
+        helperReviewSentence: false,
       } as SentenceMapItemTypes,
     ];
 
@@ -117,10 +117,10 @@ describe('getSecondsLoopedTranscriptData', () => {
         prevSentence: null,
         thisSentence: 0,
         isUpForReview: false,
-        dueStatus: '',
         isDue: false,
         targetLangformatted: 'First sentence',
         wordsFromSentence: [],
+        helperReviewSentence: false,
       } as SentenceMapItemTypes,
       {
         id: '2',
@@ -132,10 +132,10 @@ describe('getSecondsLoopedTranscriptData', () => {
         prevSentence: 0,
         thisSentence: 10,
         isUpForReview: false,
-        dueStatus: '',
         isDue: false,
         targetLangformatted: 'Second sentence',
         wordsFromSentence: [],
+        helperReviewSentence: false,
       } as SentenceMapItemTypes,
     ];
 
@@ -186,10 +186,10 @@ describe('getSecondsLoopedTranscriptData', () => {
         prevSentence: null,
         thisSentence: 0,
         isUpForReview: false,
-        dueStatus: '',
         isDue: false,
         targetLangformatted: 'First sentence',
         wordsFromSentence: [],
+        helperReviewSentence: false,
       } as SentenceMapItemTypes,
       {
         id: '2',
@@ -201,10 +201,10 @@ describe('getSecondsLoopedTranscriptData', () => {
         prevSentence: 0,
         thisSentence: 5,
         isUpForReview: false,
-        dueStatus: '',
         isDue: false,
         targetLangformatted: 'Second sentence',
         wordsFromSentence: [],
+        helperReviewSentence: false,
       } as SentenceMapItemTypes,
       {
         id: '3',
@@ -216,10 +216,10 @@ describe('getSecondsLoopedTranscriptData', () => {
         prevSentence: 10,
         thisSentence: 20,
         isUpForReview: false,
-        dueStatus: '',
         isDue: false,
         targetLangformatted: 'Third sentence',
         wordsFromSentence: [],
+        helperReviewSentence: false,
       } as SentenceMapItemTypes,
     ];
 
@@ -247,10 +247,10 @@ describe('getSecondsLoopedTranscriptData', () => {
         prevSentence: null,
         thisSentence: 0,
         isUpForReview: false,
-        dueStatus: '',
         isDue: false,
         targetLangformatted: 'First sentence',
         wordsFromSentence: [],
+        helperReviewSentence: false,
       } as SentenceMapItemTypes,
       {
         id: '2',
@@ -262,10 +262,10 @@ describe('getSecondsLoopedTranscriptData', () => {
         prevSentence: 0,
         thisSentence: 5,
         isUpForReview: false,
-        dueStatus: '',
         isDue: false,
         targetLangformatted: 'Last sentence without end',
         wordsFromSentence: [],
+        helperReviewSentence: false,
       } as SentenceMapItemTypes,
     ];
 
@@ -304,10 +304,10 @@ describe('getSecondsLoopedTranscriptData', () => {
         prevSentence: null,
         thisSentence: 0,
         isUpForReview: false,
-        dueStatus: '',
         isDue: false,
         targetLangformatted: 'First sentence',
         wordsFromSentence: [],
+        helperReviewSentence: false,
       } as SentenceMapItemTypes,
       {
         id: '2',
@@ -319,10 +319,10 @@ describe('getSecondsLoopedTranscriptData', () => {
         prevSentence: 0,
         thisSentence: 5,
         isUpForReview: false,
-        dueStatus: '',
         isDue: false,
         targetLangformatted: 'Last sentence',
         wordsFromSentence: [],
+        helperReviewSentence: false,
       } as SentenceMapItemTypes,
     ];
 
@@ -371,10 +371,10 @@ describe('getSecondsLoopedTranscriptData', () => {
         prevSentence: null,
         thisSentence: 0,
         isUpForReview: false,
-        dueStatus: '',
         isDue: false,
         targetLangformatted: 'First sentence',
         wordsFromSentence: [],
+        helperReviewSentence: false,
       } as SentenceMapItemTypes,
     ];
 
@@ -401,10 +401,10 @@ describe('getSecondsLoopedTranscriptData', () => {
           prevSentence: null,
           thisSentence: 0,
           isUpForReview: false,
-          dueStatus: '',
           isDue: false,
           targetLangformatted: 'First sentence',
           wordsFromSentence: [],
+          helperReviewSentence: false,
         } as SentenceMapItemTypes,
       ];
 
@@ -433,10 +433,10 @@ describe('getSecondsLoopedTranscriptData', () => {
           prevSentence: null,
           thisSentence: 0,
           isUpForReview: false,
-          dueStatus: '',
           isDue: false,
           targetLangformatted: 'First sentence',
           wordsFromSentence: [],
+          helperReviewSentence: false,
         } as SentenceMapItemTypes,
       ];
 
@@ -469,10 +469,10 @@ describe('getSecondsLoopedTranscriptData', () => {
           prevSentence: null,
           thisSentence: 0,
           isUpForReview: false,
-          dueStatus: '',
           isDue: false,
           targetLangformatted: 'First sentence',
           wordsFromSentence: [],
+          helperReviewSentence: false,
         } as SentenceMapItemTypes,
       ];
 
@@ -508,10 +508,10 @@ describe('getSecondsLoopedTranscriptData', () => {
           prevSentence: null,
           thisSentence: 5,
           isUpForReview: false,
-          dueStatus: '',
           isDue: false,
           targetLangformatted: 'Partial overlap sentence',
           wordsFromSentence: [],
+          helperReviewSentence: false,
         } as SentenceMapItemTypes,
       ];
 

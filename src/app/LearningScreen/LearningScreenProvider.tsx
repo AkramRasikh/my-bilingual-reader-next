@@ -31,8 +31,6 @@ import {
 } from '../types/content-types';
 import { getUniqueSegmentOfArray } from './utils/get-unique-segment-of-array';
 
-export const LearningScreenContext = createContext(null);
-
 type LearningScreenProviderProps = React.PropsWithChildren<{
   selectedContentStateMemoized: ContentTypes & { contentIndex: number };
 }>;
@@ -42,6 +40,138 @@ type OverlappingTextTypes = {
   baseLang: string;
   suggestedFocusText: string;
 };
+
+interface HandleReviewFuncParams {
+  sentenceId: string | number;
+  isRemoveReview?: boolean;
+  nextDue: any;
+}
+
+interface HandleBreakdownSentenceParams {
+  sentenceId: string | number;
+  targetLang: string;
+}
+
+interface HandleUpdateSnippetReviewParams {
+  id: string | number;
+  fieldToUpdate: any;
+}
+
+interface GetLoopTranscriptSegmentParams {
+  startTime: number;
+  endTime: number;
+}
+
+export interface LearningScreenContextTypes {
+  handlePlayFromHere: (time: number) => void;
+  handleTimeUpdate: () => void;
+  handleLoadedMetadata: () => void;
+  mediaDuration: number | null;
+  ref: React.RefObject<HTMLVideoElement>;
+  currentTime: number;
+  formattedTranscriptState: FormattedTranscriptTypes[];
+  secondsState: number[];
+  masterPlayComprehensive: any;
+  isVideoPlaying: boolean;
+  setIsVideoPlaying: React.Dispatch<React.SetStateAction<boolean>>;
+  isInReviewMode: boolean;
+  setIsInReviewMode: React.Dispatch<React.SetStateAction<boolean>>;
+  isGenericItemLoadingState: any[];
+  setIsGenericItemLoadingState: React.Dispatch<React.SetStateAction<any[]>>;
+  breakdownSentencesArrState: any[];
+  setBreakdownSentencesArrState: React.Dispatch<React.SetStateAction<any[]>>;
+  overlappingSnippetDataState: any;
+  loopTranscriptState: any[];
+  setLoopTranscriptState: React.Dispatch<React.SetStateAction<any[]>>;
+  threeSecondLoopState: number | null;
+  setThreeSecondLoopState: React.Dispatch<React.SetStateAction<number | null>>;
+  progress: number;
+  setProgress: React.Dispatch<React.SetStateAction<number>>;
+  onlyShowEngState: boolean;
+  setOnlyShowEngState: React.Dispatch<React.SetStateAction<boolean>>;
+  showWordsBasketState: boolean;
+  setShowWordsBasketState: React.Dispatch<React.SetStateAction<boolean>>;
+  trackCurrentState: boolean;
+  setTrackCurrentState: React.Dispatch<React.SetStateAction<boolean>>;
+  contractThreeSecondLoopState: boolean;
+  setContractThreeSecondLoopState: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
+  masterPlay: any;
+  handleFromHere: (time: number) => void;
+  handlePause: () => void;
+  handleRewind: () => void;
+  handleJumpToSentenceViaKeys: (nextIndex: number) => void;
+  handleLoopThis3Second: () => void;
+  handleShiftLoopSentence: (shiftForward: boolean) => void;
+  handleLoopThisSentence: () => void;
+  handleUpdateLoopedSentence: (extendSentenceLoop: boolean) => void;
+  handleBreakdownMasterSentence: () => Promise<void>;
+  handleAddMasterToReview: () => Promise<void>;
+  handleIsEasyReviewShortCut: () => Promise<void>;
+  handleBulkReviews: () => Promise<void>;
+  handleReviewFunc: (params: HandleReviewFuncParams) => Promise<void>;
+  handleBreakdownSentence: (
+    params: HandleBreakdownSentenceParams,
+  ) => Promise<void>;
+  isBreakingDownSentenceArrState: any[];
+  handleStudyFromHere: () => void;
+  setStudyFromHereTimeState: React.Dispatch<React.SetStateAction<any>>;
+  studyFromHereTimeState: any;
+  transcriptRef: React.RefObject<any>;
+  scrollToElState: string;
+  selectedContentTitleState: string;
+  wordsForSelectedTopic: WordTypes[];
+  selectedContentState: ContentTypes & { contentIndex: number };
+  sentenceRepsState: number;
+  elapsed: number;
+  setElapsed: React.Dispatch<React.SetStateAction<number>>;
+  playFromThisContext: any;
+  setSentenceRepsState: React.Dispatch<React.SetStateAction<number>>;
+  sentencesNeedReview: any[];
+  sentencesPendingOrDue: any[];
+  contentMetaWordMemoized: any;
+  initialSentenceCount: number | null;
+  errorVideoState: boolean;
+  setErrorVideoState: React.Dispatch<React.SetStateAction<boolean>>;
+  handleJumpToFirstElInReviewTranscript: (isSecondIndex?: boolean) => void;
+  learnFormattedTranscript: any[];
+  sentencesForReviewMemoized: any[];
+  firstTime: number | null;
+  handleSaveSnippet: (snippetArgs: OverlappingTextTypes) => Promise<void>;
+  overlappingTextMemoized: OverlappingTextTypes | null;
+  savedSnippetsMemoized: any;
+  handleUpdateSnippetReview: (
+    snippetArgs: HandleUpdateSnippetReviewParams,
+  ) => Promise<void>;
+  handleDeleteSnippet: (
+    snippetId: string | number,
+    wordsFromSentence: boolean,
+  ) => Promise<void>;
+  contentSnippets: Snippet[];
+  sentenceMapMemoized: Record<string, SentenceMapItemTypes>;
+  handleQuickSaveSnippet: () => Promise<void>;
+  handleUpdateSnippet: (snippetToUpdate: any) => Promise<void>;
+  getSentenceDataOfOverlappingWordsDuringSave: (
+    thisSnippetsTime: number,
+    highlightedTextFromSnippet: string,
+  ) => string | number | null;
+  overlappedSentencesViableForReviewMemoized: any[];
+  handleAddOverlappedSnippetsToReview: () => Promise<void>;
+  setScrollToElState: React.Dispatch<React.SetStateAction<string>>;
+  enableWordReviewState: boolean;
+  setEnableWordReviewState: React.Dispatch<React.SetStateAction<boolean>>;
+  enableTranscriptReviewState: boolean;
+  setEnableTranscriptReviewState: React.Dispatch<React.SetStateAction<boolean>>;
+  enableSnippetReviewState: boolean;
+  setEnableSnippetReviewState: React.Dispatch<React.SetStateAction<boolean>>;
+  reviewIntervalState: number;
+  setReviewIntervalState: React.Dispatch<React.SetStateAction<number>>;
+  snippetsWithDueStatusMemoized: Snippet[];
+}
+
+export const LearningScreenContext =
+  createContext<LearningScreenContextTypes | null>(null);
 
 export const LearningScreenProvider = ({
   selectedContentStateMemoized,
@@ -91,7 +221,6 @@ export const LearningScreenProvider = ({
   const [mediaDuration, setMediaDuration] = useState<number | null>(null);
 
   const {
-    pureWordsMemoized,
     wordsState,
     breakdownSentence,
     sentenceReviewBulk,
@@ -120,61 +249,48 @@ export const LearningScreenProvider = ({
     let sentencesPendingOrDue = 0;
     let firstSentenceDueTime = null;
 
-    const formattedTranscriptMemoized: FormattedTranscriptTypes[] = content.map(
-      (item, index) => {
-        const hasBeenReviewed = item?.reviewData?.due;
-        if (hasBeenReviewed) {
-          sentencesPendingOrDue += 1;
-        }
+    const formattedTranscriptMemoized = content.map((item, index) => {
+      const hasBeenReviewed = item?.reviewData?.due;
+      if (hasBeenReviewed) {
+        sentencesPendingOrDue += 1;
+      }
+      const isDueNow = isDueCheck(item, now);
 
-        if (isDueCheck(item, now)) {
-          sentencesNeedReview += 1;
-          if (!isNumber(firstDueIndexMemoized)) {
-            if (enableTranscriptReviewState) {
-              firstSentenceDueTime = item.time;
-            }
-            firstDueIndexMemoized = index;
-            if (isNumber(firstDueIndexMemoized) && firstDueIndexMemoized > 0) {
-              firstDueIndexMemoized = firstDueIndexMemoized - 1;
-            }
+      if (isDueNow) {
+        sentencesNeedReview += 1;
+        if (!isNumber(firstDueIndexMemoized)) {
+          if (enableTranscriptReviewState) {
+            firstSentenceDueTime = item.time;
+          }
+          firstDueIndexMemoized = index;
+          if (isNumber(firstDueIndexMemoized) && firstDueIndexMemoized > 0) {
+            firstDueIndexMemoized = firstDueIndexMemoized - 1;
           }
         }
+      }
 
-        const isDueNow = hasBeenReviewed && new Date(hasBeenReviewed) < now;
-        const dueStatus = !hasBeenReviewed ? '' : isDueNow ? 'now' : 'pending';
+      const wordsFromSentence = findAllInstancesOfWordsInSentence(
+        item.targetLang,
+        wordsState,
+      );
 
-        const wordsFromSentence = findAllInstancesOfWordsInSentence(
-          item.targetLang,
-          wordsState,
-        );
+      const targetLangformatted = underlineWordsInSentence(
+        item.targetLang,
+        wordsFromSentence,
+      );
 
-        const targetLangformatted = underlineWordsInSentence(
-          item.targetLang,
-          wordsFromSentence,
-        );
+      const nextItem = content[index + 1];
+      const nextIsDueNow = isDueCheck(nextItem, now);
+      const helperReviewSentence = !!(index > 0 && nextIsDueNow);
 
-        // Check if next item is due
-        const nextItem = content[index + 1];
-        const nextHasBeenReviewed = nextItem?.reviewData?.due;
-        const nextIsDueNow =
-          nextHasBeenReviewed && new Date(nextHasBeenReviewed) < now;
-        const nextDueStatus = !nextHasBeenReviewed
-          ? ''
-          : nextIsDueNow
-          ? 'now'
-          : 'pending';
-        const helperReviewSentence = index > 0 && nextDueStatus === 'now';
-
-        return {
-          ...item,
-          dueStatus,
-          isDue: isDueNow,
-          targetLangformatted,
-          wordsFromSentence,
-          ...(helperReviewSentence && { helperReviewSentence: true }),
-        };
-      },
-    );
+      return {
+        ...item,
+        isDue: isDueNow,
+        targetLangformatted,
+        wordsFromSentence,
+        helperReviewSentence,
+      } as FormattedTranscriptTypes;
+    });
 
     // Step 3: Build prev/next lookup map
     const sentenceMapMemoized: Record<string, SentenceMapItemTypes> = {};
@@ -194,8 +310,6 @@ export const LearningScreenProvider = ({
       };
     }
 
-    // Step 4: Capture latest due info
-
     return {
       firstDueIndexMemoized,
       formattedTranscriptMemoized,
@@ -204,7 +318,7 @@ export const LearningScreenProvider = ({
       sentencesPendingOrDue,
       firstSentenceDueTime,
     };
-  }, [pureWordsMemoized, content, enableTranscriptReviewState, wordsState]);
+  }, [content, enableTranscriptReviewState, wordsState]);
 
   const handlePlayFromHere = (time: number) => {
     if (ref.current) {
@@ -498,7 +612,13 @@ export const LearningScreenProvider = ({
     return arrOfSeconds;
   }, [mediaDuration, selectedContentStateMemoized]);
 
-  const getLoopTranscriptSegment = ({ startTime, endTime }) => {
+  const getLoopTranscriptSegment = ({
+    startTime,
+    endTime,
+  }: {
+    startTime: number;
+    endTime: number;
+  }) => {
     const secondsStateSliceArr = getUniqueSegmentOfArray(
       secondsStateMemoized,
       startTime,
@@ -920,7 +1040,7 @@ export const LearningScreenProvider = ({
     const sentenceIdsForReview = [];
 
     learnFormattedTranscript.forEach((transcriptEl) => {
-      if (transcriptEl.dueStatus === 'now') {
+      if (transcriptEl.isDue) {
         sentenceIdsForReview.push(transcriptEl.id);
       }
     });

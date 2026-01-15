@@ -1,7 +1,10 @@
 import { useContext } from 'react';
-import { LearningScreenContext } from './LearningScreenProvider';
+import {
+  LearningScreenContext,
+  LearningScreenContextTypes,
+} from './LearningScreenProvider';
 
-const useLearningScreen = () => {
+const useLearningScreen = (): LearningScreenContextTypes => {
   const context = useContext(LearningScreenContext);
 
   if (!context)

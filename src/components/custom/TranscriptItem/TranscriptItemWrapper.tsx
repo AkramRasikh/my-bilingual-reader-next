@@ -19,13 +19,12 @@ const TranscriptItemWrapper = ({ children }) => {
   } = useTranscriptItem();
 
   const hasBeenReviewed = contentItem?.reviewData?.due;
-  const dueStatus = contentItem?.dueStatus;
-  const notDue = dueStatus !== 'now';
+  const isDue = contentItem?.isDue;
 
   const helperReviewSentence = contentItem?.helperReviewSentence;
   const showMiniReviewWidget =
     isInReviewMode &&
-    notDue &&
+    !isDue &&
     !helperReviewSentence &&
     !overrideMiniReviewState;
 
@@ -44,12 +43,12 @@ const TranscriptItemWrapper = ({ children }) => {
         isComprehensiveMode
           ? 'transition-all duration-300 overflow-hidden'
           : '',
-        dueStatus === 'now'
+        isDue
           ? 'border-red-500'
           : hasBeenReviewed
           ? 'border-amber-500'
           : 'border-blue-200',
-        dueStatus !== 'now' ? 'opacity-50' : 'opacity-100',
+        !isDue ? 'opacity-50' : 'opacity-100',
         isInReviewMode ? 'w-full' : '',
         isFirstInIndex ? 'mt-5' : '',
         collapseState

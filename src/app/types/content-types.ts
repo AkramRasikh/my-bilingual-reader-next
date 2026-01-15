@@ -26,11 +26,10 @@ export interface ContentTranscriptTypes {
 }
 
 export interface FormattedTranscriptTypes extends ContentTranscriptTypes {
-  dueStatus: '' | 'now' | 'pending';
   isDue: boolean;
   targetLangformatted: React.ReactNode;
   wordsFromSentence?: WordTypes[];
-  helperReviewSentence?: boolean;
+  helperReviewSentence: boolean;
 }
 
 export interface SentenceMapItemTypes extends FormattedTranscriptTypes {

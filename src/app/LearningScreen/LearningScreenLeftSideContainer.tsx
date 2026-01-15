@@ -48,9 +48,7 @@ const LearningScreenLeftSideContainer = () => {
   const timelineContentMemoized = useMemo(() => {
     return {
       words: wordsForSelectedTopic.filter((item) => item.isDue),
-      sentences: learnFormattedTranscript.filter(
-        (item) => item.dueStatus === 'now',
-      ),
+      sentences: learnFormattedTranscript.filter((item) => item.isDue),
     };
   }, [wordsForSelectedTopic, learnFormattedTranscript]);
 
