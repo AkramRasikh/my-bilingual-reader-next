@@ -20,7 +20,6 @@ const LearningScreenComprehensiveReview = () => {
   const {
     threeSecondLoopState,
     overlappingSnippetDataState,
-    breakdownSentencesArrState,
     masterPlay,
     isGenericItemLoadingState,
     isBreakingDownSentenceArrState,
@@ -33,7 +32,6 @@ const LearningScreenComprehensiveReview = () => {
     handlePause,
     handleFromHere,
     handleBreakdownSentence,
-    setBreakdownSentencesArrState,
     transcriptRef,
     scrollToElState,
     wordsForSelectedTopic,
@@ -262,7 +260,6 @@ const LearningScreenComprehensiveReview = () => {
               threeSecondLoopState={threeSecondLoopState}
               overlappingSnippetDataState={overlappingSnippetDataState}
               contentItem={contentItem}
-              breakdownSentencesArrState={breakdownSentencesArrState}
               masterPlay={masterPlay}
               isGenericItemLoadingState={isGenericItemLoadingState}
               handleSaveWord={handleSaveWord}
@@ -277,7 +274,6 @@ const LearningScreenComprehensiveReview = () => {
               handlePause={handlePause}
               handleFromHere={handleFromHere}
               handleBreakdownSentence={handleBreakdownSentence}
-              setBreakdownSentencesArrState={setBreakdownSentencesArrState}
               isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
               scrollToElState={scrollToElState}
               wordsForSelectedTopic={wordsForSelectedTopic}

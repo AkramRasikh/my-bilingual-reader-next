@@ -83,10 +83,6 @@ export interface LearningScreenContextTypes {
   setIsGenericItemLoadingState: React.Dispatch<
     React.SetStateAction<SentenceMapItemTypes['id'][]>
   >;
-  breakdownSentencesArrState: SentenceMapItemTypes['id'][];
-  setBreakdownSentencesArrState: React.Dispatch<
-    React.SetStateAction<SentenceMapItemTypes['id'][]>
-  >;
   overlappingSnippetDataState: OverlappingSnippetData[];
   loopTranscriptState: FormattedTranscriptTypes[];
   setLoopTranscriptState: React.Dispatch<

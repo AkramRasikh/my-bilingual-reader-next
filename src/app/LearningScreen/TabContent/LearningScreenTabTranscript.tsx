@@ -14,7 +14,6 @@ const LearningScreenTabTranscript = () => {
   const {
     threeSecondLoopState,
     overlappingSnippetDataState,
-    breakdownSentencesArrState,
     masterPlay,
     isGenericItemLoadingState,
     isBreakingDownSentenceArrState,
@@ -27,7 +26,6 @@ const LearningScreenTabTranscript = () => {
     handlePause,
     handleFromHere,
     handleBreakdownSentence,
-    setBreakdownSentencesArrState,
     transcriptRef,
     scrollToElState,
     wordsForSelectedTopic,
@@ -118,7 +116,6 @@ const LearningScreenTabTranscript = () => {
                   threeSecondLoopState={threeSecondLoopState}
                   overlappingSnippetDataState={overlappingSnippetDataState}
                   contentItem={contentItem}
-                  breakdownSentencesArrState={breakdownSentencesArrState}
                   masterPlay={masterPlay}
                   isGenericItemLoadingState={isGenericItemLoadingState}
                   handleSaveWord={handleSaveWord}
@@ -133,7 +130,6 @@ const LearningScreenTabTranscript = () => {
                   handlePause={handlePause}
                   handleFromHere={handleFromHere}
                   handleBreakdownSentence={handleBreakdownSentence}
-                  setBreakdownSentencesArrState={setBreakdownSentencesArrState}
                   isBreakingDownSentenceArrState={
                     isBreakingDownSentenceArrState
                   }
