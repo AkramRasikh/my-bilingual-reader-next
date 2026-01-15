@@ -202,14 +202,14 @@ export const LearningScreenProvider = ({
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState<
     number | null
   >(null);
-  const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState(
-    [],
-  );
+  const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState<
+    SentenceMapItemTypes['id'][]
+  >([]);
   const [isBreakingDownSentenceArrState, setIsBreakingDownSentenceArrState] =
     useState([]);
-  const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState(
-    [],
-  );
+  const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState<
+    SentenceMapItemTypes['id'][]
+  >([]);
 
   const [loopTranscriptState, setLoopTranscriptState] = useState<
     FormattedTranscriptTypes[]
@@ -945,12 +945,6 @@ export const LearningScreenProvider = ({
       setBreakdownSentencesArrState(updatedList);
     }
   };
-
-  console.log('## breakdownSentencesArrState 1', breakdownSentencesArrState);
-  console.log(
-    '## isBreakingDownSentenceArrState 2',
-    isBreakingDownSentenceArrState,
-  );
 
   const handleBreakdownMasterSentence = async () => {
     if (!masterPlayComprehensive) return null;
