@@ -84,6 +84,8 @@ interface HandleSaveWordCallTypes {
   contextSentence?: string;
   meaning?: string;
   isGoogle?: boolean;
+  originalContext?: string;
+  time?: number;
 }
 
 interface HandleSaveWordResponseCallTypes {
