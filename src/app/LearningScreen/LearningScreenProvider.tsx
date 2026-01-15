@@ -61,6 +61,10 @@ interface HandleUpdateSnippetReviewParams {
   fieldToUpdate: Partial<Snippet>;
 }
 
+interface SentencesForReviewMemoizedProps extends WordTypes {
+  time?: number;
+}
+
 export interface LearningScreenContextTypes {
   handlePlayFromHere: (time: number) => void;
   handleTimeUpdate: () => void;
@@ -143,7 +147,7 @@ export interface LearningScreenContextTypes {
   setErrorVideoState: React.Dispatch<React.SetStateAction<boolean>>;
   handleJumpToFirstElInReviewTranscript: (isSecondIndex?: boolean) => void;
   learnFormattedTranscript: FormattedTranscriptTypes[];
-  sentencesForReviewMemoized: SentenceMapItemTypes[];
+  sentencesForReviewMemoized: SentencesForReviewMemoizedProps[];
   firstTime: number | null;
   handleSaveSnippet: (snippetArgs: OverlappingTextTypes) => Promise<void>;
   overlappingTextMemoized: OverlappingTextTypes | null;
@@ -206,7 +210,7 @@ export const LearningScreenProvider = ({
     SentenceMapItemTypes['id'][]
   >([]);
   const [isBreakingDownSentenceArrState, setIsBreakingDownSentenceArrState] =
-    useState([]);
+    useState<SentenceMapItemTypes['id'][]>([]);
   const [breakdownSentencesArrState, setBreakdownSentencesArrState] = useState<
     SentenceMapItemTypes['id'][]
   >([]);
@@ -987,7 +991,6 @@ export const LearningScreenProvider = ({
       await handleReviewFunc({
         sentenceId: masterPlayComprehensive.id,
         isRemoveReview: Boolean(sentenceHasReview),
-        nextDue: null,
       });
       setSentenceRepsState(sentenceRepsState + 1);
     } finally {
@@ -1071,7 +1074,7 @@ export const LearningScreenProvider = ({
       return [];
     }
     const now = new Date();
-    const sentencesForReviewMemoized = [];
+    const sentencesForReviewMemoized = [] as SentencesForReviewMemoizedProps[];
     wordsForSelectedTopicMemoized.forEach((wordItem) => {
       const firstContext = wordItem.contexts[0];
 
@@ -1083,7 +1086,7 @@ export const LearningScreenProvider = ({
           ...wordItem,
           time: learnFormattedTranscript.find(
             (item) => item.id === firstContext,
-          ).time,
+          )?.time,
         });
       }
     });
