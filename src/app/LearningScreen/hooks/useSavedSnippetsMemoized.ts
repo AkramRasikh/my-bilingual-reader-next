@@ -3,7 +3,16 @@ import { threeSecondLoopLogicLegacy } from './useManageThreeSecondLoopLegacy';
 import {
   ContentTypes,
   FormattedTranscriptTypes,
+  Snippet,
 } from '@/app/types/content-types';
+import { OverlappingSnippetData } from '@/app/types/shared-types';
+
+export interface SavedSnippetsMemoizedProps extends OverlappingSnippetData {
+  snippetId: Snippet['id'];
+  time: Snippet['time'];
+  isContracted?: Snippet['isContracted'];
+  isPreSnippet?: Snippet['isPreSnippet'];
+}
 
 export const useSavedSnippetsMemoized = (
   snippets: ContentTypes['snippets'] | undefined,
@@ -11,7 +20,7 @@ export const useSavedSnippetsMemoized = (
   loopDataRef: React.RefObject<any>,
 ) => {
   return useMemo(() => {
-    const allRes = [];
+    const allRes = [] as SavedSnippetsMemoizedProps[];
 
     if (!snippets) {
       return [];

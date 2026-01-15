@@ -11,7 +11,10 @@ import {
 } from '../srs-utils/srs-algo';
 import useManageLoopInit from './hooks/useManageLoopInit';
 import { useLoopSecondsHook } from './hooks/useMapTranscriptToSeconds';
-import { useSavedSnippetsMemoized } from './hooks/useSavedSnippetsMemoized';
+import {
+  SavedSnippetsMemoizedProps,
+  useSavedSnippetsMemoized,
+} from './hooks/useSavedSnippetsMemoized';
 import { useOverlappedSentencesViableForReviewMemo } from './hooks/useOverlappedSentencesViableForReviewMemo';
 import { isDueCheck } from '@/utils/is-due-check';
 import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
@@ -146,7 +149,7 @@ export interface LearningScreenContextTypes {
   firstTime: number | null;
   handleSaveSnippet: (snippetArgs: OverlappingTextTypes) => Promise<void>;
   overlappingTextMemoized: OverlappingTextTypes | null;
-  savedSnippetsMemoized: Snippet;
+  savedSnippetsMemoized: SavedSnippetsMemoizedProps[];
   handleUpdateSnippetReview: (
     snippetArgs: HandleUpdateSnippetReviewParams,
   ) => Promise<void>;
