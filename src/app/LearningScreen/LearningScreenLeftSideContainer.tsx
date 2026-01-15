@@ -55,6 +55,8 @@ const LearningScreenLeftSideContainer = () => {
   }, [wordsForSelectedTopic, learnFormattedTranscript]);
 
   const { words, sentences } = timelineContentMemoized;
+  const noTimelineEls =
+    !sentences.length && !words.length && !snippetsWithDueStatusMemoized.length;
 
   return (
     <div className='flex-1 w-xl mx-auto'>
@@ -94,7 +96,7 @@ const LearningScreenLeftSideContainer = () => {
           </div>
         </div>
       )}
-      {mediaDuration ? (
+      {mediaDuration && !noTimelineEls ? (
         <TranscriptTimeline
           videoDuration={mediaDuration}
           words={words}
