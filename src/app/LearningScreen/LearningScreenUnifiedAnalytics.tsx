@@ -75,13 +75,13 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
       </p>
       <hr className='my-1' />
       <p className='flex gap-2 text-xs font-medium w-fit m-auto py-2'>
-        <div
+        <span
           className={clsx('relative', isLoadingBulkState ? 'opacity-50' : '')}
         >
           {isLoadingBulkState && (
-            <div className='absolute right-4/10 top-1/8'>
+            <span className='absolute right-4/10 top-1/8'>
               <LoadingSpinner />
-            </div>
+            </span>
           )}
           <span className='m-auto mr-2' data-testid='bulk-review-count'>
             Bulk Review: {overlappedSentencesViableForReviewMemoized?.length}
@@ -100,7 +100,7 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
           >
             <SaveAllIcon />
           </Button>
-        </div>
+        </span>
       </p>
       <p className='flex gap-2 text-xs font-medium  w-fit m-auto'>
         <span className='m-auto' data-testid='analytics-reps-count'>
