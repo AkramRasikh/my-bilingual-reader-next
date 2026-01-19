@@ -217,10 +217,10 @@ const LearningScreenComprehensiveReview = () => {
       />
       {postSnippetsState?.length > 0 ? (
         <div className='flex flex-col gap-2 mb-2'>
-          {postSnippetsState.map((item, index) => {
+          {postSnippetsState.map((item) => {
             return (
               <LearningScreenSnippetReview
-                key={index}
+                key={item.id}
                 item={item}
                 handleLoopHere={handleLoopHere}
                 isVideoPlaying={isVideoPlaying}
