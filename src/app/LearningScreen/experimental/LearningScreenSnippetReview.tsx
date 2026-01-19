@@ -46,12 +46,7 @@ const LearningScreenSnippetReview = ({
     selectedContentTitleState,
     sentenceMapMemoized,
   } = useLearningScreen();
-  const {
-    pureWordsMemoized,
-    languageSelectedState,
-    wordsState,
-    handleSaveWord,
-  } = useFetchData();
+  const { languageSelectedState, wordsState, handleSaveWord } = useFetchData();
 
   const onMoveLeft = () => {
     setStartIndexKeyState(startIndexKeyState - 1);

@@ -255,7 +255,7 @@ test.describe('Transcript item menu interactions and review', () => {
   });
 });
 
-test.describe.only('Word(s) from transcript item', () => {
+test.describe('Word(s) from transcript item', () => {
   test('successfully save word', async ({ page }) => {
     // Setup API mocking for saveWord
     await page.route('**/api/saveWord', async (route) => {
@@ -376,12 +376,15 @@ test.describe.only('Word(s) from transcript item', () => {
 
       // Create a range within the span's text node
       const range = document.createRange();
-      
+
       // Find the actual text node
       let textNode = null;
-      
+
       // Check if firstChild is a text node
-      if (targetSpan.firstChild && targetSpan.firstChild.nodeType === Node.TEXT_NODE) {
+      if (
+        targetSpan.firstChild &&
+        targetSpan.firstChild.nodeType === Node.TEXT_NODE
+      ) {
         textNode = targetSpan.firstChild;
       } else {
         // Walk through child nodes to find text node
@@ -399,7 +402,7 @@ test.describe.only('Word(s) from transcript item', () => {
         const walker = document.createTreeWalker(
           targetSpan,
           NodeFilter.SHOW_TEXT,
-          null
+          null,
         );
         textNode = walker.nextNode();
       }
@@ -408,14 +411,17 @@ test.describe.only('Word(s) from transcript item', () => {
         // Find the offset within this specific text node
         const textNodeContent = textNode.textContent || '';
         const localIndex = textNodeContent.indexOf(targetText);
-        
+
         if (localIndex !== -1) {
           range.setStart(textNode, localIndex);
           range.setEnd(textNode, localIndex + targetText.length);
         } else {
           // If not found in this node, use the original index
           range.setStart(textNode, targetIndex);
-          range.setEnd(textNode, Math.min(targetIndex + targetText.length, textNodeContent.length));
+          range.setEnd(
+            textNode,
+            Math.min(targetIndex + targetText.length, textNodeContent.length),
+          );
         }
       } else {
         // Last resort: select the entire span
@@ -639,12 +645,15 @@ test.describe.only('Word(s) from transcript item', () => {
 
       // Create a range within the span's text node
       const range = document.createRange();
-      
+
       // Find the actual text node
       let textNode = null;
-      
+
       // Check if firstChild is a text node
-      if (targetSpan.firstChild && targetSpan.firstChild.nodeType === Node.TEXT_NODE) {
+      if (
+        targetSpan.firstChild &&
+        targetSpan.firstChild.nodeType === Node.TEXT_NODE
+      ) {
         textNode = targetSpan.firstChild;
       } else {
         // Walk through child nodes to find text node
@@ -661,7 +670,7 @@ test.describe.only('Word(s) from transcript item', () => {
         const walker = document.createTreeWalker(
           targetSpan,
           NodeFilter.SHOW_TEXT,
-          null
+          null,
         );
         textNode = walker.nextNode();
       }
@@ -669,13 +678,16 @@ test.describe.only('Word(s) from transcript item', () => {
       if (textNode && textNode.nodeType === Node.TEXT_NODE) {
         const textNodeContent = textNode.textContent || '';
         const localIndex = textNodeContent.indexOf(targetText);
-        
+
         if (localIndex !== -1) {
           range.setStart(textNode, localIndex);
           range.setEnd(textNode, localIndex + targetText.length);
         } else {
           range.setStart(textNode, targetIndex);
-          range.setEnd(textNode, Math.min(targetIndex + targetText.length, textNodeContent.length));
+          range.setEnd(
+            textNode,
+            Math.min(targetIndex + targetText.length, textNodeContent.length),
+          );
         }
       } else {
         range.selectNodeContents(targetSpan);
@@ -863,12 +875,15 @@ test.describe.only('Word(s) from transcript item', () => {
 
       // Create a range within the span's text node
       const range = document.createRange();
-      
+
       // Find the actual text node
       let textNode = null;
-      
+
       // Check if firstChild is a text node
-      if (targetSpan.firstChild && targetSpan.firstChild.nodeType === Node.TEXT_NODE) {
+      if (
+        targetSpan.firstChild &&
+        targetSpan.firstChild.nodeType === Node.TEXT_NODE
+      ) {
         textNode = targetSpan.firstChild;
       } else {
         // Walk through child nodes to find text node
@@ -885,7 +900,7 @@ test.describe.only('Word(s) from transcript item', () => {
         const walker = document.createTreeWalker(
           targetSpan,
           NodeFilter.SHOW_TEXT,
-          null
+          null,
         );
         textNode = walker.nextNode();
       }
@@ -893,13 +908,16 @@ test.describe.only('Word(s) from transcript item', () => {
       if (textNode && textNode.nodeType === Node.TEXT_NODE) {
         const textNodeContent = textNode.textContent || '';
         const localIndex = textNodeContent.indexOf(targetText);
-        
+
         if (localIndex !== -1) {
           range.setStart(textNode, localIndex);
           range.setEnd(textNode, localIndex + targetText.length);
         } else {
           range.setStart(textNode, targetIndex);
-          range.setEnd(textNode, Math.min(targetIndex + targetText.length, textNodeContent.length));
+          range.setEnd(
+            textNode,
+            Math.min(targetIndex + targetText.length, textNodeContent.length),
+          );
         }
       } else {
         range.selectNodeContents(targetSpan);

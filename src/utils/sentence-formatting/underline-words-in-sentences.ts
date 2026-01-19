@@ -34,7 +34,10 @@ export const underlineWordsInSentence = (
   wordsFromThisSentence: WordTypes[],
   skipChunking: boolean = false,
 ) => {
-  if (wordsFromThisSentence?.length === 0 || sentence.length === 0) {
+  if (
+    !skipChunking &&
+    (wordsFromThisSentence?.length === 0 || sentence.length === 0)
+  ) {
     return [{ text: sentence, savedWords: [] }];
   }
 
