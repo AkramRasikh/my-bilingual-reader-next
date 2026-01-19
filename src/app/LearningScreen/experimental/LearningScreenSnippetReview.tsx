@@ -41,7 +41,7 @@ const LearningScreenSnippetReview = ({
 
   const {
     handleUpdateSnippet,
-    wordsForSelectedTopicMemoized,
+    wordsForSelectedTopic,
     getSentenceDataOfOverlappingWordsDuringSave,
     selectedContentTitleState,
     sentenceMapMemoized,
@@ -83,7 +83,6 @@ const LearningScreenSnippetReview = ({
       } else {
         console.log('## no belonding sentence found');
       }
-    } catch (error) {
     } finally {
       setHighlightedTextState('');
       setWordPopUpState([]);
@@ -132,8 +131,8 @@ const LearningScreenSnippetReview = ({
         isPreSnippet: false,
         focusedText: textMatch,
       });
-    } catch (error) {
-      console.log('## onUpdateSnippet error', error);
+      setStartIndexKeyState(0);
+      setEndIndexKeyState(0);
     } finally {
       setIsLoadingSaveSnippetState(false);
     }
@@ -224,7 +223,7 @@ const LearningScreenSnippetReview = ({
               handleMouseEnter={handleMouseEnter}
               wordPopUpState={wordPopUpState}
               setWordPopUpState={setWordPopUpState}
-              wordsForSelectedTopic={wordsForSelectedTopicMemoized}
+              wordsForSelectedTopic={wordsForSelectedTopic}
               handleDeleteWordDataProvider={() => {}}
               wordsFromSentence={wordsFromSentence}
               languageSelectedState={languageSelectedState}

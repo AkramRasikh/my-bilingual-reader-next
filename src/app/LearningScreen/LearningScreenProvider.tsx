@@ -160,7 +160,9 @@ export interface LearningScreenContextTypes {
   contentSnippets: Snippet[];
   sentenceMapMemoized: Record<string, SentenceMapItemTypes>;
   handleQuickSaveSnippet: () => Promise<void | null>;
-  handleUpdateSnippet: (snippetToUpdate: Snippet) => Promise<void>;
+  handleUpdateSnippet: (
+    snippetToUpdate: Partial<Snippet> & Pick<Snippet, 'id'>,
+  ) => Promise<void>;
   getSentenceDataOfOverlappingWordsDuringSave: (
     thisSnippetsTime: number,
     highlightedTextFromSnippet: string,
@@ -468,7 +470,9 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const handleUpdateSnippet = async (snippetToUpdate: Snippet) => {
+  const handleUpdateSnippet = async (
+    snippetToUpdate: Partial<Snippet> & Pick<Snippet, 'id'>,
+  ) => {
     const contentSnippets = selectedContentStateMemoized?.snippets;
     if (!contentSnippets || contentSnippets.length === 0) {
       return;
@@ -685,8 +689,8 @@ export const LearningScreenProvider = ({
     currentTime && loopSecondsState.length > 0
       ? loopSecondsState[Math.floor(currentTime)]
       : secondsStateMemoized.length > 0
-      ? secondsStateMemoized[Math.floor(currentTime)]
-      : '';
+        ? secondsStateMemoized[Math.floor(currentTime)]
+        : '';
 
   const masterPlayComprehensive = sentenceMapMemoized
     ? sentenceMapMemoized[masterPlay]
@@ -744,8 +748,8 @@ export const LearningScreenProvider = ({
       nextIndex === 1
         ? masterPlayComprehensive?.nextSentence
         : nextIndex === 0
-        ? masterPlayComprehensive?.thisSentence
-        : masterPlayComprehensive?.prevSentence;
+          ? masterPlayComprehensive?.thisSentence
+          : masterPlayComprehensive?.prevSentence;
 
     if (isNumber(nextTimeToFollow) && nextTimeToFollow >= 0) {
       handleFromHere(nextTimeToFollow);
