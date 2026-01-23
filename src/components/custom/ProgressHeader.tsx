@@ -13,7 +13,7 @@ const ProgressHeader = ({
   small = false,
 }: ProgressHeaderProps) => {
   return (
-    <div className='flex gap-2' data-testid='progress-header'>
+    <div className='flex gap-2 justify-center' data-testid='progress-header'>
       <Progress
         value={progressState}
         className={clsx(' my-auto', small ? 'w-7/12' : 'w-full')}
