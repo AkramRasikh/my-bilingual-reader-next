@@ -792,9 +792,11 @@ export const LearningScreenProvider = ({
 
     const firstWordDueTime =
       enableWordReviewState && dueWords.length > 0
-        ? dueWords.reduce((earliest, curr) =>
-            curr.time < earliest.time ? curr : earliest,
-          ).time
+        ? (dueWords.reduce((earliest, curr) =>
+            (curr.time ?? Infinity) < (earliest.time ?? Infinity)
+              ? curr
+              : earliest,
+          ).time ?? null)
         : null;
 
     return {
@@ -1119,7 +1121,7 @@ export const LearningScreenProvider = ({
       firstSentenceDueTime,
     ];
 
-    const validTimes = timeArrays.filter((time) => time !== null);
+    const validTimes = timeArrays.filter((time) => time !== null) as number[];
     return validTimes.length > 0 ? Math.min(...validTimes) : null;
   }, [
     isInReviewMode,
