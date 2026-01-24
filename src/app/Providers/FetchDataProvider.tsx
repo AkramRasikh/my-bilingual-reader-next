@@ -102,10 +102,11 @@ interface UpdateWordDataProviderCallTypes {
 
 interface UpdateSentenceDataCallTypes {
   sentenceId: ContentTranscriptTypes['id'];
-  fieldToUpdate: Partial<ContentTranscriptTypes>;
+  fieldToUpdate: Partial<ContentTranscriptTypes | { removeReview: boolean }>;
   contentIndex: ContentStateTypes['contentIndex'];
   indexKey: ContentStateTypes['id'];
   isRemoveReview?: boolean;
+  topicName?: string;
 }
 
 interface AddImageDataProviderCallTypes {
@@ -164,7 +165,7 @@ export interface FetchDataContextTypes {
     params: HandleDeleteWordDataProviderCallTypes,
   ) => void;
   updateWordDataProvider: (params: UpdateWordDataProviderCallTypes) => void;
-  updateSentenceData: (params: UpdateSentenceDataCallTypes) => void;
+  updateSentenceData: (params: UpdateSentenceDataCallTypes) => boolean | void;
   wordsToReviewOnMountState: number;
   addImageDataProvider: (params: AddImageDataProviderCallTypes) => void;
   wordsToReviewGivenOriginalContextId: Record<WordTypes['id'], WordTypes[]>;
