@@ -798,6 +798,7 @@ export const LearningScreenProvider = ({
               : earliest,
           ).time ?? null)
         : null;
+    // comeback to fix this!
 
     return {
       contentMetaWordMemoized: dueWords,
