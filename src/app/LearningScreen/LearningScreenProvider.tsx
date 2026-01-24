@@ -6,7 +6,6 @@ import {
   getEmptyCard,
   getNextScheduledOptions,
   srsCalculationAndText,
-  srsRetentionKey,
   srsRetentionKeyTypes,
 } from '../srs-utils/srs-algo';
 import useManageLoopInit from './hooks/useManageLoopInit';
@@ -407,7 +406,7 @@ export const LearningScreenProvider = ({
     const timeNow = new Date();
 
     const { nextScheduledOptions } = srsCalculationAndText({
-      contentType: srsRetentionKey.snippet,
+      contentType: srsRetentionKeyTypes.snippet,
       timeNow,
     });
     const startTime = currentTime - 1.5;
@@ -510,7 +509,7 @@ export const LearningScreenProvider = ({
     const timeNow = new Date();
 
     const { nextScheduledOptions } = srsCalculationAndText({
-      contentType: srsRetentionKey.snippet,
+      contentType: srsRetentionKeyTypes.snippet,
       timeNow,
     });
 
