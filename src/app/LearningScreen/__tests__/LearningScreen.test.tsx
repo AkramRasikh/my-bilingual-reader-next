@@ -95,6 +95,26 @@ const checkingMainTranscriptContent = () => {
   );
 };
 
+const checkingForLearningActionBar = (isInReviewMode: boolean) => {
+  if (isInReviewMode) {
+    const learningScreenActionBarQueried = screen.queryByTestId(
+      'learning-screen-action-bar',
+    );
+    expect(learningScreenActionBarQueried).not.toBeInTheDocument();
+  } else {
+    const learningScreenActionBar = screen.getByTestId(
+      'learning-screen-action-bar',
+    );
+    expect(learningScreenActionBar).toBeInTheDocument();
+    const currentMediaPositionBtn = screen.getByTestId('current-button');
+    expect(currentMediaPositionBtn).toBeInTheDocument();
+    const studyHereButton = screen.getByTestId('study-here-button');
+    expect(studyHereButton).toHaveTextContent('Study here 1');
+    const checkpointButton = screen.getByTestId('checkpoint-button');
+    expect(checkpointButton).toBeInTheDocument();
+  }
+};
+
 const checkingMediaActionButtons = () => {
   const englishSwitch = screen.getByTestId('english-switch');
   expect(englishSwitch).toBeChecked();
@@ -103,13 +123,6 @@ const checkingMediaActionButtons = () => {
   expect(trackMediaElLabel).toBeEnabled();
   expect(screen.getByTestId('countup-timer-button')).toBeInTheDocument();
   expect(screen.getByTestId('countdown-timer-button')).toBeInTheDocument();
-
-  const currentMediaPositionBtn = screen.getByTestId('current-button');
-  expect(currentMediaPositionBtn).toBeInTheDocument();
-  const studyHereButton = screen.getByTestId('study-here-button');
-  expect(studyHereButton).toHaveTextContent('Study here 1');
-  const checkpointButton = screen.getByTestId('checkpoint-button');
-  expect(checkpointButton).toBeInTheDocument();
 };
 
 const checkAllTranscriptItems = () => {
@@ -620,11 +633,13 @@ describe('LearningScreen - studying new content', () => {
       checkTabTriggersOnLoad();
       checkingMainTranscriptContent();
       checkingTimelineMarkers();
+      checkingForLearningActionBar(false);
       checkAllTranscriptItems();
       checkingMediaActionButtons();
       await addFirstSentenceToReview();
       await addSecondSentenceToReview();
       startReviewMode();
+      checkingForLearningActionBar(true);
       await reviewFirstSentenceAgain();
       await removeSecondSentenceFromReview();
     });

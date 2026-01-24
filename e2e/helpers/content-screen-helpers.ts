@@ -182,9 +182,13 @@ export async function checkPrePostReviewToggle(page: Page) {
 // Helper function to check initial action bar button visibility
 async function checkInitialActionButtons(page: Page) {
   // Check Study here button is visible
+  const learningScreenActionBar = page.getByTestId(
+    'learning-screen-action-bar',
+  );
   const studyHereButton = page.getByTestId('study-here-button');
   await expect(studyHereButton).toBeVisible();
   await expect(studyHereButton).toContainText('Study here');
+  await expect(learningScreenActionBar).toBeVisible();
 
   // Check Current button is visible
   const currentButton = page.getByTestId('current-button');

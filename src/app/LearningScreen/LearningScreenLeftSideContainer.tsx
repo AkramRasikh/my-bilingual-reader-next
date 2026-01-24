@@ -32,6 +32,7 @@ const LearningScreenLeftSideContainer = () => {
     handleSaveSnippet,
     overlappingTextMemoized,
     snippetsWithDueStatusMemoized,
+    isInReviewMode,
   } = useLearningScreen();
   const { languageSelectedState, handleSaveWord } = useFetchData();
 
@@ -106,7 +107,7 @@ const LearningScreenLeftSideContainer = () => {
           firstTime={firstTime}
         />
       ) : null}
-      <LearningScreenActionBar />
+      {!isInReviewMode && <LearningScreenActionBar />}
       {masterPlayComprehensive && (
         <TranscriptItemSecondary
           contentItem={masterPlayComprehensive}

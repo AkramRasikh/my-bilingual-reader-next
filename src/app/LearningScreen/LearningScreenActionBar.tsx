@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 
 const LearningScreenActionBar = () => {
   const {
-    isInReviewMode,
     loopTranscriptState,
     handleBulkReviews,
     handleStudyFromHere,
@@ -37,29 +36,28 @@ const LearningScreenActionBar = () => {
   const studyFromHereTimeStateNumber = isNumber(studyFromHereTimeState);
 
   return (
-    <div className='flex flex-col items-start gap-2 my-2 p-2'>
+    <div
+      className='flex flex-col items-start gap-2 my-2 p-2'
+      data-testid='learning-screen-action-bar'
+    >
       <div className='flex gap-2 flex-wrap'>
-        {!isInReviewMode && (
-          <>
-            <Button
-              onClick={handleStudyFromHere}
-              variant={'outline'}
-              data-testid='study-here-button'
-            >
-              Study here {studyFromHereTimeState + 1}
-            </Button>
-            {studyFromHereTimeStateNumber && (
-              <Button
-                variant={'destructive'}
-                data-testid='clear-button'
-                onClick={() => setStudyFromHereTimeState(null)}
-              >
-                Clear
-              </Button>
-            )}
-            <div className='w-px h-8 my-auto bg-gray-400' />
-          </>
+        <Button
+          onClick={handleStudyFromHere}
+          variant={'outline'}
+          data-testid='study-here-button'
+        >
+          Study here {studyFromHereTimeState + 1}
+        </Button>
+        {studyFromHereTimeStateNumber && (
+          <Button
+            variant={'destructive'}
+            data-testid='clear-button'
+            onClick={() => setStudyFromHereTimeState(null)}
+          >
+            Clear
+          </Button>
         )}
+        <div className='w-px h-8 my-auto bg-gray-400' />
         <Button
           data-testid='current-button'
           variant={'link'}
@@ -67,16 +65,14 @@ const LearningScreenActionBar = () => {
         >
           Current
         </Button>
-        {!isInReviewMode && (
-          <Button
-            data-testid='checkpoint-button'
-            variant='link'
-            onClick={scrollToLastLeftOff}
-          >
-            Checkpoint
-          </Button>
-        )}
-        {isLooping && !isInReviewMode && (
+        <Button
+          data-testid='checkpoint-button'
+          variant='link'
+          onClick={scrollToLastLeftOff}
+        >
+          Checkpoint
+        </Button>
+        {isLooping && (
           <Button variant={'outline'} onClick={handleBulkReviews}>
             Loop ➡️ Review (shft + ⤶)
           </Button>

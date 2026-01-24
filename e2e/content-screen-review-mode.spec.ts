@@ -66,6 +66,11 @@ async function checkPrePostReviewToggle(page: Page) {
   const sentencesLabel = page.locator('label[for="sentences-toggle"]');
   const snippetsLabel = page.locator('label[for="snippets-toggle"]');
 
+  const learningScreenActionBar = page.getByTestId(
+    'learning-screen-action-bar',
+  );
+  await expect(learningScreenActionBar).toBeVisible();
+
   await expect(wordsLabel).toContainText('🔤 (0)');
   await expect(sentencesLabel).toContainText('📝 (0)');
   await expect(snippetsLabel).toContainText('✂️ (0)');
@@ -84,6 +89,11 @@ async function checkPrePostReviewToggle(page: Page) {
   await expect(wordsLabel).toContainText('🔤 (5)');
   await expect(sentencesLabel).toContainText('📝 (0)');
   await expect(snippetsLabel).toContainText('✂️ (0)');
+
+  const learningScreenActionBarNotVisible = page.getByTestId(
+    'learning-screen-action-bar',
+  );
+  await expect(learningScreenActionBarNotVisible).not.toBeVisible();
 }
 
 // Helper function to check review variant checkboxes
