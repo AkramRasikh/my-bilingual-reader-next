@@ -28,10 +28,9 @@ export type ContentAction =
       type: 'removeReview';
     }
   | {
-      fields:
-        | ContentStateTypes['nextReview']
-        | ContentStateTypes['reviewHistory']
-        | ContentStateTypes['snippets'];
+      fields: Partial<
+        Pick<ContentStateTypes, 'nextReview' | 'reviewHistory' | 'snippets'>
+      >;
       contentIndex: ContentStateTypes['contentIndex'];
       type: 'updateMetaData';
     }

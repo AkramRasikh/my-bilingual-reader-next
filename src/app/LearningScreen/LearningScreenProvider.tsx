@@ -499,6 +499,10 @@ export const LearningScreenProvider = ({
 
   const handleSaveSnippet = async (snippetArgs: OverlappingTextTypes) => {
     const contentSnippets = selectedContentStateMemoized?.snippets || [];
+    if (!threeSecondLoopState) {
+      return null;
+    }
+
     const hasThisSnippet =
       contentSnippets?.length === 0
         ? false
