@@ -34,8 +34,6 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
     try {
       setIsLoadingBulkState(true);
       await handleAddOverlappedSnippetsToReview();
-    } catch (error) {
-      console.log('## handleBulkAddToReviews');
     } finally {
       setIsLoadingBulkState(false);
     }
