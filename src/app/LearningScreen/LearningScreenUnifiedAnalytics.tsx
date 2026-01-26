@@ -74,7 +74,7 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
         {contentSnippets.length}
       </p>
       <hr className='my-1' />
-      <p className='flex gap-2 text-xs font-medium w-fit m-auto py-2'>
+      <div className='flex gap-2 text-xs font-medium w-fit m-auto py-2'>
         <span
           className={clsx('relative', isLoadingBulkState ? 'opacity-50' : '')}
         >
@@ -101,8 +101,8 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
             <SaveAllIcon />
           </Button>
         </span>
-      </p>
-      <p className='flex gap-2 text-xs font-medium  w-fit m-auto'>
+      </div>
+      <div className='flex gap-2 text-xs font-medium  w-fit m-auto'>
         <span className='m-auto' data-testid='analytics-reps-count'>
           Reps: {sentenceRepsState}
         </span>
@@ -115,7 +115,7 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
             <HistoryIcon />
           </Button>
         ) : null}
-      </p>
+      </div>
       {sentenceRepsPerMinState && (
         <p className='text-xs font-medium m-auto w-fit'>
           Reps/Min: {sentenceRepsPerMinState}

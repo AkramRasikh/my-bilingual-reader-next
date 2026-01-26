@@ -50,7 +50,7 @@ export interface Snippet {
   baseLang: string;
   targetLang: string;
   time: number;
-  reviewData: ReviewDataTypes;
+  reviewData?: ReviewDataTypes;
   focusedText?: string;
   isContracted?: boolean;
   isPreSnippet?: boolean;
