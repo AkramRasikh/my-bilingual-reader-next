@@ -1,4 +1,8 @@
-import { ContentTranscriptTypes, ContentTypes } from '../types/content-types';
+import {
+  ContentTranscriptTypes,
+  ContentTypes,
+  Snippet,
+} from '../types/content-types';
 
 export interface ContentStateTypes extends ContentTypes {
   contentIndex: number;
@@ -41,6 +45,17 @@ export type ContentAction =
   | {
       newContentData: ContentTypes;
       type: 'addContent';
+    }
+  | {
+      type: 'saveSnippet';
+      contentIndex: ContentStateTypes['contentIndex'];
+      snippetData: Snippet;
+      isUpdate?: boolean;
+    }
+  | {
+      type: 'deleteSnippet';
+      contentIndex: ContentStateTypes['contentIndex'];
+      snippetId: Snippet['id'];
     };
 
 export function contentReducer(
@@ -125,6 +140,42 @@ export function contentReducer(
         },
       ];
     }
+
+    case 'saveSnippet':
+      return state.map((topic, idx) => {
+        if (idx !== action.contentIndex) return topic;
+
+        // Overwrite existing snippet
+        if (action.isUpdate) {
+          return {
+            ...topic,
+            snippets: topic.snippets?.map((snippet) =>
+              snippet.id === action.snippetData.id
+                ? { ...snippet, ...action.snippetData }
+                : snippet,
+            ),
+          };
+        }
+
+        // Add new snippet
+        return {
+          ...topic,
+          snippets: topic.snippets
+            ? [...topic.snippets, action.snippetData]
+            : [action.snippetData],
+        };
+      });
+    case 'deleteSnippet':
+      return state.map((topic, idx) => {
+        if (idx !== action.contentIndex) return topic;
+
+        return {
+          ...topic,
+          snippets: topic.snippets?.filter(
+            (snippet) => snippet.id !== action.snippetId,
+          ),
+        };
+      });
 
     default:
       return state;
