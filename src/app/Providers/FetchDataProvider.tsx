@@ -37,7 +37,7 @@ import { useRouter } from 'next/navigation';
 import { LanguageEnum } from '../languages';
 import { SentenceTypes } from '../types/sentence-types';
 import { WordTypes } from '../types/word-types';
-import { ContentTranscriptTypes } from '../types/content-types';
+import { ContentTranscriptTypes, Snippet } from '../types/content-types';
 import { ReviewDataTypes } from '../types/shared-types';
 import { StoryTypes } from '../types/story-types';
 import { apiRequestWrapper } from '@/lib/api-request-wrapper';
@@ -90,6 +90,20 @@ interface HandleSaveWordCallTypes {
 interface HandleSaveWordResponseCallTypes {
   word: WordTypes;
 }
+
+interface HandleSaveSnippetCallTypes {
+  snippetData: Snippet;
+  contentId: ContentStateTypes['id'];
+  contentIndex: ContentStateTypes['contentIndex'];
+  isUpdate?: boolean;
+}
+
+interface HandleDeleteSnippetCallTypes {
+  contentId: ContentStateTypes['id'];
+  snippetId: Snippet['id'];
+  contentIndex: ContentStateTypes['contentIndex'];
+}
+
 interface HandleDeleteWordDataProviderCallTypes {
   wordId: WordTypes['id'];
 }
@@ -175,6 +189,12 @@ export interface FetchDataContextTypes {
   story?: StoryTypeStateTypes;
   setStory: Dispatch<SetStateAction<StoryTypeStateTypes | undefined>>;
   addGeneratedSentence: (params: AddGeneratedSentenceCallTypes) => void;
+  handleSaveSnippetFetchProvider: (
+    params: HandleSaveSnippetCallTypes,
+  ) => Promise<void>;
+  handleDeleteSnippetFetchProvider: (
+    params: HandleDeleteSnippetCallTypes,
+  ) => Promise<void>;
 }
 
 const FetchDataContext = createContext<FetchDataContextTypes>({
@@ -195,6 +215,8 @@ const FetchDataContext = createContext<FetchDataContextTypes>({
   handleDeleteWordDataProvider: () => {},
   addImageDataProvider: () => {},
   addGeneratedSentence: () => {},
+  handleSaveSnippetFetchProvider: async () => {},
+  handleDeleteSnippetFetchProvider: async () => {},
   wordsToReviewGivenOriginalContextId: {},
   languageSelectedState: LanguageEnum.None,
   contentState: [],
@@ -370,6 +392,64 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     } catch (error) {
       console.log('## breakdownSentence', { error });
       setToastMessageState('Sentence breakdown error 🧱🔨❌');
+    }
+  };
+
+  const handleSaveSnippetFetchProvider = async ({
+    snippetData,
+    contentId,
+    contentIndex,
+    isUpdate,
+  }: HandleSaveSnippetCallTypes) => {
+    try {
+      const saveSnippetResponse = (await apiRequestWrapper({
+        url: '/api/saveSnippet',
+        body: {
+          language: languageSelectedState,
+          contentId,
+          snippetData,
+        },
+      })) as Snippet;
+
+      dispatchContent({
+        type: 'saveSnippet',
+        contentIndex: contentIndex,
+        snippetData: saveSnippetResponse,
+        isUpdate,
+      });
+      setToastMessageState('Snippet saved ✂️✅!');
+    } catch (error) {
+      console.log('## handleSaveSnippetFetchProvider', { error });
+      setToastMessageState('Error saving snippet ✂️❌!');
+    }
+  };
+
+  const handleDeleteSnippetFetchProvider = async ({
+    contentId,
+    snippetId,
+    contentIndex,
+  }: HandleDeleteSnippetCallTypes) => {
+    try {
+      const deleteSnippetResponse = await apiRequestWrapper({
+        url: '/api/deleteSnippet',
+        body: {
+          language: languageSelectedState,
+          contentId,
+          snippetId,
+        },
+      });
+
+      console.log('## deleteSnippetResponse', deleteSnippetResponse);
+
+      dispatchContent({
+        type: 'deleteSnippet',
+        contentIndex: contentIndex,
+        snippetId: snippetId,
+      });
+      setToastMessageState('Snippet deleted ✂️✅!');
+    } catch (error) {
+      console.log('## handleDeleteSnippetFetchProvider', { error });
+      setToastMessageState('Error deleting snippet ✂️❌!');
     }
   };
 
@@ -785,6 +865,8 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         wordsToReviewGivenOriginalContextId,
         deleteContent,
         deleteVideo,
+        handleSaveSnippetFetchProvider,
+        handleDeleteSnippetFetchProvider,
       }}
     >
       {children}
