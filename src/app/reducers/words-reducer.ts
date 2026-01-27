@@ -34,7 +34,7 @@ export type WordActions =
 export function wordsReducer(state: WordTypes[], action: WordActions) {
   switch (action.type) {
     case 'initWords':
-      if (action.words === null) {
+      if (!action.words || action.words.length === 0) {
         return [];
       }
       // for your first useEffect initialization
@@ -42,12 +42,18 @@ export function wordsReducer(state: WordTypes[], action: WordActions) {
       const contentState = action.content;
 
       // Create a map of sentenceId -> content title
-      const sentenceIdToTitleMap = contentState?.reduce((acc, contentItem) => {
-        contentItem.content.forEach((sentence) => {
-          acc[sentence.id] = { title: contentItem.title, time: sentence.time };
-        });
-        return acc;
-      }, {} as Record<string, { title: string; time: number }>);
+      const sentenceIdToTitleMap = contentState?.reduce(
+        (acc, contentItem) => {
+          contentItem.content.forEach((sentence) => {
+            acc[sentence.id] = {
+              title: contentItem.title,
+              time: sentence.time,
+            };
+          });
+          return acc;
+        },
+        {} as Record<string, { title: string; time: number }>,
+      );
 
       const now = new Date();
 
