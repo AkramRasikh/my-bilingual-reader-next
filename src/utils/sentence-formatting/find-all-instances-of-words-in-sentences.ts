@@ -5,6 +5,9 @@ export const findAllInstancesOfWordsInSentence = (
   wordState: WordTypes[],
 ) => {
   const results = [] as WordTypes[];
+  if (wordState.length === 0) {
+    return results;
+  }
 
   wordState.forEach((wordData) => {
     if (
