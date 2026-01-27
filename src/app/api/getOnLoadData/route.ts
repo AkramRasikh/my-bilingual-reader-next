@@ -39,6 +39,9 @@ export async function POST(req: Request) {
             ...contentWidget,
             contentIndex,
             generalTopicName: contentWidget.title,
+            snippets: contentWidget.snippets
+              ? Object.values(contentWidget.snippets)
+              : undefined,
           };
         },
       ),
