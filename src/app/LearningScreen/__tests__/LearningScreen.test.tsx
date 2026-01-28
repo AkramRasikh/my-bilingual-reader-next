@@ -13,7 +13,8 @@ import {
   mockDeleteWord,
   mockGetOnLoadData,
   mockSaveWord,
-  mockUpdateContentMetaData,
+  mockSaveSnippetUnitTest,
+  mockDeleteSnippetUnitTest,
   mockUpdateSentenceReview,
   REVIEW_DATA_2_DAYS_AWAY,
 } from './test-helpers/api-mocks';
@@ -529,17 +530,10 @@ const saveSnippet = async () => {
     'save-snippet-button-sentence-4',
   );
 
-  mockUpdateContentMetaData({
-    ...mockSelectedContent,
-    snippets: [
-      {
-        ...MOCK_SNIPPET_1,
-      },
-    ],
-  });
+  mockSaveSnippetUnitTest(MOCK_SNIPPET_1);
   saveSnippetTranscriptBtn.click();
   await waitFor(() => {
-    expect(screen.getByText('Updated content data ✅!')).toBeInTheDocument();
+    expect(screen.getByText('Snippet saved ✂️✅!')).toBeInTheDocument();
   });
 };
 
@@ -564,8 +558,8 @@ const checkNewStableSnippetUIComponents = async () => {
   );
   expect(savedSnippetBottomUIWidget).toBeInTheDocument();
   expect(screen.getByTestId('analytics-snippets-due')).toHaveTextContent(
-    'Snippets Due: 0/1/1',
-  ); // if review triggered it will show 1/1/1
+    'Snippets Due: 1/1/1',
+  );
 
   // expect(
   //   document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
@@ -586,10 +580,7 @@ const deleteSnippet = async () => {
   const multiSnippetActionsContainer = screen.getByTestId(
     `transcript-time-overlap-indicator-multi-sentence-4`,
   );
-  mockUpdateContentMetaData({
-    ...mockSelectedContent,
-    snippets: [],
-  });
+  mockDeleteSnippetUnitTest({ success: true });
   const deleteButton = within(multiSnippetActionsContainer).getByRole(
     'button',
     { name: '❌' },
@@ -597,7 +588,7 @@ const deleteSnippet = async () => {
   fireEvent.doubleClick(deleteButton);
 
   await waitFor(() => {
-    expect(screen.getByText('Updated content data ✅!')).toBeInTheDocument();
+    expect(screen.getByText('Snippet deleted ✂️✅!')).toBeInTheDocument();
   });
   expect(screen.getByTestId('analytics-snippets-due')).toHaveTextContent(
     'Snippets Due: 0/0/0',

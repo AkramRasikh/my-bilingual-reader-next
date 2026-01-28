@@ -122,6 +122,14 @@ export const mockSaveSnippetUnitTest = (contentResponse: any) => {
     return {};
   });
 };
+export const mockDeleteSnippetUnitTest = (contentResponse: any) => {
+  jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
+    if (params.url === '/api/deleteSnippet') {
+      return { contentResponse };
+    }
+    return {};
+  });
+};
 
 export const mockGetOnLoadData = (
   contentData: any[],

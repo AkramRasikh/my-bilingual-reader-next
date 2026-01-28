@@ -501,18 +501,13 @@ export const LearningScreenProvider = ({
     });
 
     const reviewData = nextScheduledOptions['1'].card;
-    await updateContentMetaData({
-      fieldToUpdate: {
-        snippets: [
-          ...contentSnippets,
-          {
-            id: uuidv4(),
-            time: threeSecondLoopState,
-            isContracted: contractThreeSecondLoopState,
-            reviewData,
-            ...snippetArgs,
-          },
-        ],
+    await handleSaveSnippetFetchProvider({
+      snippetData: {
+        id: uuidv4(),
+        time: threeSecondLoopState,
+        isContracted: contractThreeSecondLoopState,
+        reviewData,
+        ...snippetArgs,
       },
       contentId,
       contentIndex,
