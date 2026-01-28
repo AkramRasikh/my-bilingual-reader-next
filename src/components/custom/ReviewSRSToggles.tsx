@@ -56,7 +56,6 @@ const ReviewSRSToggles = ({
           fieldToUpdate: { reviewData: formattedToBe5am },
         });
       } else if (isSnippet) {
-        console.log('## formattedToBe5am', formattedToBe5am);
         await handleReviewFunc({
           snippetData: {
             ...contentItem,
