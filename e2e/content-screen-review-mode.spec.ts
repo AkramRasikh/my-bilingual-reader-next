@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-import { setupApiMocks } from './helpers/mock-api';
+import { mockSaveSnippetAPIE2E, setupApiMocks } from './helpers/mock-api';
 import { landingMetaData } from './helpers/landing-meta-data';
 import { mockEasyLinguisticsRadioSignLangIslandSnippets } from './mock-data/easy-linguistics-radio-sign-lang-island';
 import {
@@ -25,11 +25,6 @@ const batchDueWord = [
   '9a9cdfcf-17af-4f72-b350-ec719e1147ff',
   '7ae308cf-0c27-46a9-b1db-16191a97eeca',
 ];
-
-const firstSnippet = '75a51c0b-9378-4f44-8ea5-e8e3013abd23';
-const secondSnippet = '3eca4d57-72f3-40ba-95f9-ec7dfe35635a';
-const thirdSnippet = '7f3b7a90-4419-48e1-b4a3-527ab83e4014';
-const fourthSnippet = '4fee7322-f0db-41d1-b671-e8c472bcc395';
 
 const firstDueSentenceId = '7c5ba8cc-c745-422e-b0f5-4c8ab884744d';
 const secondDueSentenceId = '24cb7886-50d5-4ee9-85e8-55eb099faf5a';
@@ -236,52 +231,6 @@ async function reviewWord(page: Page, wordId: string) {
   await page.waitForTimeout(500);
 }
 
-async function reviewSnippet(page: Page, snippetId: string) {
-  await page.route('**/api/updateContentMetaData', async (route) => {
-    // Wait 1 second to make loading spinner visible
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        snippets: [
-          ...mockEasyLinguisticsRadioSignLangIslandSnippets,
-          {
-            baseLang: '*****',
-            focusedText: '****',
-            id: snippetId,
-            isContracted: true,
-            reviewData: {
-              difficulty: 7.1949,
-              due: new Date().toISOString(),
-              ease: 2.5,
-              elapsed_days: 0,
-              interval: 0,
-              lapses: 0,
-              last_review: new Date().toISOString(),
-              reps: 1,
-              scheduled_days: 0,
-              stability: 0.40255,
-              state: 1,
-            },
-            suggestedFocusText: '****',
-            targetLang: '****',
-            time: 1000,
-          },
-        ],
-      }),
-    });
-  });
-
-  const reviewSRSTogglesForSnippet = page.getByTestId(
-    `review-srs-toggles-${snippetId}`,
-  );
-
-  await reviewSRSTogglesForSnippet.locator('button').nth(3).click();
-  await page.waitForTimeout(1000);
-}
-
 async function reviewSentence(page: Page, sentenceId: string) {
   //refactor to one
   const reviewSRSTogglesForSentence = page.getByTestId(
@@ -350,20 +299,113 @@ test('review each variant - words/sentences/snippets - follows a change in revie
   await checkReviewVariantCounts(page, 6, 2, 4);
 
   await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
-  await reviewSnippet(page, firstSnippet);
+  await mockSaveSnippetAPIE2E(page, {
+    baseLang:
+      "Mizu/In the first place, they're often inconvenienced compared to speakers of spoken languages, and in some cases,",
+    id: '75a51c0b-9378-4f44-8ea5-e8e3013abd23',
+    isContracted: false,
+    isPreSnippet: true,
+    reviewData: {
+      difficulty: 7.59429283,
+      due: new Date(),
+      ease: 2.5,
+      elapsed_days: 3,
+      interval: 0,
+      lapses: 0,
+      last_review: new Date(),
+      reps: 4,
+      scheduled_days: 4,
+      stability: 5.29012538,
+      state: 2,
+    },
+    suggestedFocusText: '水/そもそも音声言語の話者に比べて不',
+    targetLang:
+      '水/そもそも音声言語の話者に比べて不便を強いられていたりとか場合によっては',
+    time: 66.540221,
+  });
 
   await checkReviewVariantCounts(page, 6, 2, 3);
   await checkSnippetsDueMeta(page, 'Snippets Due: 224/292/292');
 
-  await reviewSnippet(page, secondSnippet);
+  await mockSaveSnippetAPIE2E(page, {
+    baseLang:
+      "Mizu/That's right. There's an island called Martha's Vineyard that belongs to this Dukes County area. Hori/Yeah, yeah, yeah.Hori/That appeared in some episode. Mizu/Oh, really?Hori/I seem to remember it appearing as an island where sign language was used a lot. Mizu/That's right.",
+    id: '3eca4d57-72f3-40ba-95f9-ec7dfe35635a',
+    isContracted: false,
+    isPreSnippet: true,
+    reviewData: {
+      difficulty: 8.25312633,
+      due: new Date(),
+      ease: 2.5,
+      elapsed_days: 1,
+      interval: 0,
+      lapses: 0,
+      last_review: new Date(),
+      reps: 6,
+      scheduled_days: 2,
+      stability: 2.11570807,
+      state: 2,
+    },
+    suggestedFocusText:
+      'うん堀/なんかの回で出てきたな、それ。水/あ、本当ですか?堀/なんか手話',
+    targetLang:
+      '水/そうですね。このデュークス郡っていうところに属するマーサズ・ヴィンヤード島っていう島があるんですよ。堀/うんうんうん。堀/なんかの回で出てきたな、それ。水/あ、本当ですか?堀/なんか手話がめっちゃ使われてる島みたいな感じで出てきた記憶がある。水/そうですそうです。マサチューセッツ州の沿岸部から',
+    time: 116.267792,
+  });
   await checkReviewVariantCounts(page, 6, 2, 2);
   await checkSnippetsDueMeta(page, 'Snippets Due: 223/292/292');
 
-  await reviewSnippet(page, fourthSnippet);
+  await mockSaveSnippetAPIE2E(page, {
+    baseLang:
+      "Mizu/There's definitely a lot of prejudice. Hori/So, a sense of equality is quite difficult.",
+    focusedText: '偏見は全然ありますね',
+    id: '4fee7322-f0db-41d1-b671-e8c472bcc395',
+    isContracted: true,
+    reviewData: {
+      difficulty: 7.15845635,
+      due: new Date(),
+      ease: 2.5,
+      elapsed_days: 1,
+      interval: 0,
+      lapses: 0,
+      last_review: new Date(),
+      reps: 3,
+      scheduled_days: 2,
+      stability: 2.48051861,
+      state: 2,
+    },
+    suggestedFocusText: '見は全然ありますね。堀/',
+    targetLang:
+      '水/偏見は全然ありますね。堀/ていうだから平等な感じってなかなか',
+    time: 73.204224,
+  });
   await checkReviewVariantCounts(page, 6, 2, 1);
   await checkSnippetsDueMeta(page, 'Snippets Due: 222/292/292');
 
-  await reviewSnippet(page, thirdSnippet);
+  await mockSaveSnippetAPIE2E(page, {
+    baseLang:
+      "Mizu/In the first place, they're often inconvenienced compared to speakers of spoken languages, and in some cases,",
+    id: '7f3b7a90-4419-48e1-b4a3-527ab83e4014',
+    isContracted: false,
+    isPreSnippet: true,
+    reviewData: {
+      difficulty: 8.25312633,
+      due: new Date(),
+      ease: 2.5,
+      elapsed_days: 1,
+      interval: 0,
+      lapses: 0,
+      last_review: new Date(),
+      reps: 6,
+      scheduled_days: 2,
+      stability: 2.11570807,
+      state: 2,
+    },
+    suggestedFocusText: '者に比べて不便を強いられていたりとか',
+    targetLang:
+      '水/そもそも音声言語の話者に比べて不便を強いられていたりとか場合によっては',
+    time: 68.495017,
+  });
   await checkReviewVariantCounts(page, 6, 2, 0);
   await checkSnippetsDueMeta(page, 'Snippets Due: 221/292/292');
 

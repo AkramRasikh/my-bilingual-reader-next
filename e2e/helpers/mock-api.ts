@@ -1,4 +1,4 @@
-import { ContentTypes } from '@/app/types/content-types';
+import { ContentTypes, Snippet } from '@/app/types/content-types';
 import { Page } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -394,4 +394,25 @@ export const mockSentenceBrekadownAPIE2E = async (page: Page) => {
       }),
     });
   });
+};
+
+export const mockSaveSnippetAPIE2E = async (
+  page: Page,
+  snippetData: Snippet,
+) => {
+  await page.route('**/api/saveSnippet', async (route) => {
+    // Wait 1 second to make loading spinner visible
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(snippetData),
+    });
+  });
+  const reviewSRSTogglesForSnippet = page.getByTestId(
+    `review-srs-toggles-${snippetData.id}`,
+  );
+
+  await reviewSRSTogglesForSnippet.locator('button').nth(3).click();
+  await page.waitForTimeout(1000);
 };
