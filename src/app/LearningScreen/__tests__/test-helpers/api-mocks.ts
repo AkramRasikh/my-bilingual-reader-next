@@ -114,9 +114,9 @@ export const mockDeleteWord = (wordId: string) => {
   });
 };
 
-export const mockUpdateContentMetaData = (contentResponse: any) => {
+export const mockSaveSnippetUnitTest = (contentResponse: any) => {
   jest.spyOn(apiLib, 'apiRequestWrapper').mockImplementation(async (params) => {
-    if (params.url === '/api/updateContentMetaData') {
+    if (params.url === '/api/saveSnippet') {
       return contentResponse;
     }
     return {};

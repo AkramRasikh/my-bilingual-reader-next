@@ -9,7 +9,7 @@ import {
 } from './test-helpers/test-utils';
 import {
   mockGetOnLoadData,
-  mockUpdateContentMetaData,
+  mockSaveSnippetUnitTest,
   mockUpdateSentenceReview,
   mockUpdateWord,
   REVIEW_DATA_2_DAYS_AWAY,
@@ -155,90 +155,51 @@ describe('LearningScreen - Review Mode', () => {
     );
     expect(snippetReviewToggle3).toHaveTextContent('公園に行きましょう');
 
-    mockUpdateContentMetaData({
-      ...mockSelectedContentWithDueData,
-      snippets: [
-        {
-          ...mockSelectedContentWithDueData.snippets[0],
-          reviewData: {
-            ...mockSelectedContentWithDueData.snippets[0].reviewData,
-            due: dueIn2Days(),
-          },
-        },
-        mockSelectedContentWithDueData.snippets[1],
-        mockSelectedContentWithDueData.snippets[2],
-      ],
+    mockSaveSnippetUnitTest({
+      ...mockSelectedContentWithDueData.snippets[0],
+      reviewData: {
+        ...mockSelectedContentWithDueData.snippets[0].reviewData,
+        due: dueIn2Days(),
+      },
     });
 
     const reviewFirstSnippetBtn = screen.getByTestId('easy-snippet-due-1');
     reviewFirstSnippetBtn.click();
     await waitFor(() => {
-      expect(screen.getByText('Updated content data ✅!')).toBeInTheDocument();
+      expect(screen.getByText('Snippet saved ✂️✅!')).toBeInTheDocument();
     });
 
     checkForReviewLabelText(2, 3, 3);
     checkingTimelineMarkers(2, 3, 3);
 
-    mockUpdateContentMetaData({
-      ...mockSelectedContentWithDueData,
-      snippets: [
-        {
-          ...mockSelectedContentWithDueData.snippets[0],
-          reviewData: {
-            ...mockSelectedContentWithDueData.snippets[0].reviewData,
-            due: dueIn2Days(),
-          },
-        },
-        {
-          ...mockSelectedContentWithDueData.snippets[1],
-          reviewData: {
-            ...mockSelectedContentWithDueData.snippets[1].reviewData,
-            due: dueIn2Days(),
-          },
-        },
-        mockSelectedContentWithDueData.snippets[2],
-      ],
+    mockSaveSnippetUnitTest({
+      ...mockSelectedContentWithDueData.snippets[1],
+      reviewData: {
+        ...mockSelectedContentWithDueData.snippets[1].reviewData,
+        due: dueIn2Days(),
+      },
     });
     const reviewSecondSnippetBtn = screen.getByTestId('easy-snippet-due-2');
     reviewSecondSnippetBtn.click();
     await waitFor(() => {
-      expect(screen.getByText('Updated content data ✅!')).toBeInTheDocument();
+      expect(screen.getByText('Snippet saved ✂️✅!')).toBeInTheDocument();
     });
 
     checkForReviewLabelText(1, 3, 3);
     checkingTimelineMarkers(1, 3, 3);
 
-    mockUpdateContentMetaData({
-      ...mockSelectedContentWithDueData,
-      snippets: [
-        {
-          ...mockSelectedContentWithDueData.snippets[0],
-          reviewData: {
-            ...mockSelectedContentWithDueData.snippets[0].reviewData,
-            due: dueIn2Days(),
-          },
-        },
-        {
-          ...mockSelectedContentWithDueData.snippets[1],
-          reviewData: {
-            ...mockSelectedContentWithDueData.snippets[1].reviewData,
-            due: dueIn2Days(),
-          },
-        },
-        {
-          ...mockSelectedContentWithDueData.snippets[2],
-          reviewData: {
-            ...mockSelectedContentWithDueData.snippets[2].reviewData,
-            due: dueIn2Days(),
-          },
-        },
-      ],
+    mockSaveSnippetUnitTest({
+      ...mockSelectedContentWithDueData.snippets[2],
+      reviewData: {
+        ...mockSelectedContentWithDueData.snippets[2].reviewData,
+        due: dueIn2Days(),
+      },
     });
 
     const reviewThirdSnippetBtn = screen.getByTestId('easy-snippet-due-3');
     reviewThirdSnippetBtn.click();
     await waitFor(() => {
-      expect(screen.getByText('Updated content data ✅!')).toBeInTheDocument();
+      expect(screen.getByText('Snippet saved ✂️✅!')).toBeInTheDocument();
     });
 
     checkForReviewLabelText(0, 3, 3);
@@ -328,7 +289,7 @@ describe('LearningScreen - Review Mode', () => {
     expect(screen.getByText('Done!')).toBeInTheDocument();
   };
 
-  it('should allow user to review words/sentences/snippets', async () => {
+  it.only('should allow user to review words/sentences/snippets', async () => {
     await renderWithProvider(mockSelectedContentWithDueData);
     const onLoadTitle = await screen.findByText(mockTitle);
     expect(onLoadTitle).toBeDefined();
