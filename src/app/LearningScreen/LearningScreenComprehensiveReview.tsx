@@ -157,18 +157,13 @@ const LearningScreenComprehensiveReview = () => {
   const handleReviewSnippets = async (args) => {
     const isRemoveReview = args?.isRemoveReview;
     if (isRemoveReview) {
-      await finalDeleteSnippet(args.id, args?.wordsFromSentence);
-      return;
+      await handleDeleteSnippet(args.snippetData, args?.wordsFromSentence);
+    } else {
+      await handleUpdateSnippetReview(args.snippetData);
     }
-    setThreeSecondLoopState(null);
-    setContractThreeSecondLoopState();
-    await handleUpdateSnippetReview(args);
-  };
 
-  const finalDeleteSnippet = async (snippetId, wordsFromSentence) => {
-    await handleDeleteSnippet(snippetId, wordsFromSentence);
     setThreeSecondLoopState(null);
-    setContractThreeSecondLoopState();
+    setContractThreeSecondLoopState(false);
   };
 
   if (

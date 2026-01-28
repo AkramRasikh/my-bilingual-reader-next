@@ -55,9 +55,9 @@ interface HandleBreakdownSentenceParams {
   targetLang: string;
 }
 
-interface HandleUpdateSnippetReviewParams {
-  id: string;
-  fieldToUpdate: Partial<Snippet>;
+interface HandleUpdateSnippetParams {
+  snippetData: Snippet;
+  isUpdate?: boolean;
 }
 
 interface TopicWordsForReviewMemoizedProps extends WordTypes {
@@ -149,9 +149,7 @@ export interface LearningScreenContextTypes {
   ) => Promise<void | null>;
   overlappingTextMemoized: OverlappingTextTypes | null;
   savedSnippetsMemoized: SavedSnippetsMemoizedProps[];
-  handleUpdateSnippetReview: (
-    snippetArgs: HandleUpdateSnippetReviewParams,
-  ) => Promise<void>;
+  handleUpdateSnippetReview: (snippetData: Snippet) => Promise<void>;
   handleDeleteSnippet: (
     snippetId: Snippet['id'],
     wordsFromSentence?: WordTypes[],
@@ -159,9 +157,10 @@ export interface LearningScreenContextTypes {
   contentSnippets: Snippet[];
   sentenceMapMemoized: Record<string, SentenceMapItemTypes>;
   handleQuickSaveSnippet: () => Promise<void | null>;
-  handleUpdateSnippet: (
-    snippetToUpdate: Partial<Snippet> & Pick<Snippet, 'id'>,
-  ) => Promise<void>;
+  handleUpdateSnippet: (params: {
+    snippetData: Snippet;
+    isUpdate: boolean;
+  }) => Promise<void>;
   getSentenceDataOfOverlappingWordsDuringSave: (
     thisSnippetsTime: number,
     highlightedTextFromSnippet: string,
@@ -238,6 +237,8 @@ export const LearningScreenProvider = ({
     updateSentenceData,
     updateContentMetaData,
     languageSelectedState,
+    handleSaveSnippetFetchProvider,
+    handleDeleteSnippetFetchProvider,
   } = useFetchData();
 
   const selectedContentTitleState = selectedContentStateMemoized.title;
@@ -455,10 +456,8 @@ export const LearningScreenProvider = ({
 
     try {
       setIsGenericItemLoadingState((prev) => [...prev, ...overlappingIds]);
-      await updateContentMetaData({
-        fieldToUpdate: {
-          snippets: [...contentSnippets, finalSnippetObject],
-        },
+      await handleSaveSnippetFetchProvider({
+        snippetData: finalSnippetObject,
         contentId,
         contentIndex,
       });
@@ -469,32 +468,16 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const handleUpdateSnippet = async (
-    snippetToUpdate: Partial<Snippet> & Pick<Snippet, 'id'>,
-  ) => {
-    const contentSnippets = selectedContentStateMemoized?.snippets;
-    if (!contentSnippets || contentSnippets.length === 0) {
-      return;
-    }
-    const updatedSnippetArray = contentSnippets.map((item) => {
-      if (snippetToUpdate.id === item.id) {
-        return {
-          ...item,
-          ...snippetToUpdate,
-        };
-      }
-
-      return item;
-    });
-
-    const boolReturn = await updateContentMetaData({
-      fieldToUpdate: {
-        snippets: updatedSnippetArray,
-      },
+  const handleUpdateSnippet = async ({
+    snippetData,
+    isUpdate,
+  }: HandleUpdateSnippetParams) => {
+    await handleSaveSnippetFetchProvider({
+      snippetData,
       contentId,
       contentIndex,
+      isUpdate,
     });
-    return boolReturn;
   };
 
   const handleSaveSnippet = async (snippetArgs: OverlappingTextTypes) => {
@@ -539,7 +522,7 @@ export const LearningScreenProvider = ({
   };
 
   const handleDeleteSnippet = async (
-    snippetId: Snippet['id'],
+    snippetData: Snippet,
     wordsFromSentence?: WordTypes[],
   ) => {
     if (
@@ -548,58 +531,27 @@ export const LearningScreenProvider = ({
     ) {
       return;
     }
-    let updatedSnippets = [];
     if (wordsFromSentence) {
-      updatedSnippets = selectedContentStateMemoized.snippets.map((item) => {
-        if (item.id !== snippetId) {
-          return item;
-        }
-        const updatedObject = { ...item, reviewData: undefined };
-        return updatedObject;
+      await handleSaveSnippetFetchProvider({
+        snippetData: { ...snippetData, reviewData: undefined },
+        contentId,
+        contentIndex,
       });
     } else {
-      updatedSnippets = selectedContentStateMemoized.snippets.filter(
-        (item) => item.id !== snippetId,
-      );
+      await handleDeleteSnippetFetchProvider({
+        contentIndex,
+        contentId,
+        snippetId: snippetData.id,
+      });
     }
-    await updateContentMetaData({
-      fieldToUpdate: {
-        snippets: [...updatedSnippets],
-      },
-      contentIndex,
-      contentId,
-    });
   };
 
-  const handleUpdateSnippetReview = async (
-    snippetArgs: HandleUpdateSnippetReviewParams,
-  ) => {
-    if (
-      !selectedContentStateMemoized?.snippets ||
-      selectedContentStateMemoized.snippets.length === 0
-    ) {
-      return;
-    }
-    const snippetId = snippetArgs.id;
-    const fieldToUpdate = snippetArgs.fieldToUpdate;
-    const updatedSnippets = selectedContentStateMemoized.snippets.map(
-      (item) => {
-        if (item.id === snippetId) {
-          return {
-            ...item,
-            ...fieldToUpdate,
-          };
-        }
-        return item;
-      },
-    );
-
-    await updateContentMetaData({
-      fieldToUpdate: {
-        snippets: [...updatedSnippets],
-      },
+  const handleUpdateSnippetReview = async (snippetData: Snippet) => {
+    await handleSaveSnippetFetchProvider({
+      snippetData,
       contentIndex,
       contentId,
+      isUpdate: true,
     });
   };
 

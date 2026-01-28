@@ -32,8 +32,8 @@ const ReviewSRSToggles = ({
     contentType: isSnippet
       ? srsRetentionKeyTypes.snippet
       : isVocab
-      ? srsRetentionKeyTypes.vocab
-      : srsRetentionKeyTypes.sentences,
+        ? srsRetentionKeyTypes.vocab
+        : srsRetentionKeyTypes.sentences,
     timeNow,
   });
 
@@ -56,9 +56,12 @@ const ReviewSRSToggles = ({
           fieldToUpdate: { reviewData: formattedToBe5am },
         });
       } else if (isSnippet) {
+        console.log('## formattedToBe5am', formattedToBe5am);
         await handleReviewFunc({
-          id: contentItem.id,
-          fieldToUpdate: { reviewData: formattedToBe5am },
+          snippetData: {
+            ...contentItem,
+            reviewData: formattedToBe5am,
+          },
         });
       } else {
         await handleReviewFunc({
@@ -66,8 +69,6 @@ const ReviewSRSToggles = ({
           nextDue: formattedToBe5am,
         });
       }
-    } catch (error) {
-      console.log('## handleNextReview', { error });
     } finally {
       setIsLoadingSRSState(false);
     }
@@ -82,7 +83,10 @@ const ReviewSRSToggles = ({
         });
       } else if (isSnippet) {
         await handleReviewFunc({
-          id: contentItem.id,
+          snippetData: {
+            ...contentItem,
+            reviewData: undefined,
+          },
           isRemoveReview: true,
         });
       } else {

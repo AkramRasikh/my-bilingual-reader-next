@@ -25,10 +25,13 @@ export const TranscriptItemTimeOverlappingIndicatorMulti = ({
   const [transcriptItemLoadingState, setTranscriptItemLoadingState] =
     useState('');
 
-  const handleDeleteSnippetItem = async (id) => {
+  const handleDeleteSnippetItem = async (snippetItem) => {
     try {
-      setTranscriptItemLoadingState(id);
-      await handleDeleteSnippet(id);
+      setTranscriptItemLoadingState(snippetItem.id);
+      await handleDeleteSnippet({
+        ...snippetItem,
+        id: snippetItem.snippetId,
+      });
     } finally {
       setTranscriptItemLoadingState('');
     }
@@ -52,8 +55,8 @@ export const TranscriptItemTimeOverlappingIndicatorMulti = ({
               hasNoReview
                 ? 'bg-gray-400'
                 : isPreSnippet
-                ? 'bg-amber-300'
-                : 'bg-blue-700',
+                  ? 'bg-amber-300'
+                  : 'bg-blue-700',
               transcriptItemLoadingState
                 ? 'animate-pulse bg-red-700 opacity-100'
                 : '',
@@ -85,9 +88,7 @@ export const TranscriptItemTimeOverlappingIndicatorMulti = ({
               style={{
                 fontSize: 5,
               }}
-              onDoubleClick={async () =>
-                await handleDeleteSnippetItem(item.snippetId)
-              }
+              onDoubleClick={async () => await handleDeleteSnippetItem(item)}
             >
               ❌
             </button>

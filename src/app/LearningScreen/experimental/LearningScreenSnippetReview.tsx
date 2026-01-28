@@ -19,6 +19,12 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
 import HighlightedText from '@/components/custom/HighlightedText';
 import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
+import { Snippet } from '@/app/types/content-types';
+
+interface HandleReviewSnippetsFinalArg {
+  isRemoveReview?: boolean;
+  snippetData: Snippet;
+}
 
 const LearningScreenSnippetReview = ({
   item,
@@ -127,9 +133,8 @@ const LearningScreenSnippetReview = ({
     try {
       setIsLoadingSaveSnippetState(true);
       await handleUpdateSnippet({
-        id: item.id,
-        isPreSnippet: false,
-        focusedText: textMatch,
+        snippetData: { ...item, isPreSnippet: false, focusedText: textMatch },
+        isUpdate: true,
       });
       setStartIndexKeyState(0);
       setEndIndexKeyState(0);
@@ -181,10 +186,14 @@ const LearningScreenSnippetReview = ({
       };
     }, [item, wordsState]);
 
-  const handleReviewSnippetsFinal = async (args) => {
+  const handleReviewSnippetsFinal = async (
+    arg: HandleReviewSnippetsFinalArg,
+  ): Promise<void> => {
+    const isRemoveReview = arg?.isRemoveReview;
     await handleReviewSnippets({
-      ...args,
+      snippetData: arg.snippetData,
       wordsFromSentence: wordsInSuggestedText.length > 0,
+      isRemoveReview,
     });
   };
 
