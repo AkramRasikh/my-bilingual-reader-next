@@ -289,7 +289,7 @@ describe('LearningScreen - Review Mode', () => {
     expect(screen.getByText('Done!')).toBeInTheDocument();
   };
 
-  it.only('should allow user to review words/sentences/snippets', async () => {
+  it('should allow user to review words/sentences/snippets', async () => {
     await renderWithProvider(mockSelectedContentWithDueData);
     const onLoadTitle = await screen.findByText(mockTitle);
     expect(onLoadTitle).toBeDefined();
