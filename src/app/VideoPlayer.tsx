@@ -67,8 +67,6 @@ const VideoPlayer = ({
         ...overlappingTextMemoized,
         focusedText: highlightedTextFocusLoopState,
       });
-    } catch (error) {
-      console.log('## handleSaveSnippetFlow error', error);
     } finally {
       setHighlightedTextFocusLoopState('');
       setIsLoadingSaveSnippetState(false);

@@ -11,7 +11,6 @@ import {
   checkBulkReviewCount,
 } from './helpers/content-screen-helpers';
 import {
-  mockUpdateContentMetaDataWithSnippet,
   mockGetOnLoadDataE2E,
   mockAddSnippetAPIE2E,
   mockDeleteSnippetAPIE2E,
@@ -418,35 +417,35 @@ test.describe('Loop(s)', () => {
     await verifyOutsideLoopClickDoesntStopLoop(page);
     const selectionSuccess = await highlightJapaneseText(page);
     expect(selectionSuccess).toBe(true);
-    await saveHighlightedTextAsSnippet(page);
     await mockSaveSnippetAPIE2E(
       page,
       {
-        baseLang:
-          'Hori/Yes. Yes. Mizu/It\'s called "Let Me Speak with the Language of My Eyes." Here\'s the synopsis:',
-        focusedText: 'だんですよ。堀/はい。はい。水/『目で見る',
-        id: '38d3e884-b050-46d6-ab0d-3d5a751be335',
+        id: '13b3d85c-33c7-47a2-8467-914e3546fc1f',
+        time: 7.5,
         isContracted: false,
         reviewData: {
-          difficulty: 7.1949,
           due: new Date(),
-          ease: 2.5,
-          elapsed_days: 0,
-          interval: 0,
-          lapses: 0,
-          last_review: new Date(),
-          reps: 1,
-          scheduled_days: 0,
           stability: 0.40255,
+          difficulty: 7.1949,
+          elapsed_days: 0,
+          scheduled_days: 0,
+          reps: 1,
+          lapses: 0,
           state: 1,
+          last_review: new Date(),
+          ease: 2.5,
+          interval: 0,
         },
-        suggestedFocusText: 'だんですよ。堀/はい。はい。水/『目で見る',
         targetLang:
-          '堀/水/最近こんな小説を読んだんですよ。堀/はい。はい。水/『目で見ることばで話をさせて』という小説なんですけど、これあらすじを話しますと',
-        time: 6,
+          '堀/はい。はい。水/『目で見ることばで話をさせて』という小説なんですけど、これあらすじを話しますと',
+        baseLang:
+          'Hori/Yes. Yes. Mizu/It\'s called "Let Me Speak with the Language of My Eyes." Here\'s the synopsis:',
+        suggestedFocusText: '堀/はい。はい。水/『目で見ることばで話をさせて',
+        focusedText: '目で見ること',
       },
       false,
     );
+    await saveHighlightedTextAsSnippet(page);
     await verifyPostSnippetSaveUI(page);
     await mockDeleteSnippetAPIE2E(page);
     await deleteRecentlyAddedSnippet(page);
@@ -465,9 +464,35 @@ test.describe('Loop(s)', () => {
     await page.waitForTimeout(500);
     await verifyPostFreeLoopUI(page);
     await toggleLeftAndRightChecks(page);
-
+    await mockSaveSnippetAPIE2E(
+      page,
+      {
+        id: '335fbec1-bd11-4a53-becc-e453d6ed003a',
+        time: 6.001384,
+        isContracted: false,
+        reviewData: {
+          due: new Date(),
+          stability: 0.40255,
+          difficulty: 7.1949,
+          elapsed_days: 0,
+          scheduled_days: 0,
+          reps: 1,
+          lapses: 0,
+          state: 1,
+          last_review: new Date(),
+          ease: 2.5,
+          interval: 0,
+        },
+        targetLang:
+          '水/最近こんな小説を読んだんですよ。堀/はい。はい。水/『目で見ることばで話をさせて』という小説なんですけど、これあらすじを話しますと',
+        baseLang:
+          'Mizu/I read this novel recently.Hori/Yes. Yes. Mizu/It\'s called "Let Me Speak with the Language of My Eyes." Here\'s the synopsis:',
+        suggestedFocusText: 'を読んだんですよ堀/はい。はい。水/『目',
+        focusedText: '読んだんですよ。堀/はい。はい。水/『目',
+      },
+      false,
+    );
     await page.keyboard.press('Shift+Enter');
-    await page.waitForResponse('**/api/updateContentMetaData');
     await checkSnippetsDueMeta(page, 'Snippets Due: 225/293/293');
     await checkBulkReviewCount(page, 'Bulk Review: 8');
     await expect(
@@ -495,13 +520,39 @@ test.describe('Loop(s)', () => {
   test('3 second loop using Shift+" keyboard shortcut - multi sentences', async ({
     page,
   }) => {
-    await mockUpdateContentMetaDataWithSnippet(page);
     await goFromLandingToLearningScreen(page);
     await triggerTrackSwitch(page);
     await triggerOverlappingSnippets(page);
     await verifyOverlappingSnippetUI(page);
+    await mockSaveSnippetAPIE2E(
+      page,
+      {
+        id: '335fbec1-bd11-4a53-becc-e453d6ed003a',
+        time: 6.001384,
+        isContracted: false,
+        reviewData: {
+          due: new Date(),
+          stability: 0.40255,
+          difficulty: 7.1949,
+          elapsed_days: 0,
+          scheduled_days: 0,
+          reps: 1,
+          lapses: 0,
+          state: 1,
+          last_review: new Date(),
+          ease: 2.5,
+          interval: 0,
+        },
+        targetLang:
+          '水/最近こんな小説を読んだんですよ。堀/はい。はい。水/『目で見ることばで話をさせて』という小説なんですけど、これあらすじを話しますと',
+        baseLang:
+          'Mizu/I read this novel recently.Hori/Yes. Yes. Mizu/It\'s called "Let Me Speak with the Language of My Eyes." Here\'s the synopsis:',
+        suggestedFocusText: 'を読んだんですよ堀/はい。はい。水/『目',
+        focusedText: '読んだんですよ。堀/はい。はい。水/『目',
+      },
+      false,
+    );
     await saveSecondSnippet(page);
-    await page.waitForResponse('**/api/updateContentMetaData');
     await verifyPostSaveOverlappingSnippetUI(page);
   });
 });
