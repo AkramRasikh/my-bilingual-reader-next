@@ -430,7 +430,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     contentIndex,
   }: HandleDeleteSnippetCallTypes) => {
     try {
-      const deleteSnippetResponse = await apiRequestWrapper({
+      await apiRequestWrapper({
         url: '/api/deleteSnippet',
         body: {
           language: languageSelectedState,
@@ -438,9 +438,6 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
           snippetId,
         },
       });
-
-      console.log('## deleteSnippetResponse', deleteSnippetResponse);
-
       dispatchContent({
         type: 'deleteSnippet',
         contentIndex: contentIndex,

@@ -15,6 +15,7 @@ import {
   mockGetOnLoadDataE2E,
   mockAddSnippetAPIE2E,
   mockDeleteSnippetAPIE2E,
+  mockSaveSnippetAPIE2E,
 } from './helpers/mock-api';
 import { initScriptsE2e } from './helpers/init-scripts';
 
@@ -418,7 +419,34 @@ test.describe('Loop(s)', () => {
     const selectionSuccess = await highlightJapaneseText(page);
     expect(selectionSuccess).toBe(true);
     await saveHighlightedTextAsSnippet(page);
-    await page.waitForResponse('**/api/updateContentMetaData');
+    await mockSaveSnippetAPIE2E(
+      page,
+      {
+        baseLang:
+          'Hori/Yes. Yes. Mizu/It\'s called "Let Me Speak with the Language of My Eyes." Here\'s the synopsis:',
+        focusedText: 'だんですよ。堀/はい。はい。水/『目で見る',
+        id: '38d3e884-b050-46d6-ab0d-3d5a751be335',
+        isContracted: false,
+        reviewData: {
+          difficulty: 7.1949,
+          due: new Date(),
+          ease: 2.5,
+          elapsed_days: 0,
+          interval: 0,
+          lapses: 0,
+          last_review: new Date(),
+          reps: 1,
+          scheduled_days: 0,
+          stability: 0.40255,
+          state: 1,
+        },
+        suggestedFocusText: 'だんですよ。堀/はい。はい。水/『目で見る',
+        targetLang:
+          '堀/水/最近こんな小説を読んだんですよ。堀/はい。はい。水/『目で見ることばで話をさせて』という小説なんですけど、これあらすじを話しますと',
+        time: 6,
+      },
+      false,
+    );
     await verifyPostSnippetSaveUI(page);
     await mockDeleteSnippetAPIE2E(page);
     await deleteRecentlyAddedSnippet(page);

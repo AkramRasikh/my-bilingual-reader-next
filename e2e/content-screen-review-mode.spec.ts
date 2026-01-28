@@ -299,113 +299,129 @@ test('review each variant - words/sentences/snippets - follows a change in revie
   await checkReviewVariantCounts(page, 6, 2, 4);
 
   await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
-  await mockSaveSnippetAPIE2E(page, {
-    baseLang:
-      "Mizu/In the first place, they're often inconvenienced compared to speakers of spoken languages, and in some cases,",
-    id: '75a51c0b-9378-4f44-8ea5-e8e3013abd23',
-    isContracted: false,
-    isPreSnippet: true,
-    reviewData: {
-      difficulty: 7.59429283,
-      due: new Date(),
-      ease: 2.5,
-      elapsed_days: 3,
-      interval: 0,
-      lapses: 0,
-      last_review: new Date(),
-      reps: 4,
-      scheduled_days: 4,
-      stability: 5.29012538,
-      state: 2,
+  await mockSaveSnippetAPIE2E(
+    page,
+    {
+      baseLang:
+        "Mizu/In the first place, they're often inconvenienced compared to speakers of spoken languages, and in some cases,",
+      id: '75a51c0b-9378-4f44-8ea5-e8e3013abd23',
+      isContracted: false,
+      isPreSnippet: true,
+      reviewData: {
+        difficulty: 7.59429283,
+        due: new Date(),
+        ease: 2.5,
+        elapsed_days: 3,
+        interval: 0,
+        lapses: 0,
+        last_review: new Date(),
+        reps: 4,
+        scheduled_days: 4,
+        stability: 5.29012538,
+        state: 2,
+      },
+      suggestedFocusText: '水/そもそも音声言語の話者に比べて不',
+      targetLang:
+        '水/そもそも音声言語の話者に比べて不便を強いられていたりとか場合によっては',
+      time: 66.540221,
     },
-    suggestedFocusText: '水/そもそも音声言語の話者に比べて不',
-    targetLang:
-      '水/そもそも音声言語の話者に比べて不便を強いられていたりとか場合によっては',
-    time: 66.540221,
-  });
+    true,
+  );
 
   await checkReviewVariantCounts(page, 6, 2, 3);
   await checkSnippetsDueMeta(page, 'Snippets Due: 224/292/292');
 
-  await mockSaveSnippetAPIE2E(page, {
-    baseLang:
-      "Mizu/That's right. There's an island called Martha's Vineyard that belongs to this Dukes County area. Hori/Yeah, yeah, yeah.Hori/That appeared in some episode. Mizu/Oh, really?Hori/I seem to remember it appearing as an island where sign language was used a lot. Mizu/That's right.",
-    id: '3eca4d57-72f3-40ba-95f9-ec7dfe35635a',
-    isContracted: false,
-    isPreSnippet: true,
-    reviewData: {
-      difficulty: 8.25312633,
-      due: new Date(),
-      ease: 2.5,
-      elapsed_days: 1,
-      interval: 0,
-      lapses: 0,
-      last_review: new Date(),
-      reps: 6,
-      scheduled_days: 2,
-      stability: 2.11570807,
-      state: 2,
+  await mockSaveSnippetAPIE2E(
+    page,
+    {
+      baseLang:
+        "Mizu/That's right. There's an island called Martha's Vineyard that belongs to this Dukes County area. Hori/Yeah, yeah, yeah.Hori/That appeared in some episode. Mizu/Oh, really?Hori/I seem to remember it appearing as an island where sign language was used a lot. Mizu/That's right.",
+      id: '3eca4d57-72f3-40ba-95f9-ec7dfe35635a',
+      isContracted: false,
+      isPreSnippet: true,
+      reviewData: {
+        difficulty: 8.25312633,
+        due: new Date(),
+        ease: 2.5,
+        elapsed_days: 1,
+        interval: 0,
+        lapses: 0,
+        last_review: new Date(),
+        reps: 6,
+        scheduled_days: 2,
+        stability: 2.11570807,
+        state: 2,
+      },
+      suggestedFocusText:
+        'うん堀/なんかの回で出てきたな、それ。水/あ、本当ですか?堀/なんか手話',
+      targetLang:
+        '水/そうですね。このデュークス郡っていうところに属するマーサズ・ヴィンヤード島っていう島があるんですよ。堀/うんうんうん。堀/なんかの回で出てきたな、それ。水/あ、本当ですか?堀/なんか手話がめっちゃ使われてる島みたいな感じで出てきた記憶がある。水/そうですそうです。マサチューセッツ州の沿岸部から',
+      time: 116.267792,
     },
-    suggestedFocusText:
-      'うん堀/なんかの回で出てきたな、それ。水/あ、本当ですか?堀/なんか手話',
-    targetLang:
-      '水/そうですね。このデュークス郡っていうところに属するマーサズ・ヴィンヤード島っていう島があるんですよ。堀/うんうんうん。堀/なんかの回で出てきたな、それ。水/あ、本当ですか?堀/なんか手話がめっちゃ使われてる島みたいな感じで出てきた記憶がある。水/そうですそうです。マサチューセッツ州の沿岸部から',
-    time: 116.267792,
-  });
+    true,
+  );
   await checkReviewVariantCounts(page, 6, 2, 2);
   await checkSnippetsDueMeta(page, 'Snippets Due: 223/292/292');
 
-  await mockSaveSnippetAPIE2E(page, {
-    baseLang:
-      "Mizu/There's definitely a lot of prejudice. Hori/So, a sense of equality is quite difficult.",
-    focusedText: '偏見は全然ありますね',
-    id: '4fee7322-f0db-41d1-b671-e8c472bcc395',
-    isContracted: true,
-    reviewData: {
-      difficulty: 7.15845635,
-      due: new Date(),
-      ease: 2.5,
-      elapsed_days: 1,
-      interval: 0,
-      lapses: 0,
-      last_review: new Date(),
-      reps: 3,
-      scheduled_days: 2,
-      stability: 2.48051861,
-      state: 2,
+  await mockSaveSnippetAPIE2E(
+    page,
+    {
+      baseLang:
+        "Mizu/There's definitely a lot of prejudice. Hori/So, a sense of equality is quite difficult.",
+      focusedText: '偏見は全然ありますね',
+      id: '4fee7322-f0db-41d1-b671-e8c472bcc395',
+      isContracted: true,
+      reviewData: {
+        difficulty: 7.15845635,
+        due: new Date(),
+        ease: 2.5,
+        elapsed_days: 1,
+        interval: 0,
+        lapses: 0,
+        last_review: new Date(),
+        reps: 3,
+        scheduled_days: 2,
+        stability: 2.48051861,
+        state: 2,
+      },
+      suggestedFocusText: '見は全然ありますね。堀/',
+      targetLang:
+        '水/偏見は全然ありますね。堀/ていうだから平等な感じってなかなか',
+      time: 73.204224,
     },
-    suggestedFocusText: '見は全然ありますね。堀/',
-    targetLang:
-      '水/偏見は全然ありますね。堀/ていうだから平等な感じってなかなか',
-    time: 73.204224,
-  });
+    true,
+  );
   await checkReviewVariantCounts(page, 6, 2, 1);
   await checkSnippetsDueMeta(page, 'Snippets Due: 222/292/292');
 
-  await mockSaveSnippetAPIE2E(page, {
-    baseLang:
-      "Mizu/In the first place, they're often inconvenienced compared to speakers of spoken languages, and in some cases,",
-    id: '7f3b7a90-4419-48e1-b4a3-527ab83e4014',
-    isContracted: false,
-    isPreSnippet: true,
-    reviewData: {
-      difficulty: 8.25312633,
-      due: new Date(),
-      ease: 2.5,
-      elapsed_days: 1,
-      interval: 0,
-      lapses: 0,
-      last_review: new Date(),
-      reps: 6,
-      scheduled_days: 2,
-      stability: 2.11570807,
-      state: 2,
+  await mockSaveSnippetAPIE2E(
+    page,
+    {
+      baseLang:
+        "Mizu/In the first place, they're often inconvenienced compared to speakers of spoken languages, and in some cases,",
+      id: '7f3b7a90-4419-48e1-b4a3-527ab83e4014',
+      isContracted: false,
+      isPreSnippet: true,
+      reviewData: {
+        difficulty: 8.25312633,
+        due: new Date(),
+        ease: 2.5,
+        elapsed_days: 1,
+        interval: 0,
+        lapses: 0,
+        last_review: new Date(),
+        reps: 6,
+        scheduled_days: 2,
+        stability: 2.11570807,
+        state: 2,
+      },
+      suggestedFocusText: '者に比べて不便を強いられていたりとか',
+      targetLang:
+        '水/そもそも音声言語の話者に比べて不便を強いられていたりとか場合によっては',
+      time: 68.495017,
     },
-    suggestedFocusText: '者に比べて不便を強いられていたりとか',
-    targetLang:
-      '水/そもそも音声言語の話者に比べて不便を強いられていたりとか場合によっては',
-    time: 68.495017,
-  });
+    true,
+  );
   await checkReviewVariantCounts(page, 6, 2, 0);
   await checkSnippetsDueMeta(page, 'Snippets Due: 221/292/292');
 

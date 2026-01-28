@@ -223,23 +223,6 @@ export async function mockUpdateContentMetaDataWithSnippet(page: Page) {
  * @param snippets - Array of snippets after deletion
  * @param delay - Optional delay in ms for the mock response (default: 500)
  */
-export async function mockUpdateContentMetaDataDelete(
-  page: Page,
-  snippets: any[],
-  delay: number = 500,
-) {
-  await page.route('**/api/updateContentMetaData', async (route) => {
-    await new Promise((resolve) => setTimeout(resolve, delay));
-
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        snippets,
-      }),
-    });
-  });
-}
 
 /**
  * Clears e2e flag from localStorage
@@ -353,14 +336,12 @@ export const mockAddSnippetAPIE2E = async (page: Page) => {
 };
 
 export const mockDeleteSnippetAPIE2E = async (page: Page) => {
-  await page.route('**/api/updateContentMetaData', async (route) => {
+  await page.route('**/api/deleteSnippet', async (route) => {
     await new Promise((resolve) => setTimeout(resolve, 500));
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({
-        snippets: mockEasyLinguisticsRadioSignLangIslandSnippets,
-      }),
+      body: JSON.stringify({}),
     });
   });
 };
@@ -399,6 +380,7 @@ export const mockSentenceBrekadownAPIE2E = async (page: Page) => {
 export const mockSaveSnippetAPIE2E = async (
   page: Page,
   snippetData: Snippet,
+  isReview: boolean = false,
 ) => {
   await page.route('**/api/saveSnippet', async (route) => {
     // Wait 1 second to make loading spinner visible
@@ -409,10 +391,12 @@ export const mockSaveSnippetAPIE2E = async (
       body: JSON.stringify(snippetData),
     });
   });
-  const reviewSRSTogglesForSnippet = page.getByTestId(
-    `review-srs-toggles-${snippetData.id}`,
-  );
+  if (isReview) {
+    const reviewSRSTogglesForSnippet = page.getByTestId(
+      `review-srs-toggles-${snippetData.id}`,
+    );
 
-  await reviewSRSTogglesForSnippet.locator('button').nth(3).click();
-  await page.waitForTimeout(1000);
+    await reviewSRSTogglesForSnippet.locator('button').nth(3).click();
+    await page.waitForTimeout(1000);
+  }
 };
