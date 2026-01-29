@@ -234,7 +234,6 @@ export const LearningScreenProvider = ({
     breakdownSentence,
     sentenceReviewBulk,
     updateSentenceData,
-    updateContentMetaData,
     languageSelectedState,
     handleSaveSnippetFetchProvider,
     handleDeleteSnippetFetchProvider,
