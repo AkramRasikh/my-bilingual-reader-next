@@ -151,7 +151,7 @@ export function contentReducer(
             ...topic,
             snippets: topic.snippets?.map((snippet) =>
               snippet.id === action.snippetData.id
-                ? { ...snippet, ...action.snippetData }
+                ? action.snippetData
                 : snippet,
             ),
           };

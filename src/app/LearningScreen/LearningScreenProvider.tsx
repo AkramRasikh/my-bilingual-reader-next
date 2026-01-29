@@ -531,6 +531,7 @@ export const LearningScreenProvider = ({
         snippetData: { ...snippetData, reviewData: undefined },
         contentId,
         contentIndex,
+        isUpdate: true,
       });
     } else {
       await handleDeleteSnippetFetchProvider({
