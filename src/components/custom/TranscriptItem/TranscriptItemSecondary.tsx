@@ -7,13 +7,10 @@ import clsx from 'clsx';
 import LoadingSpinner from '../LoadingSpinner';
 import { LucideHammer } from 'lucide-react';
 
-const TranscriptItemSecondary = ({
-  contentItem,
-  handleSaveWord,
-  isBreakdownSentenceLoadingState,
-}) => {
+const TranscriptItemSecondary = ({ contentItem, handleSaveWord }) => {
+  const isBreakdownSentenceLoadingState = true;
   const [wordPopUpState, setWordPopUpState] = useState([]);
-  const [isLoadingState, setIsLoadingState] = useState(false);
+  const [isLoadingState, setIsLoadingState] = useState(true);
 
   const { wordsState, handleDeleteWordDataProvider } = useFetchData();
   const { wordsForSelectedTopic, selectedContentTitleState } =
@@ -72,17 +69,18 @@ const TranscriptItemSecondary = ({
   const isDue = contentItem?.isDue;
 
   return (
-    <div className='flex flex-row gap-2 w-11/12'>
+    <div
+      className={clsx(
+        'flex flex-row gap-2 rounded-2xl border-2 p-2',
+        isDue
+          ? 'border-red-500'
+          : hasBeenReviewed
+            ? 'border-amber-500'
+            : 'border-blue-200',
+        isLoadingState ? 'opacity-75' : '',
+      )}
+    >
       <div className='flex flex-col gap-3 mt-2'>
-        <div
-          className={clsx(
-            'inset-0 flex items-center justify-center rounded',
-            !isLoadingState && 'invisible',
-          )}
-        >
-          <LoadingSpinner />
-        </div>
-
         <div
           className={clsx(
             'animate-pulse inset-0 flex items-center justify-center rounded',
@@ -96,19 +94,19 @@ const TranscriptItemSecondary = ({
             size={16}
           />
         </div>
+
+        <div
+          className={clsx(
+            'inset-0 flex items-center justify-center rounded',
+            !isLoadingState && 'invisible',
+          )}
+        >
+          <LoadingSpinner />
+        </div>
       </div>
       <div
         data-testid='transcript-item-secondary'
-        className={clsx(
-          'rounded-2xl border-2 p-2 mt-2 flex flex-col gap-2 relative flex-1',
-          isDue
-            ? 'border-red-500'
-            : hasBeenReviewed
-              ? 'border-amber-500'
-              : 'border-blue-200',
-
-          isLoadingState ? 'opacity-75' : '',
-        )}
+        className='flex flex-col gap-2 relative flex-1'
       >
         <FormattedSentence
           targetLangformatted={targetLangformatted}
@@ -133,6 +131,19 @@ const TranscriptItemSecondary = ({
             />
           </>
         )}
+      </div>
+      <div className='flex flex-col gap-3 mt-2'>
+        <div className='invisible inset-0 flex items-center justify-center rounded min-h-6'>
+          <LoadingSpinner />
+        </div>
+
+        <div className='invisible animate-pulse inset-0 flex items-center justify-center rounded min-h-6'>
+          <LucideHammer
+            color='brown'
+            className='animate-bounce mx-auto fill-amber-700 rounded-4xl'
+            size={16}
+          />
+        </div>
       </div>
     </div>
   );
