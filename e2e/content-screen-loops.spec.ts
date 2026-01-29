@@ -54,9 +54,7 @@ const verifyPostFreeLoopUI = async (page: Page) => {
   const saveButton = page.getByTestId('save-snippet-button');
   await expect(saveButton).toBeVisible();
   await expect(saveButton).toBeDisabled();
-  const videoPlayerText = page
-    .locator('p.text-center.font-bold.text-xl.text-blue-700')
-    .first();
+  const videoPlayerText = page.getByTestId('video-player-snippet-text');
   await expect(videoPlayerText).toBeVisible();
   await expect(saveButton).toBeDisabled();
 };

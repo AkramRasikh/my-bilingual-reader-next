@@ -7,10 +7,13 @@ import clsx from 'clsx';
 import LoadingSpinner from '../LoadingSpinner';
 import { LucideHammer } from 'lucide-react';
 
-const TranscriptItemSecondary = ({ contentItem, handleSaveWord }) => {
-  const isBreakdownSentenceLoadingState = true;
+const TranscriptItemSecondary = ({
+  contentItem,
+  handleSaveWord,
+  isBreakdownSentenceLoadingState,
+}) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
-  const [isLoadingState, setIsLoadingState] = useState(true);
+  const [isLoadingState, setIsLoadingState] = useState(false);
 
   const { wordsState, handleDeleteWordDataProvider } = useFetchData();
   const { wordsForSelectedTopic, selectedContentTitleState } =
@@ -106,7 +109,7 @@ const TranscriptItemSecondary = ({ contentItem, handleSaveWord }) => {
       </div>
       <div
         data-testid='transcript-item-secondary'
-        className='flex flex-col gap-2 relative flex-1'
+        className='flex flex-col gap-2 relative flex-1 mr-7'
       >
         <FormattedSentence
           targetLangformatted={targetLangformatted}
@@ -131,19 +134,6 @@ const TranscriptItemSecondary = ({ contentItem, handleSaveWord }) => {
             />
           </>
         )}
-      </div>
-      <div className='flex flex-col gap-3 mt-2'>
-        <div className='invisible inset-0 flex items-center justify-center rounded min-h-6'>
-          <LoadingSpinner />
-        </div>
-
-        <div className='invisible animate-pulse inset-0 flex items-center justify-center rounded min-h-6'>
-          <LucideHammer
-            color='brown'
-            className='animate-bounce mx-auto fill-amber-700 rounded-4xl'
-            size={16}
-          />
-        </div>
       </div>
     </div>
   );
