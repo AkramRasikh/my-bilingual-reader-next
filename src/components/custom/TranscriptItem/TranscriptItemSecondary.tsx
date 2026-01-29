@@ -72,47 +72,68 @@ const TranscriptItemSecondary = ({
   const isDue = contentItem?.isDue;
 
   return (
-    <div
-      data-testid='transcript-item-secondary'
-      className={clsx(
-        'rounded-2xl border-2 p-2 mt-2 flex flex-col gap-2 relative',
-        isDue
-          ? 'border-red-500'
-          : hasBeenReviewed
-            ? 'border-amber-500'
-            : 'border-blue-200',
-
-        isLoadingState ? 'opacity-75' : '',
-      )}
-    >
-      {isLoadingState && (
-        <div className='absolute inset-0 flex items-center justify-center bg-white/70 rounded'>
+    <div className='flex flex-row gap-2 w-11/12'>
+      <div className='flex flex-col gap-3 mt-2'>
+        <div
+          className={clsx(
+            'inset-0 flex items-center justify-center rounded',
+            !isLoadingState && 'invisible',
+          )}
+        >
           <LoadingSpinner />
         </div>
-      )}
-      <FormattedSentence
-        targetLangformatted={targetLangformatted}
-        handleMouseLeave={handleMouseLeave}
-        handleMouseEnter={handleMouseEnter}
-        wordsForSelectedTopic={wordsForSelectedTopic}
-        handleDeleteWordDataProvider={handleDeleteWordDataProvider}
-        wordPopUpState={wordPopUpState}
-        setWordPopUpState={setWordPopUpState}
-        wordsFromSentence={wordsFromSentence}
-      />
-      <p>{baseLang}</p>
-      {hasSentenceBreakdown && (
-        <>
-          <hr className='bg-gray-500' />
-          <SentenceBreakdown
-            vocab={contentItem.vocab}
-            meaning={contentItem.meaning}
-            sentenceStructure={contentItem.sentenceStructure}
-            handleSaveFunc={handleSaveFunc}
-            thisSentencesSavedWords={wordsFromSentence}
+
+        <div
+          className={clsx(
+            'animate-pulse inset-0 flex items-center justify-center rounded',
+            !isBreakdownSentenceLoadingState && 'invisible',
+          )}
+          data-testid={`transcript-breakdown-loading-${contentItem.id}`}
+        >
+          <LucideHammer
+            color='brown'
+            className='animate-bounce mx-auto fill-amber-700 rounded-4xl'
+            size={16}
           />
-        </>
-      )}
+        </div>
+      </div>
+      <div
+        data-testid='transcript-item-secondary'
+        className={clsx(
+          'rounded-2xl border-2 p-2 mt-2 flex flex-col gap-2 relative flex-1',
+          isDue
+            ? 'border-red-500'
+            : hasBeenReviewed
+              ? 'border-amber-500'
+              : 'border-blue-200',
+
+          isLoadingState ? 'opacity-75' : '',
+        )}
+      >
+        <FormattedSentence
+          targetLangformatted={targetLangformatted}
+          handleMouseLeave={handleMouseLeave}
+          handleMouseEnter={handleMouseEnter}
+          wordsForSelectedTopic={wordsForSelectedTopic}
+          handleDeleteWordDataProvider={handleDeleteWordDataProvider}
+          wordPopUpState={wordPopUpState}
+          setWordPopUpState={setWordPopUpState}
+          wordsFromSentence={wordsFromSentence}
+        />
+        <p>{baseLang}</p>
+        {hasSentenceBreakdown && (
+          <>
+            <hr className='bg-gray-500' />
+            <SentenceBreakdown
+              vocab={contentItem.vocab}
+              meaning={contentItem.meaning}
+              sentenceStructure={contentItem.sentenceStructure}
+              handleSaveFunc={handleSaveFunc}
+              thisSentencesSavedWords={wordsFromSentence}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 };
