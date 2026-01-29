@@ -33,11 +33,8 @@ export const srsCalculationAndText = ({
   timeNow: Date;
   reviewData?: ReviewDataTypes;
 }) => {
-  const hasDueDate = reviewData?.due ? new Date(reviewData?.due) : null; // check if due yet
-
-  const cardDataRelativeToNow = hasDueDate
-    ? reviewData
-    : (getEmptyCard() as ReviewDataTypes);
+  const cardDataRelativeToNow =
+    reviewData ?? (getEmptyCard() as ReviewDataTypes);
 
   const nextScheduledOptions = getNextScheduledOptions({
     card: cardDataRelativeToNow,
