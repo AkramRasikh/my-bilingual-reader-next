@@ -1,14 +1,13 @@
 import HighlightedText from '@/components/custom/HighlightedText';
 import useTranscriptItem from './useTranscriptItem';
 import TranscriptItemWrapper from './TranscriptItemWrapper';
-import TranscriptItemTimeOverlappingIndicator, {
-  TranscriptItemTimeOverlappingIndicatorMulti,
-} from './TranscriptItemTimeOverlappingIndicator';
+import TranscriptItemTimeOverlappingIndicator from './TranscriptItemTimeOverlappingIndicator';
 import TranscriptItemMenuSection from './TranscriptItemMenuSection';
 import TranscriptItemReviewSection from './TranscriptItemReviewSection';
 import TranscriptItemActionBar from './TranscriptItemActionBar';
 import TranscriptItemContent from './TranscriptItemContent';
 import TranscriptItemLoopingSentence from './TranscriptItemLoopingSentence';
+import TranscriptItemTimeOverlappingIndicatorMulti from './TranscriptItemTimeOverlappingIndicatorMulti';
 
 const TranscriptItem = () => {
   const {
