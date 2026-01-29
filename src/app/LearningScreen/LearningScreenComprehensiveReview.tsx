@@ -8,6 +8,12 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningScreenTabTranscriptNestedWordsReview';
 import LearningScreenSnippetReview from './experimental/LearningScreenSnippetReview';
 import ReviewTypeToggles from './components/ReviewTypeToggles';
+import { Snippet } from '../types/content-types';
+
+interface HandleReviewSnippetsComprehensiveReviewProps {
+  snippetData: Snippet;
+  isRemoveReview?: boolean;
+}
 
 const LearningScreenComprehensiveReview = () => {
   const {
@@ -29,11 +35,9 @@ const LearningScreenComprehensiveReview = () => {
     scrollToElState,
     wordsForSelectedTopic,
     formattedTranscriptState,
-    handleDeleteSnippet,
     setThreeSecondLoopState,
     setContractThreeSecondLoopState,
     handlePlayFromHere,
-    handleUpdateSnippetReview,
     savedSnippetsMemoized,
     enableWordReviewState,
     setEnableWordReviewState,
@@ -48,6 +52,7 @@ const LearningScreenComprehensiveReview = () => {
     snippetsWithDueStatusMemoized,
     setIsInReviewMode,
     selectedContentTitleState,
+    handleUpdateSnippet,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -147,21 +152,27 @@ const LearningScreenComprehensiveReview = () => {
     snippetsWithDueStatusMemoized,
   ]);
 
-  const handleLoopHere = ({ time, isContracted }) => {
+  const handleLoopHere = ({
+    time,
+    isContracted,
+  }: {
+    time: number;
+    isContracted: boolean;
+  }) => {
     const playFromTime = time - (isContracted ? 0.75 : 1.5);
     setThreeSecondLoopState(time);
     setContractThreeSecondLoopState(isContracted);
     handlePlayFromHere(playFromTime);
   };
 
-  const handleReviewSnippets = async (args) => {
-    const isRemoveReview = args?.isRemoveReview;
-    if (isRemoveReview) {
-      await handleDeleteSnippet(args.snippetData, args?.wordsFromSentence);
-    } else {
-      await handleUpdateSnippetReview(args.snippetData);
-    }
-
+  const handleReviewSnippetsComprehensiveReview = async ({
+    snippetData,
+    isRemoveReview,
+  }: HandleReviewSnippetsComprehensiveReviewProps) => {
+    await handleUpdateSnippet({
+      snippetData,
+      isRemoveReview,
+    });
     setThreeSecondLoopState(null);
     setContractThreeSecondLoopState(false);
   };
@@ -220,7 +231,9 @@ const LearningScreenComprehensiveReview = () => {
                 handleLoopHere={handleLoopHere}
                 isVideoPlaying={isVideoPlaying}
                 threeSecondLoopState={threeSecondLoopState}
-                handleReviewSnippets={handleReviewSnippets}
+                handleUpdateSnippetComprehensiveReview={
+                  handleReviewSnippetsComprehensiveReview
+                }
               />
             );
           })}

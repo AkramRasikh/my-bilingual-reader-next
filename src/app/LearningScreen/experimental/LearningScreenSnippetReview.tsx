@@ -26,13 +26,24 @@ interface HandleReviewSnippetsFinalArg {
   snippetData: Snippet;
 }
 
+interface LearningScreenSnippetReviewProps {
+  snippetData: Snippet;
+  handleLoopHere: (arg: { time: number; isContracted?: boolean }) => void;
+  isVideoPlaying: boolean;
+  threeSecondLoopState: number | null;
+  handleUpdateSnippetComprehensiveReview: (arg: {
+    snippetData: Snippet;
+    isRemoveReview?: boolean;
+  }) => Promise<void>;
+}
+
 const LearningScreenSnippetReview = ({
   snippetData,
   handleLoopHere,
   isVideoPlaying,
   threeSecondLoopState,
-  handleReviewSnippets,
-}) => {
+  handleUpdateSnippetComprehensiveReview,
+}: LearningScreenSnippetReviewProps) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
   const [endIndexKeyState, setEndIndexKeyState] = useState(0);
   const [wordPopUpState, setWordPopUpState] = useState([]);
@@ -47,7 +58,6 @@ const LearningScreenSnippetReview = ({
   const ulRef = useRef<NodeJS.Timeout | null>(null);
 
   const {
-    handleUpdateSnippet,
     wordsForSelectedTopic,
     getSentenceDataOfOverlappingWordsDuringSave,
     selectedContentTitleState,
@@ -120,7 +130,7 @@ const LearningScreenSnippetReview = ({
   const { textMatch, matchStartKey, matchEndKey } = useMemo(() => {
     return highlightSnippetTextApprox(
       snippetData.targetLang,
-      snippetData.focusedText || snippetData.suggestedFocusText,
+      snippetData?.focusedText || snippetData?.suggestedFocusText || '',
       isLoadingSaveSnippetState,
       startIndexKeyState,
       endIndexKeyState,
@@ -138,13 +148,12 @@ const LearningScreenSnippetReview = ({
     }
     try {
       setIsLoadingSaveSnippetState(true);
-      await handleUpdateSnippet({
+      await handleUpdateSnippetComprehensiveReview({
         snippetData: {
           ...snippetData,
           isPreSnippet: false,
           focusedText: textMatch,
         },
-        isUpdate: true,
       });
       setStartIndexKeyState(0);
       setEndIndexKeyState(0);
@@ -174,7 +183,7 @@ const LearningScreenSnippetReview = ({
   const { targetLangformatted, wordsFromSentence, wordsInSuggestedText } =
     useMemo(() => {
       const wordsInSuggestedText = findAllInstancesOfWordsInSentence(
-        snippetData.focusedText || snippetData.suggestedFocusText,
+        snippetData?.focusedText || snippetData?.suggestedFocusText || '',
         wordsState,
       );
 
@@ -200,10 +209,9 @@ const LearningScreenSnippetReview = ({
     arg: HandleReviewSnippetsFinalArg,
   ): Promise<void> => {
     const isRemoveReview = arg?.isRemoveReview;
-    await handleReviewSnippets({
+    await handleUpdateSnippetComprehensiveReview({
       snippetData: arg.snippetData,
-      wordsFromSentence: wordsInSuggestedText.length > 0,
-      isRemoveReview,
+      isRemoveReview: isRemoveReview && !(wordsInSuggestedText?.length > 0),
     });
   };
 

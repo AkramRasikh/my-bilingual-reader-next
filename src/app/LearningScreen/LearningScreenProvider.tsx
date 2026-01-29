@@ -149,7 +149,6 @@ export interface LearningScreenContextTypes {
   ) => Promise<void | null>;
   overlappingTextMemoized: OverlappingTextTypes | null;
   savedSnippetsMemoized: SavedSnippetsMemoizedProps[];
-  handleUpdateSnippetReview: (snippetData: Snippet) => Promise<void>;
   handleDeleteSnippet: (
     snippetId: Snippet['id'],
     wordsFromSentence?: WordTypes[],
@@ -159,7 +158,7 @@ export interface LearningScreenContextTypes {
   handleQuickSaveSnippet: () => Promise<void | null>;
   handleUpdateSnippet: (params: {
     snippetData: Snippet;
-    isUpdate: boolean;
+    isRemoveReview?: boolean;
   }) => Promise<void>;
   getSentenceDataOfOverlappingWordsDuringSave: (
     thisSnippetsTime: number,
@@ -468,18 +467,6 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const handleUpdateSnippet = async ({
-    snippetData,
-    isUpdate,
-  }: HandleUpdateSnippetParams) => {
-    await handleSaveSnippetFetchProvider({
-      snippetData,
-      contentId,
-      contentIndex,
-      isUpdate,
-    });
-  };
-
   const handleSaveSnippet = async (snippetArgs: OverlappingTextTypes) => {
     const contentSnippets = selectedContentStateMemoized?.snippets || [];
     if (!threeSecondLoopState) {
@@ -542,13 +529,27 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const handleUpdateSnippetReview = async (snippetData: Snippet) => {
-    await handleSaveSnippetFetchProvider({
-      snippetData,
-      contentIndex,
-      contentId,
-      isUpdate: true,
-    });
+  const handleUpdateSnippet = async ({
+    snippetData,
+    isRemoveReview,
+  }: {
+    snippetData: Snippet;
+    isRemoveReview?: boolean;
+  }) => {
+    if (isRemoveReview) {
+      await handleDeleteSnippetFetchProvider({
+        contentIndex,
+        contentId,
+        snippetId: snippetData.id,
+      });
+    } else {
+      await handleSaveSnippetFetchProvider({
+        snippetData,
+        contentIndex,
+        contentId,
+        isUpdate: true,
+      });
+    }
   };
 
   const handleJumpToFirstElInReviewTranscript = (isSecondIndex?: boolean) => {
@@ -1237,10 +1238,9 @@ export const LearningScreenProvider = ({
         firstTime,
         overlappingTextMemoized,
         savedSnippetsMemoized,
-        handleUpdateSnippetReview,
+        handleUpdateSnippet,
         contentSnippets: selectedContentStateMemoized?.snippets || [],
         sentenceMapMemoized,
-        handleUpdateSnippet,
         getSentenceDataOfOverlappingWordsDuringSave,
         setScrollToElState,
         enableWordReviewState,
