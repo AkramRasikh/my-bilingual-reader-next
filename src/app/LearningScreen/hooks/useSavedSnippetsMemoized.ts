@@ -51,6 +51,7 @@ export const useSavedSnippetsMemoized = (
           time: snippetData.time,
           isContracted: snippetData?.isContracted,
           isPreSnippet: snippetData?.isPreSnippet,
+          hasReview: Boolean(snippetData?.reviewData),
         })),
       );
     });

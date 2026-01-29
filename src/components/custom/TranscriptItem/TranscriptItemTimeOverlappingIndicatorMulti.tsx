@@ -12,7 +12,7 @@ const TranscriptItemTimeOverlappingIndicatorMulti = ({
 
   const handleDeleteSnippetItem = async (snippetItem) => {
     try {
-      setTranscriptItemLoadingState(snippetItem.id);
+      setTranscriptItemLoadingState(snippetItem.snippetId);
       await handleDeleteSnippet({
         ...snippetItem,
         id: snippetItem.snippetId,
@@ -30,7 +30,7 @@ const TranscriptItemTimeOverlappingIndicatorMulti = ({
       {thisHasSavedSnippetOverlap.map((item, index) => {
         const snippetId = item.snippetId;
         const isPreSnippet = item?.isPreSnippet;
-        const hasNoReview = item?.reviewData;
+        const hasNoReview = !item?.hasReview;
         const thisSnippetIsLoading = transcriptItemLoadingState === snippetId;
         return (
           <div
@@ -42,7 +42,7 @@ const TranscriptItemTimeOverlappingIndicatorMulti = ({
                 : isPreSnippet
                   ? 'bg-amber-300'
                   : 'bg-blue-700',
-              transcriptItemLoadingState
+              thisSnippetIsLoading
                 ? 'animate-pulse bg-red-700 opacity-100'
                 : '',
             )}
