@@ -27,7 +27,7 @@ interface HandleReviewSnippetsFinalArg {
 }
 
 const LearningScreenSnippetReview = ({
-  item,
+  snippetData,
   handleLoopHere,
   isVideoPlaying,
   threeSecondLoopState,
@@ -40,8 +40,9 @@ const LearningScreenSnippetReview = ({
     useState(false);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [isLoadingWordState, setIsLoadingWordState] = useState(false);
-  const thisIsPlaying = isVideoPlaying && threeSecondLoopState === item.time;
-  const isPreSnippet = item?.isPreSnippet;
+  const thisIsPlaying =
+    isVideoPlaying && threeSecondLoopState === snippetData.time;
+  const isPreSnippet = snippetData?.isPreSnippet;
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
   const ulRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -73,14 +74,14 @@ const LearningScreenSnippetReview = ({
     try {
       setIsLoadingWordState(true);
       const belongingSentenceId = getSentenceDataOfOverlappingWordsDuringSave(
-        item.time,
+        snippetData.time,
         highlightedTextState,
       );
       if (belongingSentenceId) {
         await handleSaveWord({
           highlightedWord: highlightedTextState || thisWord,
           highlightedWordSentenceId: belongingSentenceId,
-          contextSentence: item.targetLang, // maybe these two should match?
+          contextSentence: snippetData.targetLang, // maybe these two should match?
           meaning: thisWordMeaning,
           isGoogle,
           originalContext: selectedContentTitleState,
@@ -118,13 +119,18 @@ const LearningScreenSnippetReview = ({
 
   const { textMatch, matchStartKey, matchEndKey } = useMemo(() => {
     return highlightSnippetTextApprox(
-      item.targetLang,
-      item.focusedText || item.suggestedFocusText,
+      snippetData.targetLang,
+      snippetData.focusedText || snippetData.suggestedFocusText,
       isLoadingSaveSnippetState,
       startIndexKeyState,
       endIndexKeyState,
     );
-  }, [item, isLoadingSaveSnippetState, startIndexKeyState, endIndexKeyState]);
+  }, [
+    snippetData,
+    isLoadingSaveSnippetState,
+    startIndexKeyState,
+    endIndexKeyState,
+  ]);
 
   const onUpdateSnippet = async () => {
     if (!textMatch) {
@@ -133,7 +139,11 @@ const LearningScreenSnippetReview = ({
     try {
       setIsLoadingSaveSnippetState(true);
       await handleUpdateSnippet({
-        snippetData: { ...item, isPreSnippet: false, focusedText: textMatch },
+        snippetData: {
+          ...snippetData,
+          isPreSnippet: false,
+          focusedText: textMatch,
+        },
         isUpdate: true,
       });
       setStartIndexKeyState(0);
@@ -164,17 +174,17 @@ const LearningScreenSnippetReview = ({
   const { targetLangformatted, wordsFromSentence, wordsInSuggestedText } =
     useMemo(() => {
       const wordsInSuggestedText = findAllInstancesOfWordsInSentence(
-        item.focusedText || item.suggestedFocusText,
+        snippetData.focusedText || snippetData.suggestedFocusText,
         wordsState,
       );
 
       const wordsFromSentence = findAllInstancesOfWordsInSentence(
-        item.targetLang,
+        snippetData.targetLang,
         wordsState,
       );
 
       const targetLangformatted = underlineWordsInSentence(
-        item.targetLang,
+        snippetData.targetLang,
         wordsFromSentence,
         true,
       );
@@ -184,7 +194,7 @@ const LearningScreenSnippetReview = ({
         wordsFromSentence,
         wordsInSuggestedText,
       };
-    }, [item, wordsState]);
+    }, [snippetData, wordsState]);
 
   const handleReviewSnippetsFinal = async (
     arg: HandleReviewSnippetsFinalArg,
@@ -200,7 +210,10 @@ const LearningScreenSnippetReview = ({
   const indexHasChanged = endIndexKeyState !== 0 || startIndexKeyState !== 0;
 
   return (
-    <div className='relative' data-testid={`snippet-review-item-${item.id}`}>
+    <div
+      className='relative'
+      data-testid={`snippet-review-item-${snippetData.id}`}
+    >
       {isLoadingSaveSnippetState && (
         <div className='absolute right-1/2 top-3/10'>
           <LoadingSpinner />
@@ -213,14 +226,14 @@ const LearningScreenSnippetReview = ({
               className={clsx('h-7 w-7', thisIsPlaying ? 'bg-amber-300' : '')}
               onClick={() =>
                 handleLoopHere({
-                  time: item.time,
-                  isContracted: item.isContracted,
+                  time: snippetData.time,
+                  isContracted: snippetData.isContracted,
                 })
               }
             >
               {thisIsPlaying ? <PauseIcon /> : <PlayIcon />}
             </Button>
-            {item?.isPreSnippet && (
+            {snippetData?.isPreSnippet && (
               <RabbitIcon className='fill-amber-300 rounded m-auto' />
             )}
           </div>
@@ -290,7 +303,7 @@ const LearningScreenSnippetReview = ({
         )}
         <ReviewSRSToggles
           isSnippet
-          contentItem={item}
+          contentItem={snippetData}
           handleReviewFunc={handleReviewSnippetsFinal}
         />
       </div>

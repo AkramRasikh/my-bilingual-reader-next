@@ -216,7 +216,7 @@ const LearningScreenComprehensiveReview = () => {
             return (
               <LearningScreenSnippetReview
                 key={item.id}
-                item={item}
+                snippetData={item}
                 handleLoopHere={handleLoopHere}
                 isVideoPlaying={isVideoPlaying}
                 threeSecondLoopState={threeSecondLoopState}
