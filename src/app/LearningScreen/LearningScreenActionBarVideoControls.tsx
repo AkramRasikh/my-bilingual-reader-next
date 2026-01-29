@@ -1,6 +1,5 @@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import CountdownTimer from '../../components/custom/CountDownTimer';
 import useLearningScreen from './useLearningScreen';
 import CountUpTimer from '@/components/custom/CountUpTimer';
 
@@ -8,7 +7,6 @@ const LearningScreenActionBarVideoControls = () => {
   const {
     onlyShowEngState,
     setOnlyShowEngState,
-    ref,
     elapsed,
     setElapsed,
     trackCurrentState,
@@ -36,8 +34,6 @@ const LearningScreenActionBarVideoControls = () => {
           data-testid='track-current-switch'
         />
       </div>
-      <div className='w-px h-5 my-auto bg-gray-300' />
-      <CountdownTimer audioTimeRef={ref} />
       <div className='w-px h-5 my-auto bg-gray-300' />
       <CountUpTimer elapsed={elapsed} setElapsed={setElapsed} />
     </div>

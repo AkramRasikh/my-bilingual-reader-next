@@ -123,7 +123,6 @@ const checkingMediaActionButtons = () => {
   expect(trackMediaElLabel).toBeChecked();
   expect(trackMediaElLabel).toBeEnabled();
   expect(screen.getByTestId('countup-timer-button')).toBeInTheDocument();
-  expect(screen.getByTestId('countdown-timer-button')).toBeInTheDocument();
 };
 
 const checkAllTranscriptItems = () => {
