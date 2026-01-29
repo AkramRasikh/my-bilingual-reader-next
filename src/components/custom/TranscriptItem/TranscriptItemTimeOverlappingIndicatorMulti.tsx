@@ -1,25 +1,17 @@
 import clsx from 'clsx';
-import { useState } from 'react';
 
 const TranscriptItemTimeOverlappingIndicatorMulti = ({
   thisHasSavedSnippetOverlap,
   handleDeleteSnippet,
   handleLoopHere,
   contentItemId,
+  snippetLoadingState,
 }) => {
-  const [transcriptItemLoadingState, setTranscriptItemLoadingState] =
-    useState('');
-
   const handleDeleteSnippetItem = async (snippetItem) => {
-    try {
-      setTranscriptItemLoadingState(snippetItem.snippetId);
-      await handleDeleteSnippet({
-        ...snippetItem,
-        id: snippetItem.snippetId,
-      });
-    } finally {
-      setTranscriptItemLoadingState('');
-    }
+    await handleDeleteSnippet({
+      ...snippetItem,
+      id: snippetItem.snippetId,
+    });
   };
 
   return (
@@ -31,7 +23,7 @@ const TranscriptItemTimeOverlappingIndicatorMulti = ({
         const snippetId = item.snippetId;
         const isPreSnippet = item?.isPreSnippet;
         const hasNoReview = !item?.hasReview;
-        const thisSnippetIsLoading = transcriptItemLoadingState === snippetId;
+        const thisSnippetIsLoading = snippetLoadingState.includes(snippetId);
         return (
           <div
             key={index}

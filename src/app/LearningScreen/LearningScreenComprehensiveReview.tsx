@@ -21,6 +21,7 @@ const LearningScreenComprehensiveReview = () => {
     overlappingSnippetDataState,
     masterPlay,
     isGenericItemLoadingState,
+    snippetLoadingState,
     isBreakingDownSentenceArrState,
     isInReviewMode,
     onlyShowEngState,
@@ -263,6 +264,7 @@ const LearningScreenComprehensiveReview = () => {
               contentItem={contentItem}
               masterPlay={masterPlay}
               isGenericItemLoadingState={isGenericItemLoadingState}
+              snippetLoadingState={snippetLoadingState}
               handleSaveWord={handleSaveWord}
               handleDeleteWordDataProvider={handleDeleteWordDataProvider}
               wordsState={wordsState}

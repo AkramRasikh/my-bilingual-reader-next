@@ -82,6 +82,8 @@ export interface LearningScreenContextTypes {
   setIsGenericItemLoadingState: React.Dispatch<
     React.SetStateAction<SentenceMapItemTypes['id'][]>
   >;
+  snippetLoadingState: string[];
+  setSnippetLoadingState: React.Dispatch<React.SetStateAction<string[]>>;
   overlappingSnippetDataState: OverlappingSnippetData[];
   loopTranscriptState: FormattedTranscriptTypes[];
   setLoopTranscriptState: React.Dispatch<
@@ -150,9 +152,9 @@ export interface LearningScreenContextTypes {
   overlappingTextMemoized: OverlappingTextTypes | null;
   savedSnippetsMemoized: SavedSnippetsMemoizedProps[];
   handleDeleteSnippet: (
-    snippetId: Snippet['id'],
+    snippetData: Snippet,
     wordsFromSentence?: WordTypes[],
-  ) => Promise<void | null>;
+  ) => Promise<void>;
   contentSnippets: Snippet[];
   sentenceMapMemoized: Record<string, SentenceMapItemTypes>;
   handleQuickSaveSnippet: () => Promise<void | null>;
@@ -206,6 +208,7 @@ export const LearningScreenProvider = ({
   const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState<
     SentenceMapItemTypes['id'][]
   >([]);
+  const [snippetLoadingState, setSnippetLoadingState] = useState<string[]>([]);
   const [isBreakingDownSentenceArrState, setIsBreakingDownSentenceArrState] =
     useState<SentenceMapItemTypes['id'][]>([]);
 
@@ -512,19 +515,27 @@ export const LearningScreenProvider = ({
     ) {
       return;
     }
-    if (wordsFromSentence) {
-      await handleSaveSnippetFetchProvider({
-        snippetData: { ...snippetData, reviewData: undefined },
-        contentId,
-        contentIndex,
-        isUpdate: true,
-      });
-    } else {
-      await handleDeleteSnippetFetchProvider({
-        contentIndex,
-        contentId,
-        snippetId: snippetData.id,
-      });
+
+    setSnippetLoadingState((prev) => [...prev, snippetData.id]);
+    try {
+      if (wordsFromSentence) {
+        await handleSaveSnippetFetchProvider({
+          snippetData: { ...snippetData, reviewData: undefined },
+          contentId,
+          contentIndex,
+          isUpdate: true,
+        });
+      } else {
+        await handleDeleteSnippetFetchProvider({
+          contentIndex,
+          contentId,
+          snippetId: snippetData.id,
+        });
+      }
+    } finally {
+      setSnippetLoadingState((prev) =>
+        prev.filter((id) => id !== snippetData.id),
+      );
     }
   };
 
@@ -1181,6 +1192,8 @@ export const LearningScreenProvider = ({
         setIsInReviewMode,
         isGenericItemLoadingState,
         setIsGenericItemLoadingState,
+        snippetLoadingState,
+        setSnippetLoadingState,
         overlappingSnippetDataState: overlappingSnippetDataMemoised || [],
         loopTranscriptState,
         setLoopTranscriptState,

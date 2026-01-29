@@ -198,6 +198,7 @@ const WordsStudyUIVideoEl = ({ contextDataEl }) => {
                 breakdownSentencesArrState={[]}
                 masterPlay={masterPlay}
                 isGenericItemLoadingState={[]}
+                snippetLoadingState={[]}
                 handleSaveWord={handleSaveWord}
                 handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                 wordsState={wordsState}

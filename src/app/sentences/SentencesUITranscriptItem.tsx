@@ -45,6 +45,7 @@ const SentencesUITranscriptItem = ({ sentence, sentenceNum, isSelected }) => {
       sentenceHighlightingState={''}
       masterPlay={masterPlay}
       isGenericItemLoadingState={[]}
+      snippetLoadingState={[]}
       handleSaveWord={() => {}} //handleSaveWord
       handleDeleteWordDataProvider={() => {}} //handleDeleteWordDataProvider
       wordsState={wordsState}

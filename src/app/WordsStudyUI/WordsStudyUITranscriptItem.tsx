@@ -25,6 +25,7 @@ const WordStudyUITranscriptItem = ({
       breakdownSentencesArrState={breakdownSentencesArrState}
       masterPlay={masterPlay}
       isGenericItemLoadingState={[]}
+      snippetLoadingState={[]}
       handleSaveWord={handleSaveWord}
       handleDeleteWordDataProvider={handleDeleteWordDataProvider}
       wordsState={wordsState}

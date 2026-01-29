@@ -25,6 +25,7 @@ const TranscriptItem = () => {
     handleLoopHere,
     biggestOverlappedSnippet,
     overlappingTextMemoized,
+    snippetLoadingState,
   } = useTranscriptItem();
 
   const thisIsOverlapping = biggestOverlappedSnippet === contentItem.id;
@@ -76,6 +77,7 @@ const TranscriptItem = () => {
           handleDeleteSnippet={handleDeleteSnippet}
           handleLoopHere={handleLoopHere}
           contentItemId={contentItem?.id}
+          snippetLoadingState={snippetLoadingState}
         />
       )}
     </TranscriptItemWrapper>

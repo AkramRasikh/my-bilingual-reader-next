@@ -37,7 +37,7 @@ const WordsStudyUIIsolatedTranscriptItem = ({ contextData }) => {
       setSentenceHighlightingState={() => {}}
       sentenceHighlightingState={''}
       masterPlay={isSentencePlayingsState ? contextData.id : ''}
-      isGenericItemLoadingState={[]}
+      isGenericItemLoadingState={[]}\n      snippetLoadingState={[]}
       handleSaveWord={() => {}} //handleSaveWord
       handleDeleteWordDataProvider={() => {}} //handleDeleteWordDataProvider
       wordsState={wordsState}
