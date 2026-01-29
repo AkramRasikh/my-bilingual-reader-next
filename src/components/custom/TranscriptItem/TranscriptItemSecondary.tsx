@@ -5,8 +5,13 @@ import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import clsx from 'clsx';
 import LoadingSpinner from '../LoadingSpinner';
+import { LucideHammer } from 'lucide-react';
 
-const TranscriptItemSecondary = ({ contentItem, handleSaveWord }) => {
+const TranscriptItemSecondary = ({
+  contentItem,
+  handleSaveWord,
+  isBreakdownSentenceLoadingState,
+}) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const [isLoadingState, setIsLoadingState] = useState(false);
 
@@ -36,9 +41,7 @@ const TranscriptItemSecondary = ({ contentItem, handleSaveWord }) => {
         originalContext: selectedContentTitleState,
         time: contentItem?.time,
       });
-    } catch (error) {
     } finally {
-      // setHighlightedTextState('');
       setWordPopUpState([]);
       setIsLoadingState(false);
     }
@@ -76,8 +79,8 @@ const TranscriptItemSecondary = ({ contentItem, handleSaveWord }) => {
         isDue
           ? 'border-red-500'
           : hasBeenReviewed
-          ? 'border-amber-500'
-          : 'border-blue-200',
+            ? 'border-amber-500'
+            : 'border-blue-200',
 
         isLoadingState ? 'opacity-75' : '',
       )}

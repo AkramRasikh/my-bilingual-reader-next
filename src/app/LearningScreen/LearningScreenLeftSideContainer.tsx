@@ -33,6 +33,7 @@ const LearningScreenLeftSideContainer = () => {
     overlappingTextMemoized,
     snippetsWithDueStatusMemoized,
     isInReviewMode,
+    isBreakingDownSentenceArrState,
   } = useLearningScreen();
   const { languageSelectedState, handleSaveWord } = useFetchData();
 
@@ -112,6 +113,9 @@ const LearningScreenLeftSideContainer = () => {
         <TranscriptItemSecondary
           contentItem={masterPlayComprehensive}
           handleSaveWord={handleSaveWord}
+          isBreakdownSentenceLoadingState={isBreakingDownSentenceArrState.includes(
+            masterPlayComprehensive.id,
+          )}
         />
       )}
       <KeyListener />
