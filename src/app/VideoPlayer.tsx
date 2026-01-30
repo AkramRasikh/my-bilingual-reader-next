@@ -96,7 +96,7 @@ const VideoPlayer = ({
             ref={masterTextRef}
             data-testid='video-player-snippet-text'
             className={clsx(
-              'text-center font-bold text-xl backdrop-blur-xs backdrop-brightness-75 p-1 m-1 rounded-lg',
+              'text-center font-bold text-xl backdrop-blur-xs backdrop-brightness-90 p-1 m-1 rounded-lg text-gray-700',
               threeSecondLoopState ? 'm-auto' : '',
             )}
           >
