@@ -5,16 +5,14 @@ const SentenceBreakdownTargetLangWord = ({
   wordIsSaved,
   surfaceForm,
 }) => (
-  <div
-    className={clsx('flex gap-0.5 flex-col')}
+  <span
+    className={clsx(wordIsSaved && 'underline')}
     style={{
       color,
     }}
   >
-    <span className={clsx(wordIsSaved && 'underline', 'm-auto')}>
-      {surfaceForm}
-    </span>
-  </div>
+    {surfaceForm}
+  </span>
 );
 
 export default SentenceBreakdownTargetLangWord;

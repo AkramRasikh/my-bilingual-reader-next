@@ -33,7 +33,6 @@ const SentenceBreakdownTargetLang = ({
           <li
             key={index}
             id={`vocab-${index}`}
-            className='relative'
             onMouseEnter={() => handleAddIndexToArr(index)}
             onMouseLeave={() => handleOnMouseExit(index)}
           >

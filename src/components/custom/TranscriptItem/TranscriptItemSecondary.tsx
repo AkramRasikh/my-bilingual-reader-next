@@ -4,8 +4,7 @@ import useLearningScreen from '../../../app/LearningScreen/useLearningScreen';
 import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import clsx from 'clsx';
-import LoadingSpinner from '../LoadingSpinner';
-import { LucideHammer } from 'lucide-react';
+import TranscriptItemSecondaryLoadingIndicators from './TranscriptItemSecondaryLoadingIndicators';
 
 const TranscriptItemSecondary = ({
   contentItem,
@@ -83,34 +82,12 @@ const TranscriptItemSecondary = ({
         isLoadingState ? 'opacity-75' : '',
       )}
     >
-      <div className='flex flex-col gap-3 mt-2'>
-        <div
-          className={clsx(
-            'animate-pulse inset-0 flex items-center justify-center rounded',
-            !isBreakdownSentenceLoadingState && 'invisible',
-          )}
-          data-testid={`transcript-breakdown-loading-${contentItem.id}`}
-        >
-          <LucideHammer
-            color='brown'
-            className='animate-bounce mx-auto fill-amber-700 rounded-4xl'
-            size={16}
-          />
-        </div>
-
-        <div
-          className={clsx(
-            'inset-0 flex items-center justify-center rounded',
-            !isLoadingState && 'invisible',
-          )}
-        >
-          <LoadingSpinner />
-        </div>
-      </div>
-      <div
-        data-testid='transcript-item-secondary'
-        className='flex flex-col gap-2 relative flex-1 mr-7'
-      >
+      <TranscriptItemSecondaryLoadingIndicators
+        isBreakdownSentenceLoadingState={isBreakdownSentenceLoadingState}
+        isLoadingState={isLoadingState}
+        contentItemId={contentItem.id}
+      />
+      <div data-testid='transcript-item-secondary' className='relative mr-7'>
         <FormattedSentence
           targetLangformatted={targetLangformatted}
           handleMouseLeave={handleMouseLeave}
@@ -121,7 +98,7 @@ const TranscriptItemSecondary = ({
           setWordPopUpState={setWordPopUpState}
           wordsFromSentence={wordsFromSentence}
         />
-        <p>{baseLang}</p>
+        <p className='mb-2'>{baseLang}</p>
         {hasSentenceBreakdown && (
           <>
             <hr className='bg-gray-500' />
