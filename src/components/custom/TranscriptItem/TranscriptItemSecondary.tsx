@@ -74,7 +74,7 @@ const TranscriptItemSecondary = ({
   return (
     <div
       className={clsx(
-        'flex flex-row gap-2 rounded-2xl border-2 p-2',
+        'flex flex-row gap-2 rounded-2xl border-2 p-2 mt-2',
         isDue
           ? 'border-red-500'
           : hasBeenReviewed
