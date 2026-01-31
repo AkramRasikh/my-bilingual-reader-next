@@ -62,44 +62,40 @@ const LearningScreenComprehensiveReview = () => {
     handleDeleteWordDataProvider,
   } = useFetchData();
 
-  const [postSentencesState, setPostSentencesState] = useState([]);
-  const [postWordsState, setPostWordsState] = useState([]);
-  const [postSnippetsState, setPostSnippetsState] = useState([]);
   const [firstTimeState, setFirstTimeState] = useState(null);
 
-  useEffect(() => {
-    if (
-      postSentencesState.length === 0 &&
-      postWordsState.length === 0 &&
-      postSnippetsState.length === 0
-    ) {
-      setFirstTimeState(firstTime);
-    } else if (firstTime !== null && firstTime < firstTimeState) {
-      setFirstTimeState(firstTime);
-    }
-  }, [
-    postSentencesState,
-    postWordsState,
-    postSnippetsState,
-    firstTime,
-    firstTimeState,
-  ]);
-
-  useEffect(() => {
+  const postWordsState = useMemo(() => {
     if (!enableWordReviewState) {
-      setPostWordsState([]);
+      return [];
     } else if (firstTimeState !== null) {
-      setPostWordsState(
-        contentMetaWordMemoized.filter((item) =>
-          isWithinInterval(item, firstTimeState, reviewIntervalState),
-        ),
+      return contentMetaWordMemoized.filter((item) =>
+        isWithinInterval(item, firstTimeState, reviewIntervalState),
       );
     }
+    return [];
   }, [
     enableWordReviewState,
     firstTimeState,
     reviewIntervalState,
     contentMetaWordMemoized,
+  ]);
+
+  const postSnippetsState = useMemo(() => {
+    if (!enableSnippetReviewState) {
+      return [];
+    } else if (firstTimeState !== null) {
+      return (
+        snippetsWithDueStatusMemoized.filter((item) =>
+          isWithinInterval(item, firstTimeState, reviewIntervalState),
+        ) || []
+      );
+    }
+    return [];
+  }, [
+    enableSnippetReviewState,
+    firstTimeState,
+    reviewIntervalState,
+    snippetsWithDueStatusMemoized,
   ]);
 
   const slicedTranscriptArray = useMemo(() => {
@@ -122,12 +118,13 @@ const LearningScreenComprehensiveReview = () => {
     return slicedTranscriptArray.filter((item) => item.isDue);
   }, [slicedTranscriptArray]);
 
-  useEffect(() => {
+  const postSentencesState = useMemo(() => {
     if (!enableTranscriptReviewState) {
-      setPostSentencesState([]);
+      return [];
     } else if (firstTimeState !== null) {
-      setPostSentencesState(transcriptDueNumber);
+      return transcriptDueNumber;
     }
+    return [];
   }, [
     enableTranscriptReviewState,
     firstTimeState,
@@ -137,20 +134,21 @@ const LearningScreenComprehensiveReview = () => {
   ]);
 
   useEffect(() => {
-    if (!enableSnippetReviewState) {
-      setPostSnippetsState([]);
-    } else if (firstTimeState !== null) {
-      setPostSnippetsState(
-        snippetsWithDueStatusMemoized.filter((item) =>
-          isWithinInterval(item, firstTimeState, reviewIntervalState),
-        ) || [],
-      );
+    if (
+      postSentencesState.length === 0 &&
+      postWordsState.length === 0 &&
+      postSnippetsState.length === 0
+    ) {
+      setFirstTimeState(firstTime);
+    } else if (firstTime !== null && firstTime < firstTimeState) {
+      setFirstTimeState(firstTime);
     }
   }, [
-    enableSnippetReviewState,
+    postSentencesState,
+    postWordsState,
+    postSnippetsState,
+    firstTime,
     firstTimeState,
-    reviewIntervalState,
-    snippetsWithDueStatusMemoized,
   ]);
 
   const handleLoopHere = ({
