@@ -245,21 +245,23 @@ const LearningScreenSnippetReview = ({
               <RabbitIcon className='fill-amber-300 rounded m-auto' />
             )}
           </div>
-          <div>
-            <FormattedSentence
-              ref={ulRef}
-              targetLangformatted={targetLangformatted}
-              handleMouseLeave={handleMouseLeave}
-              handleMouseEnter={handleMouseEnter}
-              wordPopUpState={wordPopUpState}
-              setWordPopUpState={setWordPopUpState}
-              wordsForSelectedTopic={wordsForSelectedTopic}
-              handleDeleteWordDataProvider={() => {}}
-              wordsFromSentence={wordsFromSentence}
-              languageSelectedState={languageSelectedState}
-              matchStartKey={matchStartKey}
-              matchEndKey={matchEndKey}
-            />
+          <div className='w-full'>
+            <div className='flex text-align-justify'>
+              <FormattedSentence
+                ref={ulRef}
+                targetLangformatted={targetLangformatted}
+                handleMouseLeave={handleMouseLeave}
+                handleMouseEnter={handleMouseEnter}
+                wordPopUpState={wordPopUpState}
+                setWordPopUpState={setWordPopUpState}
+                wordsForSelectedTopic={wordsForSelectedTopic}
+                handleDeleteWordDataProvider={() => {}}
+                wordsFromSentence={wordsFromSentence}
+                languageSelectedState={languageSelectedState}
+                matchStartKey={matchStartKey}
+                matchEndKey={matchEndKey}
+              />
+            </div>
             {highlightedTextState && (
               <HighlightedText
                 isLoadingState={isLoadingWordState || isLoadingSaveSnippetState}
