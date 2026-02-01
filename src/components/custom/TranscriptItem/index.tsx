@@ -12,7 +12,6 @@ import TranscriptItemTimeOverlappingIndicatorMulti from './TranscriptItemTimeOve
 const TranscriptItem = () => {
   const {
     highlightedTextState,
-    setHighlightedTextState,
     thisSnippetOverlapMemoized,
     isLoadingState,
     contentItem,
@@ -64,7 +63,6 @@ const TranscriptItem = () => {
         <HighlightedText
           isLoadingState={isLoadingState}
           handleSaveFunc={handleSaveFunc}
-          setHighlightedTextState={setHighlightedTextState}
           highlightedTextState={highlightedTextState}
         />
       )}

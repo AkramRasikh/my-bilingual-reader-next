@@ -226,7 +226,10 @@ const LearningScreenSnippetReview = ({
     });
   };
 
-  const indexHasChanged = endIndexKeyState !== 0 || startIndexKeyState !== 0 || lengthAdjustmentState !== 0;
+  const indexHasChanged =
+    endIndexKeyState !== 0 ||
+    startIndexKeyState !== 0 ||
+    lengthAdjustmentState !== 0;
 
   return (
     <div
@@ -253,7 +256,7 @@ const LearningScreenSnippetReview = ({
               {thisIsPlaying ? <PauseIcon /> : <PlayIcon />}
             </Button>
             {snippetData?.isPreSnippet && (
-              <RabbitIcon className='fill-amber-300 rounded m-auto' />
+              <RabbitIcon className='fill-amber-300 rounded m-auto mt-0' />
             )}
           </div>
           <div className='w-full'>
@@ -277,7 +280,6 @@ const LearningScreenSnippetReview = ({
               <HighlightedText
                 isLoadingState={isLoadingWordState || isLoadingSaveSnippetState}
                 handleSaveFunc={handleSaveFunc}
-                setHighlightedTextState={setHighlightedTextState}
                 highlightedTextState={highlightedTextState}
               />
             )}
