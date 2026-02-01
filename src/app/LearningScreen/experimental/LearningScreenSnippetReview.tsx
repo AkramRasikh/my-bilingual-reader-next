@@ -92,6 +92,13 @@ const LearningScreenSnippetReview = ({
     setLengthAdjustmentState(0);
   };
 
+  const handlePlaySnippet = () => {
+    handleLoopHere({
+      time: snippetData.time,
+      isContracted: snippetData.isContracted,
+    });
+  };
+
   const handleSaveFunc = async (isGoogle, thisWord, thisWordMeaning) => {
     try {
       setIsLoadingWordState(true);
@@ -248,12 +255,7 @@ const LearningScreenSnippetReview = ({
           <div className='flex flex-col gap-2'>
             <Button
               className={clsx('h-7 w-7', thisIsPlaying ? 'bg-amber-300' : '')}
-              onClick={() =>
-                handleLoopHere({
-                  time: snippetData.time,
-                  isContracted: snippetData.isContracted,
-                })
-              }
+              onClick={handlePlaySnippet}
             >
               {thisIsPlaying ? <PauseIcon /> : <PlayIcon />}
             </Button>
