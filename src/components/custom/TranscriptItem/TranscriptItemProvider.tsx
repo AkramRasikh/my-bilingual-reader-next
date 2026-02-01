@@ -40,6 +40,7 @@ export const TranscriptItemProvider = ({
   overlappingTextMemoized,
   handleSaveSnippet,
   originalContext,
+  isReadyForQuickReview,
   children,
 }) => {
   const transcriptItemContainerRef = useRef(null);
@@ -339,6 +340,7 @@ export const TranscriptItemProvider = ({
         overlappingTextMemoized,
         handleSaveSnippet,
         thisSnippetOverlapMemoized,
+        isReadyForQuickReview,
       }}
     >
       {children}

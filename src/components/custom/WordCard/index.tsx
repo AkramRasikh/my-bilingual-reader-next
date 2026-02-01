@@ -34,6 +34,7 @@ const WordCard = ({
   wordContextIsPlaying,
   handlePause,
   wordHasOverlappingSnippetTime,
+  isReadyForQuickReview,
   ...rest
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
@@ -159,6 +160,7 @@ const WordCard = ({
           }}
           handleReviewFunc={handleReviewFunc}
           isVocab
+          isReadyForQuickReview={isReadyForQuickReview}
         />
       ) : (
         <span className='font-medium text-sm'>{isDueText}</span>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   isMoreThanADayAhead,
@@ -14,6 +14,7 @@ const ReviewSRSToggles = ({
   handleReviewFunc,
   isSnippet,
   isVocab,
+  isReadyForQuickReview,
 }) => {
   const [isLoadingSRSState, setIsLoadingSRSState] = useState(false);
   const reviewData = contentItem.reviewData;
@@ -128,6 +129,25 @@ const ReviewSRSToggles = ({
     },
   ];
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        isReadyForQuickReview &&
+        e.shiftKey &&
+        e.key.toLowerCase() === 'f' &&
+        !isLoadingSRSState
+      ) {
+        console.log('Shift+F detected, triggering handleNextReview(4)');
+        handleNextReview('4');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isReadyForQuickReview, isLoadingSRSState, handleNextReview]);
+
   return (
     <div
       className={clsx(
@@ -143,6 +163,11 @@ const ReviewSRSToggles = ({
           disabled={btn.disabled}
           onClick={() => handleNextReview(btn.difficultyNumber)}
           data-testid={btn.dataTestId}
+          className={clsx(
+            isReadyForQuickReview && btn.difficultyNumber === '4'
+              ? 'animate-pulse bg-green-400'
+              : '',
+          )}
         >
           {btn.text}
         </Button>

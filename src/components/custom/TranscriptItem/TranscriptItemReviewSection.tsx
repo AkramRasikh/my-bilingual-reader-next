@@ -8,6 +8,7 @@ const TranscriptItemReviewSection = () => {
     isInReviewMode,
     isSentenceReviewMode,
     handleReviewTranscriptItem,
+    isReadyForQuickReview,
   } = useTranscriptItem();
 
   const hasBeenReviewed = contentItem?.reviewData?.due;
@@ -21,6 +22,7 @@ const TranscriptItemReviewSection = () => {
           contentItem={contentItem}
           handleReviewFunc={handleReviewTranscriptItem}
           isVocab={false}
+          isReadyForQuickReview={isReadyForQuickReview}
         />
       ) : isInReviewMode && hasBeenReviewed ? (
         <p className='italic m-1 text-center'>

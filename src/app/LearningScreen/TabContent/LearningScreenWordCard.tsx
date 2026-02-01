@@ -5,7 +5,7 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import clsx from 'clsx';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 
-const LearningScreenWordCard = ({ word, indexNum }) => {
+const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
   const [collapseState, setCollapseState] = useState(false);
   const [triggerHideState, setTriggerHideState] = useState(false);
   const {
@@ -120,6 +120,7 @@ const LearningScreenWordCard = ({ word, indexNum }) => {
           wordContextIsPlaying={wordContextIsPlaying}
           handlePause={handlePause}
           wordHasOverlappingSnippetTime={wordHasOverlappingSnippetTime}
+          isReadyForQuickReview={isReadyForQuickReview}
         />
       </div>
     </li>

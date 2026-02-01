@@ -33,6 +33,7 @@ import {
 } from '../types/content-types';
 import { getUniqueSegmentOfArray } from './utils/get-unique-segment-of-array';
 import { OverlappingSnippetData, ReviewDataTypes } from '../types/shared-types';
+import { useGamepad } from './experimental/useGamePad';
 
 type LearningScreenProviderProps = React.PropsWithChildren<{
   selectedContentStateMemoized: ContentTypes & { contentIndex: number };
@@ -241,6 +242,8 @@ export const LearningScreenProvider = ({
     handleSaveSnippetFetchProvider,
     handleDeleteSnippetFetchProvider,
   } = useFetchData();
+
+  useGamepad();
 
   const selectedContentTitleState = selectedContentStateMemoized.title;
 

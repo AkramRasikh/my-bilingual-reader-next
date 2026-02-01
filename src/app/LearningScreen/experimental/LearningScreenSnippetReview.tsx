@@ -35,6 +35,7 @@ interface LearningScreenSnippetReviewProps {
     snippetData: Snippet;
     isRemoveReview?: boolean;
   }) => Promise<void>;
+  isReadyForQuickReview: boolean;
 }
 
 const LearningScreenSnippetReview = ({
@@ -43,6 +44,7 @@ const LearningScreenSnippetReview = ({
   isVideoPlaying,
   threeSecondLoopState,
   handleUpdateSnippetComprehensiveReview,
+  isReadyForQuickReview,
 }: LearningScreenSnippetReviewProps) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
   const [endIndexKeyState, setEndIndexKeyState] = useState(0);
@@ -345,6 +347,7 @@ const LearningScreenSnippetReview = ({
           isSnippet
           contentItem={snippetData}
           handleReviewFunc={handleReviewSnippetsFinal}
+          isReadyForQuickReview={isReadyForQuickReview}
         />
       </div>
     </div>

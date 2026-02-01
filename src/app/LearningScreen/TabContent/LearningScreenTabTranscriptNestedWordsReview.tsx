@@ -6,6 +6,7 @@ import LearningScreenWordCard from './LearningScreenWordCard';
 const LearningScreenTabTranscriptNestedWordsReview = ({
   topicWordsForReviewMemoized,
   withToggle = true,
+  firstElIdInReview,
 }) => {
   const [showNestedRelevantWordsState, setShowNestedRelevantWordsState] =
     useState(true);
@@ -29,6 +30,7 @@ const LearningScreenTabTranscriptNestedWordsReview = ({
                   word={word}
                   key={word.id}
                   indexNum={index + 1}
+                  isReadyForQuickReview={firstElIdInReview === word.id}
                 />
               );
             })}

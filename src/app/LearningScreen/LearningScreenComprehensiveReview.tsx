@@ -64,7 +64,7 @@ const LearningScreenComprehensiveReview = () => {
 
   const [firstTimeState, setFirstTimeState] = useState(null);
 
-  const postWordsState = useMemo(() => {
+  const postWordsMemoized = useMemo(() => {
     if (!enableWordReviewState) {
       return [];
     } else if (firstTimeState !== null) {
@@ -80,7 +80,7 @@ const LearningScreenComprehensiveReview = () => {
     contentMetaWordMemoized,
   ]);
 
-  const postSnippetsState = useMemo(() => {
+  const postSnippetsMemoized = useMemo(() => {
     if (!enableSnippetReviewState) {
       return [];
     } else if (firstTimeState !== null) {
@@ -118,7 +118,7 @@ const LearningScreenComprehensiveReview = () => {
     return slicedTranscriptArray.filter((item) => item.isDue);
   }, [slicedTranscriptArray]);
 
-  const postSentencesState = useMemo(() => {
+  const postSentencesMemoized = useMemo(() => {
     if (!enableTranscriptReviewState) {
       return [];
     } else if (firstTimeState !== null) {
@@ -135,21 +135,27 @@ const LearningScreenComprehensiveReview = () => {
 
   useEffect(() => {
     if (
-      postSentencesState.length === 0 &&
-      postWordsState.length === 0 &&
-      postSnippetsState.length === 0
+      postSentencesMemoized.length === 0 &&
+      postWordsMemoized.length === 0 &&
+      postSnippetsMemoized.length === 0
     ) {
       setFirstTimeState(firstTime);
     } else if (firstTime !== null && firstTime < firstTimeState) {
       setFirstTimeState(firstTime);
     }
   }, [
-    postSentencesState,
-    postWordsState,
-    postSnippetsState,
+    postSentencesMemoized,
+    postWordsMemoized,
+    postSnippetsMemoized,
     firstTime,
     firstTimeState,
   ]);
+
+  const firstElIdInReview = [
+    ...postSnippetsMemoized,
+    ...postWordsMemoized,
+    ...postSentencesMemoized,
+  ]?.[0]?.id;
 
   const handleLoopHere = ({
     time,
@@ -177,9 +183,9 @@ const LearningScreenComprehensiveReview = () => {
   };
 
   if (
-    postWordsState?.length === 0 &&
-    postSentencesState?.length === 0 &&
-    postSnippetsState?.length === 0
+    postWordsMemoized?.length === 0 &&
+    postSentencesMemoized?.length === 0 &&
+    postSnippetsMemoized?.length === 0
   ) {
     return (
       <div>
@@ -190,9 +196,9 @@ const LearningScreenComprehensiveReview = () => {
           setEnableTranscriptReviewState={setEnableTranscriptReviewState}
           enableSnippetReviewState={enableSnippetReviewState}
           setEnableSnippetReviewState={setEnableSnippetReviewState}
-          wordsCount={postWordsState?.length || 0}
-          sentencesCount={postSentencesState.length || 0}
-          snippetsCount={postSnippetsState?.length}
+          wordsCount={postWordsMemoized?.length || 0}
+          sentencesCount={postSentencesMemoized.length || 0}
+          snippetsCount={postSnippetsMemoized?.length}
           reviewIntervalState={reviewIntervalState}
           setReviewIntervalState={setReviewIntervalState}
           isInReviewMode={isInReviewMode}
@@ -212,17 +218,17 @@ const LearningScreenComprehensiveReview = () => {
         setEnableTranscriptReviewState={setEnableTranscriptReviewState}
         enableSnippetReviewState={enableSnippetReviewState}
         setEnableSnippetReviewState={setEnableSnippetReviewState}
-        wordsCount={postWordsState?.length || 0}
-        sentencesCount={postSentencesState.length || 0}
-        snippetsCount={postSnippetsState?.length}
+        wordsCount={postWordsMemoized?.length || 0}
+        sentencesCount={postSentencesMemoized.length || 0}
+        snippetsCount={postSnippetsMemoized?.length}
         reviewIntervalState={reviewIntervalState}
         setReviewIntervalState={setReviewIntervalState}
         isInReviewMode={isInReviewMode}
         setIsInReviewMode={setIsInReviewMode}
       />
-      {postSnippetsState?.length > 0 ? (
+      {postSnippetsMemoized?.length > 0 ? (
         <div className='flex flex-col gap-2 mb-2'>
-          {postSnippetsState.map((item) => {
+          {postSnippetsMemoized.map((item) => {
             return (
               <LearningScreenSnippetReview
                 key={item.id}
@@ -233,15 +239,17 @@ const LearningScreenComprehensiveReview = () => {
                 handleUpdateSnippetComprehensiveReview={
                   handleReviewSnippetsComprehensiveReview
                 }
+                isReadyForQuickReview={firstElIdInReview === item.id}
               />
             );
           })}
         </div>
       ) : null}
-      {postWordsState?.length > 0 && (
+      {postWordsMemoized?.length > 0 && (
         <LearningScreenTabTranscriptNestedWordsReview
-          topicWordsForReviewMemoized={postWordsState}
+          topicWordsForReviewMemoized={postWordsMemoized}
           withToggle={false}
+          firstElIdInReview={firstElIdInReview}
         />
       )}
 
@@ -284,6 +292,7 @@ const LearningScreenComprehensiveReview = () => {
               setThreeSecondLoopState={setThreeSecondLoopState}
               setContractThreeSecondLoopState={setContractThreeSecondLoopState}
               originalContext={selectedContentTitleState}
+              isReadyForQuickReview={firstElIdInReview === contentItem.id}
             >
               <TranscriptItem />
             </TranscriptItemProvider>
