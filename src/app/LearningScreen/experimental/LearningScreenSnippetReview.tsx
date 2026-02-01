@@ -46,6 +46,7 @@ const LearningScreenSnippetReview = ({
 }: LearningScreenSnippetReviewProps) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
   const [endIndexKeyState, setEndIndexKeyState] = useState(0);
+  const [lengthAdjustmentState, setLengthAdjustmentState] = useState(0);
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
     useState(false);
@@ -75,9 +76,18 @@ const LearningScreenSnippetReview = ({
     setEndIndexKeyState(endIndexKeyState + 1);
   };
 
+  const onExpandLength = () => {
+    setLengthAdjustmentState(lengthAdjustmentState + 1);
+  };
+
+  const onContractLength = () => {
+    setLengthAdjustmentState(lengthAdjustmentState - 1);
+  };
+
   const onReset = () => {
     setStartIndexKeyState(0);
     setEndIndexKeyState(0);
+    setLengthAdjustmentState(0);
   };
 
   const handleSaveFunc = async (isGoogle, thisWord, thisWordMeaning) => {
@@ -133,13 +143,13 @@ const LearningScreenSnippetReview = ({
       snippetData?.focusedText || snippetData?.suggestedFocusText || '',
       isLoadingSaveSnippetState,
       startIndexKeyState,
-      endIndexKeyState,
+      lengthAdjustmentState,
     );
   }, [
     snippetData,
     isLoadingSaveSnippetState,
     startIndexKeyState,
-    endIndexKeyState,
+    lengthAdjustmentState,
   ]);
 
   const onUpdateSnippet = async () => {
@@ -157,6 +167,7 @@ const LearningScreenSnippetReview = ({
       });
       setStartIndexKeyState(0);
       setEndIndexKeyState(0);
+      setLengthAdjustmentState(0);
     } finally {
       setIsLoadingSaveSnippetState(false);
     }
@@ -215,7 +226,7 @@ const LearningScreenSnippetReview = ({
     });
   };
 
-  const indexHasChanged = endIndexKeyState !== 0 || startIndexKeyState !== 0;
+  const indexHasChanged = endIndexKeyState !== 0 || startIndexKeyState !== 0 || lengthAdjustmentState !== 0;
 
   return (
     <div
@@ -295,6 +306,23 @@ const LearningScreenSnippetReview = ({
                 disabled={isLoadingSaveSnippetState}
               >
                 <MoveRightIcon />
+              </Button>
+              <div className='w-px h-8 bg-gray-300 mx-2' />
+              <Button
+                onClick={onContractLength}
+                variant={'outline'}
+                disabled={isLoadingSaveSnippetState}
+                title='Contract snippet length'
+              >
+                -
+              </Button>
+              <Button
+                onClick={onExpandLength}
+                variant={'outline'}
+                disabled={isLoadingSaveSnippetState}
+                title='Expand snippet length'
+              >
+                +
               </Button>
             </div>
             <div>
