@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import useTranscriptItem from './useTranscriptItem';
 import { Button } from '@/components/ui/button';
+import { useEffect } from 'react';
 
 const TranscriptItemActionBar = () => {
   const {
@@ -23,6 +24,7 @@ const TranscriptItemActionBar = () => {
     handleFromHere,
     isBreakdownSentenceLoadingState,
     setShowSentenceBreakdownState,
+    isReadyForQuickReview,
   } = useTranscriptItem();
 
   const thisTime = contentItem.time;
@@ -42,6 +44,23 @@ const TranscriptItemActionBar = () => {
   const handleBreakdownClick = () => {
     setShowSentenceBreakdownState(!showSentenceBreakdownState);
   };
+
+  useEffect(() => {
+    if (!isReadyForQuickReview) return;
+
+    const handleGamepadPress = () => {
+      const gamepads = navigator.getGamepads();
+      const gamepad = gamepads[0];
+
+      if (gamepad && gamepad.buttons[1]?.pressed) {
+        handlePlayActionBar();
+      }
+    };
+
+    const intervalId = setInterval(handleGamepadPress, 100);
+
+    return () => clearInterval(intervalId);
+  }, [isReadyForQuickReview, thisSentenceIsPlaying, isVideoPlaying, thisTime]);
 
   return (
     <div className='flex flex-col gap-1 h-fit'>

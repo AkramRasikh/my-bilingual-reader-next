@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   isMoreThanADayAhead,
@@ -8,6 +8,7 @@ import {
 } from '../../app/srs-utils/srs-algo';
 import { Trash } from 'lucide-react';
 import clsx from 'clsx';
+import { useReviewKeyboardShortcut } from './useReviewKeyboardShortcut';
 
 const ReviewSRSToggles = ({
   contentItem,
@@ -129,24 +130,11 @@ const ReviewSRSToggles = ({
     },
   ];
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        isReadyForQuickReview &&
-        e.shiftKey &&
-        e.key.toLowerCase() === 'f' &&
-        !isLoadingSRSState
-      ) {
-        console.log('Shift+F detected, triggering handleNextReview(4)');
-        handleNextReview('4');
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isReadyForQuickReview, isLoadingSRSState, handleNextReview]);
+  useReviewKeyboardShortcut({
+    isReadyForQuickReview,
+    isLoadingSRSState,
+    handleNextReview,
+  });
 
   return (
     <div

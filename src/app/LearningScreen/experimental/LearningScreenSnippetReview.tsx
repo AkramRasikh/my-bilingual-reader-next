@@ -200,6 +200,28 @@ const LearningScreenSnippetReview = ({
     };
   }, []);
 
+  useEffect(() => {
+    if (!isReadyForQuickReview) return;
+
+    const handleGamepadPress = () => {
+      const gamepads = navigator.getGamepads();
+      const gamepad = gamepads[0];
+
+      if (gamepad && gamepad.buttons[1]?.pressed) {
+        handlePlaySnippet();
+      }
+    };
+
+    const intervalId = setInterval(handleGamepadPress, 100);
+
+    return () => clearInterval(intervalId);
+  }, [
+    isReadyForQuickReview,
+    thisIsPlaying,
+    snippetData.time,
+    snippetData.isContracted,
+  ]);
+
   const { targetLangformatted, wordsFromSentence, wordsInSuggestedText } =
     useMemo(() => {
       const wordsInSuggestedText = findAllInstancesOfWordsInSentence(

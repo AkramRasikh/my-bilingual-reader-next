@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CardContent } from '@/components/ui/card';
 import { isDueCheck } from '@/utils/is-due-check';
 import { getCloudflareImageURL } from '@/utils/get-media-url';
@@ -71,6 +71,8 @@ const WordCard = ({
     }
   };
 
+  // isReadyForQuickReview
+
   const handlePlayThisContext = () => {
     if (wordContextIsPlaying) {
       handlePause?.();
@@ -99,6 +101,23 @@ const WordCard = ({
       id,
       definition,
     });
+
+  useEffect(() => {
+    if (!isReadyForQuickReview) return;
+
+    const handleGamepadPress = () => {
+      const gamepads = navigator.getGamepads();
+      const gamepad = gamepads[0];
+
+      if (gamepad && gamepad.buttons[1]?.pressed) {
+        handlePlayThisContext();
+      }
+    };
+
+    const intervalId = setInterval(handleGamepadPress, 100);
+
+    return () => clearInterval(intervalId);
+  }, [isReadyForQuickReview, wordContextIsPlaying, originalContextId]);
 
   return (
     <WordCardWrapper
