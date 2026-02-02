@@ -9,7 +9,6 @@ const qRewindTime = 3;
 const LearningScreenKeyListener = () => {
   const {
     ref,
-    handlePausePlay,
     handleRewind,
     handleJumpToSentenceViaKeys,
     isVideoPlaying,
@@ -167,11 +166,6 @@ const LearningScreenKeyListener = () => {
         return;
       }
 
-      if (e.shiftKey && e.key.toLowerCase() === ' ') {
-        handlePausePlay();
-        return;
-      }
-
       if (e.shiftKey && e.key.toLowerCase() === '"') {
         handleLoopThis3Second();
         return;
@@ -220,7 +214,6 @@ const LearningScreenKeyListener = () => {
     handleJumpToSentenceViaKeys,
     handleBreakdownMasterSentence,
     handleRewind,
-    handlePausePlay,
     handleLoopThisSentence,
     handleLoopThis3Second,
     threeSecondLoopState,

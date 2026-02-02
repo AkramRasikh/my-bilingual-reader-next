@@ -9,7 +9,6 @@ const qRewindTime = 3;
 const WordsStudyUIKeyListener = ({ handleJumpToSentenceViaKeys }) => {
   const {
     ref,
-    handlePausePlay,
     handleRewind,
     isVideoPlaying,
     handleLoopThis3Second,
@@ -96,11 +95,6 @@ const WordsStudyUIKeyListener = ({ handleJumpToSentenceViaKeys }) => {
         }
       }
 
-      if (e.shiftKey && e.key.toLowerCase() === ' ') {
-        handlePausePlay();
-        return;
-      }
-
       if (e.shiftKey && e.key.toLowerCase() === '"') {
         handleLoopThis3Second();
         return;
@@ -148,7 +142,6 @@ const WordsStudyUIKeyListener = ({ handleJumpToSentenceViaKeys }) => {
   }, [
     handleJumpToSentenceViaKeys,
     handleRewind,
-    handlePausePlay,
     handleLoopThisSentence,
     handleLoopThis3Second,
     threeSecondLoopState,
