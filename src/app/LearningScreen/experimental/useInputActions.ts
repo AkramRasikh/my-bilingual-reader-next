@@ -3,7 +3,8 @@ export type InputAction =
   | 'PAUSE_PLAY'
   | 'JUMP_NEXT'
   | 'JUMP_PREV'
-  | 'JUMP_CURRENT';
+  | 'JUMP_CURRENT'
+  | 'LOOP_SENTENCE';
 
 interface InputHandlers {
   handleRewind: () => void;
@@ -11,6 +12,7 @@ interface InputHandlers {
   handleJumpNext: () => void;
   handleJumpPrev: () => void;
   handleJumpCurrent: () => void;
+  handleLoopThisSentence: () => void;
   // Add more handlers as you expand
 }
 
@@ -32,9 +34,9 @@ export const useInputActions = (handlers: InputHandlers) => {
       case 'JUMP_CURRENT':
         handlers.handleJumpCurrent();
         break;
-      // Add more cases as you expand
+      case 'LOOP_SENTENCE':
+        handlers.handleLoopThisSentence();
     }
   };
-
   return { dispatch };
 };

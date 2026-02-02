@@ -719,6 +719,29 @@ export const LearningScreenProvider = ({
     handleJumpToSentenceViaKeys(0);
   };
 
+  const handleLoopSentenceCombo = () => {
+    // If loop already exists, extend it. Otherwise create new loop
+    if (loopTranscriptState && loopTranscriptState.length > 0) {
+      handleUpdateLoopedSentence(true);
+    } else {
+      handleLoopThisSentence();
+    }
+  };
+
+  const handleLoopThisSentence = () => {
+    if (!masterPlayComprehensive || !mediaDuration) return null;
+
+    if (
+      loopTranscriptState?.length === 1 &&
+      loopTranscriptState[0]?.id === masterPlayComprehensive.id
+    ) {
+      setLoopTranscriptState([]);
+      return;
+    }
+
+    setLoopTranscriptState([masterPlayComprehensive]);
+  };
+
   // Set up input action dispatcher for gamepad
   const { dispatch } = useInputActions({
     handleRewind,
@@ -726,6 +749,7 @@ export const LearningScreenProvider = ({
     handleJumpNext,
     handleJumpPrev,
     handleJumpCurrent,
+    handleLoopThisSentence: handleLoopSentenceCombo,
   });
   useGamepad(dispatch);
 
@@ -890,20 +914,6 @@ export const LearningScreenProvider = ({
     if (shiftForward) {
       setLoopTranscriptState((prev) => prev.slice(1));
     }
-  };
-
-  const handleLoopThisSentence = () => {
-    if (!masterPlayComprehensive || !mediaDuration) return null;
-
-    if (
-      loopTranscriptState?.length === 1 &&
-      loopTranscriptState[0]?.id === masterPlayComprehensive.id
-    ) {
-      setLoopTranscriptState([]);
-      return;
-    }
-
-    setLoopTranscriptState([masterPlayComprehensive]);
   };
 
   const handleUpdateLoopedSentence = (extendSentenceLoop: boolean) => {

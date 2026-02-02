@@ -8,6 +8,7 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
   const gamepadConnectedRef = useRef(false);
   const debugLoggedRef = useRef(false);
   const loopCountRef = useRef(0);
+  const lButtonHeldRef = useRef(false);
 
   useEffect(() => {
     if (!navigator.getGamepads) {
@@ -131,10 +132,16 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
 
         if (dpadDown && !axesPressedRef.current['dpad-down']) {
           const whichAxis = axis7 > 0.5 ? 7 : axis9 > 0.5 ? 9 : 1;
-          // console.log(`## 🎮 D-pad Down pressed (axis ${whichAxis})`);
           axesPressedRef.current['dpad-down'] = true;
-          // console.log('## ✅ Down detected - triggering JUMP_CURRENT (replay)');
-          dispatch('JUMP_CURRENT');
+          
+          // Check if L button is held for combo action
+          if (lButtonHeldRef.current) {
+            console.log('## ✅ L + Down combo detected - triggering LOOP_SENTENCE');
+            dispatch('LOOP_SENTENCE');
+          } else {
+            // console.log('## ✅ Down detected - triggering JUMP_CURRENT (replay)');
+            dispatch('JUMP_CURRENT');
+          }
         }
 
         if (!dpadDown && axesPressedRef.current['dpad-down']) {
@@ -193,8 +200,13 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
             // );
           }
 
+          // Track L button state (button 6 on 8BitDo Micro)
+          if (index === 6) {
+            lButtonHeldRef.current = button.pressed;
+          }
+
           if (button.pressed && !pressedRef.current[index]) {
-            // console.log(`## 🎮 Button ${index} pressed`);
+            console.log(`## 🎮 Button ${index} pressed`);
             pressedRef.current[index] = true;
 
             // Map buttons to actions
@@ -202,6 +214,8 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
             if (index === 12 || index === 0) {
               // console.log(`## ✅ Button ${index} detected - triggering REWIND`);
               dispatch('REWIND');
+            } else if (index === 6) {
+              console.log('## 🎮 L button pressed - ready for combo');
             } else {
               // console.log(
               //   `## ❌ Button ${index} has no action assigned - check if this is D-pad Down`,
@@ -210,9 +224,13 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
           }
 
           if (!button.pressed && pressedRef.current[index]) {
-            // console.log(`## 🎮 Button ${index} released`);
+            console.log(`## 🎮 Button ${index} released`);
             pressedRef.current[index] = false;
             debugLoggedRef.current = false; // Allow debug logging again
+            
+            if (index === 6) {
+              console.log('## 🎮 L button released');
+            }
           }
         });
       } else {
