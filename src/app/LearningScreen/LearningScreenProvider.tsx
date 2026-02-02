@@ -751,8 +751,35 @@ export const LearningScreenProvider = ({
     handleUpdateLoopedSentence(false);
   };
 
+  const handleLoopThis3Second = () => {
+    if (loopTranscriptState) {
+      setLoopTranscriptState([]);
+    }
+    if (isNumber(threeSecondLoopState)) {
+      setThreeSecondLoopState(null);
+      return;
+    }
+
+    if (!ref.current) {
+      return;
+    }
+    setThreeSecondLoopState(ref.current.currentTime);
+    // account for the three seconds on both extremes
+  };
+
+  // State-aware wrapper: Up button behavior changes based on threeSecondLoopState
+  const handleRewindOrToggleContract = () => {
+    if (threeSecondLoopState) {
+      // When in 3-second loop mode, toggle contract state
+      setContractThreeSecondLoopState((prev) => !prev);
+    } else {
+      // Normal rewind
+      handleRewind();
+    }
+  };
+
   const { dispatch } = useInputActions({
-    handleRewind,
+    handleRewind: handleRewindOrToggleContract,
     handlePausePlay,
     handleJumpNext,
     handleJumpPrev,
@@ -760,6 +787,7 @@ export const LearningScreenProvider = ({
     handleLoopThisSentence: handleLoopSentenceCombo,
     handleShiftLoopSentence: handleShiftLoopSentenceForward,
     handleShrinkLoop,
+    handleThreeSecondLoop: handleLoopThis3Second,
   });
   useGamepad(dispatch);
 
@@ -902,22 +930,6 @@ export const LearningScreenProvider = ({
     if (result) {
       setSentenceRepsState(sentenceRepsState + 1);
     }
-  };
-
-  const handleLoopThis3Second = () => {
-    if (loopTranscriptState) {
-      setLoopTranscriptState([]);
-    }
-    if (isNumber(threeSecondLoopState)) {
-      setThreeSecondLoopState(null);
-      return;
-    }
-
-    if (!ref.current) {
-      return;
-    }
-    setThreeSecondLoopState(ref.current.currentTime);
-    // account for the three seconds on both extremes
   };
 
   const handleShiftLoopSentence = (shiftForward: boolean) => {

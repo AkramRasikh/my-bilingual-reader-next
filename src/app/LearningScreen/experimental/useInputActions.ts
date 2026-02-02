@@ -6,7 +6,8 @@ export type InputAction =
   | 'JUMP_CURRENT'
   | 'LOOP_SENTENCE'
   | 'SLICE_LOOP'
-  | 'SHRINK_LOOP';
+  | 'SHRINK_LOOP'
+  | 'THREE_SECOND_LOOP';
 
 interface InputHandlers {
   handleRewind: () => void;
@@ -17,6 +18,7 @@ interface InputHandlers {
   handleLoopThisSentence: () => void;
   handleShiftLoopSentence: () => void;
   handleShrinkLoop: () => void;
+  handleThreeSecondLoop: () => void;
   // Add more handlers as you expand
 }
 
@@ -46,6 +48,9 @@ export const useInputActions = (handlers: InputHandlers) => {
         break;
       case 'SHRINK_LOOP':
         handlers.handleShrinkLoop();
+        break;
+      case 'THREE_SECOND_LOOP':
+        handlers.handleThreeSecondLoop();
     }
   };
   return { dispatch };

@@ -9,6 +9,8 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
   const debugLoggedRef = useRef(false);
   const loopCountRef = useRef(0);
   const lButtonHeldRef = useRef(false);
+  const rButtonHeldRef = useRef(false);
+  const lrComboFiredRef = useRef(false);
 
   useEffect(() => {
     if (!navigator.getGamepads) {
@@ -217,6 +219,23 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
           // Track L button state (button 6 on 8BitDo Micro)
           if (index === 6) {
             lButtonHeldRef.current = button.pressed;
+          }
+
+          // Track R button state (button 7 on 8BitDo Micro)
+          if (index === 7) {
+            rButtonHeldRef.current = button.pressed;
+          }
+
+          // Check for L+R combo (both pressed simultaneously)
+          if (lButtonHeldRef.current && rButtonHeldRef.current && !lrComboFiredRef.current) {
+            console.log('## ✅ L + R combo detected - triggering THREE_SECOND_LOOP');
+            dispatch('THREE_SECOND_LOOP');
+            lrComboFiredRef.current = true;
+          }
+
+          // Reset combo flag when either button is released
+          if ((!lButtonHeldRef.current || !rButtonHeldRef.current) && lrComboFiredRef.current) {
+            lrComboFiredRef.current = false;
           }
 
           if (button.pressed && !pressedRef.current[index]) {
