@@ -8,7 +8,9 @@ export type InputAction =
   | 'SLICE_LOOP'
   | 'SHRINK_LOOP'
   | 'THREE_SECOND_LOOP'
-  | 'QUICK_SAVE_SNIPPET';
+  | 'QUICK_SAVE_SNIPPET'
+  | 'SHIFT_SNIPPET_LEFT'
+  | 'SHIFT_SNIPPET_RIGHT';
 
 interface InputHandlers {
   handleRewind: () => void;
@@ -21,6 +23,8 @@ interface InputHandlers {
   handleShrinkLoop: () => void;
   handleThreeSecondLoop: () => void;
   handleQuickSaveSnippet: () => Promise<void | null>;
+  handleShiftSnippetLeft: () => void;
+  handleShiftSnippetRight: () => void;
   // Add more handlers as you expand
 }
 
@@ -56,6 +60,12 @@ export const useInputActions = (handlers: InputHandlers) => {
         break;
       case 'QUICK_SAVE_SNIPPET':
         handlers.handleQuickSaveSnippet();
+        break;
+      case 'SHIFT_SNIPPET_LEFT':
+        handlers.handleShiftSnippetLeft();
+        break;
+      case 'SHIFT_SNIPPET_RIGHT':
+        handlers.handleShiftSnippetRight();
     }
   };
   return { dispatch };

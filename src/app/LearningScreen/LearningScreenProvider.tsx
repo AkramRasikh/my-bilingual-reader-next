@@ -778,6 +778,21 @@ export const LearningScreenProvider = ({
     }
   };
 
+  // State-aware wrappers: Left/Right shift snippet when in 3-second loop mode
+  const handleShiftSnippetLeft = () => {
+    if (isNumber(threeSecondLoopState) && threeSecondLoopState > 0) {
+      const newCurrentNumber = threeSecondLoopState - 0.5;
+      setThreeSecondLoopState(newCurrentNumber);
+    }
+  };
+
+  const handleShiftSnippetRight = () => {
+    if (isNumber(threeSecondLoopState) && threeSecondLoopState > 0) {
+      const newCurrentNumber = threeSecondLoopState + 0.5;
+      setThreeSecondLoopState(newCurrentNumber);
+    }
+  };
+
   const { dispatch } = useInputActions({
     handleRewind: handleRewindOrToggleContract,
     handlePausePlay,
@@ -789,8 +804,10 @@ export const LearningScreenProvider = ({
     handleShrinkLoop,
     handleThreeSecondLoop: handleLoopThis3Second,
     handleQuickSaveSnippet,
+    handleShiftSnippetLeft,
+    handleShiftSnippetRight,
   });
-  useGamepad(dispatch);
+  useGamepad(dispatch, threeSecondLoopState);
 
   const playFromThisContext = (contextId: FormattedTranscriptTypes['id']) => {
     const contextSentence = sentenceMapMemoized[contextId];

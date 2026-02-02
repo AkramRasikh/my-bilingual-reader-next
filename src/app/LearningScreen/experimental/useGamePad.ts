@@ -2,7 +2,10 @@
 import { useEffect, useRef } from 'react';
 import { InputAction } from './useInputActions';
 
-export function useGamepad(dispatch: (action: InputAction) => void) {
+export function useGamepad(
+  dispatch: (action: InputAction) => void,
+  threeSecondLoopState: number | null,
+) {
   const pressedRef = useRef<{ [key: number]: boolean }>({});
   const axesPressedRef = useRef<{ [key: string]: boolean }>({});
   const gamepadConnectedRef = useRef(false);
@@ -124,7 +127,7 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
           const whichAxis = axis7 < -0.5 ? 7 : axis9 < -0.5 ? 9 : 1;
           console.log(`## 🎮 D-pad Up pressed (axis ${whichAxis})`);
           axesPressedRef.current['dpad-up'] = true;
-          
+
           // Check if L button is held for combo action
           if (lButtonHeldRef.current) {
             console.log('## ✅ L + Up combo detected - triggering SHRINK_LOOP');
@@ -144,10 +147,12 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
         if (dpadDown && !axesPressedRef.current['dpad-down']) {
           const whichAxis = axis7 > 0.5 ? 7 : axis9 > 0.5 ? 9 : 1;
           axesPressedRef.current['dpad-down'] = true;
-          
+
           // Check if L button is held for combo action
           if (lButtonHeldRef.current) {
-            console.log('## ✅ L + Down combo detected - triggering LOOP_SENTENCE');
+            console.log(
+              '## ✅ L + Down combo detected - triggering LOOP_SENTENCE',
+            );
             dispatch('LOOP_SENTENCE');
           } else {
             // console.log('## ✅ Down detected - triggering JUMP_CURRENT (replay)');
@@ -178,11 +183,19 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
           const whichAxis = axis6 > 0.5 ? 6 : axis8 > 0.5 ? 8 : 0;
           // console.log(`## 🎮 D-pad Right pressed (axis ${whichAxis})`);
           axesPressedRef.current['dpad-right'] = true;
-          
+
           // Check if L button is held for combo action
           if (lButtonHeldRef.current) {
-            console.log('## ✅ L + Right combo detected - triggering SLICE_LOOP');
+            console.log(
+              '## ✅ L + Right combo detected - triggering SLICE_LOOP',
+            );
             dispatch('SLICE_LOOP');
+          } else if (threeSecondLoopState) {
+            // When in 3-second loop mode, shift snippet right
+            console.log(
+              '## ✅ Right detected (in 3s loop) - triggering SHIFT_SNIPPET_RIGHT',
+            );
+            dispatch('SHIFT_SNIPPET_RIGHT');
           } else {
             // console.log('## ✅ Right detected - triggering JUMP_NEXT');
             dispatch('JUMP_NEXT');
@@ -199,8 +212,17 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
           const whichAxis = axis6 < -0.5 ? 6 : axis8 < -0.5 ? 8 : 0;
           // console.log(`## 🎮 D-pad Left pressed (axis ${whichAxis})`);
           axesPressedRef.current['dpad-left'] = true;
-          // console.log('## ✅ Left detected - triggering JUMP_PREV');
-          dispatch('JUMP_PREV');
+
+          if (threeSecondLoopState) {
+            // When in 3-second loop mode, shift snippet left
+            console.log(
+              '## ✅ Left detected (in 3s loop) - triggering SHIFT_SNIPPET_LEFT',
+            );
+            dispatch('SHIFT_SNIPPET_LEFT');
+          } else {
+            // console.log('## ✅ Left detected - triggering JUMP_PREV');
+            dispatch('JUMP_PREV');
+          }
         }
 
         if (!dpadLeft && axesPressedRef.current['dpad-left']) {
@@ -234,26 +256,44 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
           }
 
           // Check for L+R combo (both pressed simultaneously)
-          if (lButtonHeldRef.current && rButtonHeldRef.current && !lrComboFiredRef.current) {
-            console.log('## ✅ L + R combo detected - triggering THREE_SECOND_LOOP');
+          if (
+            lButtonHeldRef.current &&
+            rButtonHeldRef.current &&
+            !lrComboFiredRef.current
+          ) {
+            console.log(
+              '## ✅ L + R combo detected - triggering THREE_SECOND_LOOP',
+            );
             dispatch('THREE_SECOND_LOOP');
             lrComboFiredRef.current = true;
           }
 
           // Reset combo flag when either button is released
-          if ((!lButtonHeldRef.current || !rButtonHeldRef.current) && lrComboFiredRef.current) {
+          if (
+            (!lButtonHeldRef.current || !rButtonHeldRef.current) &&
+            lrComboFiredRef.current
+          ) {
             lrComboFiredRef.current = false;
           }
 
           // Check for L+X combo (both pressed simultaneously)
-          if (lButtonHeldRef.current && xButtonHeldRef.current && !lxComboFiredRef.current) {
-            console.log('## ✅ L + X combo detected - triggering QUICK_SAVE_SNIPPET');
+          if (
+            lButtonHeldRef.current &&
+            xButtonHeldRef.current &&
+            !lxComboFiredRef.current
+          ) {
+            console.log(
+              '## ✅ L + X combo detected - triggering QUICK_SAVE_SNIPPET',
+            );
             dispatch('QUICK_SAVE_SNIPPET');
             lxComboFiredRef.current = true;
           }
 
           // Reset combo flag when either button is released
-          if ((!lButtonHeldRef.current || !xButtonHeldRef.current) && lxComboFiredRef.current) {
+          if (
+            (!lButtonHeldRef.current || !xButtonHeldRef.current) &&
+            lxComboFiredRef.current
+          ) {
             lxComboFiredRef.current = false;
           }
 
@@ -279,7 +319,7 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
             console.log(`## 🎮 Button ${index} released`);
             pressedRef.current[index] = false;
             debugLoggedRef.current = false; // Allow debug logging again
-            
+
             if (index === 6) {
               console.log('## 🎮 L button released');
             }
@@ -307,5 +347,5 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
         handleGamepadDisconnected,
       );
     };
-  }, [dispatch]);
+  }, [dispatch, threeSecondLoopState]);
 }
