@@ -696,8 +696,37 @@ export const LearningScreenProvider = ({
     ref.current.currentTime = ref.current.currentTime - 3;
   };
 
+  const handlePausePlay = () => {
+    if (!ref.current) {
+      return;
+    }
+    if (ref.current.paused) {
+      ref.current.play();
+    } else {
+      ref.current.pause();
+    }
+  };
+
+  const handleJumpNext = () => {
+    handleJumpToSentenceViaKeys(1);
+  };
+
+  const handleJumpPrev = () => {
+    handleJumpToSentenceViaKeys(-1);
+  };
+
+  const handleJumpCurrent = () => {
+    handleJumpToSentenceViaKeys(0);
+  };
+
   // Set up input action dispatcher for gamepad
-  const { dispatch } = useInputActions({ handleRewind });
+  const { dispatch } = useInputActions({
+    handleRewind,
+    handlePausePlay,
+    handleJumpNext,
+    handleJumpPrev,
+    handleJumpCurrent,
+  });
   useGamepad(dispatch);
 
   const playFromThisContext = (contextId: FormattedTranscriptTypes['id']) => {

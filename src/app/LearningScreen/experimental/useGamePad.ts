@@ -79,8 +79,8 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
             .map((btn, idx) => (btn.pressed ? idx : -1))
             .filter((idx) => idx !== -1);
           if (pressedButtons.length > 0) {
-            console.log('## 🎮 Buttons currently pressed:', pressedButtons);
-            console.log('## 🎮 Axes values:', gp.axes);
+            // console.log('## 🎮 Buttons currently pressed:', pressedButtons);
+            // console.log('## 🎮 Axes values:', gp.axes);
             debugLoggedRef.current = true;
           }
         }
@@ -91,26 +91,110 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
         const axis9 = gp.axes[9] || 0;
         const axis1 = gp.axes[1] || 0;
 
-        const dpadUp = axis7 < -0.5 || axis9 < -0.5 || axis1 < -0.5;
+        // Try common D-pad horizontal axes: 6, 8, or 0 (-1 = left, +1 = right)
+        const axis6 = gp.axes[6] || 0;
+        const axis8 = gp.axes[8] || 0;
+        const axis0 = gp.axes[0] || 0;
+
+        const dpadUp = axis7 < -0.5 || axis1 < -0.5;
+        const dpadDown = axis7 > 0.5 || axis1 > 0.5;
+        const dpadRight = axis6 > 0.5 || axis8 > 0.5 || axis0 > 0.5;
+        const dpadLeft = axis6 < -0.5 || axis8 < -0.5 || axis0 < -0.5;
+
+        // Debug down detection
+        if (loopCountRef.current % 60 === 0) {
+          // console.log('## DEBUG Down check:', {
+          //   axis7,
+          //   axis9,
+          //   axis1,
+          //   'axis7 > 0.5': axis7 > 0.5,
+          //   'axis9 > 0.5': axis9 > 0.5,
+          //   'axis1 > 0.5': axis1 > 0.5,
+          //   dpadDown,
+          //   'dpad-down pressed?': axesPressedRef.current['dpad-down'],
+          // });
+        }
 
         if (dpadUp && !axesPressedRef.current['dpad-up']) {
           const whichAxis = axis7 < -0.5 ? 7 : axis9 < -0.5 ? 9 : 1;
-          // console.log(`## 🎮 D-pad Up pressed (axis ${whichAxis})`);
+          console.log(`## 🎮 D-pad Up pressed (axis ${whichAxis})`);
           axesPressedRef.current['dpad-up'] = true;
-          // console.log('## ✅ Up button detected - triggering REWIND');
+          console.log('## ✅ Up button detected - triggering REWIND');
           dispatch('REWIND');
         }
 
         if (!dpadUp && axesPressedRef.current['dpad-up']) {
-          // console.log('## 🎮 D-pad Up released');
+          console.log('## 🎮 D-pad Up released');
           axesPressedRef.current['dpad-up'] = false;
+          debugLoggedRef.current = false;
+        }
+
+        if (dpadDown && !axesPressedRef.current['dpad-down']) {
+          const whichAxis = axis7 > 0.5 ? 7 : axis9 > 0.5 ? 9 : 1;
+          // console.log(`## 🎮 D-pad Down pressed (axis ${whichAxis})`);
+          axesPressedRef.current['dpad-down'] = true;
+          // console.log('## ✅ Down detected - triggering JUMP_CURRENT (replay)');
+          dispatch('JUMP_CURRENT');
+        }
+
+        if (!dpadDown && axesPressedRef.current['dpad-down']) {
+          // console.log('## 🎮 D-pad Down released - resetting');
+          axesPressedRef.current['dpad-down'] = false;
+          debugLoggedRef.current = false;
+        }
+
+        // Force log down state
+        if (
+          loopCountRef.current % 60 === 0 &&
+          axesPressedRef.current['dpad-down']
+        ) {
+          console.log(
+            '## ⚠️ Down is stuck pressed. dpadDown value:',
+            dpadDown,
+            'axis9:',
+            axis9,
+          );
+        }
+
+        if (dpadRight && !axesPressedRef.current['dpad-right']) {
+          const whichAxis = axis6 > 0.5 ? 6 : axis8 > 0.5 ? 8 : 0;
+          // console.log(`## 🎮 D-pad Right pressed (axis ${whichAxis})`);
+          axesPressedRef.current['dpad-right'] = true;
+          // console.log('## ✅ Right detected - triggering JUMP_NEXT');
+          dispatch('JUMP_NEXT');
+        }
+
+        if (!dpadRight && axesPressedRef.current['dpad-right']) {
+          // console.log('## 🎮 D-pad Right released');
+          axesPressedRef.current['dpad-right'] = false;
+          debugLoggedRef.current = false;
+        }
+
+        if (dpadLeft && !axesPressedRef.current['dpad-left']) {
+          const whichAxis = axis6 < -0.5 ? 6 : axis8 < -0.5 ? 8 : 0;
+          // console.log(`## 🎮 D-pad Left pressed (axis ${whichAxis})`);
+          axesPressedRef.current['dpad-left'] = true;
+          // console.log('## ✅ Left detected - triggering JUMP_PREV');
+          dispatch('JUMP_PREV');
+        }
+
+        if (!dpadLeft && axesPressedRef.current['dpad-left']) {
+          // console.log('## 🎮 D-pad Left released');
+          axesPressedRef.current['dpad-left'] = false;
           debugLoggedRef.current = false;
         }
 
         // Check all buttons to find which one is pressed
         gp.buttons.forEach((button, index) => {
+          // Log ALL button states every second to debug
+          if (loopCountRef.current % 60 === 0 && button.pressed) {
+            // console.log(
+            //   `## 🔍 Button ${index} is currently pressed (value: ${button.value})`,
+            // );
+          }
+
           if (button.pressed && !pressedRef.current[index]) {
-            console.log(`## 🎮 Button ${index} pressed`);
+            // console.log(`## 🎮 Button ${index} pressed`);
             pressedRef.current[index] = true;
 
             // Map buttons to actions
@@ -120,13 +204,13 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
               dispatch('REWIND');
             } else {
               // console.log(
-              //   `## ❌ Button ${index} has no action assigned - try assigning this button if it's D-pad Up`,
+              //   `## ❌ Button ${index} has no action assigned - check if this is D-pad Down`,
               // );
             }
           }
 
           if (!button.pressed && pressedRef.current[index]) {
-            console.log(`## 🎮 Button ${index} released`);
+            // console.log(`## 🎮 Button ${index} released`);
             pressedRef.current[index] = false;
             debugLoggedRef.current = false; // Allow debug logging again
           }
@@ -134,9 +218,9 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
       } else {
         // No gamepad detected
         if (loopCountRef.current % 300 === 0 && !gamepadConnectedRef.current) {
-          console.log(
-            '## ⚠️ No gamepad detected. Press any button on your controller to activate it.',
-          );
+          // console.log(
+          //   '## ⚠️ No gamepad detected. Press any button on your controller to activate it.',
+          // );
         }
       }
 
