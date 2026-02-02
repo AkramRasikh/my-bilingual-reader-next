@@ -8,7 +8,7 @@ import {
 } from '../../app/srs-utils/srs-algo';
 import { Trash } from 'lucide-react';
 import clsx from 'clsx';
-import { useReviewKeyboardShortcut } from './useReviewKeyboardShortcut';
+import { useGamePadSRSShortcut } from './useGamePadSRSShortcut';
 
 const ReviewSRSToggles = ({
   contentItem,
@@ -130,7 +130,7 @@ const ReviewSRSToggles = ({
     },
   ];
 
-  useReviewKeyboardShortcut({
+  useGamePadSRSShortcut({
     isReadyForQuickReview,
     isLoadingSRSState,
     handleNextReview,
