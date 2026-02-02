@@ -4,14 +4,17 @@ interface UseGamePadSRSShortcutProps {
   isReadyForQuickReview: boolean;
   isLoadingSRSState: boolean;
   handleNextReview: (difficulty: string) => void;
+  handleRemoveReview: () => void;
 }
 
 export const useGamePadSRSShortcut = ({
   isReadyForQuickReview,
   isLoadingSRSState,
   handleNextReview,
+  handleRemoveReview,
 }: UseGamePadSRSShortcutProps) => {
   const l2ButtonHeldRef = useRef(false);
+  const r2ButtonHeldRef = useRef(false);
   const yButtonHeldRef = useRef(false);
   const xButtonHeldRef = useRef(false);
   const bButtonHeldRef = useRef(false);
@@ -20,6 +23,7 @@ export const useGamePadSRSShortcut = ({
   const lxComboFiredRef = useRef(false);
   const lbComboFiredRef = useRef(false);
   const laComboFiredRef = useRef(false);
+  const l2r2ComboFiredRef = useRef(false);
 
   useEffect(() => {
     if (!navigator.getGamepads) {
@@ -37,6 +41,11 @@ export const useGamePadSRSShortcut = ({
           // Track L2 button state (button 8)
           if (index === 8) {
             l2ButtonHeldRef.current = button.pressed;
+          }
+
+          // Track R2 button state (button 9)
+          if (index === 9) {
+            r2ButtonHeldRef.current = button.pressed;
           }
 
           // Track Y button state (button 2)
@@ -134,6 +143,23 @@ export const useGamePadSRSShortcut = ({
           ) {
             laComboFiredRef.current = false;
           }
+
+          if (
+            l2ButtonHeldRef.current &&
+            r2ButtonHeldRef.current &&
+            !l2r2ComboFiredRef.current
+          ) {
+            handleRemoveReview();
+            l2r2ComboFiredRef.current = true;
+          }
+
+          // Reset L2+R2 combo flag when either button is released
+          if (
+            (!l2ButtonHeldRef.current || !r2ButtonHeldRef.current) &&
+            l2r2ComboFiredRef.current
+          ) {
+            l2r2ComboFiredRef.current = false;
+          }
         });
       }
 
@@ -145,5 +171,10 @@ export const useGamePadSRSShortcut = ({
     return () => {
       cancelAnimationFrame(rafId);
     };
-  }, [isReadyForQuickReview, isLoadingSRSState, handleNextReview]);
+  }, [
+    isReadyForQuickReview,
+    isLoadingSRSState,
+    handleNextReview,
+    handleRemoveReview,
+  ]);
 };

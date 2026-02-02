@@ -134,6 +134,7 @@ const ReviewSRSToggles = ({
     isReadyForQuickReview,
     isLoadingSRSState,
     handleNextReview,
+    handleRemoveReview,
   });
 
   return (
