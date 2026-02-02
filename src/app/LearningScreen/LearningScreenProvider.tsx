@@ -34,6 +34,7 @@ import {
 import { getUniqueSegmentOfArray } from './utils/get-unique-segment-of-array';
 import { OverlappingSnippetData, ReviewDataTypes } from '../types/shared-types';
 import { useGamepad } from './experimental/useGamePad';
+import { useInputActions } from './experimental/useInputActions';
 
 type LearningScreenProviderProps = React.PropsWithChildren<{
   selectedContentStateMemoized: ContentTypes & { contentIndex: number };
@@ -242,8 +243,6 @@ export const LearningScreenProvider = ({
     handleSaveSnippetFetchProvider,
     handleDeleteSnippetFetchProvider,
   } = useFetchData();
-
-  useGamepad();
 
   const selectedContentTitleState = selectedContentStateMemoized.title;
 
@@ -696,6 +695,10 @@ export const LearningScreenProvider = ({
     }
     ref.current.currentTime = ref.current.currentTime - 3;
   };
+
+  // Set up input action dispatcher for gamepad
+  const { dispatch } = useInputActions({ handleRewind });
+  useGamepad(dispatch);
 
   const playFromThisContext = (contextId: FormattedTranscriptTypes['id']) => {
     const contextSentence = sentenceMapMemoized[contextId];

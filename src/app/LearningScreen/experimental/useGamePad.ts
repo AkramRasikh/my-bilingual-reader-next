@@ -1,28 +1,26 @@
 // useGamepad.ts
 import { useEffect, useRef } from 'react';
+import { InputAction } from './useInputActions';
 
-export function useGamepad() {
+export function useGamepad(dispatch: (action: InputAction) => void) {
   const pressedRef = useRef<{ [key: number]: boolean }>({});
+  const axesPressedRef = useRef<{ [key: string]: boolean }>({});
   const gamepadConnectedRef = useRef(false);
   const debugLoggedRef = useRef(false);
   const loopCountRef = useRef(0);
 
   useEffect(() => {
-    console.log('🎮 useGamepad hook initialized');
-    
-    // Check if Gamepad API is available
     if (!navigator.getGamepads) {
       console.error('❌ Gamepad API not supported in this browser');
       return;
     }
-    console.log('✅ Gamepad API is available');
 
     let rafId: number;
 
-    const handleGamepadConnected = (e: GamepadEvent) => {
-      console.log('🎮 Gamepad connected:', e.gamepad.id);
-      console.log('   Buttons:', e.gamepad.buttons.length);
-      console.log('   Axes:', e.gamepad.axes.length);
+    const handleGamepadConnected = () => {
+      // console.log('🎮 Gamepad connected:', e.gamepad.id);
+      // console.log('   Buttons:', e.gamepad.buttons.length);
+      // console.log('   Axes:', e.gamepad.axes.length);
       gamepadConnectedRef.current = true;
       debugLoggedRef.current = false; // Reset debug flag
     };
@@ -37,19 +35,21 @@ export function useGamepad() {
 
     // Check for already connected gamepads
     const initialGamepads = navigator.getGamepads();
-    console.log('🎮 Initial gamepad check:', initialGamepads);
-    const connectedGamepad = Array.from(initialGamepads).find(gp => gp !== null);
+    // console.log('🎮 Initial gamepad check:', initialGamepads);
+    const connectedGamepad = Array.from(initialGamepads).find(
+      (gp) => gp !== null,
+    );
     if (connectedGamepad) {
-      console.log('🎮 Found already connected gamepad:', connectedGamepad.id);
+      // console.log('🎮 Found already connected gamepad:', connectedGamepad.id);
       gamepadConnectedRef.current = true;
     }
 
     const loop = () => {
       loopCountRef.current++;
-      
+
       // Log every 300 frames (~5 seconds at 60fps) to show the loop is running
       if (loopCountRef.current % 300 === 0) {
-        console.log('🔄 Loop running... (count:', loopCountRef.current, ')');
+        // console.log('🔄 Loop running... (count:', loopCountRef.current, ')');
       }
 
       const gamepads = navigator.getGamepads();
@@ -60,8 +60,17 @@ export function useGamepad() {
       if (gp) {
         // Log gamepad detection once per connection
         if (!gamepadConnectedRef.current) {
-          console.log('🎮 Gamepad detected in loop:', gp.id);
+          // console.log('🎮 Gamepad detected in loop:', gp.id);
           gamepadConnectedRef.current = true;
+        }
+
+        // Always log axes when they're not at rest (to help debug which axis is which)
+        const activeAxes = gp.axes.some((axis) => Math.abs(axis) > 0.1);
+        if (activeAxes && loopCountRef.current % 30 === 0) {
+          // console.log(
+          //   '## 🎮 Axes values:',
+          //   gp.axes.map((v, i) => `[${i}]:${v.toFixed(2)}`),
+          // );
         }
 
         // Debug: Log all pressed buttons once
@@ -70,26 +79,54 @@ export function useGamepad() {
             .map((btn, idx) => (btn.pressed ? idx : -1))
             .filter((idx) => idx !== -1);
           if (pressedButtons.length > 0) {
-            console.log('🎮 Buttons currently pressed:', pressedButtons);
+            console.log('## 🎮 Buttons currently pressed:', pressedButtons);
+            console.log('## 🎮 Axes values:', gp.axes);
             debugLoggedRef.current = true;
           }
+        }
+
+        // Check D-pad via axes - 8BitDo Micro typically uses different axes
+        // Try common D-pad vertical axes: 7, 9, or 1 (-1 = up, +1 = down)
+        const axis7 = gp.axes[7] || 0;
+        const axis9 = gp.axes[9] || 0;
+        const axis1 = gp.axes[1] || 0;
+
+        const dpadUp = axis7 < -0.5 || axis9 < -0.5 || axis1 < -0.5;
+
+        if (dpadUp && !axesPressedRef.current['dpad-up']) {
+          const whichAxis = axis7 < -0.5 ? 7 : axis9 < -0.5 ? 9 : 1;
+          // console.log(`## 🎮 D-pad Up pressed (axis ${whichAxis})`);
+          axesPressedRef.current['dpad-up'] = true;
+          // console.log('## ✅ Up button detected - triggering REWIND');
+          dispatch('REWIND');
+        }
+
+        if (!dpadUp && axesPressedRef.current['dpad-up']) {
+          // console.log('## 🎮 D-pad Up released');
+          axesPressedRef.current['dpad-up'] = false;
+          debugLoggedRef.current = false;
         }
 
         // Check all buttons to find which one is pressed
         gp.buttons.forEach((button, index) => {
           if (button.pressed && !pressedRef.current[index]) {
-            console.log(`🎮 Button ${index} pressed`);
+            console.log(`## 🎮 Button ${index} pressed`);
             pressedRef.current[index] = true;
 
-            // Trigger on button 0 (typically A button)
-            if (index === 0) {
-              console.log('✅ A button detected - triggering Shift+F');
-              triggerShiftF();
+            // Map buttons to actions
+            // Trigger on button 12 (typically D-pad Up) OR button 0 for testing
+            if (index === 12 || index === 0) {
+              // console.log(`## ✅ Button ${index} detected - triggering REWIND`);
+              dispatch('REWIND');
+            } else {
+              // console.log(
+              //   `## ❌ Button ${index} has no action assigned - try assigning this button if it's D-pad Up`,
+              // );
             }
           }
 
           if (!button.pressed && pressedRef.current[index]) {
-            console.log(`🎮 Button ${index} released`);
+            console.log(`## 🎮 Button ${index} released`);
             pressedRef.current[index] = false;
             debugLoggedRef.current = false; // Allow debug logging again
           }
@@ -97,18 +134,18 @@ export function useGamepad() {
       } else {
         // No gamepad detected
         if (loopCountRef.current % 300 === 0 && !gamepadConnectedRef.current) {
-          console.log('⚠️ No gamepad detected. Press any button on your controller to activate it.');
+          console.log(
+            '## ⚠️ No gamepad detected. Press any button on your controller to activate it.',
+          );
         }
       }
 
       rafId = requestAnimationFrame(loop);
     };
 
-    console.log('🎮 Starting gamepad polling loop...');
     loop();
 
     return () => {
-      console.log('🎮 useGamepad hook cleanup');
       cancelAnimationFrame(rafId);
       window.removeEventListener('gamepadconnected', handleGamepadConnected);
       window.removeEventListener(
@@ -116,19 +153,5 @@ export function useGamepad() {
         handleGamepadDisconnected,
       );
     };
-  }, []);
-}
-
-function triggerShiftF() {
-  console.log('⌨️ Dispatching Shift+F keyboard event');
-  const event = new KeyboardEvent('keydown', {
-    key: 'F',
-    code: 'KeyF',
-    shiftKey: true,
-    bubbles: true,
-    cancelable: true,
-  });
-
-  const dispatched = window.dispatchEvent(event);
-  console.log('⌨️ Event dispatched:', dispatched);
+  }, [dispatch]);
 }
