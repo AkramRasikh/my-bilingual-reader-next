@@ -4,7 +4,9 @@ export type InputAction =
   | 'JUMP_NEXT'
   | 'JUMP_PREV'
   | 'JUMP_CURRENT'
-  | 'LOOP_SENTENCE';
+  | 'LOOP_SENTENCE'
+  | 'SLICE_LOOP'
+  | 'SHRINK_LOOP';
 
 interface InputHandlers {
   handleRewind: () => void;
@@ -13,6 +15,8 @@ interface InputHandlers {
   handleJumpPrev: () => void;
   handleJumpCurrent: () => void;
   handleLoopThisSentence: () => void;
+  handleShiftLoopSentence: () => void;
+  handleShrinkLoop: () => void;
   // Add more handlers as you expand
 }
 
@@ -36,6 +40,12 @@ export const useInputActions = (handlers: InputHandlers) => {
         break;
       case 'LOOP_SENTENCE':
         handlers.handleLoopThisSentence();
+        break;
+      case 'SLICE_LOOP':
+        handlers.handleShiftLoopSentence();
+        break;
+      case 'SHRINK_LOOP':
+        handlers.handleShrinkLoop();
     }
   };
   return { dispatch };

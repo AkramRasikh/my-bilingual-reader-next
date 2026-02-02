@@ -120,8 +120,15 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
           const whichAxis = axis7 < -0.5 ? 7 : axis9 < -0.5 ? 9 : 1;
           console.log(`## 🎮 D-pad Up pressed (axis ${whichAxis})`);
           axesPressedRef.current['dpad-up'] = true;
-          console.log('## ✅ Up button detected - triggering REWIND');
-          dispatch('REWIND');
+          
+          // Check if L button is held for combo action
+          if (lButtonHeldRef.current) {
+            console.log('## ✅ L + Up combo detected - triggering SHRINK_LOOP');
+            dispatch('SHRINK_LOOP');
+          } else {
+            console.log('## ✅ Up button detected - triggering REWIND');
+            dispatch('REWIND');
+          }
         }
 
         if (!dpadUp && axesPressedRef.current['dpad-up']) {
@@ -167,8 +174,15 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
           const whichAxis = axis6 > 0.5 ? 6 : axis8 > 0.5 ? 8 : 0;
           // console.log(`## 🎮 D-pad Right pressed (axis ${whichAxis})`);
           axesPressedRef.current['dpad-right'] = true;
-          // console.log('## ✅ Right detected - triggering JUMP_NEXT');
-          dispatch('JUMP_NEXT');
+          
+          // Check if L button is held for combo action
+          if (lButtonHeldRef.current) {
+            console.log('## ✅ L + Right combo detected - triggering SLICE_LOOP');
+            dispatch('SLICE_LOOP');
+          } else {
+            // console.log('## ✅ Right detected - triggering JUMP_NEXT');
+            dispatch('JUMP_NEXT');
+          }
         }
 
         if (!dpadRight && axesPressedRef.current['dpad-right']) {

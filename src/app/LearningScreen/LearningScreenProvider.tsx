@@ -743,6 +743,14 @@ export const LearningScreenProvider = ({
   };
 
   // Set up input action dispatcher for gamepad
+  const handleShiftLoopSentenceForward = () => {
+    handleShiftLoopSentence(true);
+  };
+
+  const handleShrinkLoop = () => {
+    handleUpdateLoopedSentence(false);
+  };
+
   const { dispatch } = useInputActions({
     handleRewind,
     handlePausePlay,
@@ -750,6 +758,8 @@ export const LearningScreenProvider = ({
     handleJumpPrev,
     handleJumpCurrent,
     handleLoopThisSentence: handleLoopSentenceCombo,
+    handleShiftLoopSentence: handleShiftLoopSentenceForward,
+    handleShrinkLoop,
   });
   useGamepad(dispatch);
 
