@@ -793,6 +793,31 @@ export const LearningScreenProvider = ({
     }
   };
 
+  const handleBreakdownMasterSentence = async () => {
+    if (!masterPlayComprehensive) return null;
+    const alreadyHasBreakdown = masterPlayComprehensive?.sentenceStructure;
+    if (alreadyHasBreakdown) {
+      return null;
+    }
+
+    try {
+      setIsBreakingDownSentenceArrState((prev) => [
+        ...prev,
+        masterPlayComprehensive.id,
+      ]);
+      await breakdownSentence({
+        indexKey: selectedContentStateMemoized.id,
+        sentenceId: masterPlayComprehensive.id,
+        targetLang: masterPlayComprehensive.targetLang,
+        contentIndex,
+      });
+    } finally {
+      setIsBreakingDownSentenceArrState((prev) =>
+        prev.filter((item) => item !== masterPlayComprehensive.id),
+      );
+    }
+  };
+
   const { dispatch } = useInputActions({
     handleRewind: handleRewindOrToggleContract,
     handlePausePlay,
@@ -806,6 +831,7 @@ export const LearningScreenProvider = ({
     handleQuickSaveSnippet,
     handleShiftSnippetLeft,
     handleShiftSnippetRight,
+    handleBreakdownSentence: handleBreakdownMasterSentence,
   });
   useGamepad(dispatch, threeSecondLoopState);
 
@@ -972,31 +998,6 @@ export const LearningScreenProvider = ({
       setLoopTranscriptState((prev) => [...prev, thisItemData]);
     } else {
       setLoopTranscriptState((prev) => prev.slice(0, -1));
-    }
-  };
-
-  const handleBreakdownMasterSentence = async () => {
-    if (!masterPlayComprehensive) return null;
-    const alreadyHasBreakdown = masterPlayComprehensive?.sentenceStructure;
-    if (alreadyHasBreakdown) {
-      return null;
-    }
-
-    try {
-      setIsBreakingDownSentenceArrState((prev) => [
-        ...prev,
-        masterPlayComprehensive.id,
-      ]);
-      await breakdownSentence({
-        indexKey: selectedContentStateMemoized.id,
-        sentenceId: masterPlayComprehensive.id,
-        targetLang: masterPlayComprehensive.targetLang,
-        contentIndex,
-      });
-    } finally {
-      setIsBreakingDownSentenceArrState((prev) =>
-        prev.filter((item) => item !== masterPlayComprehensive.id),
-      );
     }
   };
 

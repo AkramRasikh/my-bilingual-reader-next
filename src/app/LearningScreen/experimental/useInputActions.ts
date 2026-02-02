@@ -10,7 +10,8 @@ export type InputAction =
   | 'THREE_SECOND_LOOP'
   | 'QUICK_SAVE_SNIPPET'
   | 'SHIFT_SNIPPET_LEFT'
-  | 'SHIFT_SNIPPET_RIGHT';
+  | 'SHIFT_SNIPPET_RIGHT'
+  | 'BREAKDOWN_SENTENCE';
 
 interface InputHandlers {
   handleRewind: () => void;
@@ -25,6 +26,7 @@ interface InputHandlers {
   handleQuickSaveSnippet: () => Promise<void | null>;
   handleShiftSnippetLeft: () => void;
   handleShiftSnippetRight: () => void;
+  handleBreakdownSentence: () => Promise<void | null>;
   // Add more handlers as you expand
 }
 
@@ -66,6 +68,9 @@ export const useInputActions = (handlers: InputHandlers) => {
         break;
       case 'SHIFT_SNIPPET_RIGHT':
         handlers.handleShiftSnippetRight();
+        break;
+      case 'BREAKDOWN_SENTENCE':
+        handlers.handleBreakdownSentence();
     }
   };
   return { dispatch };
