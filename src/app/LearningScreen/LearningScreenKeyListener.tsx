@@ -4,8 +4,6 @@ import { useEffect } from 'react';
 import useLearningScreen from './useLearningScreen';
 import { isNumber } from '@/utils/is-number';
 
-const qRewindTime = 3;
-
 const LearningScreenKeyListener = () => {
   const {
     ref,
@@ -193,10 +191,10 @@ const LearningScreenKeyListener = () => {
           handleJumpToSentenceViaKeys(1);
           break;
         case 'q':
-          handleRewind(qRewindTime);
+          handleRewind();
           break;
         case 'l':
-          handleRewind(qRewindTime);
+          handleRewind();
           break;
         default:
           break;
