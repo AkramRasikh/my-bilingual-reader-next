@@ -788,6 +788,7 @@ export const LearningScreenProvider = ({
     handleShiftLoopSentence: handleShiftLoopSentenceForward,
     handleShrinkLoop,
     handleThreeSecondLoop: handleLoopThis3Second,
+    handleQuickSaveSnippet,
   });
   useGamepad(dispatch);
 

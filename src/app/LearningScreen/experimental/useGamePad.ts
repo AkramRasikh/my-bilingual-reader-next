@@ -11,6 +11,8 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
   const lButtonHeldRef = useRef(false);
   const rButtonHeldRef = useRef(false);
   const lrComboFiredRef = useRef(false);
+  const xButtonHeldRef = useRef(false);
+  const lxComboFiredRef = useRef(false);
 
   useEffect(() => {
     if (!navigator.getGamepads) {
@@ -226,6 +228,11 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
             rButtonHeldRef.current = button.pressed;
           }
 
+          // Track X button state (button 3 on 8BitDo Micro)
+          if (index === 3) {
+            xButtonHeldRef.current = button.pressed;
+          }
+
           // Check for L+R combo (both pressed simultaneously)
           if (lButtonHeldRef.current && rButtonHeldRef.current && !lrComboFiredRef.current) {
             console.log('## ✅ L + R combo detected - triggering THREE_SECOND_LOOP');
@@ -236,6 +243,18 @@ export function useGamepad(dispatch: (action: InputAction) => void) {
           // Reset combo flag when either button is released
           if ((!lButtonHeldRef.current || !rButtonHeldRef.current) && lrComboFiredRef.current) {
             lrComboFiredRef.current = false;
+          }
+
+          // Check for L+X combo (both pressed simultaneously)
+          if (lButtonHeldRef.current && xButtonHeldRef.current && !lxComboFiredRef.current) {
+            console.log('## ✅ L + X combo detected - triggering QUICK_SAVE_SNIPPET');
+            dispatch('QUICK_SAVE_SNIPPET');
+            lxComboFiredRef.current = true;
+          }
+
+          // Reset combo flag when either button is released
+          if ((!lButtonHeldRef.current || !xButtonHeldRef.current) && lxComboFiredRef.current) {
+            lxComboFiredRef.current = false;
           }
 
           if (button.pressed && !pressedRef.current[index]) {

@@ -7,7 +7,8 @@ export type InputAction =
   | 'LOOP_SENTENCE'
   | 'SLICE_LOOP'
   | 'SHRINK_LOOP'
-  | 'THREE_SECOND_LOOP';
+  | 'THREE_SECOND_LOOP'
+  | 'QUICK_SAVE_SNIPPET';
 
 interface InputHandlers {
   handleRewind: () => void;
@@ -19,6 +20,7 @@ interface InputHandlers {
   handleShiftLoopSentence: () => void;
   handleShrinkLoop: () => void;
   handleThreeSecondLoop: () => void;
+  handleQuickSaveSnippet: () => Promise<void | null>;
   // Add more handlers as you expand
 }
 
@@ -51,6 +53,9 @@ export const useInputActions = (handlers: InputHandlers) => {
         break;
       case 'THREE_SECOND_LOOP':
         handlers.handleThreeSecondLoop();
+        break;
+      case 'QUICK_SAVE_SNIPPET':
+        handlers.handleQuickSaveSnippet();
     }
   };
   return { dispatch };
