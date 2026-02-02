@@ -11,7 +11,7 @@ export function useGamepad(
   const gamepadConnectedRef = useRef(false);
   const debugLoggedRef = useRef(false);
   const loopCountRef = useRef(0);
-  const lButtonHeldRef = useRef(false);
+  const lButtonHeldRef = useRef(false); // L button (button 6)
   const rButtonHeldRef = useRef(false);
   const lrComboFiredRef = useRef(false);
   const xButtonHeldRef = useRef(false);
@@ -157,7 +157,9 @@ export function useGamepad(
             );
             dispatch('LOOP_SENTENCE');
           } else {
-            // console.log('## ✅ Down detected - triggering JUMP_CURRENT (replay)');
+            console.log(
+              '## ✅ Down detected - triggering JUMP_CURRENT (replay)',
+            );
             dispatch('JUMP_CURRENT');
           }
         }
@@ -242,8 +244,8 @@ export function useGamepad(
             // );
           }
 
-          // Track L2 button state (button 8 on 8BitDo Micro)
-          if (index === 8) {
+          // Track L button state (button 6 on 8BitDo Micro)
+          if (index === 6) {
             lButtonHeldRef.current = button.pressed;
           }
 
@@ -331,11 +333,11 @@ export function useGamepad(
 
             // Map buttons to actions
             // Trigger on button 12 (typically D-pad Up) OR button 0 for testing
-            if (index === 12 || index === 0) {
+            if (index === 12) {
               // console.log(`## ✅ Button ${index} detected - triggering REWIND`);
               dispatch('REWIND');
-            } else if (index === 8) {
-              console.log('## 🎮 L2 button pressed - ready for combo');
+            } else if (index === 6) {
+              console.log('## 🎮 L button pressed - ready for combo');
             } else {
               // console.log(
               //   `## ❌ Button ${index} has no action assigned - check if this is D-pad Down`,
@@ -348,8 +350,8 @@ export function useGamepad(
             pressedRef.current[index] = false;
             debugLoggedRef.current = false; // Allow debug logging again
 
-            if (index === 8) {
-              console.log('## 🎮 L2 button released');
+            if (index === 6) {
+              console.log('## 🎮 L button released');
             }
           }
         });
