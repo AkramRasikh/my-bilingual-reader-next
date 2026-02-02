@@ -18,6 +18,8 @@ export function useGamepad(
   const lxComboFiredRef = useRef(false);
   const bButtonHeldRef = useRef(false);
   const lbComboFiredRef = useRef(false);
+  const aButtonHeldRef = useRef(false);
+  const laComboFiredRef = useRef(false);
 
   useEffect(() => {
     if (!navigator.getGamepads) {
@@ -264,6 +266,11 @@ export function useGamepad(
             bButtonHeldRef.current = button.pressed;
           }
 
+          // Track A button state (button 0 on 8BitDo Micro)
+          if (index === 0) {
+            aButtonHeldRef.current = button.pressed;
+          }
+
           // Check for L+R combo (both pressed simultaneously)
           if (
             lButtonHeldRef.current &&
@@ -325,6 +332,27 @@ export function useGamepad(
             lbComboFiredRef.current
           ) {
             lbComboFiredRef.current = false;
+          }
+
+          // Check for L+A combo (both pressed simultaneously)
+          if (
+            lButtonHeldRef.current &&
+            aButtonHeldRef.current &&
+            !laComboFiredRef.current
+          ) {
+            console.log(
+              '## ✅ L + A combo detected - triggering ADD_MASTER_TO_REVIEW',
+            );
+            dispatch('ADD_MASTER_TO_REVIEW');
+            laComboFiredRef.current = true;
+          }
+
+          // Reset combo flag when either button is released
+          if (
+            (!lButtonHeldRef.current || !aButtonHeldRef.current) &&
+            laComboFiredRef.current
+          ) {
+            laComboFiredRef.current = false;
           }
 
           if (button.pressed && !pressedRef.current[index]) {

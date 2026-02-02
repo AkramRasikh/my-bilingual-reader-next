@@ -818,23 +818,6 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const { dispatch } = useInputActions({
-    handleRewind: handleRewindOrToggleContract,
-    handlePausePlay,
-    handleJumpNext,
-    handleJumpPrev,
-    handleJumpCurrent,
-    handleLoopThisSentence: handleLoopSentenceCombo,
-    handleShiftLoopSentence: handleShiftLoopSentenceForward,
-    handleShrinkLoop,
-    handleThreeSecondLoop: handleLoopThis3Second,
-    handleQuickSaveSnippet,
-    handleShiftSnippetLeft,
-    handleShiftSnippetRight,
-    handleBreakdownSentence: handleBreakdownMasterSentence,
-  });
-  useGamepad(dispatch, threeSecondLoopState);
-
   const playFromThisContext = (contextId: FormattedTranscriptTypes['id']) => {
     const contextSentence = sentenceMapMemoized[contextId];
     if (contextSentence) {
@@ -1017,7 +1000,6 @@ export const LearningScreenProvider = ({
         sentenceId: masterPlayComprehensive.id,
         isRemoveReview: Boolean(sentenceHasReview),
       });
-      setSentenceRepsState(sentenceRepsState + 1);
     } finally {
       setIsGenericItemLoadingState((prev) =>
         prev.filter((item) => item !== masterPlayComprehensive.id),
@@ -1259,6 +1241,24 @@ export const LearningScreenProvider = ({
       );
     }
   };
+
+  const { dispatch } = useInputActions({
+    handleRewind: handleRewindOrToggleContract,
+    handlePausePlay,
+    handleJumpNext,
+    handleJumpPrev,
+    handleJumpCurrent,
+    handleLoopThisSentence: handleLoopSentenceCombo,
+    handleShiftLoopSentence: handleShiftLoopSentenceForward,
+    handleShrinkLoop,
+    handleThreeSecondLoop: handleLoopThis3Second,
+    handleQuickSaveSnippet,
+    handleShiftSnippetLeft,
+    handleShiftSnippetRight,
+    handleBreakdownSentence: handleBreakdownMasterSentence,
+    handleAddMasterToReview,
+  });
+  useGamepad(dispatch, threeSecondLoopState);
 
   return (
     <LearningScreenContext.Provider

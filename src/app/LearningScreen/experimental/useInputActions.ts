@@ -11,7 +11,8 @@ export type InputAction =
   | 'QUICK_SAVE_SNIPPET'
   | 'SHIFT_SNIPPET_LEFT'
   | 'SHIFT_SNIPPET_RIGHT'
-  | 'BREAKDOWN_SENTENCE';
+  | 'BREAKDOWN_SENTENCE'
+  | 'ADD_MASTER_TO_REVIEW';
 
 interface InputHandlers {
   handleRewind: () => void;
@@ -27,6 +28,7 @@ interface InputHandlers {
   handleShiftSnippetLeft: () => void;
   handleShiftSnippetRight: () => void;
   handleBreakdownSentence: () => Promise<void | null>;
+  handleAddMasterToReview: () => Promise<void>;
   // Add more handlers as you expand
 }
 
@@ -71,6 +73,9 @@ export const useInputActions = (handlers: InputHandlers) => {
         break;
       case 'BREAKDOWN_SENTENCE':
         handlers.handleBreakdownSentence();
+        break;
+      case 'ADD_MASTER_TO_REVIEW':
+        handlers.handleAddMasterToReview();
     }
   };
   return { dispatch };
