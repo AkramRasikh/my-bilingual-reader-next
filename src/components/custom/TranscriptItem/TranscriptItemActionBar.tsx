@@ -50,9 +50,14 @@ const TranscriptItemActionBar = () => {
 
     const handleGamepadPress = () => {
       const gamepads = navigator.getGamepads();
-      const gamepad = gamepads[0];
+      // Find the first connected gamepad
+      const gamepad = Array.from(gamepads).find((gp) => gp !== null);
 
-      if (gamepad && gamepad.buttons[1]?.pressed) {
+      if (!gamepad) {
+        return;
+      }
+
+      if (gamepad.buttons[1]?.pressed) {
         handlePlayActionBar();
       }
     };

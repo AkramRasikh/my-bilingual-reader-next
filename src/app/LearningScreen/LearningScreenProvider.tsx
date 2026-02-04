@@ -793,6 +793,10 @@ export const LearningScreenProvider = ({
     }
   };
 
+  const handleToggleReviewMode = () => {
+    setIsInReviewMode((prev) => !prev);
+  };
+
   const handleBreakdownMasterSentence = async () => {
     if (!masterPlayComprehensive) return null;
     const alreadyHasBreakdown = masterPlayComprehensive?.sentenceStructure;
@@ -1257,6 +1261,7 @@ export const LearningScreenProvider = ({
     handleShiftSnippetRight,
     handleBreakdownSentence: handleBreakdownMasterSentence,
     handleAddMasterToReview,
+    handleToggleReviewMode,
   });
   useGamepad(dispatch, threeSecondLoopState);
 

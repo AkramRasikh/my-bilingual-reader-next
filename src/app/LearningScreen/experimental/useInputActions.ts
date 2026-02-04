@@ -12,7 +12,8 @@ export type InputAction =
   | 'SHIFT_SNIPPET_LEFT'
   | 'SHIFT_SNIPPET_RIGHT'
   | 'BREAKDOWN_SENTENCE'
-  | 'ADD_MASTER_TO_REVIEW';
+  | 'ADD_MASTER_TO_REVIEW'
+  | 'TOGGLE_REVIEW_MODE';
 
 interface InputHandlers {
   handleRewind: () => void;
@@ -29,6 +30,7 @@ interface InputHandlers {
   handleShiftSnippetRight: () => void;
   handleBreakdownSentence: () => Promise<void | null>;
   handleAddMasterToReview: () => Promise<void>;
+  handleToggleReviewMode: () => void;
   // Add more handlers as you expand
 }
 
@@ -76,6 +78,9 @@ export const useInputActions = (handlers: InputHandlers) => {
         break;
       case 'ADD_MASTER_TO_REVIEW':
         handlers.handleAddMasterToReview();
+        break;
+      case 'TOGGLE_REVIEW_MODE':
+        handlers.handleToggleReviewMode();
     }
   };
   return { dispatch };
