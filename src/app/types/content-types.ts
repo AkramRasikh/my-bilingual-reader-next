@@ -26,9 +26,14 @@ export interface ContentTranscriptTypes {
   vocab?: Vocab[];
 }
 
+export interface TargetLangFormattedChunk {
+  text: string;
+  savedWords: string[];
+}
+
 export interface FormattedTranscriptTypes extends ContentTranscriptTypes {
   isDue: boolean;
-  targetLangformatted: React.ReactNode;
+  targetLangformatted: TargetLangFormattedChunk[];
   wordsFromSentence?: WordTypes[];
   helperReviewSentence: boolean;
 }

@@ -51,9 +51,7 @@ const TranscriptItem = () => {
           ) : (
             <TranscriptItemContent />
           )}
-          {!thisIsOverlapping && (
-            <TranscriptItemMenuSection />
-          )}
+          {!thisIsOverlapping && <TranscriptItemMenuSection />}
         </div>
       </div>
       <TranscriptItemReviewSection />
@@ -64,15 +62,12 @@ const TranscriptItem = () => {
           highlightedTextState={highlightedTextState}
         />
       )}
-      {contentItem?.title && (
-        <p className='flex justify-end opacity-50'>{contentItem.title}</p>
-      )}
-      {thisHasSavedSnippetOverlap?.length > 0 && (
+      {thisHasSavedSnippetOverlap && thisHasSavedSnippetOverlap.length > 0 && (
         <TranscriptItemTimeOverlappingIndicatorMulti
+          contentItemId={contentItem.id}
           thisHasSavedSnippetOverlap={thisHasSavedSnippetOverlap}
           handleDeleteSnippet={handleDeleteSnippet}
           handleLoopHere={handleLoopHere}
-          contentItemId={contentItem?.id}
           snippetLoadingState={snippetLoadingState}
         />
       )}
