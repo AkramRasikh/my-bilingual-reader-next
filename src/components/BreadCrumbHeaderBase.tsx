@@ -1,5 +1,4 @@
 'use client';
-import BasketDialogue from '@/app/BasketDialogue';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -18,7 +17,6 @@ interface BreadCrumbHeaderBase {
   subHeading?: string;
   navigationButtons?: () => JSX.Element[];
   progressHeaderComponent?: () => JSX.Element;
-  withBasket?: boolean;
 }
 
 const BreadCrumbHeaderBase = ({
@@ -28,7 +26,6 @@ const BreadCrumbHeaderBase = ({
   subHeading,
   navigationButtons,
   progressHeaderComponent,
-  withBasket = true,
 }: BreadCrumbHeaderBase) => (
   <div className='flex justify-between w-full'>
     <Breadcrumb className='my-auto mx-1'>
@@ -68,10 +65,7 @@ const BreadCrumbHeaderBase = ({
     {progressHeaderComponent && (
       <div className='w-md my-auto'>{progressHeaderComponent()}</div>
     )}
-    <div>
-      {withBasket && <BasketDialogue />}
-      {navigationButtons?.()}
-    </div>
+    <div>{navigationButtons?.()}</div>
   </div>
 );
 

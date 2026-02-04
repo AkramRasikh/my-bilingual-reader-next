@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
 import useLearningScreen from './useLearningScreen';
 import BreadCrumbHeaderBase from '../../components/BreadCrumbHeaderBase';
 import { useRouter } from 'next/navigation';
@@ -10,9 +9,6 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import ProgressHeader from '../../components/custom/ProgressHeader';
 
 const LearningScreenBreadCrumbHeader = () => {
-  const [showBasketState, setShowBasketState] = useState(false);
-
-  const { wordBasketState } = useFetchData();
   const { selectedContentState, initialSentenceCount, sentencesNeedReview } =
     useLearningScreen();
 
@@ -24,12 +20,6 @@ const LearningScreenBreadCrumbHeader = () => {
   } = useFetchData();
 
   const router = useRouter();
-
-  useEffect(() => {
-    if (wordBasketState.length === 0 && showBasketState) {
-      setShowBasketState(false);
-    }
-  }, [wordBasketState, showBasketState]);
 
   // totalItems: starts at initial count, increases if new items are added
   const totalItems = Math.max(initialSentenceCount, sentencesNeedReview);

@@ -2,7 +2,6 @@
 
 import { Button, buttonVariants } from '@/components/ui/button';
 import type { VariantProps } from 'class-variance-authority';
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
@@ -16,21 +15,12 @@ interface NavgationButtonsType {
   disabled?: boolean;
 }
 const LandingUIBreadCrumb = () => {
-  const [showBasketState, setShowBasketState] = useState(false);
-
   const {
-    wordBasketState,
     languageSelectedState,
     setLanguageSelectedState,
     wordsForReviewMemoized,
     sentencesDueForReviewMemoized,
   } = useFetchData();
-
-  useEffect(() => {
-    if (wordBasketState.length === 0 && showBasketState) {
-      setShowBasketState(false);
-    }
-  }, [wordBasketState, showBasketState]);
 
   const numberOfSentences = sentencesDueForReviewMemoized.length;
 

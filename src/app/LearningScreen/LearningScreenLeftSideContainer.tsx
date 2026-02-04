@@ -11,7 +11,7 @@ import AudioPlayer from '@/components/AudioPlayer';
 import clsx from 'clsx';
 import LearningScreenLoopBtn from './LearningScreenLoopBtn';
 import LearningScreenLoopUI from './LearningScreenLoopUI';
-import useCheckVideoIsWorking from '../WordsStudyUI/useCheckVideoIsWorking';
+import useCheckVideoIsWorking from './useCheckVideoIsWorking';
 import TranscriptTimeline from '@/components/experimental/TranscriptTimeline';
 
 const LearningScreenLeftSideContainer = () => {
