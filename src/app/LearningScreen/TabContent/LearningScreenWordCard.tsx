@@ -18,9 +18,7 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
   } = useLearningScreen();
   const {
     languageSelectedState,
-    wordBasketState,
     updateWordDataProvider,
-    addWordToBasket,
     addImageDataProvider,
   } = useFetchData();
 
@@ -85,7 +83,6 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
 
     playFromThisContext(args);
   };
-  const isInBasket = wordBasketState?.some((i) => i?.id === word.id);
 
   const wordContextIsPlaying =
     isVideoPlaying && word?.contexts?.[0] === masterPlay;
@@ -112,8 +109,6 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
           {...word}
           indexNum={indexNum}
           updateWordData={handleUpdateWord}
-          addWordToBasket={addWordToBasket}
-          isInBasket={isInBasket}
           addImageDataProvider={addImageDataProvider}
           playFromThisContext={handlePlayFromContextFinal}
           languageSelectedState={languageSelectedState}

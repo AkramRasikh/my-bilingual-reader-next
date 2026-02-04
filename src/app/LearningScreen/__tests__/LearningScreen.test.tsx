@@ -51,11 +51,9 @@ const checkMetaDataOnLoad = () => {
   const breadcrumbContentButton = screen.getByTestId(
     'breadcrumb-content-button',
   );
-  const breadcrumbBasketButton = screen.getByTestId('basket-button');
 
   expect(breadcrumbSentencesButton).toBeDisabled();
   expect(breadcrumbSentencesButton).toHaveTextContent('Sentence (0)');
-  expect(breadcrumbBasketButton).toHaveTextContent('🧺 (0)');
   expect(breadcrumbWordsButton).toHaveTextContent('Words (0)');
   expect(breadcrumbWordsButton).toBeDisabled();
   expect(breadcrumbContentButton).toHaveTextContent('Content');

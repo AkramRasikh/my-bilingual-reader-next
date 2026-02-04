@@ -5,8 +5,6 @@ import { LucidePause, LucidePlay, MoreVerticalIcon } from 'lucide-react';
 
 const WordCardHeader = ({
   textTitle,
-  isInBasket,
-  onClickBasket,
   onClickPlayContext,
   setOpenContentState,
   openContentState,
@@ -36,13 +34,6 @@ const WordCardHeader = ({
         data-testid={`word-card-play-button-${id}`}
       >
         {wordContextIsPlaying ? <LucidePause /> : <LucidePlay />}
-      </Button>
-      <Button
-        variant={isInBasket ? 'destructive' : 'default'}
-        className={clsx(!isInBasket ? 'bg-transparent' : '', 'h-3 w-3 p-3')}
-        onClick={onClickBasket}
-      >
-        🧺
       </Button>
       <Button
         variant={'secondary'}

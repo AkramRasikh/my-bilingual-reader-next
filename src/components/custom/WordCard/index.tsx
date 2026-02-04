@@ -13,8 +13,6 @@ import WordCardWrapper from './WordCardWrapper';
 
 const WordCard = ({
   id,
-  isInBasket,
-  addWordToBasket,
   baseForm,
   definition,
   surfaceForm,
@@ -93,13 +91,6 @@ const WordCard = ({
     }
   };
 
-  const handleAddWordToBasket = () =>
-    addWordToBasket?.({
-      word: baseForm,
-      id,
-      definition,
-    });
-
   useEffect(() => {
     if (!isReadyForQuickReview) return;
 
@@ -134,8 +125,6 @@ const WordCard = ({
         <WordCardHeader
           id={id}
           textTitle={textTitle}
-          isInBasket={isInBasket}
-          onClickBasket={handleAddWordToBasket}
           onClickPlayContext={handlePlayThisContext}
           setOpenContentState={setOpenContentState}
           openContentState={openContentState}

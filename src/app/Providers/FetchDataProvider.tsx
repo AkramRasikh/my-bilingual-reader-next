@@ -142,12 +142,6 @@ interface DeleteWordResponseTypes {
   id: WordTypes['id'];
 }
 
-interface WordBasketTypes {
-  id: WordTypes['id'];
-  word: WordTypes['baseForm'];
-  definition: WordTypes['definition'];
-}
-
 interface AddGeneratedSentenceCallTypes {
   targetLang: StoryTypeStateTypes['targetLang'];
   baseLang: StoryTypeStateTypes['baseLang'];
@@ -184,8 +178,6 @@ export interface FetchDataContextTypes {
   wordsToReviewGivenOriginalContextId: Record<WordTypes['id'], WordTypes[]>;
   deleteContent: (params: DeleteContentCallTypes) => void;
   deleteVideo: (filePath: string) => Promise<boolean>;
-  wordBasketState: WordBasketTypes[];
-  setWordBasketState: Dispatch<SetStateAction<WordBasketTypes[]>>;
   story?: StoryTypeStateTypes;
   setStory: Dispatch<SetStateAction<StoryTypeStateTypes | undefined>>;
   addGeneratedSentence: (params: AddGeneratedSentenceCallTypes) => void;
@@ -227,8 +219,6 @@ const FetchDataContext = createContext<FetchDataContextTypes>({
   toastMessageState: '',
   hasFetchedDataState: false,
   pureWordsMemoized: [],
-  wordBasketState: [],
-  setWordBasketState: () => {},
   setStory: () => {},
   wordsToReviewOnMountState: 0,
 });
@@ -245,7 +235,6 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
   const [contentState, dispatchContent] = useReducer(contentReducer, []);
   const [wordsState, dispatchWords] = useReducer(wordsReducer, []);
   const [wordsToReviewOnMountState, setWordsToReviewOnMountState] = useState(0);
-  const [wordBasketState, setWordBasketState] = useState<WordBasketTypes[]>([]);
   const [toastMessageState, setToastMessageState] = useState('');
   const [story, setStory] = useState<StoryTypeStateTypes>();
   const isSetOneTime = useRef(true);
@@ -842,8 +831,6 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         pureWordsMemoized,
         wordsForReviewMemoized,
         sentencesDueForReviewMemoized,
-        wordBasketState,
-        setWordBasketState,
         breakdownSentence,
         sentenceReviewBulk,
         updateContentMetaData,
