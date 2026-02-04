@@ -38,8 +38,8 @@ const LandingUIBreadCrumb = () => {
 
   const buttonsArr = [
     {
-      href: '/sentences',
-      disabled: !(numberOfSentences > 0),
+      href: '#',
+      disabled: true,
       variant: 'link',
       text: `Sentence (${numberOfSentences})`,
     },

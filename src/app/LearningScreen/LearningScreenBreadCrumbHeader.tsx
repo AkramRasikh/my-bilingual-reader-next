@@ -49,8 +49,8 @@ const LearningScreenBreadCrumbHeader = () => {
 
   const buttonsArr = [
     {
-      onClick: () => router.push('/sentences'),
-      disabled: !(numberOfSentences > 0),
+      onClick: () => {},
+      disabled: true,
       variant: 'link',
       text: `Sentence (${numberOfSentences})`,
       dataTestId: 'breadcrumb-sentences-button',

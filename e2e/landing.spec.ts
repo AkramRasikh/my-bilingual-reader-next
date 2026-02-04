@@ -95,7 +95,7 @@ test('breadcrumb navigation displays correct counts', async ({ page }) => {
   // Verify it shows Words (149) specifically
   await expect(wordsLink).toHaveText('Words (149)');
 
-  // Check Sentence button with count (disabled, so still a button)
+  // Check Sentence button with count (disabled, so still a link)
   const sentencesButton = page.getByRole('link', {
     name: /Sentence \(\d+\)/,
   });
@@ -116,22 +116,4 @@ test('breadcrumb navigation displays correct counts', async ({ page }) => {
   await homeLink.click();
   await page.waitForURL('http://localhost:3000/');
   expect(page.url()).toBe('http://localhost:3000/');
-
-  // Click Sentence link and verify navigation
-  await sentencesButton.click();
-  await page.waitForURL('**/sentences');
-  expect(page.url()).toContain('/sentences');
-
-  // Click Home to return again
-  await homeLink.click();
-  await page.waitForURL('http://localhost:3000/');
-  expect(page.url()).toBe('http://localhost:3000/');
 });
-// await sentencesButton.click();
-// await page.waitForLoadState('networkidle');
-// expect(page.url()).toContain('/sentences');
-
-// // Click Home to return again
-// await homeButton.click();
-// await page.waitForLoadState('networkidle');
-// expect(page.url()).toBe('http://localhost:3000/');
