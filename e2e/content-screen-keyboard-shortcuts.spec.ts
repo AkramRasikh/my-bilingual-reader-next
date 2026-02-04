@@ -85,10 +85,10 @@ test.describe('Keyboard actions', () => {
     const loadingHammer = page.getByTestId(
       `transcript-breakdown-loading-${firstContentId}`,
     );
-    await expect(loadingHammer).toBeVisible();
+    await expect(loadingHammer).toHaveCount(2);
     const toastMessage = page.getByText('Sentence broken down 🧱🔨!');
     await expect(toastMessage).toBeVisible({ timeout: 3000 });
-    await expect(loadingHammer).not.toBeVisible({ timeout: 5000 });
+    await expect(loadingHammer).toHaveCount(0, { timeout: 5000 });
     await expect(brickEmoji).toBeVisible();
     await expect(brickEmoji).toContainText('🧱');
   });
