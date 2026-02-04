@@ -57,11 +57,6 @@ interface HandleBreakdownSentenceParams {
   targetLang: string;
 }
 
-interface HandleUpdateSnippetParams {
-  snippetData: Snippet;
-  isUpdate?: boolean;
-}
-
 interface TopicWordsForReviewMemoizedProps extends WordTypes {
   time?: number;
 }

@@ -1,6 +1,78 @@
 import { arabic } from '@/app/languages';
 import { transliterationMatcher } from '@/utils/transliteration-matcher';
-import { createContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  createContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+} from 'react';
+import { FormattedTranscriptTypes, Snippet } from '@/app/types/content-types';
+import { WordTypes } from '@/app/types/word-types';
+import { OverlappingSnippetData } from '@/app/types/shared-types';
+
+interface HandleReviewFuncParams {
+  sentenceId: string;
+  isRemoveReview?: boolean;
+}
+
+interface OverlappingTextTypes {
+  targetLang: string;
+  baseLang: string;
+  suggestedFocusText: string;
+}
+
+interface TranscriptItemProviderProps {
+  threeSecondLoopState: number | null;
+  overlappingSnippetDataState: OverlappingSnippetData[];
+  contentItem: FormattedTranscriptTypes;
+  loopTranscriptState: FormattedTranscriptTypes[];
+  masterPlay: string | null;
+  isGenericItemLoadingState: boolean;
+  snippetLoadingState: string[];
+  handleSaveWord: (params: {
+    highlightedWord: string;
+    highlightedWordSentenceId: string;
+    contextSentence: string;
+    meaning?: string;
+    isGoogle: boolean;
+    originalContext: string;
+    time?: number;
+  }) => Promise<void>;
+  handleDeleteWordDataProvider: (wordData: WordTypes) => Promise<boolean>;
+  wordsState: WordTypes[];
+  isInReviewMode: boolean;
+  onlyShowEngState: boolean;
+  setLoopTranscriptState: Dispatch<SetStateAction<FormattedTranscriptTypes[]>>;
+  handleReviewFunc: (params: HandleReviewFuncParams) => Promise<void>;
+  isVideoPlaying: boolean;
+  handlePause: () => void;
+  handleFromHere: (time: number) => void;
+  handleBreakdownSentence: (params: {
+    sentenceId: string;
+    targetLang: string;
+  }) => Promise<void>;
+  isBreakingDownSentenceArrState: string[];
+  scrollToElState: string | null;
+  wordsForSelectedTopic: WordTypes[];
+  languageSelectedState: string;
+  indexNum: number;
+  isComprehensiveMode?: boolean;
+  savedSnippetsMemoized: Snippet[];
+  handleDeleteSnippet: (snippetId: string) => Promise<void>;
+  setThreeSecondLoopState: Dispatch<SetStateAction<number | null>>;
+  setContractThreeSecondLoopState: Dispatch<SetStateAction<boolean>>;
+  handlePlayFromHere: (time: number) => void;
+  biggestOverlappedSnippet: string | null;
+  overlappingTextMemoized: OverlappingTextTypes | null;
+  handleSaveSnippet: (snippetArgs: OverlappingTextTypes) => Promise<void>;
+  originalContext: string;
+  isReadyForQuickReview?: boolean;
+  children: ReactNode;
+}
 
 export const TranscriptItemContext = createContext(null);
 
@@ -26,10 +98,8 @@ export const TranscriptItemProvider = ({
   isBreakingDownSentenceArrState,
   scrollToElState,
   wordsForSelectedTopic,
-  isWordStudyMode,
   languageSelectedState,
   indexNum,
-  isSentenceReviewMode,
   isComprehensiveMode,
   savedSnippetsMemoized,
   handleDeleteSnippet,
@@ -42,7 +112,7 @@ export const TranscriptItemProvider = ({
   originalContext,
   isReadyForQuickReview,
   children,
-}) => {
+}: TranscriptItemProviderProps) => {
   const transcriptItemContainerRef = useRef(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [showSentenceBreakdownState, setShowSentenceBreakdownState] =
@@ -218,7 +288,6 @@ export const TranscriptItemProvider = ({
         originalContext,
         time: contentItem?.time,
       });
-    } catch (error) {
     } finally {
       setHighlightedTextState('');
       setWordPopUpState([]);
@@ -244,15 +313,11 @@ export const TranscriptItemProvider = ({
   };
 
   const handleDeleteFunc = async (wordData) => {
-    try {
-      const resBool = await handleDeleteWordDataProvider(wordData);
-      if (resBool) {
-        setWordPopUpState([]);
-      }
-      return resBool;
-    } catch (error) {
-      console.log('## handleDeleteFunc error', error);
+    const resBool = await handleDeleteWordDataProvider(wordData);
+    if (resBool) {
+      setWordPopUpState([]);
     }
+    return resBool;
   };
 
   const handleOnMouseEnterSentence = () => {
@@ -267,8 +332,6 @@ export const TranscriptItemProvider = ({
         setCollapseState(true);
       }
       await handleReviewFunc(arg);
-    } catch (error) {
-      console.log('## handleReviewTranscriptItem error', error);
     } finally {
       if (isComprehensiveMode) {
         setCollapseState(false);
@@ -323,10 +386,8 @@ export const TranscriptItemProvider = ({
         overrideMiniReviewState,
         setOverrideMiniReviewState,
         wordsForSelectedTopic,
-        isWordStudyMode,
         languageSelectedState,
         highlightedTextsArabicTransliteration,
-        isSentenceReviewMode,
         indexNum,
         transcriptItemContainerRef,
         collapseState,

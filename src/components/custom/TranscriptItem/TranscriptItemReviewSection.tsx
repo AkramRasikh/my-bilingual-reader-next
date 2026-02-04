@@ -6,7 +6,6 @@ const TranscriptItemReviewSection = () => {
   const {
     contentItem,
     isInReviewMode,
-    isSentenceReviewMode,
     handleReviewTranscriptItem,
     isReadyForQuickReview,
   } = useTranscriptItem();
@@ -17,7 +16,7 @@ const TranscriptItemReviewSection = () => {
 
   return (
     <>
-      {(isSentenceReviewMode || isInReviewMode) && isDueNow ? (
+      {isInReviewMode && isDueNow ? (
         <ReviewSRSToggles
           contentItem={contentItem}
           handleReviewFunc={handleReviewTranscriptItem}

@@ -16,9 +16,7 @@ const TranscriptItem = () => {
     isLoadingState,
     contentItem,
     handleSaveFunc,
-    isWordStudyMode,
     highlightedTextsArabicTransliteration,
-    isSentenceReviewMode,
     thisHasSavedSnippetOverlap,
     handleDeleteSnippet,
     handleLoopHere,
@@ -53,12 +51,12 @@ const TranscriptItem = () => {
           ) : (
             <TranscriptItemContent />
           )}
-          {!thisIsOverlapping && !isWordStudyMode && !isSentenceReviewMode && (
+          {!thisIsOverlapping && (
             <TranscriptItemMenuSection />
           )}
         </div>
       </div>
-      {!isWordStudyMode && <TranscriptItemReviewSection />}
+      <TranscriptItemReviewSection />
       {highlightedTextState && (
         <HighlightedText
           isLoadingState={isLoadingState}
