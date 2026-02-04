@@ -7,8 +7,6 @@ import {
   useEffect,
   useReducer,
   useMemo,
-  SetStateAction,
-  Dispatch,
   useRef,
 } from 'react';
 import useLanguageSelector from './useLanguageSelector';
@@ -31,7 +29,6 @@ import {
   getNextScheduledOptions,
   srsRetentionKeyTypes,
 } from '../srs-utils/srs-algo';
-import { getAudioURL } from '@/utils/get-media-url';
 import useFetchInitData from './useFetchInitData';
 import { useRouter } from 'next/navigation';
 import { LanguageEnum } from '../languages';
@@ -39,7 +36,6 @@ import { SentenceTypes } from '../types/sentence-types';
 import { WordTypes } from '../types/word-types';
 import { ContentTranscriptTypes, Snippet } from '../types/content-types';
 import { ReviewDataTypes } from '../types/shared-types';
-import { StoryTypes } from '../types/story-types';
 import { apiRequestWrapper } from '@/lib/api-request-wrapper';
 
 interface BreakDownSentenceCallTypes {
@@ -68,15 +64,6 @@ interface UpdateContentMetaDataCallTypes {
   contentIndex: ContentStateTypes['contentIndex'];
 }
 
-interface StoryTypeStateTypes extends StoryTypes {
-  isSaved?: boolean;
-}
-
-interface UpdateAdhocSentenceDataCallTypes {
-  fieldToUpdate: Partial<SentenceTypes>;
-  sentenceId: SentenceTypes['id'];
-  isRemoveReview?: boolean;
-}
 interface HandleSaveWordCallTypes {
   highlightedWord: string;
   highlightedWordSentenceId: SentenceTypes['id'] | ContentStateTypes['id'];
@@ -142,12 +129,6 @@ interface DeleteWordResponseTypes {
   id: WordTypes['id'];
 }
 
-interface AddGeneratedSentenceCallTypes {
-  targetLang: StoryTypeStateTypes['targetLang'];
-  baseLang: StoryTypeStateTypes['baseLang'];
-  notes?: StoryTypeStateTypes['notes'];
-}
-
 export interface FetchDataContextTypes {
   languageSelectedState: LanguageEnum;
   setLanguageSelectedState: (lang: LanguageEnum) => void;
@@ -166,7 +147,6 @@ export interface FetchDataContextTypes {
   updateContentMetaData: (params: UpdateContentMetaDataCallTypes) => void;
   toastMessageState: string;
   setToastMessageState: (param: string) => void;
-  updateAdhocSentenceData: (params: UpdateAdhocSentenceDataCallTypes) => void;
   handleSaveWord: (params: HandleSaveWordCallTypes) => void;
   handleDeleteWordDataProvider: (
     params: HandleDeleteWordDataProviderCallTypes,
@@ -178,9 +158,6 @@ export interface FetchDataContextTypes {
   wordsToReviewGivenOriginalContextId: Record<WordTypes['id'], WordTypes[]>;
   deleteContent: (params: DeleteContentCallTypes) => void;
   deleteVideo: (filePath: string) => Promise<boolean>;
-  story?: StoryTypeStateTypes;
-  setStory: Dispatch<SetStateAction<StoryTypeStateTypes | undefined>>;
-  addGeneratedSentence: (params: AddGeneratedSentenceCallTypes) => void;
   handleSaveSnippetFetchProvider: (
     params: HandleSaveSnippetCallTypes,
   ) => Promise<void>;
@@ -206,7 +183,6 @@ const FetchDataContext = createContext<FetchDataContextTypes>({
   setToastMessageState: () => {},
   handleDeleteWordDataProvider: () => {},
   addImageDataProvider: () => {},
-  addGeneratedSentence: () => {},
   handleSaveSnippetFetchProvider: async () => {},
   handleDeleteSnippetFetchProvider: async () => {},
   wordsToReviewGivenOriginalContextId: {},
@@ -219,7 +195,6 @@ const FetchDataContext = createContext<FetchDataContextTypes>({
   toastMessageState: '',
   hasFetchedDataState: false,
   pureWordsMemoized: [],
-  setStory: () => {},
   wordsToReviewOnMountState: 0,
 });
 
@@ -236,7 +211,6 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
   const [wordsState, dispatchWords] = useReducer(wordsReducer, []);
   const [wordsToReviewOnMountState, setWordsToReviewOnMountState] = useState(0);
   const [toastMessageState, setToastMessageState] = useState('');
-  const [story, setStory] = useState<StoryTypeStateTypes>();
   const isSetOneTime = useRef(true);
   const router = useRouter();
 
@@ -502,40 +476,6 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     }
   };
 
-  const updateAdhocSentenceData = async ({
-    sentenceId,
-    fieldToUpdate,
-    isRemoveReview,
-  }: UpdateAdhocSentenceDataCallTypes) => {
-    try {
-      const updatedFieldFromDB = await apiRequestWrapper({
-        url: '/api/updateAdhocSentence',
-        body: {
-          id: sentenceId,
-          fieldToUpdate,
-          language: languageSelectedState,
-        },
-      });
-
-      if (updatedFieldFromDB) {
-        dispatchSentences({
-          type: 'updateSentence',
-          sentenceId,
-          isRemoveReview,
-          updatedFieldFromDB,
-        });
-
-        setToastMessageState(
-          isRemoveReview
-            ? 'Successful learned sentence ✅'
-            : 'Sentence reviewed ✅',
-        );
-      }
-    } catch (error) {
-      console.log('## updateAdhocSentenceData', { error });
-      setToastMessageState('Error updating adhoc-sentence sentence ❌');
-    }
-  };
   const handleDeleteWordDataProvider = async ({
     wordId,
   }: HandleDeleteWordDataProviderCallTypes) => {
@@ -756,45 +696,6 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     }
   };
 
-  const addGeneratedSentence = async ({
-    targetLang,
-    baseLang,
-    notes,
-  }: AddGeneratedSentenceCallTypes) => {
-    try {
-      if (!story) {
-        return;
-      }
-      const res = await fetch('/api/addSentence', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          language: languageSelectedState,
-          targetLang,
-          baseLang,
-          localAudioPath: story.audioUrl,
-          notes,
-        }),
-      });
-      const data = await res.json();
-
-      console.log('## addGeneratedSentence data', data);
-
-      if (data) {
-        setStory({
-          ...story,
-          isSaved: true,
-          audioUrl: getAudioURL(data[0].id, languageSelectedState),
-        });
-        dispatchSentences({ type: 'addSentence', sentence: data });
-        setToastMessageState('Generated sentence saved ✅🤖!');
-      }
-    } catch (error) {
-      console.log('## addGeneratedSentence', { error });
-      setToastMessageState(`Failed to save generated sentence ❌`);
-    }
-  };
-
   const deleteVideo = async (filePath: string): Promise<boolean> => {
     try {
       const res = await fetch('/api/deleteVideo', {
@@ -836,14 +737,10 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         updateContentMetaData,
         toastMessageState,
         setToastMessageState,
-        story,
-        setStory,
-        updateAdhocSentenceData,
         handleSaveWord,
         handleDeleteWordDataProvider,
         updateWordDataProvider,
         updateSentenceData,
-        addGeneratedSentence,
         addImageDataProvider,
         wordsToReviewOnMountState,
         wordsToReviewGivenOriginalContextId,
