@@ -208,7 +208,7 @@ export const TranscriptItemProvider = ({
   }, [savedSnippetsMemoized, contentItem.id]);
 
   useEffect(() => {
-    function handleClickOutside(event) {
+    function handleClickOutside(event: MouseEvent) {
       if (
         highlightedTextState &&
         transcriptItemContainerRef.current &&
@@ -250,13 +250,19 @@ export const TranscriptItemProvider = ({
     }
   }, [showThisSentenceBreakdownPreviewState]);
 
-  const handleLoopHere = ({ time, isContracted }) => {
+  const handleLoopHere = ({
+    time,
+    isContracted,
+  }: {
+    time: number;
+    isContracted: boolean;
+  }) => {
     setThreeSecondLoopState(time);
     setContractThreeSecondLoopState(isContracted);
     handlePlayFromHere?.(time);
   };
 
-  const handleMouseEnter = (text) => {
+  const handleMouseEnter = (text: string) => {
     hoverTimer.current = setTimeout(() => {
       const wordsAmongstHighlightedText = wordsState?.filter((item) => {
         if (item.baseForm === text || item.surfaceForm === text) {
@@ -276,7 +282,11 @@ export const TranscriptItemProvider = ({
     }
   };
 
-  const handleSaveFunc = async (isGoogle, thisWord, thisWordMeaning) => {
+  const handleSaveFunc = async (
+    isGoogle: boolean,
+    thisWord: string,
+    thisWordMeaning?: string,
+  ) => {
     try {
       setIsLoadingState(true);
       await handleSaveWord({
@@ -312,7 +322,7 @@ export const TranscriptItemProvider = ({
     }
   };
 
-  const handleDeleteFunc = async (wordData) => {
+  const handleDeleteFunc = async (wordData: WordTypes) => {
     const resBool = await handleDeleteWordDataProvider(wordData);
     if (resBool) {
       setWordPopUpState([]);
@@ -325,7 +335,7 @@ export const TranscriptItemProvider = ({
     setShowThisSentenceBreakdownPreviewState(true);
   };
 
-  const handleReviewTranscriptItem = async (arg) => {
+  const handleReviewTranscriptItem = async (arg: HandleReviewFuncParams) => {
     try {
       setIsLoadingState(true);
       if (isComprehensiveMode) {
