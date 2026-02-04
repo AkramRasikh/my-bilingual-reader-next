@@ -17,8 +17,6 @@ const LearningScreenTabWords = () => {
     addImageDataProvider,
   } = useFetchData();
 
-
-
   return (
     <TabsContent value='words' className={'p-1 max-h-150 overflow-y-auto'}>
       <div className='text-center m-auto p-1.5'>
