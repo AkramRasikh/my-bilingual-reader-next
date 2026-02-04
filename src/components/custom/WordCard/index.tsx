@@ -112,7 +112,9 @@ const WordCard = ({
         return;
       }
 
-      if (gamepad.buttons[1]?.pressed) {
+      // Only trigger if B button (1) is pressed AND L button (6) is NOT pressed
+      // This prevents L+B combo from also triggering the play action
+      if (gamepad.buttons[1]?.pressed && !gamepad.buttons[8]?.pressed) {
         handlePlayThisContext();
       }
     };

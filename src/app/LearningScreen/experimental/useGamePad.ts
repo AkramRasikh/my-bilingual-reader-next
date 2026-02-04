@@ -368,28 +368,6 @@ export function useGamepad(
             laComboFiredRef.current = false;
           }
 
-          // Check for button 10+11 combo (both pressed simultaneously)
-          if (
-            button10HeldRef.current &&
-            button11HeldRef.current &&
-            !button10_11ComboFiredRef.current
-          ) {
-            console.log(
-              '## ✅ Button 10 + 11 combo detected - triggering TOGGLE_REVIEW_MODE',
-            );
-            dispatch('TOGGLE_REVIEW_MODE');
-            button10_11ComboFiredRef.current = true;
-            return;
-          }
-
-          // Reset combo flag when either button is released
-          if (
-            (!button10HeldRef.current || !button11HeldRef.current) &&
-            button10_11ComboFiredRef.current
-          ) {
-            button10_11ComboFiredRef.current = false;
-          }
-
           if (button.pressed && !pressedRef.current[index]) {
             console.log(`## 🎮 Button ${index} pressed`);
             pressedRef.current[index] = true;
@@ -404,6 +382,11 @@ export function useGamepad(
                 `## ✅ Button ${index} detected - triggering PAUSE_PLAY`,
               );
               dispatch('PAUSE_PLAY');
+            } else if (index === 11) {
+              console.log(
+                `## ✅ Button ${index} detected - triggering TOGGLE_REVIEW_MODE`,
+              );
+              dispatch('TOGGLE_REVIEW_MODE');
             } else if (index === 6) {
               console.log('## 🎮 L button pressed - ready for combo');
             } else {
