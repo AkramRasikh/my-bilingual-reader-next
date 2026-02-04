@@ -88,25 +88,21 @@ test('breadcrumb navigation displays correct counts', async ({ page }) => {
   await page.goto('/');
   await page.waitForLoadState('networkidle');
 
-  // Check Words link with count
-  const wordsLink = page.getByRole('link', { name: /Words \(\d+\)/ });
-  await expect(wordsLink).toBeVisible();
-
-  // Verify it shows Words (149) specifically
-  await expect(wordsLink).toHaveText('Words (149)');
-
-  // Check Sentence button with count (disabled, so still a link)
-  const sentencesButton = page.getByRole('link', {
+  // Check Sentence button with count (disabled button, not a link)
+  const sentencesButton = page.getByRole('button', {
     name: /Sentence \(\d+\)/,
   });
   await expect(sentencesButton).toBeVisible();
   await expect(sentencesButton).toHaveText('Sentence (1)');
+  await expect(sentencesButton).toBeDisabled();
 
-  // Verify Words link is visible with correct count (but don't click it - it's a dummy button)
-  await expect(wordsLink).toBeVisible();
-  await expect(wordsLink).toHaveText('Words (149)');
+  // Check Words button with count (disabled button, not a link)
+  const wordsButton = page.getByRole('button', { name: /Words \(\d+\)/ });
+  await expect(wordsButton).toBeVisible();
+  await expect(wordsButton).toHaveText('Words (149)');
+  await expect(wordsButton).toBeDisabled();
 
-  // Check Content link exists
+  // Check Content link exists (this one is actually a link)
   const contentLink = page.getByRole('link', { name: 'Content' });
   await expect(contentLink).toBeVisible();
 });
