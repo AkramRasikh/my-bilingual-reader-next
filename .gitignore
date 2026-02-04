@@ -52,3 +52,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 mock-data.json
+*storybook.log
+storybook-static
