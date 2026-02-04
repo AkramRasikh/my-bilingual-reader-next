@@ -1,7 +1,10 @@
 import { useContext } from 'react';
-import { TranscriptItemContext } from './TranscriptItemProvider';
+import {
+  TranscriptItemContext,
+  TranscriptItemContextType,
+} from './TranscriptItemProvider';
 
-const useTranscriptItem = () => {
+const useTranscriptItem = (): TranscriptItemContextType => {
   const context = useContext(TranscriptItemContext);
 
   if (!context)

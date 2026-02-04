@@ -26,7 +26,7 @@ const TranscriptItemMenuSection = () => {
     try {
       await handleReviewTranscriptItem({
         sentenceId: contentItem.id,
-        isRemoveReview: hasBeenReviewed,
+        isRemoveReview: Boolean(hasBeenReviewed),
       });
     } finally {
       setShowMenuState(false);

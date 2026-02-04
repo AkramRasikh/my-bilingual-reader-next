@@ -15,7 +15,7 @@ const LearningScreenTabTranscript = () => {
     threeSecondLoopState,
     overlappingSnippetDataState,
     masterPlay,
-    isGenericItemLoadingState,
+    isGenericItemsLoadingArrayState,
     isBreakingDownSentenceArrState,
     isInReviewMode,
     onlyShowEngState,
@@ -118,7 +118,7 @@ const LearningScreenTabTranscript = () => {
                   overlappingSnippetDataState={overlappingSnippetDataState}
                   contentItem={contentItem}
                   masterPlay={masterPlay}
-                  isGenericItemLoadingState={isGenericItemLoadingState}
+                  isGenericItemsLoadingArrayState={isGenericItemsLoadingArrayState}
                   handleSaveWord={handleSaveWord}
                   handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                   wordsState={wordsState}

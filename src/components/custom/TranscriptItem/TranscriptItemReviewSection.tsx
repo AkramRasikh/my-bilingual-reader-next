@@ -12,7 +12,7 @@ const TranscriptItemReviewSection = () => {
 
   const hasBeenReviewed = contentItem?.reviewData?.due;
   const timeNow = new Date();
-  const isDueNow = new Date(hasBeenReviewed) < timeNow;
+  const isDueNow = hasBeenReviewed && new Date(hasBeenReviewed) < timeNow;
 
   return (
     <>
@@ -20,8 +20,8 @@ const TranscriptItemReviewSection = () => {
         <ReviewSRSToggles
           contentItem={contentItem}
           handleReviewFunc={handleReviewTranscriptItem}
-          isVocab={false}
           isReadyForQuickReview={isReadyForQuickReview}
+          isVocab={false}
         />
       ) : isInReviewMode && hasBeenReviewed ? (
         <p className='italic m-1 text-center'>

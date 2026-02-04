@@ -75,8 +75,8 @@ export interface LearningScreenContextTypes {
   setIsVideoPlaying: React.Dispatch<React.SetStateAction<boolean>>;
   isInReviewMode: boolean;
   setIsInReviewMode: React.Dispatch<React.SetStateAction<boolean>>;
-  isGenericItemLoadingState: SentenceMapItemTypes['id'][];
-  setIsGenericItemLoadingState: React.Dispatch<
+  isGenericItemsLoadingArrayState: SentenceMapItemTypes['id'][];
+  setIsGenericItemsLoadingArrayState: React.Dispatch<
     React.SetStateAction<SentenceMapItemTypes['id'][]>
   >;
   snippetLoadingState: string[];
@@ -202,9 +202,8 @@ export const LearningScreenProvider = ({
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState<
     number | null
   >(null);
-  const [isGenericItemLoadingState, setIsGenericItemLoadingState] = useState<
-    SentenceMapItemTypes['id'][]
-  >([]);
+  const [isGenericItemsLoadingArrayState, setIsGenericItemsLoadingArrayState] =
+    useState<SentenceMapItemTypes['id'][]>([]);
   const [snippetLoadingState, setSnippetLoadingState] = useState<string[]>([]);
   const [isBreakingDownSentenceArrState, setIsBreakingDownSentenceArrState] =
     useState<SentenceMapItemTypes['id'][]>([]);
@@ -453,14 +452,17 @@ export const LearningScreenProvider = ({
     };
 
     try {
-      setIsGenericItemLoadingState((prev) => [...prev, ...overlappingIds]);
+      setIsGenericItemsLoadingArrayState((prev) => [
+        ...prev,
+        ...overlappingIds,
+      ]);
       await handleSaveSnippetFetchProvider({
         snippetData: finalSnippetObject,
         contentId,
         contentIndex,
       });
     } finally {
-      setIsGenericItemLoadingState((prev) =>
+      setIsGenericItemsLoadingArrayState((prev) =>
         prev.filter((item) => !overlappingIds.includes(item)),
       );
     }
@@ -911,7 +913,7 @@ export const LearningScreenProvider = ({
     // }
     // const sentenceIds = sentenceIdData.map((item) => item.id);
     // try {
-    //   setIsGenericItemLoadingState((prev) => [...prev, ...sentenceIds]);
+    //   setIsGenericItemsLoadingArrayState((prev) => [...prev, ...sentenceIds]);
     //   await sentenceReviewBulk({
     //     topicName: selectedContentStateMemoized.title,
     //     fieldToUpdate: {
@@ -924,7 +926,7 @@ export const LearningScreenProvider = ({
     //   setSentenceRepsState((prev) => prev + sentenceIds.length);
     // } catch (error) {
     // } finally {
-    //   setIsGenericItemLoadingState((prev) =>
+    //   setIsGenericItemsLoadingArrayState((prev) =>
     //     prev.filter((item) => !sentenceIds.includes(item)),
     //   );
     // }
@@ -991,7 +993,7 @@ export const LearningScreenProvider = ({
     const sentenceHasReview = masterPlayComprehensive?.reviewData;
 
     try {
-      setIsGenericItemLoadingState((prev) => [
+      setIsGenericItemsLoadingArrayState((prev) => [
         ...prev,
         masterPlayComprehensive.id,
       ]);
@@ -1000,7 +1002,7 @@ export const LearningScreenProvider = ({
         isRemoveReview: Boolean(sentenceHasReview),
       });
     } finally {
-      setIsGenericItemLoadingState((prev) =>
+      setIsGenericItemsLoadingArrayState((prev) =>
         prev.filter((item) => item !== masterPlayComprehensive.id),
       );
     }
@@ -1021,7 +1023,7 @@ export const LearningScreenProvider = ({
     const nextReviewData = nextScheduledOptions['4'].card;
 
     try {
-      setIsGenericItemLoadingState((prev) => [
+      setIsGenericItemsLoadingArrayState((prev) => [
         ...prev,
         masterPlayComprehensive.id,
       ]);
@@ -1031,7 +1033,7 @@ export const LearningScreenProvider = ({
       });
       setSentenceRepsState(sentenceRepsState + 1);
     } finally {
-      setIsGenericItemLoadingState((prev) =>
+      setIsGenericItemsLoadingArrayState((prev) =>
         prev.filter((item) => item !== masterPlayComprehensive.id),
       );
     }
@@ -1226,7 +1228,7 @@ export const LearningScreenProvider = ({
 
     const sentenceIds = overlappedSentencesViableForReviewMemoized;
     try {
-      setIsGenericItemLoadingState((prev) => [...prev, ...sentenceIds]);
+      setIsGenericItemsLoadingArrayState((prev) => [...prev, ...sentenceIds]);
       await sentenceReviewBulk({
         contentId,
         reviewData: nextDueCard,
@@ -1235,7 +1237,7 @@ export const LearningScreenProvider = ({
       });
       setSentenceRepsState((prev) => prev + sentenceIds.length);
     } finally {
-      setIsGenericItemLoadingState((prev) =>
+      setIsGenericItemsLoadingArrayState((prev) =>
         prev.filter((item) => !sentenceIds.includes(item)),
       );
     }
@@ -1276,8 +1278,8 @@ export const LearningScreenProvider = ({
         setIsVideoPlaying,
         isInReviewMode,
         setIsInReviewMode,
-        isGenericItemLoadingState,
-        setIsGenericItemLoadingState,
+        isGenericItemsLoadingArrayState,
+        setIsGenericItemsLoadingArrayState,
         snippetLoadingState,
         setSnippetLoadingState,
         overlappingSnippetDataState: overlappingSnippetDataMemoised || [],

@@ -17,7 +17,7 @@ const TranscriptItemActionBar = () => {
     contentItem,
     isSentenceLooping,
     masterPlay,
-    isGenericItemLoadingState,
+    isGenericItemsLoadingArrayState,
     setLoopTranscriptState,
     isVideoPlaying,
     handlePause,
@@ -32,9 +32,8 @@ const TranscriptItemActionBar = () => {
 
   const hasSentenceBreakdown = contentItem?.sentenceStructure;
 
-  const isGenericallyDoingAsyncAction = isGenericItemLoadingState.includes(
-    contentItem.id,
-  );
+  const isGenericallyDoingAsyncAction =
+    isGenericItemsLoadingArrayState.includes(contentItem.id);
 
   const handlePlayActionBar = () =>
     thisSentenceIsPlaying && isVideoPlaying
@@ -114,9 +113,7 @@ const TranscriptItemActionBar = () => {
         <button
           id='stop-loop'
           data-testid={`stop-loop-${contentItem.id}`}
-          onClick={() => {
-            setLoopTranscriptState(null);
-          }}
+          onClick={() => setLoopTranscriptState([])}
         >
           <div className={clsx(isVideoPlaying ? 'animate-spin' : '')}>
             <Repeat2 />

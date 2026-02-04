@@ -22,6 +22,7 @@ export interface ContentTranscriptTypes {
   meaning?: string;
   reviewData?: ReviewDataTypes;
   sentenceStructure?: string;
+  transliteration?: string;
   vocab?: Vocab[];
 }
 

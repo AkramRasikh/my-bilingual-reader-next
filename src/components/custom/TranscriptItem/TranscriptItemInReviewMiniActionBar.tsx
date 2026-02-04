@@ -15,7 +15,7 @@ const TranscriptItemInReviewMiniActionBar = () => {
     contentItem,
     isSentenceLooping,
     masterPlay,
-    isGenericItemLoadingState,
+    isGenericItemsLoadingArrayState,
     setLoopTranscriptState,
     isVideoPlaying,
     handlePause,
@@ -26,9 +26,8 @@ const TranscriptItemInReviewMiniActionBar = () => {
   const thisTime = contentItem.time;
   const thisSentenceIsPlaying = contentItem.id === masterPlay;
 
-  const isGenericallyDoingAsyncAction = isGenericItemLoadingState.includes(
-    contentItem.id,
-  );
+  const isGenericallyDoingAsyncAction =
+    isGenericItemsLoadingArrayState.includes(contentItem.id);
 
   const handlePlayActionBar = () =>
     thisSentenceIsPlaying && isVideoPlaying
@@ -67,7 +66,7 @@ const TranscriptItemInReviewMiniActionBar = () => {
 
       <button
         id='stop-loop'
-        onClick={() => setLoopTranscriptState(null)}
+        onClick={() => setLoopTranscriptState([])}
         disabled={!isSentenceLooping}
         className={clsx(
           isVideoPlaying ? 'animate-spin' : '',

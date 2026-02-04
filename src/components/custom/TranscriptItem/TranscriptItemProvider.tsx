@@ -25,13 +25,76 @@ interface OverlappingTextTypes {
   suggestedFocusText: string;
 }
 
+export interface TranscriptItemContextType {
+  contentItem: FormattedTranscriptTypes;
+  hoverTimer: React.MutableRefObject<NodeJS.Timeout | null>;
+  highlightedTextState: string;
+  setHighlightedTextState: Dispatch<SetStateAction<string>>;
+  showSentenceBreakdownState: boolean;
+  setShowSentenceBreakdownState: Dispatch<SetStateAction<boolean>>;
+  showMenuState: boolean;
+  setShowMenuState: Dispatch<SetStateAction<boolean>>;
+  isLoadingState: boolean;
+  setIsLoadingState: Dispatch<SetStateAction<boolean>>;
+  showThisSentenceBreakdownPreviewState: boolean;
+  setShowThisSentenceBreakdownPreviewState: Dispatch<SetStateAction<boolean>>;
+  wordPopUpState: WordTypes[];
+  setWordPopUpState: Dispatch<SetStateAction<WordTypes[]>>;
+  handleMouseEnter: (text: string) => void;
+  handleMouseLeave: () => void;
+  isSentenceLooping: boolean;
+  masterPlay: string | null;
+  isGenericItemsLoadingArrayState: string[];
+  handleSaveFunc: (
+    isGoogle: boolean,
+    thisWord: string,
+    thisWordMeaning?: string,
+  ) => Promise<void>;
+  handleDeleteFunc: (wordData: WordTypes) => Promise<boolean | undefined>;
+  handleOnMouseEnterSentence: () => null | undefined;
+  isInReviewMode: boolean;
+  onlyShowEngState: boolean;
+  setLoopTranscriptState: Dispatch<SetStateAction<FormattedTranscriptTypes[]>>;
+  handleReviewFunc: (params: HandleReviewFuncParams) => Promise<void>;
+  isVideoPlaying: boolean;
+  handlePause: () => void;
+  handleFromHere: (time: number) => void;
+  handleReviewTranscriptItem: (arg: HandleReviewFuncParams) => Promise<void>;
+  handleBreakdownSentence: (params: {
+    sentenceId: string;
+    targetLang: string;
+  }) => Promise<void>;
+  isBreakdownSentenceLoadingState: boolean;
+  setIsBreakdownSentenceLoadingState: Dispatch<SetStateAction<boolean>>;
+  handleBreakdownSentenceTranscriptItem: () => Promise<void>;
+  overrideMiniReviewState: boolean;
+  setOverrideMiniReviewState: Dispatch<SetStateAction<boolean>>;
+  wordsForSelectedTopic: WordTypes[];
+  languageSelectedState: string;
+  highlightedTextsArabicTransliteration: string | undefined;
+  indexNum: number;
+  transcriptItemContainerRef: React.RefObject<HTMLElement | null>;
+  collapseState: boolean;
+  setCollapseState: Dispatch<SetStateAction<boolean>>;
+  isComprehensiveMode?: boolean;
+  thisHasSavedSnippetOverlap: Snippet[] | null;
+  handleDeleteSnippet: (snippetId: string) => Promise<void>;
+  snippetLoadingState: string[];
+  handleLoopHere: (params: { time: number; isContracted: boolean }) => void;
+  biggestOverlappedSnippet: string | null;
+  overlappingTextMemoized: OverlappingTextTypes | null;
+  handleSaveSnippet: (snippetArgs: OverlappingTextTypes) => Promise<void>;
+  thisSnippetOverlapMemoized: OverlappingSnippetData | undefined | null;
+  isReadyForQuickReview?: boolean;
+}
+
 interface TranscriptItemProviderProps {
   threeSecondLoopState: number | null;
   overlappingSnippetDataState: OverlappingSnippetData[];
   contentItem: FormattedTranscriptTypes;
   loopTranscriptState: FormattedTranscriptTypes[];
   masterPlay: string | null;
-  isGenericItemLoadingState: boolean;
+  isGenericItemsLoadingArrayState: string[];
   snippetLoadingState: string[];
   handleSaveWord: (params: {
     highlightedWord: string;
@@ -74,7 +137,8 @@ interface TranscriptItemProviderProps {
   children: ReactNode;
 }
 
-export const TranscriptItemContext = createContext(null);
+export const TranscriptItemContext =
+  createContext<TranscriptItemContextType | null>(null);
 
 export const TranscriptItemProvider = ({
   threeSecondLoopState,
@@ -82,7 +146,7 @@ export const TranscriptItemProvider = ({
   contentItem,
   loopTranscriptState,
   masterPlay,
-  isGenericItemLoadingState,
+  isGenericItemsLoadingArrayState,
   snippetLoadingState,
   handleSaveWord,
   handleDeleteWordDataProvider,
@@ -120,7 +184,6 @@ export const TranscriptItemProvider = ({
   const [overrideMiniReviewState, setOverrideMiniReviewState] = useState(false);
   const [showMenuState, setShowMenuState] = useState(false);
   const [collapseState, setCollapseState] = useState(false);
-  const [thisSnippetOverlapState, setThisSnippetOverlapState] = useState();
 
   const [isLoadingState, setIsLoadingState] = useState(false);
   const [isBreakdownSentenceLoadingState, setIsBreakdownSentenceLoadingState] =
@@ -142,6 +205,10 @@ export const TranscriptItemProvider = ({
 
   const targetLang = contentItem.targetLang;
   const transliteration = contentItem?.transliteration;
+
+  const isSentenceLooping = loopTranscriptState?.some(
+    (i) => i?.id === contentItem.id,
+  );
 
   const highlightedTextsArabicTransliteration = useMemo(() => {
     if (!isArabic) {
@@ -350,10 +417,6 @@ export const TranscriptItemProvider = ({
     }
   };
 
-  const isSentenceLooping = loopTranscriptState?.some(
-    (i) => i?.id === contentItem.id,
-  );
-
   return (
     <TranscriptItemContext.Provider
       value={{
@@ -365,8 +428,6 @@ export const TranscriptItemProvider = ({
         setShowSentenceBreakdownState,
         showMenuState,
         setShowMenuState,
-        thisSnippetOverlapState,
-        setThisSnippetOverlapState,
         isLoadingState,
         setIsLoadingState,
         showThisSentenceBreakdownPreviewState,
@@ -377,7 +438,7 @@ export const TranscriptItemProvider = ({
         handleMouseLeave,
         isSentenceLooping,
         masterPlay,
-        isGenericItemLoadingState,
+        isGenericItemsLoadingArrayState,
         handleSaveFunc,
         handleDeleteFunc,
         handleOnMouseEnterSentence,
