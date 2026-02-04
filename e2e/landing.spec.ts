@@ -102,18 +102,11 @@ test('breadcrumb navigation displays correct counts', async ({ page }) => {
   await expect(sentencesButton).toBeVisible();
   await expect(sentencesButton).toHaveText('Sentence (1)');
 
+  // Verify Words link is visible with correct count (but don't click it - it's a dummy button)
+  await expect(wordsLink).toBeVisible();
+  await expect(wordsLink).toHaveText('Words (149)');
+
   // Check Content link exists
   const contentLink = page.getByRole('link', { name: 'Content' });
   await expect(contentLink).toBeVisible();
-
-  // Click Words link and verify navigation
-  await wordsLink.click();
-  await page.waitForURL('**/words');
-  expect(page.url()).toContain('/words');
-
-  // Click Home to return
-  const homeLink = page.getByRole('link', { name: 'Home' });
-  await homeLink.click();
-  await page.waitForURL('http://localhost:3000/');
-  expect(page.url()).toBe('http://localhost:3000/');
 });

@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import LoadingSpinner from '../components/custom/LoadingSpinner';
 import { useState } from 'react';
-import StoryComponent from './words/StoryComponent';
+import StoryComponent from '@/components/custom/dialogue/StoryComponent';
 import { useFetchData } from './Providers/FetchDataProvider';
 
 const BasketDialogue = () => {

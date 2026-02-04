@@ -44,8 +44,8 @@ const LandingUIBreadCrumb = () => {
       text: `Sentence (${numberOfSentences})`,
     },
     {
-      href: '/words',
-      disabled: !(wordsForReviewMemoized.length > 0),
+      href: '#',
+      disabled: true,
       variant: 'link',
       text: `Words (${wordsForReviewMemoized.length})`,
     },

@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import fs from 'fs';
 import path from 'path';
 import { voicesSelectionMan, voicesSelectionWoman } from './voice-selection';
-import { formatChunksComprehensive } from '@/app/words/format-chunks';
+import { formatChunksComprehensive } from '@/utils/dialogue-generation/format-chunks';
 import { combineAudio } from './merge-audio-files';
 import { getAudioFileDuration } from '@/utils/get-audio-file-duration';
 import { cleanOldAudioFiles } from './cleanOldAudioFiles';

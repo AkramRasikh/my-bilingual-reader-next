@@ -56,8 +56,8 @@ const LearningScreenBreadCrumbHeader = () => {
       dataTestId: 'breadcrumb-sentences-button',
     },
     {
-      onClick: () => router.push('/words'),
-      disabled: !(wordsForReviewMemoized.length > 0),
+      onClick: () => {},
+      disabled: true,
       variant: 'link',
       text: `Words (${wordsForReviewMemoized.length})`,
       dataTestId: 'breadcrumb-words-button',
