@@ -5,6 +5,7 @@ import { FormattedTranscriptTypes, Snippet } from '@/app/types/content-types';
 import { WordTypes } from '@/app/types/word-types';
 import { OverlappingSnippetData } from '@/app/types/shared-types';
 import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
+import { State } from 'ts-fsrs';
 
 // Base mock object with common properties
 const baseMockContentItem: FormattedTranscriptTypes = {
@@ -97,10 +98,15 @@ const mockJapaneseContentItemWithReview: FormattedTranscriptTypes = {
   ...mockJapaneseContentItemWithBreakdown,
   isDue: true,
   reviewData: {
-    interval: 1,
-    repetition: 0,
-    efactor: 2.5,
-    dueDate: new Date('2026-01-01'),
+    due: new Date('2026-01-01'),
+    stability: 1,
+    difficulty: 5,
+    elapsed_days: 0,
+    scheduled_days: 1,
+    reps: 1,
+    lapses: 0,
+    state: State.Review,
+    last_review: new Date('2025-12-31'),
   },
 };
 
@@ -119,6 +125,7 @@ interface MockTranscriptItemWrapperProps {
   wordsState?: WordTypes[];
   loopTranscriptState?: FormattedTranscriptTypes[];
   isBreakingDownSentenceArrState?: string[];
+  masterPlay?: string | null;
 }
 
 const MockTranscriptItemWrapper = ({
@@ -129,13 +136,14 @@ const MockTranscriptItemWrapper = ({
   wordsState = [],
   loopTranscriptState = [],
   isBreakingDownSentenceArrState = [],
+  masterPlay = null,
 }: MockTranscriptItemWrapperProps) => {
   const mockProviderProps = {
     threeSecondLoopState: null,
     overlappingSnippetDataState: [] as OverlappingSnippetData[],
     contentItem,
     loopTranscriptState,
-    masterPlay: null,
+    masterPlay,
     isGenericItemsLoadingArrayState: [],
     snippetLoadingState: [],
     handleSaveWord: async () => {
@@ -241,6 +249,8 @@ export const Interactive: Story = {
     isVideoPlaying: false,
     isLooping: false,
     isBreakingDown: false,
+    isMasterPlay: false,
+    reviewState: 'not-review',
     contentItem: mockJapaneseContentItem,
   },
   argTypes: {
@@ -260,10 +270,25 @@ export const Interactive: Story = {
       control: 'boolean',
       description: 'Toggle sentence breakdown loading state',
     },
+    isMasterPlay: {
+      control: 'boolean',
+      description: 'Toggle if this sentence is currently being played',
+    },
+    reviewState: {
+      control: 'radio',
+      options: ['not-review', 'pending', 'due'],
+      description: 'Review state of the transcript item',
+    },
     loopTranscriptState: {
       table: { disable: true },
     },
     isBreakingDownSentenceArrState: {
+      table: { disable: true },
+    },
+    masterPlay: {
+      table: { disable: true },
+    },
+    contentItem: {
       table: { disable: true },
     },
   },
@@ -273,12 +298,49 @@ export const Interactive: Story = {
     const isBreakingDownSentenceArrState = args.isBreakingDown
       ? [args.contentItem.id]
       : [];
+    const masterPlay = args.isMasterPlay ? args.contentItem.id : null;
+
+    // Construct contentItem based on review state
+    let contentItem = mockJapaneseContentItem;
+    if (args.reviewState === 'pending') {
+      contentItem = {
+        ...mockJapaneseContentItem,
+        isDue: false,
+        reviewData: {
+          due: new Date('2027-01-01'), // Future date
+          stability: 1,
+          difficulty: 5,
+          elapsed_days: 0,
+          scheduled_days: 1,
+          reps: 1,
+          lapses: 0,
+          state: State.Review,
+          last_review: new Date('2026-01-15'),
+        },
+      };
+    } else if (args.reviewState === 'due') {
+      contentItem = {
+        ...mockJapaneseContentItem,
+        isDue: true,
+        reviewData: {
+          due: new Date('2026-01-01'), // Past date
+          stability: 1,
+          difficulty: 5,
+          elapsed_days: 5,
+          scheduled_days: 1,
+          reps: 1,
+          lapses: 0,
+          state: State.Review,
+          last_review: new Date('2025-12-31'),
+        },
+      };
+    }
 
     return (
       <div className='space-y-4'>
         <div className='p-4 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700'>
           <h3 className='font-bold mb-3 text-lg'>Current State</h3>
-          <div className='grid grid-cols-2 gap-2 text-sm'>
+          <div className='grid grid-cols-3 gap-2 text-sm'>
             <div className='flex items-center gap-2'>
               <span
                 className={`w-3 h-3 rounded-full ${
@@ -313,12 +375,42 @@ export const Interactive: Story = {
               />
               <span>Breaking Down</span>
             </div>
+            <div className='flex items-center gap-2'>
+              <span
+                className={`w-3 h-3 rounded-full ${
+                  args.isMasterPlay ? 'bg-purple-500' : 'bg-gray-400'
+                }`}
+              />
+              <span>Master Play</span>
+            </div>
+            <div className='flex items-center gap-2'>
+              <span
+                className={`w-3 h-3 rounded-full ${
+                  args.reviewState === 'not-review'
+                    ? 'bg-gray-400'
+                    : args.reviewState === 'pending'
+                      ? 'bg-blue-500'
+                      : 'bg-red-500'
+                }`}
+              />
+              <span>
+                Review:{' '}
+                {args.reviewState === 'not-review'
+                  ? 'None'
+                  : args.reviewState === 'pending'
+                    ? 'Pending'
+                    : 'Due'}
+              </span>
+            </div>
           </div>
         </div>
         <MockTranscriptItemWrapper
-          {...args}
+          contentItem={contentItem}
+          isInReviewMode={args.isInReviewMode}
+          isVideoPlaying={args.isVideoPlaying}
           loopTranscriptState={loopTranscriptState}
           isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+          masterPlay={masterPlay}
         />
       </div>
     );
