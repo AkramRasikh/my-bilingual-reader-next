@@ -4,6 +4,7 @@ import { TranscriptItemProvider } from './TranscriptItemProvider';
 import { FormattedTranscriptTypes, Snippet } from '@/app/types/content-types';
 import { WordTypes } from '@/app/types/word-types';
 import { OverlappingSnippetData } from '@/app/types/shared-types';
+import { underlineWordsInSentenceLegacy } from '@/utils/sentence-formatting/underline-words-in-sentences';
 
 // Base mock object with common properties
 const baseMockContentItem: FormattedTranscriptTypes = {
@@ -14,44 +15,10 @@ const baseMockContentItem: FormattedTranscriptTypes = {
     'この発言がですね従来の政府見解を大きく乗り越えるものだということでですね',
   time: 56,
   isDue: false,
-  targetLangformatted: [
-    {
-      text: 'この',
-      savedWords: [],
-    },
-    {
-      text: '発言',
-      savedWords: [],
-    },
-    {
-      text: 'がですね',
-      savedWords: [],
-    },
-    {
-      text: '従来の',
-      savedWords: [],
-    },
-    {
-      text: '政府',
-      savedWords: [],
-    },
-    {
-      text: '見解',
-      savedWords: [],
-    },
-    {
-      text: 'を',
-      savedWords: [],
-    },
-    {
-      text: '大きく',
-      savedWords: [],
-    },
-    {
-      text: '乗り越えるものだということでですね',
-      savedWords: [],
-    },
-  ],
+  targetLangformatted: underlineWordsInSentenceLegacy(
+    'この発言がですね従来の政府見解を大きく乗り越えるものだということでですね',
+    [],
+  ),
   helperReviewSentence: false,
 };
 
@@ -75,12 +42,8 @@ const mockJapaneseContentItemWithBreakdown: FormattedTranscriptTypes = {
       surfaceForm: '発言',
     },
     {
-      meaning: '(subject marker)',
-      surfaceForm: 'が',
-    },
-    {
-      meaning: '(affirmative ending)',
-      surfaceForm: 'ですね',
+      meaning: '(subject marker) + (affirmative ending)',
+      surfaceForm: 'がですね',
     },
     {
       meaning: 'traditional',
@@ -93,6 +56,38 @@ const mockJapaneseContentItemWithBreakdown: FormattedTranscriptTypes = {
     {
       meaning: 'view',
       surfaceForm: '見解',
+    },
+    {
+      meaning: '(object marker)',
+      surfaceForm: 'を',
+    },
+    {
+      meaning: 'greatly',
+      surfaceForm: '大きく',
+    },
+    {
+      meaning: 'overcome',
+      surfaceForm: '乗り越える',
+    },
+    {
+      meaning: 'thing',
+      surfaceForm: 'もの',
+    },
+    {
+      meaning: '(copula)',
+      surfaceForm: 'だ',
+    },
+    {
+      meaning: 'that is said',
+      surfaceForm: 'という',
+    },
+    {
+      meaning: 'as a matter of',
+      surfaceForm: 'ことで',
+    },
+    {
+      meaning: '(affirmative ending)',
+      surfaceForm: 'ですね',
     },
   ],
 };

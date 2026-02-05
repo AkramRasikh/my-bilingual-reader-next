@@ -10,4 +10,4 @@ export enum LanguageEnum {
 }
 
 export const isTrimmedLang = (lang: LanguageEnum) =>
-  [chinese, japanese].includes(lang);
+  [chinese, japanese].includes(lang.toLowerCase() as LanguageEnum);
