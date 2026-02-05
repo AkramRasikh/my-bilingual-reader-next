@@ -7,6 +7,31 @@ import { OverlappingSnippetData } from '@/app/types/shared-types';
 import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
 import { State } from 'ts-fsrs';
 
+const mockHatsugenWord: WordTypes = {
+  id: 'word-hatsugen-001',
+  baseForm: '発言',
+  surfaceForm: '発言',
+  definition: 'statement; remark; utterance',
+  phonetic: 'はつげん',
+  transliteration: 'hatsugen',
+  contexts: ['24f261a8-03c0-43ae-b6aa-6a28c81d4954'],
+  originalContext:
+    'この発言がですね従来の政府見解を大きく乗り越えるものだということでですね',
+  isDue: false,
+  reviewData: {
+    due: new Date('2027-01-01'),
+    stability: 1,
+    difficulty: 5,
+    elapsed_days: 0,
+    scheduled_days: 1,
+    reps: 1,
+    lapses: 0,
+    state: State.New,
+    last_review: new Date('2026-01-15'),
+  },
+  time: 56,
+};
+
 // Base mock object with common properties
 const baseMockContentItem: FormattedTranscriptTypes = {
   id: '24f261a8-03c0-43ae-b6aa-6a28c81d4954',
@@ -18,8 +43,9 @@ const baseMockContentItem: FormattedTranscriptTypes = {
   isDue: false,
   targetLangformatted: underlineWordsInSentence(
     'この発言がですね従来の政府見解を大きく乗り越えるものだということでですね',
-    [],
+    [mockHatsugenWord],
   ),
+  wordsFromSentence: [mockHatsugenWord],
   helperReviewSentence: false,
 };
 
@@ -212,6 +238,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     contentItem: mockJapaneseContentItem,
+    wordsState: [mockHatsugenWord],
   },
 };
 
