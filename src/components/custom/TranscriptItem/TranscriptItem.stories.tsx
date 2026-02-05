@@ -110,12 +110,6 @@ const mockJapaneseContentItemWithReview: FormattedTranscriptTypes = {
   },
 };
 
-// Minimal variant - different time only
-const mockJapaneseWeekly: FormattedTranscriptTypes = {
-  ...baseMockContentItem,
-  time: 2,
-};
-
 // Mock Provider wrapper component
 interface MockTranscriptItemWrapperProps {
   contentItem: FormattedTranscriptTypes;
@@ -232,15 +226,6 @@ export const InReviewMode: Story = {
     contentItem: mockJapaneseContentItemWithReview,
     isInReviewMode: true,
   },
-};
-
-export const MultipleTranscriptItems: Story = {
-  render: () => (
-    <div className='space-y-4'>
-      <MockTranscriptItemWrapper contentItem={mockJapaneseContentItem} />
-      <MockTranscriptItemWrapper contentItem={mockJapaneseWeekly} />
-    </div>
-  ),
 };
 
 export const Interactive: Story = {
