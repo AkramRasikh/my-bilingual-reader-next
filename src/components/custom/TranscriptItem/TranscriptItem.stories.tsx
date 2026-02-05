@@ -32,6 +32,56 @@ const mockHatsugenWord: WordTypes = {
   time: 56,
 };
 
+const mockYataiRegionWord: WordTypes = {
+  id: 'word-yatai-region-001',
+  baseForm: '亚太地区',
+  surfaceForm: '亚太地区',
+  definition: 'Asia-Pacific region',
+  phonetic: 'yatai diqu',
+  transliteration: 'yatai diqu',
+  contexts: ['8db44c79-9f0d-41ce-bfe1-6d8ab9d7e312'],
+  originalContext:
+    '台湾的地缘政治问题涉及中国对主权的主张、美国对台湾的支持，以及亚太地区权力平衡的复杂互动。',
+  isDue: false,
+  reviewData: {
+    due: new Date('2027-01-01'),
+    stability: 1,
+    difficulty: 5,
+    elapsed_days: 0,
+    scheduled_days: 1,
+    reps: 1,
+    lapses: 0,
+    state: State.New,
+    last_review: new Date('2026-01-15'),
+  },
+  time: 12,
+};
+
+const mockTadakhulatWord: WordTypes = {
+  id: 'word-tadakhulat-001',
+  baseForm: 'التدخلات',
+  surfaceForm: 'التدخلات',
+  definition: 'interventions',
+  phonetic: 'al-tadakhulat',
+  transliteration: 'al-tadakhulat',
+  contexts: ['f2e0f5e6-9fb1-4d5e-8a4d-6d29b6df1a2c'],
+  originalContext:
+    'الحرب في السودان أصبحت أكثر تعقيدًا بسبب التدخلات الإقليمية، بما في ذلك الدور المثير للجدل الذي تُتهم به الإمارات.',
+  isDue: false,
+  reviewData: {
+    due: new Date('2027-01-01'),
+    stability: 1,
+    difficulty: 5,
+    elapsed_days: 0,
+    scheduled_days: 1,
+    reps: 1,
+    lapses: 0,
+    state: State.New,
+    last_review: new Date('2026-01-15'),
+  },
+  time: 18,
+};
+
 // Base mock object with common properties
 const baseMockContentItem: FormattedTranscriptTypes = {
   id: '24f261a8-03c0-43ae-b6aa-6a28c81d4954',
@@ -136,6 +186,146 @@ const mockJapaneseContentItemWithReview: FormattedTranscriptTypes = {
   },
 };
 
+const mockChineseContentItem: FormattedTranscriptTypes = {
+  id: '8db44c79-9f0d-41ce-bfe1-6d8ab9d7e312',
+  baseLang:
+    'Taiwan’s geopolitical issue involves China’s claims of sovereignty, the United States’ support for Taiwan, and the complex interactions shaping the balance of power in the Asia-Pacific region.',
+  targetLang:
+    '台湾的地缘政治问题涉及中国对主权的主张、美国对台湾的支持，以及亚太地区权力平衡的复杂互动。',
+  time: 12,
+  isDue: false,
+  meaning:
+    'Taiwan’s geopolitical issue involves China’s claims of sovereignty, the United States’ support for Taiwan, and the complex interactions shaping the balance of power in the Asia-Pacific region.',
+  sentenceStructure:
+    '台湾的 (Taiwan’s) + 地缘政治问题 (geopolitical issue) + 涉及 (involves) + 中国对主权的主张 (China’s claims of sovereignty) + 、 (comma) + 美国对台湾的支持 (the United States’ support for Taiwan) + ， (comma) + 以及 (and) + 亚太地区 (Asia-Pacific region) + 权力平衡 (balance of power) + 的 (of) + 复杂互动 (complex interactions) + 。 (period)',
+  vocab: [
+    {
+      meaning: 'Taiwan’s',
+      surfaceForm: '台湾的',
+    },
+    {
+      meaning: 'geopolitical issue',
+      surfaceForm: '地缘政治问题',
+    },
+    {
+      meaning: 'involves',
+      surfaceForm: '涉及',
+    },
+    {
+      meaning: 'China’s claims of sovereignty',
+      surfaceForm: '中国对主权的主张',
+    },
+    {
+      meaning: 'the United States’ support for Taiwan',
+      surfaceForm: '美国对台湾的支持',
+    },
+    {
+      meaning: 'Asia-Pacific region',
+      surfaceForm: '亚太地区',
+    },
+    {
+      meaning: 'balance of power',
+      surfaceForm: '权力平衡',
+    },
+    {
+      meaning: 'complex interactions',
+      surfaceForm: '复杂互动',
+    },
+  ],
+  targetLangformatted: underlineWordsInSentence(
+    '台湾的地缘政治问题涉及中国对主权的主张、美国对台湾的支持，以及亚太地区权力平衡的复杂互动。',
+    [mockYataiRegionWord],
+  ),
+  wordsFromSentence: [mockYataiRegionWord],
+  helperReviewSentence: false,
+};
+
+const mockArabicContentItem: FormattedTranscriptTypes = {
+  id: 'f2e0f5e6-9fb1-4d5e-8a4d-6d29b6df1a2c',
+  baseLang:
+    'The war in Sudan has become more complex due to regional interventions, including the controversial role that the UAE is accused of playing.',
+  targetLang:
+    'الحرب في السودان أصبحت أكثر تعقيدًا بسبب التدخلات الإقليمية، بما في ذلك الدور المثير للجدل الذي تُتهم به الإمارات.',
+  time: 18,
+  isDue: false,
+  meaning:
+    'The war in Sudan has become more complex due to regional interventions, including the controversial role that the UAE is accused of playing.',
+  sentenceStructure:
+    'الحرب (the war) + في (in) + السودان (Sudan) + أصبحت (has become) + أكثر (more) + تعقيدًا (complex) + بسبب (due to) + التدخلات (interventions) + الإقليمية (regional) + ، (comma) + بما في ذلك (including) + الدور (the role) + المثير (controversial) + للجدل (debated) + الذي (that) + تُتهم (is accused) + به (of) + الإمارات (the UAE) + 。 (period)',
+  vocab: [
+    {
+      meaning: 'the war',
+      surfaceForm: 'الحرب',
+    },
+    {
+      meaning: 'in',
+      surfaceForm: 'في',
+    },
+    {
+      meaning: 'Sudan',
+      surfaceForm: 'السودان',
+    },
+    {
+      meaning: 'has become',
+      surfaceForm: 'أصبحت',
+    },
+    {
+      meaning: 'more',
+      surfaceForm: 'أكثر',
+    },
+    {
+      meaning: 'complex',
+      surfaceForm: 'تعقيدًا',
+    },
+    {
+      meaning: 'due to',
+      surfaceForm: 'بسبب',
+    },
+    {
+      meaning: 'interventions',
+      surfaceForm: 'التدخلات',
+    },
+    {
+      meaning: 'regional',
+      surfaceForm: 'الإقليمية',
+    },
+    {
+      meaning: 'including',
+      surfaceForm: 'بما في ذلك',
+    },
+    {
+      meaning: 'the role',
+      surfaceForm: 'الدور',
+    },
+    {
+      meaning: 'controversial',
+      surfaceForm: 'المثير للجدل',
+    },
+    {
+      meaning: 'that',
+      surfaceForm: 'الذي',
+    },
+    {
+      meaning: 'is accused',
+      surfaceForm: 'تُتهم',
+    },
+    {
+      meaning: 'of',
+      surfaceForm: 'به',
+    },
+    {
+      meaning: 'the UAE',
+      surfaceForm: 'الإمارات',
+    },
+  ],
+  targetLangformatted: underlineWordsInSentence(
+    'الحرب في السودان أصبحت أكثر تعقيدًا بسبب التدخلات الإقليمية، بما في ذلك الدور المثير للجدل الذي تُتهم به الإمارات.',
+    [mockTadakhulatWord],
+  ),
+  wordsFromSentence: [mockTadakhulatWord],
+  helperReviewSentence: false,
+};
+
 // Mock Provider wrapper component
 interface MockTranscriptItemWrapperProps {
   contentItem: FormattedTranscriptTypes;
@@ -146,6 +336,7 @@ interface MockTranscriptItemWrapperProps {
   loopTranscriptState?: FormattedTranscriptTypes[];
   isBreakingDownSentenceArrState?: string[];
   masterPlay?: string | null;
+  languageSelectedState?: string;
 }
 
 const MockTranscriptItemWrapper = ({
@@ -157,6 +348,7 @@ const MockTranscriptItemWrapper = ({
   loopTranscriptState = [],
   isBreakingDownSentenceArrState = [],
   masterPlay = null,
+  languageSelectedState = 'Japanese',
 }: MockTranscriptItemWrapperProps) => {
   const mockProviderProps = {
     threeSecondLoopState: null,
@@ -193,7 +385,7 @@ const MockTranscriptItemWrapper = ({
     isBreakingDownSentenceArrState,
     scrollToElState: null,
     wordsForSelectedTopic: [],
-    languageSelectedState: 'Japanese',
+    languageSelectedState,
     indexNum: 0,
     isComprehensiveMode: false,
     savedSnippetsMemoized: savedSnippets,
@@ -252,6 +444,22 @@ export const InReviewMode: Story = {
   args: {
     contentItem: mockJapaneseContentItemWithReview,
     isInReviewMode: true,
+  },
+};
+
+export const Chinese: Story = {
+  args: {
+    contentItem: mockChineseContentItem,
+    wordsState: [mockYataiRegionWord],
+    languageSelectedState: 'Chinese',
+  },
+};
+
+export const Arabic: Story = {
+  args: {
+    contentItem: mockArabicContentItem,
+    wordsState: [mockTadakhulatWord],
+    languageSelectedState: 'Arabic',
   },
 };
 
