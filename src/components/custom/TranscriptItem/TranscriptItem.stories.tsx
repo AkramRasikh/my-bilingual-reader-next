@@ -118,6 +118,7 @@ interface MockTranscriptItemWrapperProps {
   savedSnippets?: Snippet[];
   wordsState?: WordTypes[];
   loopTranscriptState?: FormattedTranscriptTypes[];
+  isBreakingDownSentenceArrState?: string[];
 }
 
 const MockTranscriptItemWrapper = ({
@@ -127,6 +128,7 @@ const MockTranscriptItemWrapper = ({
   savedSnippets = [],
   wordsState = [],
   loopTranscriptState = [],
+  isBreakingDownSentenceArrState = [],
 }: MockTranscriptItemWrapperProps) => {
   const mockProviderProps = {
     threeSecondLoopState: null,
@@ -160,7 +162,7 @@ const MockTranscriptItemWrapper = ({
     handleBreakdownSentence: async () => {
       console.log('Breakdown sentence');
     },
-    isBreakingDownSentenceArrState: [],
+    isBreakingDownSentenceArrState,
     scrollToElState: null,
     wordsForSelectedTopic: [],
     languageSelectedState: 'Japanese',
@@ -224,13 +226,6 @@ export const InReviewMode: Story = {
   },
 };
 
-export const WithLooping: Story = {
-  args: {
-    contentItem: mockJapaneseContentItem,
-    loopTranscriptState: [mockJapaneseContentItem],
-  },
-};
-
 export const MultipleTranscriptItems: Story = {
   render: () => (
     <div className='space-y-4'>
@@ -238,4 +233,94 @@ export const MultipleTranscriptItems: Story = {
       <MockTranscriptItemWrapper contentItem={mockJapaneseWeekly} />
     </div>
   ),
+};
+
+export const Interactive: Story = {
+  args: {
+    isInReviewMode: false,
+    isVideoPlaying: false,
+    isLooping: false,
+    isBreakingDown: false,
+    contentItem: mockJapaneseContentItem,
+  },
+  argTypes: {
+    isInReviewMode: {
+      control: 'boolean',
+      description: 'Toggle review mode',
+    },
+    isVideoPlaying: {
+      control: 'boolean',
+      description: 'Toggle video playing state',
+    },
+    isLooping: {
+      control: 'boolean',
+      description: 'Toggle sentence looping',
+    },
+    isBreakingDown: {
+      control: 'boolean',
+      description: 'Toggle sentence breakdown loading state',
+    },
+    loopTranscriptState: {
+      table: { disable: true },
+    },
+    isBreakingDownSentenceArrState: {
+      table: { disable: true },
+    },
+  },
+  render: (args) => {
+    // Map boolean toggles to actual array values
+    const loopTranscriptState = args.isLooping ? [args.contentItem] : [];
+    const isBreakingDownSentenceArrState = args.isBreakingDown
+      ? [args.contentItem.id]
+      : [];
+
+    return (
+      <div className='space-y-4'>
+        <div className='p-4 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700'>
+          <h3 className='font-bold mb-3 text-lg'>Current State</h3>
+          <div className='grid grid-cols-2 gap-2 text-sm'>
+            <div className='flex items-center gap-2'>
+              <span
+                className={`w-3 h-3 rounded-full ${
+                  args.isInReviewMode ? 'bg-green-500' : 'bg-gray-400'
+                }`}
+              />
+              <span>Review Mode</span>
+            </div>
+            <div className='flex items-center gap-2'>
+              <span
+                className={`w-3 h-3 rounded-full ${
+                  args.isVideoPlaying ? 'bg-green-500' : 'bg-gray-400'
+                }`}
+              />
+              <span>Video Playing</span>
+            </div>
+            <div className='flex items-center gap-2'>
+              <span
+                className={`w-3 h-3 rounded-full ${
+                  args.isLooping ? 'bg-green-500' : 'bg-gray-400'
+                }`}
+              />
+              <span>Looping</span>
+            </div>
+            <div className='flex items-center gap-2'>
+              <span
+                className={`w-3 h-3 rounded-full ${
+                  args.isBreakingDown
+                    ? 'bg-yellow-500 animate-pulse'
+                    : 'bg-gray-400'
+                }`}
+              />
+              <span>Breaking Down</span>
+            </div>
+          </div>
+        </div>
+        <MockTranscriptItemWrapper
+          {...args}
+          loopTranscriptState={loopTranscriptState}
+          isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+        />
+      </div>
+    );
+  },
 };
