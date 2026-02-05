@@ -116,6 +116,7 @@ const LearningScreenLeftSideContainer = () => {
           isBreakdownSentenceLoadingState={isBreakingDownSentenceArrState.includes(
             masterPlayComprehensive.id,
           )}
+          languageSelectedState={languageSelectedState}
         />
       )}
       <KeyListener />

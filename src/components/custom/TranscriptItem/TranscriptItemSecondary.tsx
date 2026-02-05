@@ -10,6 +10,7 @@ const TranscriptItemSecondary = ({
   contentItem,
   handleSaveWord,
   isBreakdownSentenceLoadingState,
+  languageSelectedState,
 }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const [isLoadingState, setIsLoadingState] = useState(false);
@@ -108,6 +109,7 @@ const TranscriptItemSecondary = ({
               sentenceStructure={contentItem.sentenceStructure}
               handleSaveFunc={handleSaveFunc}
               thisSentencesSavedWords={wordsFromSentence}
+              languageSelectedState={languageSelectedState}
             />
           </>
         )}
