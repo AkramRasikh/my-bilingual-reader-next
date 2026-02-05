@@ -451,7 +451,7 @@ export const Chinese: Story = {
   args: {
     contentItem: mockChineseContentItem,
     wordsState: [mockYataiRegionWord],
-    languageSelectedState: 'Chinese',
+    languageSelectedState: 'chinese',
   },
 };
 
@@ -459,7 +459,7 @@ export const Arabic: Story = {
   args: {
     contentItem: mockArabicContentItem,
     wordsState: [mockTadakhulatWord],
-    languageSelectedState: 'Arabic',
+    languageSelectedState: 'arabic',
   },
 };
 
