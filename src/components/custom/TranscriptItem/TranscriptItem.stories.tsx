@@ -4,7 +4,7 @@ import { TranscriptItemProvider } from './TranscriptItemProvider';
 import { FormattedTranscriptTypes, Snippet } from '@/app/types/content-types';
 import { WordTypes } from '@/app/types/word-types';
 import { OverlappingSnippetData } from '@/app/types/shared-types';
-import { underlineWordsInSentenceLegacy } from '@/utils/sentence-formatting/underline-words-in-sentences';
+import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
 
 // Base mock object with common properties
 const baseMockContentItem: FormattedTranscriptTypes = {
@@ -15,7 +15,7 @@ const baseMockContentItem: FormattedTranscriptTypes = {
     'この発言がですね従来の政府見解を大きく乗り越えるものだということでですね',
   time: 56,
   isDue: false,
-  targetLangformatted: underlineWordsInSentenceLegacy(
+  targetLangformatted: underlineWordsInSentence(
     'この発言がですね従来の政府見解を大きく乗り越えるものだということでですね',
     [],
   ),
