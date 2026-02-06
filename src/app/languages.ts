@@ -6,6 +6,7 @@ export enum LanguageEnum {
   Chinese = 'chinese',
   Japanese = 'japanese',
   Arabic = 'arabic',
+  French = 'french',
   None = '',
 }
 

@@ -4,83 +4,30 @@ import type { ReactNode } from 'react';
 import { LearningScreenProvider } from './LearningScreenProvider';
 import LearningScreenKeyListener from './LearningScreenKeyListener';
 import useLearningScreen from './useLearningScreen';
-import { FetchDataContext, FetchDataContextTypes } from '../Providers/FetchDataProvider';
-import { LanguageEnum } from '../languages';
+import { FetchDataContext } from '../Providers/FetchDataProvider';
 import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 import getBiggestOverlap from '@/components/custom/TranscriptItem/get-biggest-overlap';
 import { useFetchData } from '../Providers/FetchDataProvider';
-import { ContentTypes } from '../types/content-types';
+import {
+  buildMockFetchContextArabic,
+  buildMockFetchContextChinese,
+  buildMockFetchContextFrench,
+  buildMockFetchContextJapanese,
+  mockSelectedContentArabic,
+  mockSelectedContentChinese,
+  mockSelectedContentFrench,
+  mockSelectedContentJapanese,
+} from './LearningScreen.stories.mocks';
 
-const mockSelectedContent: ContentTypes & { contentIndex: number } = {
-  id: 'content-story-001',
-  title: 'Learning Screen Story',
-  contentIndex: 0,
-  createdAt: new Date('2026-01-01'),
-  hasAudio: true,
-  url: 'https://example.com/story',
-  content: [
-    {
-      id: 'sentence-1',
-      baseLang: 'Hello world',
-      targetLang: 'こんにちは世界',
-      time: 0,
-    },
-    {
-      id: 'sentence-2',
-      baseLang: 'How are you?',
-      targetLang: 'お元気ですか？',
-      time: 4,
-    },
-    {
-      id: 'sentence-3',
-      baseLang: 'Nice to meet you.',
-      targetLang: 'はじめまして。',
-      time: 8,
-    },
-    {
-      id: 'sentence-4',
-      baseLang: 'See you later, friend!',
-      targetLang: 'またね、友達！',
-      time: 12,
-    },
-  ],
-  snippets: [],
-};
-
-const mockFetchContextValue: FetchDataContextTypes = {
-  languageSelectedState: LanguageEnum.Japanese,
-  setLanguageSelectedState: () => {},
-  pureWordsMemoized: [],
-  contentState: [mockSelectedContent],
-  sentencesState: [],
-  wordsState: [],
-  hasFetchedDataState: true,
-  dispatchSentences: () => {},
-  dispatchContent: () => {},
-  dispatchWords: () => {},
-  wordsForReviewMemoized: [],
-  sentencesDueForReviewMemoized: [],
-  breakdownSentence: async () => {},
-  sentenceReviewBulk: async () => {},
-  updateContentMetaData: () => {},
-  toastMessageState: '',
-  setToastMessageState: () => {},
-  handleSaveWord: async () => {},
-  handleDeleteWordDataProvider: async () => true,
-  updateWordDataProvider: () => {},
-  updateSentenceData: () => false,
-  wordsToReviewOnMountState: 0,
-  addImageDataProvider: () => {},
-  wordsToReviewGivenOriginalContextId: {},
-  deleteContent: () => {},
-  deleteVideo: async () => false,
-  handleSaveSnippetFetchProvider: async () => {},
-  handleDeleteSnippetFetchProvider: async () => {},
-};
-
-const MockFetchProvider = ({ children }: { children: ReactNode }) => (
-  <FetchDataContext.Provider value={mockFetchContextValue}>
+const MockFetchProvider = ({
+  children,
+  fetchContextValue,
+}: {
+  children: ReactNode;
+  fetchContextValue: ReturnType<typeof buildMockFetchContext>;
+}) => (
+  <FetchDataContext.Provider value={fetchContextValue}>
     {children}
   </FetchDataContext.Provider>
 );
@@ -247,9 +194,15 @@ const LearningScreenTranscriptHarness = () => {
   );
 };
 
-const LearningScreenStoryRoot = () => (
-  <MockFetchProvider>
-    <LearningScreenProvider selectedContentStateMemoized={mockSelectedContent}>
+const LearningScreenStoryRoot = ({
+  selectedContent,
+  fetchContextValue,
+}: {
+  selectedContent: typeof mockSelectedContentJapanese;
+  fetchContextValue: ReturnType<typeof buildMockFetchContext>;
+}) => (
+  <MockFetchProvider fetchContextValue={fetchContextValue}>
+    <LearningScreenProvider selectedContentStateMemoized={selectedContent}>
       <div className='p-4 space-y-4'>
         <LearningScreenKeyListener />
         <MockMediaElement />
@@ -259,9 +212,41 @@ const LearningScreenStoryRoot = () => (
   </MockFetchProvider>
 );
 
+const LearningScreenStoryRootJapanese = () => (
+  <LearningScreenStoryRoot
+    selectedContent={mockSelectedContentJapanese}
+    fetchContextValue={buildMockFetchContextJapanese(
+      mockSelectedContentJapanese,
+    )}
+  />
+);
+
+const LearningScreenStoryRootArabic = () => (
+  <LearningScreenStoryRoot
+    selectedContent={mockSelectedContentArabic}
+    fetchContextValue={buildMockFetchContextArabic(mockSelectedContentArabic)}
+  />
+);
+
+const LearningScreenStoryRootChinese = () => (
+  <LearningScreenStoryRoot
+    selectedContent={mockSelectedContentChinese}
+    fetchContextValue={buildMockFetchContextChinese(
+      mockSelectedContentChinese,
+    )}
+  />
+);
+
+const LearningScreenStoryRootFrench = () => (
+  <LearningScreenStoryRoot
+    selectedContent={mockSelectedContentFrench}
+    fetchContextValue={buildMockFetchContextFrench(mockSelectedContentFrench)}
+  />
+);
+
 const meta = {
   title: 'LearningScreen/LearningScreen',
-  component: LearningScreenStoryRoot,
+  component: LearningScreenStoryRootJapanese,
   parameters: {
     layout: 'padded',
   },
@@ -273,5 +258,17 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Minimal: Story = {
-  render: () => <LearningScreenStoryRoot />,
+  render: () => <LearningScreenStoryRootJapanese />,
+};
+
+export const MinimalArabic: Story = {
+  render: () => <LearningScreenStoryRootArabic />,
+};
+
+export const MinimalChinese: Story = {
+  render: () => <LearningScreenStoryRootChinese />,
+};
+
+export const MinimalFrench: Story = {
+  render: () => <LearningScreenStoryRootFrench />,
 };

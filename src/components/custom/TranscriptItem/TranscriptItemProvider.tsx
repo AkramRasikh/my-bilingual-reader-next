@@ -214,7 +214,7 @@ export const TranscriptItemProvider = ({
     if (!isArabic) {
       return '';
     }
-    if (!highlightedTextState) {
+    if (!highlightedTextState || !transliteration) {
       return '';
     }
 
@@ -452,7 +452,6 @@ export const TranscriptItemProvider = ({
         handleReviewTranscriptItem,
         handleBreakdownSentence,
         isBreakdownSentenceLoadingState: breakdownMasterState,
-        setIsBreakdownSentenceLoadingState,
         handleBreakdownSentenceTranscriptItem,
         overrideMiniReviewState,
         setOverrideMiniReviewState,
