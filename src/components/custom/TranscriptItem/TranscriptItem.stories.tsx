@@ -15,6 +15,7 @@ import {
   mockJapaneseContentItemWithReview,
   mockLiberaleEconomieWord,
   mockOverlappingSnippetData,
+  mockOverlappingSnippetDataArabic,
   mockTadakhulatWord,
   mockYataiRegionWord,
 } from './TranscriptItem.mocks';
@@ -348,5 +349,15 @@ export const WithActiveOverlappingSnippetData: Story = {
     wordsState: [mockHatsugenWord],
     overlappingSnippetDataState: mockOverlappingSnippetData,
     threeSecondLoopState: 52.5, // as long as its not null the number is not important for this story
+  },
+};
+
+export const WithActiveOverlappingSnippetDataArabic: Story = {
+  args: {
+    contentItem: mockArabicContentItem,
+    wordsState: [mockTadakhulatWord],
+    overlappingSnippetDataState: mockOverlappingSnippetDataArabic,
+    threeSecondLoopState: 12.5,
+    languageSelectedState: 'arabic',
   },
 };

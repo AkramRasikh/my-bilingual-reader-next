@@ -2,17 +2,21 @@ import { OverlappingSnippetData } from '@/app/types/shared-types';
 
 interface TranscriptItemTimeOverlappingIndicatorProps {
   thisSnippetOverlapMemoized: OverlappingSnippetData;
+  isArabic?: boolean;
 }
 
 const TranscriptItemTimeOverlappingIndicator = ({
   thisSnippetOverlapMemoized,
+  isArabic = false,
 }: TranscriptItemTimeOverlappingIndicatorProps) => (
   <div className='relative h-1' data-testid='transcript-time-overlap-indicator'>
     <div
       className='absolute bg-red-500 opacity-50 rounded'
       style={{
         width: `${thisSnippetOverlapMemoized.percentageOverlap}%`,
-        left: `${thisSnippetOverlapMemoized.startPoint}%`,
+        ...(isArabic
+          ? { right: `${thisSnippetOverlapMemoized.startPoint}%` }
+          : { left: `${thisSnippetOverlapMemoized.startPoint}%` }),
         height: '100%',
       }}
     />

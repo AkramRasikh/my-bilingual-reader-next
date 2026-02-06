@@ -8,6 +8,7 @@ import TranscriptItemActionBar from './TranscriptItemActionBar';
 import TranscriptItemContent from './TranscriptItemContent';
 import TranscriptItemLoopingSentence from './TranscriptItemLoopingSentence';
 import TranscriptItemTimeOverlappingIndicatorMulti from './TranscriptItemTimeOverlappingIndicatorMulti';
+import { arabic } from '@/app/languages';
 
 const TranscriptItem = () => {
   const {
@@ -23,9 +24,11 @@ const TranscriptItem = () => {
     biggestOverlappedSnippet,
     overlappingTextMemoized,
     snippetLoadingState,
+    languageSelectedState,
   } = useTranscriptItem();
 
   const thisIsOverlapping = biggestOverlappedSnippet === contentItem.id;
+  const isArabic = languageSelectedState === arabic;
 
   return (
     <TranscriptItemWrapper>
@@ -37,6 +40,7 @@ const TranscriptItem = () => {
       {thisSnippetOverlapMemoized && (
         <TranscriptItemTimeOverlappingIndicator
           thisSnippetOverlapMemoized={thisSnippetOverlapMemoized}
+          isArabic={isArabic}
         />
       )}
 

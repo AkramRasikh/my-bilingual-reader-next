@@ -441,3 +441,11 @@ export const mockOverlappingSnippetData = [
     // overlappedSeconds: [],
   },
 ];
+
+export const mockOverlappingSnippetDataArabic = [
+  {
+    id: mockArabicContentItem.id,
+    percentageOverlap: 30,
+    startPoint: 8,
+  },
+];
