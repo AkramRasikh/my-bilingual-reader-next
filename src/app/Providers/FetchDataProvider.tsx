@@ -166,8 +166,7 @@ export interface FetchDataContextTypes {
   ) => Promise<void>;
 }
 
-const FetchDataContext = createContext<FetchDataContextTypes>({
-  updateAdhocSentenceData: () => {},
+export const FetchDataContext = createContext<FetchDataContextTypes>({
   handleSaveWord: () => {},
   updateWordDataProvider: () => {},
   updateSentenceData: () => {},
