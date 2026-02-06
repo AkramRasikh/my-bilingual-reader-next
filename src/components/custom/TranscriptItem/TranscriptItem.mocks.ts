@@ -428,3 +428,16 @@ export const mockFrenchContentItem: FormattedTranscriptTypes = {
   wordsFromSentence: [mockLiberaleEconomieWord],
   helperReviewSentence: false,
 };
+
+export const mockOverlappingSnippetData = [
+  {
+    id: mockJapaneseContentItem.id,
+    percentageOverlap: 30,
+    startPoint: 20,
+    // start: 56, //
+    // end: 59, // these two arent needed at the transcript item level as the contentItem already has the time
+    // targetLang: mockJapaneseContentItem.targetLang,
+    // sentenceSeconds: [],
+    // overlappedSeconds: [],
+  },
+];

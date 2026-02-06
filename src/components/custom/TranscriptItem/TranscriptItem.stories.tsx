@@ -14,6 +14,7 @@ import {
   mockJapaneseContentItemWithBreakdown,
   mockJapaneseContentItemWithReview,
   mockLiberaleEconomieWord,
+  mockOverlappingSnippetData,
   mockTadakhulatWord,
   mockYataiRegionWord,
 } from './TranscriptItem.mocks';
@@ -29,6 +30,8 @@ interface MockTranscriptItemWrapperProps {
   isBreakingDownSentenceArrState?: string[];
   masterPlay?: string | null;
   languageSelectedState?: string;
+  overlappingSnippetDataState?: OverlappingSnippetData[];
+  threeSecondLoopState?: number | null;
 }
 
 const MockTranscriptItemWrapper = ({
@@ -41,10 +44,12 @@ const MockTranscriptItemWrapper = ({
   isBreakingDownSentenceArrState = [],
   masterPlay = null,
   languageSelectedState = 'Japanese',
+  overlappingSnippetDataState = [],
+  threeSecondLoopState = null,
 }: MockTranscriptItemWrapperProps) => {
   const mockProviderProps = {
-    threeSecondLoopState: null,
-    overlappingSnippetDataState: [] as OverlappingSnippetData[],
+    threeSecondLoopState,
+    overlappingSnippetDataState,
     contentItem,
     loopTranscriptState,
     masterPlay,
@@ -334,5 +339,14 @@ export const Interactive: Story = {
         />
       </div>
     );
+  },
+};
+
+export const WithOverlappingSnippetData: Story = {
+  args: {
+    contentItem: mockJapaneseContentItem,
+    wordsState: [mockHatsugenWord],
+    overlappingSnippetDataState: mockOverlappingSnippetData,
+    threeSecondLoopState: 52.5, // as long as its not null the number is not important for this story
   },
 };
