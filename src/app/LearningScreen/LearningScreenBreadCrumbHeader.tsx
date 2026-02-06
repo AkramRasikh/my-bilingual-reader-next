@@ -31,7 +31,7 @@ const LearningScreenBreadCrumbHeader = () => {
   const progressText = `${completedItems}/${totalItems}`;
 
   const numberOfSentences = sentencesDueForReviewMemoized.length;
-  const generalTopicName = selectedContentState.title;
+  const title = selectedContentState.title;
 
   const firstHeader = 'Home';
 
@@ -65,7 +65,7 @@ const LearningScreenBreadCrumbHeader = () => {
       <BreadCrumbHeaderBase
         heading={firstHeader}
         onClick={handleOnHome}
-        subHeading={generalTopicName}
+        subHeading={title}
         navigationButtons={() =>
           buttonsArr.map((item, index) => {
             return (

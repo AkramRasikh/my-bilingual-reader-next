@@ -38,7 +38,6 @@ export async function POST(req: Request) {
           return {
             ...contentWidget,
             contentIndex,
-            generalTopicName: contentWidget.title,
             snippets: contentWidget.snippets
               ? Object.values(contentWidget.snippets)
               : undefined,

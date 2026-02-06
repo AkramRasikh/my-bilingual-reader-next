@@ -57,7 +57,6 @@ export async function setupApiMocks(page: Page) {
             return {
               ...contentWidget,
               contentIndex,
-              generalTopicName: contentWidget.title,
             };
           },
         ),
@@ -242,7 +241,6 @@ export const mockGetOnLoadDataE2E = async (page: Page) => {
             return {
               ...contentWidget,
               contentIndex,
-              generalTopicName: contentWidget.title,
             };
           },
         ),

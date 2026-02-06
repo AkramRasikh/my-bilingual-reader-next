@@ -6,7 +6,6 @@ import {
 
 export interface ContentStateTypes extends ContentTypes {
   contentIndex: number;
-  generalTopicName: string;
 }
 
 export type ContentAction =
@@ -135,7 +134,6 @@ export function contentReducer(
         ...state,
         {
           ...newContentData,
-          generalTopicName: newContentData.title,
           contentIndex: newContentIndex,
         },
       ];
