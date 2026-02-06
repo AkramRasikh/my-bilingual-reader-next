@@ -49,6 +49,16 @@ const getDpadState = (axes: readonly number[]) => {
   };
 };
 
+const dispatchSnippetLoopEvent = (
+  name:
+    | 'snippet-loop-adjust-length'
+    | 'snippet-loop-shift-start'
+    | 'snippet-loop-save',
+  detail: { delta?: number } = {},
+) => {
+  window.dispatchEvent(new CustomEvent(name, { detail }));
+};
+
 export function useGamepad(
   dispatch: (action: InputAction) => void,
   threeSecondLoopState: number | null,
@@ -334,6 +344,18 @@ export function useGamepad(
 
           // Check for L+X combo (both pressed simultaneously)
           if (
+            threeSecondLoopState &&
+            lButtonHeldRef.current &&
+            xButtonHeldRef.current &&
+            !lxComboFiredRef.current
+          ) {
+            console.log(
+              '## ✅ L + X combo detected - triggering snippet-loop-save',
+            );
+            dispatchSnippetLoopEvent('snippet-loop-save');
+            lxComboFiredRef.current = true;
+          } else if (
+            !threeSecondLoopState &&
             lButtonHeldRef.current &&
             xButtonHeldRef.current &&
             !lxComboFiredRef.current
@@ -355,6 +377,7 @@ export function useGamepad(
 
           // Check for L+B combo (both pressed simultaneously)
           if (
+            !threeSecondLoopState &&
             lButtonHeldRef.current &&
             bButtonHeldRef.current &&
             !lbComboFiredRef.current
@@ -376,6 +399,7 @@ export function useGamepad(
 
           // Check for L+A combo (both pressed simultaneously)
           if (
+            !threeSecondLoopState &&
             lButtonHeldRef.current &&
             aButtonHeldRef.current &&
             !laComboFiredRef.current
@@ -398,6 +422,37 @@ export function useGamepad(
           if (button.pressed && !pressedRef.current[index]) {
             console.log(`## 🎮 Button ${index} pressed`);
             pressedRef.current[index] = true;
+
+            if (threeSecondLoopState) {
+              if (index === BUTTONS.Y_BTN) {
+                if (lButtonHeldRef.current) {
+                  dispatchSnippetLoopEvent('snippet-loop-adjust-length', {
+                    delta: -1,
+                  });
+                } else {
+                  dispatchSnippetLoopEvent('snippet-loop-shift-start', {
+                    delta: -1,
+                  });
+                }
+                return;
+              }
+              if (index === BUTTONS.A_BTN) {
+                if (lButtonHeldRef.current) {
+                  dispatchSnippetLoopEvent('snippet-loop-adjust-length', {
+                    delta: 1,
+                  });
+                } else {
+                  dispatchSnippetLoopEvent('snippet-loop-shift-start', {
+                    delta: 1,
+                  });
+                }
+                return;
+              }
+              if (index === BUTTONS.B_BTN && lButtonHeldRef.current) {
+                dispatchSnippetLoopEvent('snippet-loop-save');
+                return;
+              }
+            }
 
             // Map buttons to actions
             // Trigger on CHECKER button
