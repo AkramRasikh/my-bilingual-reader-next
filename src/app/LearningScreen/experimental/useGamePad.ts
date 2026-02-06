@@ -2,6 +2,53 @@
 import { useEffect, useRef } from 'react';
 import { InputAction } from './useInputActions';
 
+const BUTTONS = {
+  L1_BTN: 6,
+  L2_BTN: 8,
+  R1_BTN: 7,
+  R2_BTN: 9,
+  MINUS_BTN: 10,
+  PLUS_BTN: 11,
+  CHECKER_BTN: 12,
+  Y_BTN: 4,
+  X_BTN: 3,
+  B_BTN: 1,
+  A_BTN: 0,
+} as const;
+
+const getDpadState = (axes: readonly number[]) => {
+  // Common D-pad axes: vertical 7/9/1, horizontal 6/8/0
+  const axis7 = axes[7] || 0;
+  const axis9 = axes[9] || 0;
+  const axis1 = axes[1] || 0;
+  const axis6 = axes[6] || 0;
+  const axis8 = axes[8] || 0;
+  const axis0 = axes[0] || 0;
+
+  const up = axis7 < -0.5 || axis1 < -0.5;
+  const down = axis7 > 0.5 || axis1 > 0.5;
+  const right = axis6 > 0.5 || axis8 > 0.5 || axis0 > 0.5;
+  const left = axis6 < -0.5 || axis8 < -0.5 || axis0 < -0.5;
+
+  const upAxis = axis7 < -0.5 ? 7 : axis9 < -0.5 ? 9 : 1;
+  const downAxis = axis7 > 0.5 ? 7 : axis9 > 0.5 ? 9 : 1;
+  const rightAxis = axis6 > 0.5 ? 6 : axis8 > 0.5 ? 8 : 0;
+  const leftAxis = axis6 < -0.5 ? 6 : axis8 < -0.5 ? 8 : 0;
+
+  return {
+    up,
+    down,
+    left,
+    right,
+    axis: {
+      up: upAxis,
+      down: downAxis,
+      left: leftAxis,
+      right: rightAxis,
+    },
+  };
+};
+
 export function useGamepad(
   dispatch: (action: InputAction) => void,
   threeSecondLoopState: number | null,
@@ -11,7 +58,7 @@ export function useGamepad(
   const gamepadConnectedRef = useRef(false);
   const debugLoggedRef = useRef(false);
   const loopCountRef = useRef(0);
-  const lButtonHeldRef = useRef(false); // L button (button 6)
+  const lButtonHeldRef = useRef(false);
   const rButtonHeldRef = useRef(false);
   const lrComboFiredRef = useRef(false);
   const xButtonHeldRef = useRef(false);
@@ -20,9 +67,8 @@ export function useGamepad(
   const lbComboFiredRef = useRef(false);
   const aButtonHeldRef = useRef(false);
   const laComboFiredRef = useRef(false);
-  const button10HeldRef = useRef(false);
-  const button11HeldRef = useRef(false);
-  const button10_11ComboFiredRef = useRef(false);
+  const minusButtonHeldRef = useRef(false);
+  const plusButtonHeldRef = useRef(false);
 
   useEffect(() => {
     if (!navigator.getGamepads) {
@@ -100,39 +146,22 @@ export function useGamepad(
           }
         }
 
-        // Check D-pad via axes - 8BitDo Micro typically uses different axes
-        // Try common D-pad vertical axes: 7, 9, or 1 (-1 = up, +1 = down)
-        const axis7 = gp.axes[7] || 0;
-        const axis9 = gp.axes[9] || 0;
-        const axis1 = gp.axes[1] || 0;
-
-        // Try common D-pad horizontal axes: 6, 8, or 0 (-1 = left, +1 = right)
-        const axis6 = gp.axes[6] || 0;
-        const axis8 = gp.axes[8] || 0;
-        const axis0 = gp.axes[0] || 0;
-
-        const dpadUp = axis7 < -0.5 || axis1 < -0.5;
-        const dpadDown = axis7 > 0.5 || axis1 > 0.5;
-        const dpadRight = axis6 > 0.5 || axis8 > 0.5 || axis0 > 0.5;
-        const dpadLeft = axis6 < -0.5 || axis8 < -0.5 || axis0 < -0.5;
+        const dpad = getDpadState(gp.axes);
+        const dpadUp = dpad.up;
+        const dpadDown = dpad.down;
+        const dpadRight = dpad.right;
+        const dpadLeft = dpad.left;
 
         // Debug down detection
         if (loopCountRef.current % 60 === 0) {
           // console.log('## DEBUG Down check:', {
-          //   axis7,
-          //   axis9,
-          //   axis1,
-          //   'axis7 > 0.5': axis7 > 0.5,
-          //   'axis9 > 0.5': axis9 > 0.5,
-          //   'axis1 > 0.5': axis1 > 0.5,
           //   dpadDown,
           //   'dpad-down pressed?': axesPressedRef.current['dpad-down'],
           // });
         }
 
         if (dpadUp && !axesPressedRef.current['dpad-up']) {
-          const whichAxis = axis7 < -0.5 ? 7 : axis9 < -0.5 ? 9 : 1;
-          console.log(`## 🎮 D-pad Up pressed (axis ${whichAxis})`);
+          console.log(`## 🎮 D-pad Up pressed (axis ${dpad.axis.up})`);
           axesPressedRef.current['dpad-up'] = true;
 
           // Check if L button is held for combo action
@@ -152,7 +181,6 @@ export function useGamepad(
         }
 
         if (dpadDown && !axesPressedRef.current['dpad-down']) {
-          const whichAxis = axis7 > 0.5 ? 7 : axis9 > 0.5 ? 9 : 1;
           axesPressedRef.current['dpad-down'] = true;
 
           // Check if L button is held for combo action
@@ -184,12 +212,12 @@ export function useGamepad(
             '## ⚠️ Down is stuck pressed. dpadDown value:',
             dpadDown,
             'axis9:',
-            axis9,
+            gp.axes[9] || 0,
           );
         }
 
         if (dpadRight && !axesPressedRef.current['dpad-right']) {
-          const whichAxis = axis6 > 0.5 ? 6 : axis8 > 0.5 ? 8 : 0;
+          const whichAxis = dpad.axis.right;
           // console.log(`## 🎮 D-pad Right pressed (axis ${whichAxis})`);
           axesPressedRef.current['dpad-right'] = true;
 
@@ -218,7 +246,7 @@ export function useGamepad(
         }
 
         if (dpadLeft && !axesPressedRef.current['dpad-left']) {
-          const whichAxis = axis6 < -0.5 ? 6 : axis8 < -0.5 ? 8 : 0;
+          const whichAxis = dpad.axis.left;
           // console.log(`## 🎮 D-pad Left pressed (axis ${whichAxis})`);
           axesPressedRef.current['dpad-left'] = true;
 
@@ -249,39 +277,39 @@ export function useGamepad(
             // );
           }
 
-          // Track L button state (button 6 on 8BitDo Micro)
-          if (index === 6) {
+          // Track L1 button state
+          if (index === BUTTONS.L1_BTN) {
             lButtonHeldRef.current = button.pressed;
           }
 
-          // Track R button state (button 7 on 8BitDo Micro)
-          if (index === 7) {
+          // Track R1 button state
+          if (index === BUTTONS.R1_BTN) {
             rButtonHeldRef.current = button.pressed;
           }
 
-          // Track X button state (button 3 on 8BitDo Micro)
-          if (index === 3) {
+          // Track X button state
+          if (index === BUTTONS.X_BTN) {
             xButtonHeldRef.current = button.pressed;
           }
 
-          // Track B button state (button 1 on 8BitDo Micro)
-          if (index === 1) {
+          // Track B button state
+          if (index === BUTTONS.B_BTN) {
             bButtonHeldRef.current = button.pressed;
           }
 
-          // Track A button state (button 0 on 8BitDo Micro)
-          if (index === 0) {
+          // Track A button state
+          if (index === BUTTONS.A_BTN) {
             aButtonHeldRef.current = button.pressed;
           }
 
-          // Track button 10 state
-          if (index === 10) {
-            button10HeldRef.current = button.pressed;
+          // Track MINUS button state
+          if (index === BUTTONS.MINUS_BTN) {
+            minusButtonHeldRef.current = button.pressed;
           }
 
-          // Track button 11 state
-          if (index === 11) {
-            button11HeldRef.current = button.pressed;
+          // Track PLUS button state
+          if (index === BUTTONS.PLUS_BTN) {
+            plusButtonHeldRef.current = button.pressed;
           }
 
           // Check for L+R combo (both pressed simultaneously)
@@ -373,21 +401,21 @@ export function useGamepad(
             pressedRef.current[index] = true;
 
             // Map buttons to actions
-            // Trigger on button 12 (typically D-pad Up) OR button 0 for testing
-            if (index === 12) {
+            // Trigger on CHECKER button
+            if (index === BUTTONS.CHECKER_BTN) {
               // console.log(`## ✅ Button ${index} detected - triggering REWIND`);
               dispatch('REWIND');
-            } else if (index === 10) {
+            } else if (index === BUTTONS.MINUS_BTN) {
               console.log(
                 `## ✅ Button ${index} detected - triggering PAUSE_PLAY`,
               );
               dispatch('PAUSE_PLAY');
-            } else if (index === 11) {
+            } else if (index === BUTTONS.PLUS_BTN) {
               console.log(
                 `## ✅ Button ${index} detected - triggering TOGGLE_REVIEW_MODE`,
               );
               dispatch('TOGGLE_REVIEW_MODE');
-            } else if (index === 6) {
+            } else if (index === BUTTONS.L1_BTN) {
               console.log('## 🎮 L button pressed - ready for combo');
             } else {
               // console.log(
@@ -401,7 +429,7 @@ export function useGamepad(
             pressedRef.current[index] = false;
             debugLoggedRef.current = false; // Allow debug logging again
 
-            if (index === 6) {
+            if (index === BUTTONS.L1_BTN) {
               console.log('## 🎮 L button released');
             }
           }

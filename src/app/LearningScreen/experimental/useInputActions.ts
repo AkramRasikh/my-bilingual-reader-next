@@ -36,6 +36,7 @@ interface InputHandlers {
 
 export const useInputActions = (handlers: InputHandlers) => {
   const dispatch = (action: InputAction) => {
+    console.log('## Input action dispatched:', action);
     switch (action) {
       case 'REWIND':
         handlers.handleRewind();
