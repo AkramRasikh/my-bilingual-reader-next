@@ -246,7 +246,6 @@ export function useGamepad(
         }
 
         if (dpadLeft && !axesPressedRef.current['dpad-left']) {
-          const whichAxis = dpad.axis.left;
           // console.log(`## 🎮 D-pad Left pressed (axis ${whichAxis})`);
           axesPressedRef.current['dpad-left'] = true;
 
