@@ -342,7 +342,7 @@ export const Interactive: Story = {
   },
 };
 
-export const WithOverlappingSnippetData: Story = {
+export const WithActiveOverlappingSnippetData: Story = {
   args: {
     contentItem: mockJapaneseContentItem,
     wordsState: [mockHatsugenWord],
