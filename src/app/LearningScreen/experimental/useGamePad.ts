@@ -62,6 +62,7 @@ const dispatchSnippetLoopEvent = (
 export function useGamepad(
   dispatch: (action: InputAction) => void,
   threeSecondLoopState: number | null,
+  isVideoPlaying: boolean,
 ) {
   const pressedRef = useRef<{ [key: number]: boolean }>({});
   const axesPressedRef = useRef<{ [key: string]: boolean }>({});
@@ -377,7 +378,7 @@ export function useGamepad(
 
           // Check for L+B combo (both pressed simultaneously)
           if (
-            !threeSecondLoopState &&
+            !(threeSecondLoopState && isVideoPlaying) &&
             lButtonHeldRef.current &&
             bButtonHeldRef.current &&
             !lbComboFiredRef.current
@@ -510,5 +511,5 @@ export function useGamepad(
         handleGamepadDisconnected,
       );
     };
-  }, [dispatch, threeSecondLoopState]);
+  }, [dispatch, threeSecondLoopState, isVideoPlaying]);
 }

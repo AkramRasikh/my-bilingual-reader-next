@@ -1260,7 +1260,7 @@ export const LearningScreenProvider = ({
     handleAddMasterToReview,
     handleToggleReviewMode,
   });
-  useGamepad(dispatch, threeSecondLoopState);
+  useGamepad(dispatch, threeSecondLoopState, isVideoPlaying);
 
   return (
     <LearningScreenContext.Provider
