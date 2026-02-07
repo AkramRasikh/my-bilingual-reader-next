@@ -9,12 +9,32 @@ import { downloadBaseLangHumanSubs } from './downloadBaseLangMachineSubs';
 import { downloadYoutubeAudio } from './downloadYoutubeAudio';
 import { sanitizeFilename } from './santizeFilename';
 import { downloadYoutubeVideo } from './downloadYoutubeVideo';
+import * as OpenCC from 'opencc-js';
 
 export const googleLanguagesKey = {
   [japanese]: 'ja',
   [chinese]: 'zh',
   [arabic]: 'ar',
 };
+
+const pickChineseSubtitleFile = (files: string[]) => {
+  const zhSrtFiles = files.filter((f) => f.includes('zh') && f.includes('srt'));
+  const traditional = zhSrtFiles.find((f) => /zh-(TW|Hant|HK)/i.test(f));
+  if (traditional) return traditional;
+
+  const simplified = zhSrtFiles.find((f) => /zh-(Hans|CN)/i.test(f));
+  if (simplified) return simplified;
+
+  return zhSrtFiles[0];
+};
+
+const traditionalToSimplifiedTW = OpenCC.Converter({ from: 'tw', to: 'cn' });
+const traditionalToSimplifiedHK = OpenCC.Converter({ from: 'hk', to: 'cn' });
+
+const getTraditionalChineseConverter = (subtitleFile: string) =>
+  /zh-(HK)/i.test(subtitleFile)
+    ? traditionalToSimplifiedHK
+    : traditionalToSimplifiedTW;
 
 const youtubeAudioPath = path.join(process.cwd(), 'public', 'youtube');
 const youtubeVideoPath = path.join(process.cwd(), 'public', 'youtube-video');
@@ -42,6 +62,8 @@ export async function POST(req) {
     const outputTemplate = path.join(tmpDir, 'video');
 
     const googleLangCode = googleLanguagesKey[language] as string;
+    console.log('## googleLangCode', googleLangCode);
+
     try {
       await downloadTargetLangSubs({ outputTemplate, url, googleLangCode });
     } catch (error) {
@@ -57,10 +79,15 @@ export async function POST(req) {
 
     const targetLangFilesFiltered =
       language === chinese
-        ? targetLangFiles.find((f) => f.includes('zh') && f.includes('srt'))
+        ? pickChineseSubtitleFile(targetLangFiles)
         : language === arabic
-        ? targetLangFiles.find((f) => f.endsWith('.ar.srt'))
-        : targetLangFiles.find((f) => f.endsWith('.ja.srt'));
+          ? targetLangFiles.find((f) => f.endsWith('.ar.srt'))
+          : targetLangFiles.find((f) => f.endsWith('.ja.srt'));
+
+    const isTraditionalChineseSubtitle =
+      language === chinese &&
+      !!targetLangFilesFiltered &&
+      /zh-(TW|Hant|HK)/i.test(targetLangFilesFiltered);
 
     if (!targetLangFilesFiltered) {
       return new Response(
@@ -123,7 +150,10 @@ export async function POST(req) {
       const lines = block.trim().split('\n');
       if (lines.length >= 3) {
         const time = lines[1].split(' --> ');
-        const text = lines.slice(2).join(' ').replace(/\r/g, '');
+        const rawText = lines.slice(2).join(' ').replace(/\r/g, '');
+        const text = isTraditionalChineseSubtitle
+          ? getTraditionalChineseConverter(targetLangFilesFiltered)(rawText)
+          : rawText;
 
         // Try to find matching English block
         const engBlock = englishBlocks[index];
