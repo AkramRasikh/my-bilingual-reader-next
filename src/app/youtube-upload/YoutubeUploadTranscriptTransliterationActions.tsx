@@ -24,8 +24,12 @@ const YoutubeUploadTranscriptTransliterationActions = () => {
 
   const handleCopy = async () => {
     try {
+      //
       const filterForNoTranscript = transcriptState.filter(
-        (item) => !item?.transliteration,
+        (item) =>
+          !item?.baseLang ||
+          item?.baseLang === '' ||
+          item?.baseLang?.trim() === '',
       );
       const formattedSubs = [...filterForNoTranscript]
         .slice(0, 50)

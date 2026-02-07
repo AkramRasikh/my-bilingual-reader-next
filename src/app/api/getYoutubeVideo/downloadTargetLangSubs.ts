@@ -4,11 +4,16 @@ export const downloadTargetLangSubs = async ({
   outputTemplate,
   url,
   googleLangCode,
-}) =>
-  await execa('yt-dlp', [
+}) => {
+  const subLangs =
+    googleLangCode === 'zh'
+      ? 'zh,zh-Hans,zh-Hant,zh-TW,zh-HK,zh-CN'
+      : googleLangCode;
+
+  return await execa('yt-dlp', [
     '--write-subs',
     '--sub-langs',
-    googleLangCode,
+    subLangs,
     '--skip-download',
     '--convert-subs',
     'srt',
@@ -16,3 +21,4 @@ export const downloadTargetLangSubs = async ({
     outputTemplate,
     url,
   ]);
+};

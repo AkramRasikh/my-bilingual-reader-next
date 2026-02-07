@@ -48,7 +48,13 @@ export function YoutubeUploadProvider({ children }) {
     secondsState?.length > 0 ? secondsState[Math.floor(currentTime)] : '';
 
   const transcriptItemsNoBaseLang = useMemo(
-    () => transcriptState?.filter((item) => !item?.baseLang),
+    () =>
+      transcriptState?.filter(
+        (item) =>
+          !item?.baseLang ||
+          item?.baseLang === '' ||
+          item?.baseLang?.trim() === '',
+      ),
     [transcriptState],
   );
 
