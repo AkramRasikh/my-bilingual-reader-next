@@ -2,12 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 import { LearningScreenProvider } from '../LearningScreenProvider';
 import { FetchDataContext } from '@/app/Providers/FetchDataProvider';
-import LearningScreenSnippetReview from './LearningScreenSnippetReview';
 import type { Snippet } from '@/app/types/content-types';
 import {
   buildMockFetchContextJapanese,
   mockSelectedContentJapanese,
 } from '../LearningScreen.stories.mocks';
+import SnippetReview from './SnippetReview';
 
 const MockFetchProvider = ({ children }: { children: ReactNode }) => (
   <FetchDataContext.Provider
@@ -24,7 +24,7 @@ interface StoryRootProps {
   isReadyForQuickReview?: boolean;
 }
 
-const LearningScreenSnippetReviewStoryRoot = ({
+const SnippetReviewStoryRoot = ({
   snippetData,
   isVideoPlaying = false,
   threeSecondLoopState = null,
@@ -35,7 +35,7 @@ const LearningScreenSnippetReviewStoryRoot = ({
       selectedContentStateMemoized={mockSelectedContentJapanese}
     >
       <div className='max-w-3xl p-4'>
-        <LearningScreenSnippetReview
+        <SnippetReview
           snippetData={snippetData}
           handleLoopHere={({ time, isContracted }) => {
             console.log('Loop here', { time, isContracted });
@@ -59,7 +59,7 @@ const LearningScreenSnippetReviewStoryRoot = ({
 );
 
 const baseSnippet: Snippet = {
-  id: 'snippet-story-001',
+  id: 'snippet-review-story-001',
   baseLang: 'How are you? I hope things are going well lately.',
   targetLang: 'お元気ですか？最近はうまくいっていますか。',
   time: 4,
@@ -68,13 +68,13 @@ const baseSnippet: Snippet = {
 };
 
 const meta = {
-  title: 'LearningScreen/LearningScreenSnippetReview',
-  component: LearningScreenSnippetReviewStoryRoot,
+  title: 'LearningScreen/SnippetReview',
+  component: SnippetReviewStoryRoot,
   parameters: {
     layout: 'padded',
   },
   tags: ['autodocs'],
-} satisfies Meta<typeof LearningScreenSnippetReviewStoryRoot>;
+} satisfies Meta<typeof SnippetReviewStoryRoot>;
 
 export default meta;
 
