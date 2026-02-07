@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CardContent } from '@/components/ui/card';
 import { isDueCheck } from '@/utils/is-due-check';
 import { getCloudflareImageURL } from '@/utils/get-media-url';
@@ -37,6 +37,7 @@ const WordCard = ({
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
   const [isLoadingState, setIsLoadingState] = useState(false);
+  const quickReviewToggleFiredRef = useRef(false);
   const timeNow = new Date();
   const textTitle = indexNum + ') ' + definition;
   const isLegacyWordWithNoReview = !reviewData;
@@ -68,8 +69,6 @@ const WordCard = ({
       setIsLoadingState(false);
     }
   };
-
-  // isReadyForQuickReview
 
   const handlePlayThisContext = () => {
     if (wordContextIsPlaying) {
@@ -103,9 +102,23 @@ const WordCard = ({
         return;
       }
 
-      // Only trigger if B button (1) is pressed AND L button (6) is NOT pressed
-      // This prevents L+B combo from also triggering the play action
-      if (gamepad.buttons[1]?.pressed && !gamepad.buttons[8]?.pressed) {
+      const aPressed = gamepad.buttons[0]?.pressed;
+      const bPressed = gamepad.buttons[1]?.pressed;
+      const rPressed = gamepad.buttons[7]?.pressed;
+
+      if (aPressed && rPressed && !quickReviewToggleFiredRef.current) {
+        setOpenContentState((prev) => !prev);
+        quickReviewToggleFiredRef.current = true;
+        return;
+      }
+
+      if (!aPressed || !rPressed) {
+        quickReviewToggleFiredRef.current = false;
+      }
+
+      // Only trigger if B button (1) is pressed AND R button (7) is NOT pressed
+      // This prevents R+B combo from also triggering the play action
+      if (bPressed && !rPressed) {
         handlePlayThisContext();
       }
     };
