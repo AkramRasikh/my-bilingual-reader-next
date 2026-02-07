@@ -99,3 +99,10 @@ export const FinalizedSnippet: Story = {
     isReadyForQuickReview: true,
   },
 };
+// threeSecondLoopState snippet 492.171405
+// overlapping doublebreakdown boundary
+// {
+//     "targetLang": "もちろんレアアースの禁輸なんて中国やるべきじゃないですよ高市さんの発言を機に経済的威圧というのはこれは私は問題だと思います",
+//     "baseLang": "Of course, China shouldn't be embargoing rare earths.I think it's problematic to use Takaichi's comments as an opportunity to resort to economic coercion.",
+//     "suggestedFocusText": "いです高市さんの発言を機に経済的威圧とい"
+// }

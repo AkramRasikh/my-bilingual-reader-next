@@ -2,15 +2,7 @@ import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
 import { Button } from '@/components/ui/button';
 import clsx from 'clsx';
-import {
-  MoveLeftIcon,
-  MoveRightIcon,
-  PauseIcon,
-  PlayIcon,
-  RabbitIcon,
-  SaveIcon,
-  Undo2Icon,
-} from 'lucide-react';
+import { PauseIcon, PlayIcon, RabbitIcon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useLearningScreen from '../useLearningScreen';
 import FormattedSentence from '@/components/custom/FormattedSentence';
@@ -20,6 +12,7 @@ import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/f
 import HighlightedText from '@/components/custom/HighlightedText';
 import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
 import { Snippet } from '@/app/types/content-types';
+import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -279,101 +272,68 @@ const SnippetReview = ({
           <LoadingSpinner />
         </div>
       )}
-      <div className='rounded border text-center py-2 px-1'>
-        <div className='flex mb-2 gap-1'>
-          <div className='flex flex-col gap-2'>
-            <Button
-              className={clsx('h-7 w-7', thisIsPlaying ? 'bg-amber-300' : '')}
-              onClick={handlePlaySnippet}
-            >
-              {thisIsPlaying ? <PauseIcon /> : <PlayIcon />}
-            </Button>
-            {snippetData?.isPreSnippet && (
-              <RabbitIcon className='fill-amber-300 rounded m-auto mt-0' />
-            )}
-          </div>
-          <div className='w-full'>
-            <div className='flex text-align-justify'>
-              <FormattedSentence
-                ref={ulRef}
-                targetLangformatted={targetLangformatted}
-                handleMouseLeave={handleMouseLeave}
-                handleMouseEnter={handleMouseEnter}
-                wordPopUpState={wordPopUpState}
-                setWordPopUpState={setWordPopUpState}
-                wordsForSelectedTopic={wordsForSelectedTopic}
-                handleDeleteWordDataProvider={() => {}}
-                wordsFromSentence={wordsFromSentence}
-                languageSelectedState={languageSelectedState}
-                matchStartKey={matchStartKey}
-                matchEndKey={matchEndKey}
-              />
-            </div>
-            {highlightedTextState && (
-              <HighlightedText
-                isLoadingState={isLoadingWordState || isLoadingSaveSnippetState}
-                handleSaveFunc={handleSaveFunc}
-                highlightedTextState={highlightedTextState}
-              />
-            )}
-          </div>
-        </div>
-        {isPreSnippet && (
-          <div className='flex flex-row px-2'>
-            <div className='flex flex-row gap-2 m-auto justify-center mb-3'>
-              <Button
-                onClick={onMoveLeft}
-                variant={'outline'}
-                disabled={isLoadingSaveSnippetState}
-              >
-                <MoveLeftIcon />
-              </Button>
-              <Button
-                onClick={onReset}
-                variant={'destructive'}
-                disabled={!indexHasChanged || isLoadingSaveSnippetState}
-              >
-                <Undo2Icon />
-              </Button>
-              <Button
-                onClick={onMoveRight}
-                variant={'outline'}
-                disabled={isLoadingSaveSnippetState}
-              >
-                <MoveRightIcon />
-              </Button>
-              <div className='w-px h-8 bg-gray-300 mx-2' />
-              <Button
-                onClick={onContractLength}
-                variant={'outline'}
-                disabled={isLoadingSaveSnippetState}
-                title='Contract snippet length'
-              >
-                -
-              </Button>
-              <Button
-                onClick={onExpandLength}
-                variant={'outline'}
-                disabled={isLoadingSaveSnippetState}
-                title='Expand snippet length'
-              >
-                +
-              </Button>
-            </div>
-            <div>
-              <Button
-                variant={'outline'}
-                disabled={!indexHasChanged || isLoadingSaveSnippetState}
-                onClick={onUpdateSnippet}
-                className={clsx(
-                  indexHasChanged ? 'animate-pulse bg-amber-300' : 'opacity-25',
+      <div className='rounded border py-2 px-1'>
+        <div className='flex gap-3'>
+          <div className='flex-1'>
+            <div className='flex mb-2 gap-1'>
+              <div className='flex flex-col gap-2'>
+                <Button
+                  className={clsx(
+                    'h-7 w-7',
+                    thisIsPlaying ? 'bg-amber-300' : '',
+                  )}
+                  onClick={handlePlaySnippet}
+                >
+                  {thisIsPlaying ? <PauseIcon /> : <PlayIcon />}
+                </Button>
+                {snippetData?.isPreSnippet && (
+                  <RabbitIcon className='fill-amber-300 rounded m-auto mt-0' />
                 )}
-              >
-                <SaveIcon />
-              </Button>
+              </div>
+              <div className='w-full'>
+                <div className='flex text-align-justify'>
+                  <FormattedSentence
+                    ref={ulRef}
+                    targetLangformatted={targetLangformatted}
+                    handleMouseLeave={handleMouseLeave}
+                    handleMouseEnter={handleMouseEnter}
+                    wordPopUpState={wordPopUpState}
+                    setWordPopUpState={setWordPopUpState}
+                    wordsForSelectedTopic={wordsForSelectedTopic}
+                    handleDeleteWordDataProvider={() => {}}
+                    wordsFromSentence={wordsFromSentence}
+                    languageSelectedState={languageSelectedState}
+                    matchStartKey={matchStartKey}
+                    matchEndKey={matchEndKey}
+                  />
+                </div>
+                {highlightedTextState && (
+                  <HighlightedText
+                    isLoadingState={
+                      isLoadingWordState || isLoadingSaveSnippetState
+                    }
+                    handleSaveFunc={handleSaveFunc}
+                    highlightedTextState={highlightedTextState}
+                  />
+                )}
+              </div>
             </div>
           </div>
-        )}
+          {isPreSnippet && (
+            <div className='flex items-start justify-end'>
+              <SnippetReviewBoundaryToggles
+                isLoading={isLoadingSaveSnippetState}
+                indexHasChanged={indexHasChanged}
+                onMoveLeft={onMoveLeft}
+                onReset={onReset}
+                onMoveRight={onMoveRight}
+                onContractLength={onContractLength}
+                onExpandLength={onExpandLength}
+                onUpdateSnippet={onUpdateSnippet}
+              />
+            </div>
+          )}
+        </div>
         <ReviewSRSToggles
           isSnippet
           contentItem={snippetData}
