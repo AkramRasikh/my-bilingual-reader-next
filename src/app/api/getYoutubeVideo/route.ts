@@ -62,8 +62,6 @@ export async function POST(req) {
     const outputTemplate = path.join(tmpDir, 'video');
 
     const googleLangCode = googleLanguagesKey[language] as string;
-    console.log('## googleLangCode', googleLangCode);
-
     try {
       await downloadTargetLangSubs({ outputTemplate, url, googleLangCode });
     } catch (error) {
