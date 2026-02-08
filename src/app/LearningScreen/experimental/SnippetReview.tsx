@@ -11,17 +11,17 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
 import HighlightedText from '@/components/custom/HighlightedText';
 import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
-import { Snippet } from '@/app/types/content-types';
+import { ContentTranscriptTypes, Snippet } from '@/app/types/content-types';
 import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
 import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
-  snippetData: Snippet;
+  snippetData: Snippet & Pick<ContentTranscriptTypes, 'vocab'>;
 }
 
 interface SnippetReviewProps {
-  snippetData: Snippet;
+  snippetData: Snippet & Pick<ContentTranscriptTypes, 'vocab'>;
   handleLoopHere: (arg: { time: number; isContracted?: boolean }) => void;
   isVideoPlaying: boolean;
   threeSecondLoopState: number | null;
