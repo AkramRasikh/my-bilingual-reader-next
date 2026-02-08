@@ -13,6 +13,7 @@ import HighlightedText from '@/components/custom/HighlightedText';
 import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
 import { Snippet } from '@/app/types/content-types';
 import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
+import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -52,6 +53,7 @@ const SnippetReview = ({
   const isPreSnippet = snippetData?.isPreSnippet;
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
   const ulRef = useRef<NodeJS.Timeout | null>(null);
+  const vocab = snippetData?.vocab;
 
   const {
     wordsForSelectedTopic,
@@ -307,6 +309,18 @@ const SnippetReview = ({
                     matchEndKey={matchEndKey}
                   />
                 </div>
+                {vocab && (
+                  <div className='mt-2'>
+                    <SentenceBreakdown
+                      vocab={vocab}
+                      meaning={''}
+                      thisSentencesSavedWords={wordsFromSentence}
+                      handleSaveFunc={handleSaveFunc}
+                      sentenceStructure={''}
+                      languageSelectedState={languageSelectedState}
+                    />
+                  </div>
+                )}
                 {highlightedTextState && (
                   <HighlightedText
                     isLoadingState={
@@ -320,7 +334,7 @@ const SnippetReview = ({
             </div>
           </div>
           {isPreSnippet && (
-            <div className='flex items-start justify-end'>
+            <div>
               <SnippetReviewBoundaryToggles
                 isLoading={isLoadingSaveSnippetState}
                 indexHasChanged={indexHasChanged}
