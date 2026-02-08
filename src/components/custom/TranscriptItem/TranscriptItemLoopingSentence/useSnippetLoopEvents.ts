@@ -7,7 +7,7 @@ type UseSnippetLoopEventsParams = {
   targetLangLength: number;
   onAdjustLength: (delta: number) => void;
   onShiftStart: (delta: number) => void;
-  onSaveSnippet: () => Promise<void> | void;
+  onSaveSnippet?: () => Promise<void> | void;
 };
 
 const useSnippetLoopEvents = ({
@@ -45,17 +45,26 @@ const useSnippetLoopEvents = ({
     const handleSave = async () => {
       if (!hasSnippetText) return;
 
-      await onSaveSnippet();
+      if (onSaveSnippet) {
+        await onSaveSnippet();
+      }
     };
 
     window.addEventListener('snippet-loop-adjust-length', handleAdjustLength);
     window.addEventListener('snippet-loop-shift-start', handleShiftStart);
-    window.addEventListener('snippet-loop-save', handleSave);
+    if (onSaveSnippet) {
+      window.addEventListener('snippet-loop-save', handleSave);
+    }
 
     return () => {
-      window.removeEventListener('snippet-loop-adjust-length', handleAdjustLength);
+      window.removeEventListener(
+        'snippet-loop-adjust-length',
+        handleAdjustLength,
+      );
       window.removeEventListener('snippet-loop-shift-start', handleShiftStart);
-      window.removeEventListener('snippet-loop-save', handleSave);
+      if (onSaveSnippet) {
+        window.removeEventListener('snippet-loop-save', handleSave);
+      }
     };
   }, [
     hasSnippetText,
