@@ -489,13 +489,15 @@ export const LearningScreenProvider = ({
     });
 
     const reviewData = nextScheduledOptions['1'].card;
+
+    const { vocab: _unusedVocab, ...finalSnippetWithoutVocab } = snippetArgs;
     await handleSaveSnippetFetchProvider({
       snippetData: {
         id: uuidv4(),
         time: threeSecondLoopState,
         isContracted: contractThreeSecondLoopState,
         reviewData,
-        ...snippetArgs,
+        ...finalSnippetWithoutVocab,
       },
       contentId,
       contentIndex,
@@ -552,8 +554,9 @@ export const LearningScreenProvider = ({
         snippetId: snippetData.id,
       });
     } else {
+      const { vocab: _unusedVocab, ...snippetWithoutVocab } = snippetData;
       await handleSaveSnippetFetchProvider({
-        snippetData,
+        snippetData: snippetWithoutVocab,
         contentIndex,
         contentId,
         isUpdate: true,
@@ -1109,11 +1112,18 @@ export const LearningScreenProvider = ({
     return topicWordsForReviewMemoized;
   }, [learnFormattedTranscript, isInReviewMode, wordsForSelectedTopicMemoized]);
 
+  const { overlappingSnippetElements, snippetsWithVocab } =
+    useSavedSnippetsMemoized(
+      selectedContentStateMemoized?.snippets,
+      formattedTranscriptMemoized,
+      loopDataRef,
+    );
+
   const { snippetsWithDueStatusMemoized, earliestSnippetDueTime } =
     useMemo(() => {
       if (
-        !selectedContentStateMemoized?.snippets ||
-        selectedContentStateMemoized?.snippets.length === 0 ||
+        !snippetsWithVocab ||
+        snippetsWithVocab.length === 0 ||
         !enableSnippetReviewState
       ) {
         return {
@@ -1124,7 +1134,7 @@ export const LearningScreenProvider = ({
       const now = new Date();
 
       const snippetsWithDueStatusMemoized = [] as Snippet[];
-      selectedContentStateMemoized?.snippets?.forEach((item) => {
+      snippetsWithVocab?.forEach((item) => {
         if (isDueCheck(item, now)) {
           snippetsWithDueStatusMemoized.push(item);
         }
@@ -1141,7 +1151,7 @@ export const LearningScreenProvider = ({
         snippetsWithDueStatusMemoized,
         earliestSnippetDueTime,
       };
-    }, [selectedContentStateMemoized, enableSnippetReviewState]);
+    }, [snippetsWithVocab, enableSnippetReviewState]);
 
   const firstTime = useMemo(() => {
     if (!isInReviewMode) {
@@ -1193,12 +1203,6 @@ export const LearningScreenProvider = ({
     threeSecondLoopState,
     loopedTranscriptMemoized,
   ]);
-
-  const savedSnippetsMemoized = useSavedSnippetsMemoized(
-    selectedContentStateMemoized?.snippets,
-    formattedTranscriptMemoized,
-    loopDataRef,
-  );
 
   const overlappedSentencesViableForReviewMemoized =
     useOverlappedSentencesViableForReviewMemo(
@@ -1337,7 +1341,7 @@ export const LearningScreenProvider = ({
         topicWordsForReviewMemoized,
         firstTime,
         overlappingTextMemoized,
-        savedSnippetsMemoized,
+        savedSnippetsMemoized: overlappingSnippetElements,
         handleUpdateSnippet,
         contentSnippets: selectedContentStateMemoized?.snippets || [],
         sentenceMapMemoized,

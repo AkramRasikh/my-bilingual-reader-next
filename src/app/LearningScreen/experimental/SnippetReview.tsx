@@ -14,6 +14,7 @@ import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/T
 import { ContentTranscriptTypes, Snippet } from '@/app/types/content-types';
 import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
 import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
+import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/useSnippetLoopEvents';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -68,6 +69,8 @@ const SnippetReview = ({
     setEndIndexKeyState(endIndexKeyState - 1);
   };
 
+
+  
   const onMoveRight = () => {
     setStartIndexKeyState(startIndexKeyState + 1);
     setEndIndexKeyState(endIndexKeyState + 1);
@@ -156,7 +159,9 @@ const SnippetReview = ({
     lengthAdjustmentState,
   ]);
 
-  const onUpdateSnippet = async () => {
+  const hasSnippetText = Boolean(textMatch);
+
+  const handleSaveSnippetFlow = async () => {
     if (!textMatch) {
       return;
     }
@@ -176,6 +181,10 @@ const SnippetReview = ({
       setIsLoadingSaveSnippetState(false);
     }
   };
+
+  const onUpdateSnippet = async () => {
+    await handleSaveSnippetFlow();
+  };
   useEffect(() => {
     const handleMouseUp = () => {
       const selection = window.getSelection();
@@ -194,6 +203,20 @@ const SnippetReview = ({
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, []);
+
+  useSnippetLoopEvents({
+    enabled: isReadyForQuickReview,
+    hasSnippetText,
+    matchEndKey,
+    matchStartKey,
+    targetLangLength: snippetData.targetLang.length,
+    onAdjustLength: (delta) => setLengthAdjustmentState((prev) => prev + delta),
+    onShiftStart: (delta) => setStartIndexKeyState((prev) => prev + delta),
+    onSaveSnippet: async () => {
+      console.log('## 🎮 snippet-loop-save');
+      await onUpdateSnippet();
+    },
+  });
 
   useEffect(() => {
     if (!isReadyForQuickReview) return;
@@ -309,7 +332,7 @@ const SnippetReview = ({
                     matchEndKey={matchEndKey}
                   />
                 </div>
-                {vocab && (
+                {vocab?.length > 0 && (
                   <div className='mt-2'>
                     <SentenceBreakdown
                       vocab={vocab}

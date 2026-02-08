@@ -28,10 +28,10 @@ export const threeSecondLoopLogicLegacy = ({
     const end = item?.nextSentence
       ? item.nextSentence
       : mediaDuration
-      ? mediaDuration
-      : index < formattedTranscriptState.length - 1
-      ? formattedTranscriptState[index + 1].time + realStartTime
-      : start;
+        ? mediaDuration
+        : index < formattedTranscriptState.length - 1
+          ? formattedTranscriptState[index + 1].time + realStartTime
+          : start;
     const duration = end - start;
 
     const overlapStart = Math.max(start, startTime);
@@ -49,6 +49,7 @@ export const threeSecondLoopLogicLegacy = ({
         percentageOverlap: Number(percentageOverlap.toFixed(2)),
         targetLang: item.targetLang,
         startPoint: Number(startPoint.toFixed(2)),
+        vocab: item?.vocab,
       });
     }
   });

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 type UseSnippetLoopEventsParams = {
+  enabled?: boolean;
   hasSnippetText: boolean;
   matchEndKey: number;
   matchStartKey: number;
@@ -11,6 +12,7 @@ type UseSnippetLoopEventsParams = {
 };
 
 const useSnippetLoopEvents = ({
+  enabled = true,
   hasSnippetText,
   matchEndKey,
   matchStartKey,
@@ -20,6 +22,9 @@ const useSnippetLoopEvents = ({
   onSaveSnippet,
 }: UseSnippetLoopEventsParams) => {
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
     const handleAdjustLength = (event: Event) => {
       const customEvent = event as CustomEvent<{ delta?: number }>;
       const delta = customEvent.detail?.delta ?? 0;
@@ -67,6 +72,7 @@ const useSnippetLoopEvents = ({
       }
     };
   }, [
+    enabled,
     hasSnippetText,
     matchEndKey,
     matchStartKey,
