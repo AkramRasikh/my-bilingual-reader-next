@@ -25,7 +25,7 @@ const languageOptions = [
   { value: chinese, label: chinese, flag: '🇨🇳' },
   { value: japanese, label: japanese, flag: '🇯🇵' },
   { value: arabic, label: arabic, flag: '🇸🇩' },
-  { value: french, label: french, flag: '🇫🇷🇫' },
+  { value: french, label: french, flag: '🇫🇷' },
 ];
 
 const LanguageSelector: React.FC<LanguageSelectorProps> = ({
