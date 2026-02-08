@@ -2,7 +2,7 @@ import fs from 'fs';
 import fsPromise from 'fs/promises';
 import path from 'path';
 import os from 'os';
-import { japanese, chinese, arabic } from '@/app/languages';
+import { japanese, chinese, arabic, french } from '@/app/languages';
 import squashSubtitles from './squashSubtitles';
 import { downloadTargetLangSubs } from './downloadTargetLangSubs';
 import { downloadBaseLangHumanSubs } from './downloadBaseLangMachineSubs';
@@ -15,6 +15,7 @@ export const googleLanguagesKey = {
   [japanese]: 'ja',
   [chinese]: 'zh',
   [arabic]: 'ar',
+  [french]: 'fr',
 };
 
 const pickChineseSubtitleFile = (files: string[]) => {
@@ -82,7 +83,9 @@ export async function POST(req) {
         ? pickChineseSubtitleFile(targetLangFiles)
         : language === arabic
           ? targetLangFiles.find((f) => f.endsWith('.ar.srt'))
-          : targetLangFiles.find((f) => f.endsWith('.ja.srt'));
+          : language === french
+            ? targetLangFiles.find((f) => f.endsWith('.fr.srt'))
+            : targetLangFiles.find((f) => f.endsWith('.ja.srt'));
 
     const isTraditionalChineseSubtitle =
       language === chinese &&

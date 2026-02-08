@@ -1,6 +1,7 @@
 export const japanese = 'japanese';
 export const arabic = 'arabic';
 export const chinese = 'chinese';
+export const french = 'french';
 
 export enum LanguageEnum {
   Chinese = 'chinese',
