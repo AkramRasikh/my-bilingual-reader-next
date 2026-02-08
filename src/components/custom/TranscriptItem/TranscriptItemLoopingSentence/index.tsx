@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import clsx from 'clsx';
 import { Loader2, SaveIcon } from 'lucide-react';
 import { highlightSnippetTextApprox } from './highlight-snippet-text-approx';
+import useSnippetLoopEvents from './useSnippetLoopEvents';
 
 const TranscriptItemLoopingSentence = ({
   overlappingTextMemoized,
@@ -143,49 +144,18 @@ const TranscriptItemLoopingSentence = ({
     targetLang,
   ]);
 
-  useEffect(() => {
-    const handleAdjustLength = (event: Event) => {
-      const customEvent = event as CustomEvent<{ delta?: number }>;
-      const delta = customEvent.detail?.delta ?? 0;
-      if (!delta) return;
-
-      if (delta < 0 && !(matchEndKey > matchStartKey + 1)) return;
-      if (delta > 0 && !(matchEndKey < targetLang.length)) return;
-
-      setLengthAdjustmentState((prev) => prev + delta);
-    };
-
-    const handleShiftStart = (event: Event) => {
-      const customEvent = event as CustomEvent<{ delta?: number }>;
-      const delta = customEvent.detail?.delta ?? 0;
-      if (!delta) return;
-
-      if (delta < 0 && matchStartKey <= 0) return;
-      if (delta > 0 && matchEndKey >= targetLang.length) return;
-
-      setStartIndexKeyState((prev) => prev + delta);
-    };
-
-    const handleSaveSnippet = async () => {
-      if (!hasSnippetText) return;
-
+  useSnippetLoopEvents({
+    hasSnippetText,
+    matchEndKey,
+    matchStartKey,
+    targetLangLength: targetLang.length,
+    onAdjustLength: (delta) => setLengthAdjustmentState((prev) => prev + delta),
+    onShiftStart: (delta) => setStartIndexKeyState((prev) => prev + delta),
+    onSaveSnippet: async () => {
       console.log('## 🎮 snippet-loop-save');
       await handleSaveSnippetFlow();
-    };
-
-    window.addEventListener('snippet-loop-adjust-length', handleAdjustLength);
-    window.addEventListener('snippet-loop-shift-start', handleShiftStart);
-    window.addEventListener('snippet-loop-save', handleSaveSnippet);
-
-    return () => {
-      window.removeEventListener(
-        'snippet-loop-adjust-length',
-        handleAdjustLength,
-      );
-      window.removeEventListener('snippet-loop-shift-start', handleShiftStart);
-      window.removeEventListener('snippet-loop-save', handleSaveSnippet);
-    };
-  }, [hasSnippetText, matchEndKey, matchStartKey, targetLang.length]);
+    },
+  });
 
   return (
     <div
