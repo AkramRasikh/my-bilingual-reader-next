@@ -6,7 +6,6 @@ export const threeSecondLoopLogicLegacy = ({
   refSeconds,
   threeSecondLoopState,
   formattedTranscriptState,
-  realStartTime = 0,
   setState,
   startTime,
   endTime,
@@ -15,7 +14,6 @@ export const threeSecondLoopLogicLegacy = ({
   refSeconds: React.MutableRefObject<number | null>;
   threeSecondLoopState: number;
   formattedTranscriptState: any[];
-  realStartTime?: number;
   setState?: (data: OverlappingSnippetData[]) => void;
   startTime: number;
   endTime: number;
@@ -24,13 +22,13 @@ export const threeSecondLoopLogicLegacy = ({
   const results: OverlappingSnippetData[] = [];
 
   formattedTranscriptState.forEach((item, index) => {
-    const start = item.time + realStartTime;
+    const start = item.time;
     const end = item?.nextSentence
       ? item.nextSentence
       : mediaDuration
         ? mediaDuration
         : index < formattedTranscriptState.length - 1
-          ? formattedTranscriptState[index + 1].time + realStartTime
+          ? formattedTranscriptState[index + 1].time
           : start;
     const duration = end - start;
 
@@ -71,7 +69,6 @@ const useManageThreeSecondLoopLegacy = ({
   threeSecondLoopState,
   contractThreeSecondLoopState,
   formattedTranscriptState,
-  realStartTime,
   setOverlappingSnippetDataState,
   overlappingSnippetDataState,
   mediaDuration,
@@ -79,7 +76,6 @@ const useManageThreeSecondLoopLegacy = ({
   threeSecondLoopState: number | null;
   contractThreeSecondLoopState: boolean;
   formattedTranscriptState: any[];
-  realStartTime: number;
   setOverlappingSnippetDataState: (data: OverlappingSnippetData[]) => void;
   overlappingSnippetDataState: OverlappingSnippetData[];
   mediaDuration?: number;
@@ -111,7 +107,6 @@ const useManageThreeSecondLoopLegacy = ({
         refSeconds,
         threeSecondLoopState,
         formattedTranscriptState,
-        realStartTime,
         setState: setOverlappingSnippetDataState,
         startTime,
         endTime,
@@ -123,7 +118,6 @@ const useManageThreeSecondLoopLegacy = ({
   }, [
     threeSecondLoopState,
     contractThreeSecondLoopState,
-    realStartTime,
     formattedTranscriptState,
     mediaDuration,
   ]);

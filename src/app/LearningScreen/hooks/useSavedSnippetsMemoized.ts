@@ -43,7 +43,6 @@ export const useSavedSnippetsMemoized = (
         refSeconds: loopDataRef,
         threeSecondLoopState: snippetData.time,
         formattedTranscriptState: formattedTranscriptMemoized,
-        realStartTime: 0,
         startTime,
         endTime,
       });
