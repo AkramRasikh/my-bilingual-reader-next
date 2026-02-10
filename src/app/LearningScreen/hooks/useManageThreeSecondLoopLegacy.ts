@@ -11,7 +11,7 @@ export const threeSecondLoopLogicLegacy = ({
   endTime,
   mediaDuration,
 }: {
-  refSeconds: React.MutableRefObject<number | null>;
+  refSeconds?: React.MutableRefObject<number | null>;
   threeSecondLoopState: number;
   formattedTranscriptState: any[];
   setState?: (data: OverlappingSnippetData[]) => void;
@@ -54,7 +54,9 @@ export const threeSecondLoopLogicLegacy = ({
     }
   });
 
-  refSeconds.current = threeSecondLoopState;
+  if (refSeconds) {
+    refSeconds.current = threeSecondLoopState;
+  }
 
   if (results?.length > 0) {
     if (setState) {

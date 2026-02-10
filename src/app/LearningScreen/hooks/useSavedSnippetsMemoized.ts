@@ -18,7 +18,6 @@ export interface SavedSnippetsMemoizedProps extends OverlappingSnippetData {
 export const useSavedSnippetsMemoized = (
   snippets: ContentTypes['snippets'] | undefined,
   formattedTranscriptMemoized: FormattedTranscriptTypes[],
-  loopDataRef: React.RefObject<any>,
 ) => {
   return useMemo(() => {
     const overlappingSnippetElements = [] as SavedSnippetsMemoizedProps[];
@@ -40,7 +39,6 @@ export const useSavedSnippetsMemoized = (
         snippetData.time + (snippetData?.isContracted ? 0.75 : 1.5);
 
       const overlappingSnippetMetaDataGivenTime = threeSecondLoopLogicLegacy({
-        refSeconds: loopDataRef,
         threeSecondLoopState: snippetData.time,
         formattedTranscriptState: formattedTranscriptMemoized,
         startTime,
@@ -85,5 +83,5 @@ export const useSavedSnippetsMemoized = (
       overlappingSnippetElements: overlappingSnippetElements.flat(),
       snippetsWithVocab,
     };
-  }, [snippets, formattedTranscriptMemoized, loopDataRef]);
+  }, [snippets, formattedTranscriptMemoized]);
 };

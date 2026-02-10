@@ -190,7 +190,6 @@ export const LearningScreenProvider = ({
 }: LearningScreenProviderProps) => {
   const ref = useRef<HTMLVideoElement | HTMLAudioElement>(null);
   const transcriptRef = useRef<HTMLElement | null>(null);
-  const loopDataRef = useRef(null);
 
   const [currentTime, setCurrentTime] = useState(0);
   const [loopSecondsState, setLoopSecondsState] = useState([]);
@@ -948,7 +947,6 @@ export const LearningScreenProvider = ({
     useSavedSnippetsMemoized(
       selectedContentStateMemoized?.snippets,
       formattedTranscriptMemoized,
-      loopDataRef,
     );
 
   const { snippetsWithDueStatusMemoized, earliestSnippetDueTime } =
