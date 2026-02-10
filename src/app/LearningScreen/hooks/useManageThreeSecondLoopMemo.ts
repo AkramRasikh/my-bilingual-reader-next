@@ -1,5 +1,4 @@
-import { isNumber } from '@/utils/is-number';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { getSecondsLoopedTranscriptData } from '../utils/get-seconds-looped-transcript-data';
 
 const useManageThreeSecondLoopMemo = ({
@@ -13,9 +12,6 @@ const useManageThreeSecondLoopMemo = ({
   formattedTranscriptState: any[];
   mediaDuration: number | null;
 }) => {
-  const refSeconds = useRef<number | null>(null);
-  const prevContractThreeSecondLoopState = useRef(contractThreeSecondLoopState);
-
   return useMemo(() => {
     if (!threeSecondLoopState || !mediaDuration) {
       return [];
@@ -24,24 +20,10 @@ const useManageThreeSecondLoopMemo = ({
       return [];
     }
 
-    const threeSecondChanged =
-      isNumber(threeSecondLoopState) &&
-      refSeconds.current !== threeSecondLoopState;
-
-    const contractChanged =
-      prevContractThreeSecondLoopState.current !== contractThreeSecondLoopState;
-
-    if (!threeSecondChanged && !contractChanged) {
-      return [];
-    }
-
     const loopStartTime =
       threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
     const loopEndTime =
       threeSecondLoopState + (contractThreeSecondLoopState ? 0.75 : 1.5);
-
-    prevContractThreeSecondLoopState.current = contractThreeSecondLoopState;
-    refSeconds.current = threeSecondLoopState;
 
     return getSecondsLoopedTranscriptData({
       formattedTranscriptState,
