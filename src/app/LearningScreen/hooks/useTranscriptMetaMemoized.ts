@@ -4,11 +4,7 @@ import { isDueCheck } from '@/utils/is-due-check';
 import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
 import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
 import { WordTypes } from '@/app/types/word-types';
-import {
-  ContentTypes,
-  FormattedTranscriptTypes,
-  SentenceMapItemTypes,
-} from '@/app/types/content-types';
+import { ContentTypes, SentenceMapItemTypes } from '@/app/types/content-types';
 
 type UseTranscriptMetaMemoizedArgs = {
   content: ContentTypes['content'];
@@ -18,7 +14,7 @@ type UseTranscriptMetaMemoizedArgs = {
 
 type TranscriptMetaMemoized = {
   firstDueIndexMemoized: number | null;
-  formattedTranscriptMemoized: FormattedTranscriptTypes[];
+  formattedTranscriptMemoized: SentenceMapItemTypes[];
   sentenceMapMemoized: Record<string, SentenceMapItemTypes>;
   sentencesNeedReview: number;
   sentencesPendingOrDue: number;
@@ -77,7 +73,7 @@ export const useTranscriptMetaMemoized = ({
         targetLangformatted,
         wordsFromSentence,
         helperReviewSentence,
-      } as FormattedTranscriptTypes;
+      } as SentenceMapItemTypes;
     });
 
     const sentenceMapMemoized: Record<string, SentenceMapItemTypes> = {};
