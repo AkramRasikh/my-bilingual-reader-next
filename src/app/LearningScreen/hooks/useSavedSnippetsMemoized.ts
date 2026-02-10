@@ -48,7 +48,10 @@ export const useSavedSnippetsMemoized = (
       if (!overlappingSnippetMetaDataGivenTime) {
         return {
           overlappingSnippetElements,
-          snippetsWithVocab,
+          snippetsWithVocab: snippetsWithVocab.push({
+            ...snippetData,
+            vocab: [],
+          }),
         };
       }
 
