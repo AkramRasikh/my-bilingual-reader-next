@@ -1,33 +1,24 @@
+import { SentenceMapItemTypes } from '@/app/types/content-types';
 import { OverlappingSnippetData } from '@/app/types/shared-types';
 
 export const threeSecondLoopLogicLegacy = ({
-  refSeconds,
-  threeSecondLoopState,
   formattedTranscriptState,
-  setState,
   startTime,
   endTime,
-  mediaDuration,
 }: {
-  refSeconds?: React.MutableRefObject<number | null>;
-  threeSecondLoopState: number;
-  formattedTranscriptState: any[];
-  setState?: (data: OverlappingSnippetData[]) => void;
+  formattedTranscriptState: SentenceMapItemTypes[];
   startTime: number;
   endTime: number;
-  mediaDuration?: number;
-}): OverlappingSnippetData[] | void => {
+}): OverlappingSnippetData[] => {
   const results: OverlappingSnippetData[] = [];
 
   formattedTranscriptState.forEach((item, index) => {
     const start = item.time;
     const end = item?.nextSentence
       ? item.nextSentence
-      : mediaDuration
-        ? mediaDuration
-        : index < formattedTranscriptState.length - 1
-          ? formattedTranscriptState[index + 1].time
-          : start;
+      : index < formattedTranscriptState.length - 1
+        ? formattedTranscriptState[index + 1].time
+        : start;
     const duration = end - start;
 
     const overlapStart = Math.max(start, startTime);
@@ -52,15 +43,5 @@ export const threeSecondLoopLogicLegacy = ({
     }
   });
 
-  if (refSeconds) {
-    refSeconds.current = threeSecondLoopState;
-  }
-
-  if (results?.length > 0) {
-    if (setState) {
-      setState(results);
-    } else {
-      return results;
-    }
-  }
+  return results;
 };

@@ -3,7 +3,7 @@ import { threeSecondLoopLogicLegacy } from './useManageThreeSecondLoopLegacy';
 import {
   ContentTranscriptTypes,
   ContentTypes,
-  FormattedTranscriptTypes,
+  SentenceMapItemTypes,
   Snippet,
 } from '@/app/types/content-types';
 import { OverlappingSnippetData } from '@/app/types/shared-types';
@@ -17,7 +17,7 @@ export interface SavedSnippetsMemoizedProps extends OverlappingSnippetData {
 
 export const useSavedSnippetsMemoized = (
   snippets: ContentTypes['snippets'] | undefined,
-  formattedTranscriptMemoized: FormattedTranscriptTypes[],
+  formattedTranscriptMemoized: SentenceMapItemTypes[],
 ) => {
   return useMemo(() => {
     const overlappingSnippetElements = [] as SavedSnippetsMemoizedProps[];
@@ -39,7 +39,6 @@ export const useSavedSnippetsMemoized = (
         snippetData.time + (snippetData?.isContracted ? 0.75 : 1.5);
 
       const overlappingSnippetMetaDataGivenTime = threeSecondLoopLogicLegacy({
-        threeSecondLoopState: snippetData.time,
         formattedTranscriptState: formattedTranscriptMemoized,
         startTime,
         endTime,
