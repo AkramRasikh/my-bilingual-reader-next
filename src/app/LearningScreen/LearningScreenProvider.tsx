@@ -28,6 +28,7 @@ import { useTopicWordsForReviewMemoized } from './hooks/useTopicWordsForReviewMe
 import { useSnippetDueMemoized } from './hooks/useSnippetDueMemoized';
 import { useLoopedTranscriptMemoized } from './hooks/useLoopedTranscriptMemoized';
 import { useOverlappingTextMemoized } from './hooks/useOverlappingTextMemoized';
+import { useMediaControls } from './hooks/useMediaControls';
 import {
   ContentTypes,
   FormattedTranscriptTypes,
@@ -258,26 +259,6 @@ export const LearningScreenProvider = ({
     enableTranscriptReviewState,
     wordsState,
   });
-
-  const handlePlayFromHere = (time: number) => {
-    if (ref.current) {
-      ref.current.currentTime = time;
-      ref.current.play();
-    }
-  };
-
-  // Update current time as video plays
-  const handleTimeUpdate = () => {
-    if (ref.current) {
-      setCurrentTime(ref.current.currentTime);
-    }
-  };
-
-  const handleLoadedMetadata = () => {
-    if (ref.current?.duration) {
-      setMediaDuration(ref.current.duration);
-    }
-  };
 
   const handleStudyFromHere = () => {
     if (!masterPlayComprehensive) {
@@ -579,123 +560,41 @@ export const LearningScreenProvider = ({
     loopTranscriptState,
   });
 
-  const handleFromHere = (time: number) => {
-    if (!isNumber(time)) {
-      return null;
-    }
-
-    handlePlayFromHere(time);
-  };
-  const handlePause = () => {
-    if (!ref.current) {
-      return;
-    }
-    ref.current.pause();
-  };
-
-  const handleRewind = () => {
-    if (!ref.current) {
-      return;
-    }
-    ref.current.currentTime = ref.current.currentTime - 3;
-  };
-
-  const handlePausePlay = () => {
-    if (!ref.current) {
-      return;
-    }
-    if (ref.current.paused) {
-      ref.current.play();
-    } else {
-      ref.current.pause();
-    }
-  };
-
-  const handleJumpNext = () => {
-    handleJumpToSentenceViaKeys(1);
-  };
-
-  const handleJumpPrev = () => {
-    handleJumpToSentenceViaKeys(-1);
-  };
-
-  const handleJumpCurrent = () => {
-    handleJumpToSentenceViaKeys(0);
-  };
-
-  const handleLoopSentenceCombo = () => {
-    // If loop already exists, extend it. Otherwise create new loop
-    if (loopTranscriptState && loopTranscriptState.length > 0) {
-      handleUpdateLoopedSentence(true);
-    } else {
-      handleLoopThisSentence();
-    }
-  };
-
-  const handleLoopThisSentence = () => {
-    if (!masterPlayComprehensive || !mediaDuration) return null;
-
-    if (
-      loopTranscriptState?.length === 1 &&
-      loopTranscriptState[0]?.id === masterPlayComprehensive.id
-    ) {
-      setLoopTranscriptState([]);
-      return;
-    }
-
-    setLoopTranscriptState([masterPlayComprehensive]);
-  };
-
-  // Set up input action dispatcher for gamepad
-  const handleShiftLoopSentenceForward = () => {
-    handleShiftLoopSentence(true);
-  };
-
-  const handleShrinkLoop = () => {
-    handleUpdateLoopedSentence(false);
-  };
-
-  const handleLoopThis3Second = () => {
-    if (loopTranscriptState) {
-      setLoopTranscriptState([]);
-    }
-    if (isNumber(threeSecondLoopState)) {
-      setThreeSecondLoopState(null);
-      return;
-    }
-
-    if (!ref.current) {
-      return;
-    }
-    setThreeSecondLoopState(ref.current.currentTime);
-    // account for the three seconds on both extremes
-  };
-
-  // State-aware wrapper: Up button behavior changes based on threeSecondLoopState
-  const handleRewindOrToggleContract = () => {
-    if (threeSecondLoopState) {
-      // When in 3-second loop mode, toggle contract state
-      setContractThreeSecondLoopState((prev) => !prev);
-    } else {
-      // Normal rewind
-      handleRewind();
-    }
-  };
-
-  // State-aware wrappers: Left/Right shift snippet when in 3-second loop mode
-  const handleShiftSnippetLeft = () => {
-    if (isNumber(threeSecondLoopState) && threeSecondLoopState > 0) {
-      const newCurrentNumber = threeSecondLoopState - 0.5;
-      setThreeSecondLoopState(newCurrentNumber);
-    }
-  };
-
-  const handleShiftSnippetRight = () => {
-    if (isNumber(threeSecondLoopState) && threeSecondLoopState > 0) {
-      const newCurrentNumber = threeSecondLoopState + 0.5;
-      setThreeSecondLoopState(newCurrentNumber);
-    }
-  };
+  const {
+    handleTimeUpdate,
+    handleLoadedMetadata,
+    handlePlayFromHere,
+    handleFromHere,
+    handlePause,
+    handleRewind,
+    handlePausePlay,
+    handleJumpToSentenceViaKeys,
+    handleJumpNext,
+    handleJumpPrev,
+    handleJumpCurrent,
+    handleLoopSentenceCombo,
+    handleLoopThisSentence,
+    handleUpdateLoopedSentence,
+    handleShiftLoopSentence,
+    handleShiftLoopSentenceForward,
+    handleShrinkLoop,
+    handleLoopThis3Second,
+    handleRewindOrToggleContract,
+    handleShiftSnippetLeft,
+    handleShiftSnippetRight,
+  } = useMediaControls({
+    ref,
+    setCurrentTime,
+    setMediaDuration,
+    masterPlayComprehensive,
+    mediaDuration,
+    loopTranscriptState,
+    setLoopTranscriptState,
+    threeSecondLoopState,
+    setThreeSecondLoopState,
+    setContractThreeSecondLoopState,
+    formattedTranscriptMemoized,
+  });
 
   const handleToggleReviewMode = () => {
     setIsInReviewMode((prev) => !prev);
@@ -730,23 +629,6 @@ export const LearningScreenProvider = ({
     const contextSentence = sentenceMapMemoized[contextId];
     if (contextSentence) {
       handleFromHere(contextSentence.time);
-    }
-  };
-
-  const handleJumpToSentenceViaKeys = (nextIndex: number) => {
-    if (!masterPlayComprehensive) {
-      return;
-    }
-
-    const nextTimeToFollow =
-      nextIndex === 1
-        ? masterPlayComprehensive?.nextSentence
-        : nextIndex === 0
-          ? masterPlayComprehensive?.thisSentence
-          : masterPlayComprehensive?.prevSentence;
-
-    if (isNumber(nextTimeToFollow) && nextTimeToFollow >= 0) {
-      handleFromHere(nextTimeToFollow);
     }
   };
 
@@ -823,31 +705,6 @@ export const LearningScreenProvider = ({
     });
     if (result) {
       setSentenceRepsState(sentenceRepsState + 1);
-    }
-  };
-
-  const handleShiftLoopSentence = (shiftForward: boolean) => {
-    if (shiftForward) {
-      setLoopTranscriptState((prev) => prev.slice(1));
-    }
-  };
-
-  const handleUpdateLoopedSentence = (extendSentenceLoop: boolean) => {
-    if (extendSentenceLoop) {
-      const lastSentenceId =
-        loopTranscriptState[loopTranscriptState.length - 1]?.id;
-      if (!lastSentenceId) {
-        return;
-      }
-      const lastSentenceIdIndex = formattedTranscriptMemoized.findIndex(
-        (i) => i.id === lastSentenceId,
-      );
-
-      const thisItemData = formattedTranscriptMemoized[lastSentenceIdIndex + 1];
-
-      setLoopTranscriptState((prev) => [...prev, thisItemData]);
-    } else {
-      setLoopTranscriptState((prev) => prev.slice(0, -1));
     }
   };
 
