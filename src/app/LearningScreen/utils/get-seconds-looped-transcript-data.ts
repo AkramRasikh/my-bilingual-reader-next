@@ -13,7 +13,7 @@ export const getSecondsLoopedTranscriptData = ({
   loopEndTime: number;
   mediaDuration: number | null;
   includeSecondsArrays?: boolean;
-}): OverlappingSnippetData[] | void => {
+}): OverlappingSnippetData[] => {
   const results: OverlappingSnippetData[] = [];
 
   if (formattedTranscriptState.length === 0) {

@@ -27,6 +27,7 @@ import { useWordMetaMemoized } from './hooks/useWordMetaMemoized';
 import { useTopicWordsForReviewMemoized } from './hooks/useTopicWordsForReviewMemoized';
 import { useSnippetDueMemoized } from './hooks/useSnippetDueMemoized';
 import { useLoopedTranscriptMemoized } from './hooks/useLoopedTranscriptMemoized';
+import { useOverlappingTextMemoized } from './hooks/useOverlappingTextMemoized';
 import {
   ContentTypes,
   FormattedTranscriptTypes,
@@ -242,7 +243,6 @@ export const LearningScreenProvider = ({
   } = useFetchData();
 
   const selectedContentTitleState = selectedContentStateMemoized.title;
-
   const content = selectedContentStateMemoized.content;
   const contentIndex = selectedContentStateMemoized.contentIndex;
   const contentId = selectedContentStateMemoized.id;
@@ -976,37 +976,11 @@ export const LearningScreenProvider = ({
     firstSentenceDueTime,
   ]);
 
-  const overlappingTextMemoized: OverlappingTextTypes | null = useMemo(() => {
-    if (
-      !threeSecondLoopState ||
-      !overlappingSnippetDataMemoised ||
-      overlappingSnippetDataMemoised.length === 0
-    ) {
-      return null;
-    }
-
-    const overlappingIds = overlappingSnippetDataMemoised.map(
-      (item) => item.id,
-    );
-    const entries = loopedTranscriptMemoized.filter((x) =>
-      overlappingIds.includes(x.id),
-    );
-
-    const targetLang = entries.map((item) => item.targetLang).join('');
-    const baseLang = entries.map((item) => item.baseLang).join('');
-
-    return {
-      targetLang,
-      baseLang,
-      suggestedFocusText: sliceTranscriptViaPercentageOverlap(
-        overlappingSnippetDataMemoised,
-      ),
-    };
-  }, [
-    overlappingSnippetDataMemoised,
+  const overlappingTextMemoized = useOverlappingTextMemoized({
     threeSecondLoopState,
+    overlappingSnippetDataMemoised,
     loopedTranscriptMemoized,
-  ]);
+  });
 
   const overlappedSentencesViableForReviewMemoized =
     useOverlappedSentencesViableForReviewMemo(
