@@ -1,5 +1,3 @@
-import { isNumber } from '@/utils/is-number';
-import { useEffect, useRef } from 'react';
 import { OverlappingSnippetData } from '@/app/types/shared-types';
 
 export const threeSecondLoopLogicLegacy = ({
@@ -66,63 +64,3 @@ export const threeSecondLoopLogicLegacy = ({
     }
   }
 };
-
-const useManageThreeSecondLoopLegacy = ({
-  threeSecondLoopState,
-  contractThreeSecondLoopState,
-  formattedTranscriptState,
-  setOverlappingSnippetDataState,
-  overlappingSnippetDataState,
-  mediaDuration,
-}: {
-  threeSecondLoopState: number | null;
-  contractThreeSecondLoopState: boolean;
-  formattedTranscriptState: any[];
-  setOverlappingSnippetDataState: (data: OverlappingSnippetData[]) => void;
-  overlappingSnippetDataState: OverlappingSnippetData[];
-  mediaDuration?: number;
-}) => {
-  const refSeconds = useRef<number | null>(null);
-  const prevContractThreeSecondLoopState = useRef(contractThreeSecondLoopState);
-
-  useEffect(() => {
-    if (!threeSecondLoopState && overlappingSnippetDataState?.length > 0) {
-      setOverlappingSnippetDataState([]);
-    }
-    if (!formattedTranscriptState || formattedTranscriptState.length === 0)
-      return;
-
-    const threeSecondChanged =
-      isNumber(threeSecondLoopState) &&
-      refSeconds.current !== threeSecondLoopState;
-
-    const contractChanged =
-      prevContractThreeSecondLoopState.current !== contractThreeSecondLoopState;
-
-    if (threeSecondChanged || contractChanged) {
-      const startTime =
-        threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
-      const endTime =
-        threeSecondLoopState + (contractThreeSecondLoopState ? 0.75 : 1.5);
-
-      threeSecondLoopLogicLegacy({
-        refSeconds,
-        threeSecondLoopState,
-        formattedTranscriptState,
-        setState: setOverlappingSnippetDataState,
-        startTime,
-        endTime,
-        mediaDuration,
-      });
-    }
-
-    prevContractThreeSecondLoopState.current = contractThreeSecondLoopState;
-  }, [
-    threeSecondLoopState,
-    contractThreeSecondLoopState,
-    formattedTranscriptState,
-    mediaDuration,
-  ]);
-};
-
-export default useManageThreeSecondLoopLegacy;
