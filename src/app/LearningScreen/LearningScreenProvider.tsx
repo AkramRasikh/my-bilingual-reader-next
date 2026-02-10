@@ -26,6 +26,7 @@ import { useTranscriptMetaMemoized } from './hooks/useTranscriptMetaMemoized';
 import { useWordMetaMemoized } from './hooks/useWordMetaMemoized';
 import { useTopicWordsForReviewMemoized } from './hooks/useTopicWordsForReviewMemoized';
 import { useSnippetDueMemoized } from './hooks/useSnippetDueMemoized';
+import { useLoopedTranscriptMemoized } from './hooks/useLoopedTranscriptMemoized';
 import {
   ContentTypes,
   FormattedTranscriptTypes,
@@ -33,6 +34,7 @@ import {
   Snippet,
 } from '../types/content-types';
 import { getUniqueSegmentOfArray } from './utils/get-unique-segment-of-array';
+import { getLoopTranscriptSegment as getLoopTranscriptSegmentFromTimes } from './utils/get-loop-transcript-segment';
 import { OverlappingSnippetData, ReviewDataTypes } from '../types/shared-types';
 import { useGamepad } from './experimental/useGamePad';
 import { useInputActions } from './experimental/useInputActions';
@@ -524,45 +526,26 @@ export const LearningScreenProvider = ({
   }: {
     startTime: number;
     endTime: number;
-  }) => {
-    const secondsStateSliceArr = getUniqueSegmentOfArray(
-      secondsStateMemoized,
-      startTime,
-      endTime,
-    );
-
-    const filtered = secondsStateSliceArr.map(
-      (secondsSentenceId) => sentenceMapMemoized[secondsSentenceId],
-    );
-
-    return filtered;
-  };
-
-  const loopedTranscriptMemoized = useMemo(() => {
-    if (!threeSecondLoopState || secondsStateMemoized.length === 0) {
-      return [];
-    }
-
-    const startTime =
-      threeSecondLoopState - (contractThreeSecondLoopState ? 0.75 : 1.5);
-    const endTime =
-      threeSecondLoopState + (contractThreeSecondLoopState ? 0.75 : 1.5);
-
-    return getLoopTranscriptSegment({
+  }) =>
+    getLoopTranscriptSegmentFromTimes({
+      secondsState: secondsStateMemoized,
+      sentenceMap: sentenceMapMemoized,
       startTime,
       endTime,
     });
-  }, [
-    secondsStateMemoized,
-    contractThreeSecondLoopState,
-    threeSecondLoopState,
-  ]);
 
   useEffect(() => {
     if (isInReviewMode) {
       setStudyFromHereTimeState(null);
     }
   }, [isInReviewMode, studyFromHereTimeState]);
+
+  const loopedTranscriptMemoized = useLoopedTranscriptMemoized({
+    threeSecondLoopState,
+    secondsState: secondsStateMemoized,
+    contractThreeSecondLoopState,
+    getLoopTranscriptSegment,
+  });
 
   const overlappingSnippetDataMemoised = useManageThreeSecondLoopMemo({
     threeSecondLoopState,
