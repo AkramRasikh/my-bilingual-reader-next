@@ -1,7 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import { mockSaveSnippetAPIE2E, setupApiMocks } from './helpers/mock-api';
 import { landingMetaData } from './helpers/landing-meta-data';
-import { mockEasyLinguisticsRadioSignLangIslandSnippets } from './mock-data/easy-linguistics-radio-sign-lang-island';
 import {
   checkSentenceCount,
   checkSnippetsDueMeta,
