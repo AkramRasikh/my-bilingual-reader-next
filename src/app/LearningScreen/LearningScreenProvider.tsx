@@ -25,6 +25,7 @@ import { getSecondsLoopedTranscriptData } from './utils/get-seconds-looped-trans
 import { useSecondsStateMemoized } from './hooks/useSecondsStateMemoized';
 import { useTranscriptMetaMemoized } from './hooks/useTranscriptMetaMemoized';
 import { useWordMetaMemoized } from './hooks/useWordMetaMemoized';
+import { useTopicWordsForReviewMemoized } from './hooks/useTopicWordsForReviewMemoized';
 import {
   ContentTypes,
   FormattedTranscriptTypes,
@@ -954,43 +955,11 @@ export const LearningScreenProvider = ({
     ? formattedTranscriptMemoized.slice(studyFromHereTimeState)
     : formattedTranscriptMemoized;
 
-  const topicWordsForReviewMemoized = useMemo(() => {
-    if (!isInReviewMode || wordsForSelectedTopicMemoized?.length === 0) {
-      return [];
-    }
-
-    const sentenceIdsForReview = [] as FormattedTranscriptTypes['id'][];
-
-    learnFormattedTranscript.forEach((transcriptEl) => {
-      if (transcriptEl.isDue) {
-        sentenceIdsForReview.push(transcriptEl.id);
-      }
-    });
-
-    if (sentenceIdsForReview.length === 0) {
-      return [];
-    }
-    const now = new Date();
-    const topicWordsForReviewMemoized =
-      [] as TopicWordsForReviewMemoizedProps[];
-    wordsForSelectedTopicMemoized.forEach((wordItem) => {
-      const firstContext = wordItem.contexts[0];
-
-      if (
-        sentenceIdsForReview.includes(firstContext) &&
-        isDueCheck(wordItem, now)
-      ) {
-        topicWordsForReviewMemoized.push({
-          ...wordItem,
-          time: learnFormattedTranscript.find(
-            (item) => item.id === firstContext,
-          )?.time,
-        });
-      }
-    });
-
-    return topicWordsForReviewMemoized;
-  }, [learnFormattedTranscript, isInReviewMode, wordsForSelectedTopicMemoized]);
+  const topicWordsForReviewMemoized = useTopicWordsForReviewMemoized({
+    learnFormattedTranscript,
+    isInReviewMode,
+    wordsForSelectedTopicMemoized,
+  });
 
   const { overlappingSnippetElements, snippetsWithVocab } =
     useSavedSnippetsMemoized(
