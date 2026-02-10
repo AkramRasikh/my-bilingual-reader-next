@@ -15,7 +15,6 @@ import {
   useSavedSnippetsMemoized,
 } from './hooks/useSavedSnippetsMemoized';
 import { useOverlappedSentencesViableForReviewMemo } from './hooks/useOverlappedSentencesViableForReviewMemo';
-import { isDueCheck } from '@/utils/is-due-check';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { WordTypes } from '../types/word-types';
 import { sliceTranscriptViaPercentageOverlap } from './utils/slice-transcript-via-percentage-overlap';
@@ -26,6 +25,7 @@ import { useSecondsStateMemoized } from './hooks/useSecondsStateMemoized';
 import { useTranscriptMetaMemoized } from './hooks/useTranscriptMetaMemoized';
 import { useWordMetaMemoized } from './hooks/useWordMetaMemoized';
 import { useTopicWordsForReviewMemoized } from './hooks/useTopicWordsForReviewMemoized';
+import { useSnippetDueMemoized } from './hooks/useSnippetDueMemoized';
 import {
   ContentTypes,
   FormattedTranscriptTypes,
@@ -969,38 +969,10 @@ export const LearningScreenProvider = ({
     );
 
   const { snippetsWithDueStatusMemoized, earliestSnippetDueTime } =
-    useMemo(() => {
-      if (
-        !snippetsWithVocab ||
-        snippetsWithVocab.length === 0 ||
-        !enableSnippetReviewState
-      ) {
-        return {
-          snippetsWithDueStatusMemoized: [],
-          earliestSnippetDueTime: null,
-        };
-      }
-      const now = new Date();
-
-      const snippetsWithDueStatusMemoized = [] as Snippet[];
-      snippetsWithVocab?.forEach((item) => {
-        if (isDueCheck(item, now)) {
-          snippetsWithDueStatusMemoized.push(item);
-        }
-      });
-
-      const earliestSnippetDueTime =
-        enableSnippetReviewState && snippetsWithDueStatusMemoized.length > 0
-          ? snippetsWithDueStatusMemoized.reduce((earliest, curr) =>
-              curr.time < earliest.time ? curr : earliest,
-            ).time
-          : null;
-
-      return {
-        snippetsWithDueStatusMemoized,
-        earliestSnippetDueTime,
-      };
-    }, [snippetsWithVocab, enableSnippetReviewState]);
+    useSnippetDueMemoized({
+      snippetsWithVocab,
+      enableSnippetReviewState,
+    });
 
   const firstTime = useMemo(() => {
     if (!isInReviewMode) {
