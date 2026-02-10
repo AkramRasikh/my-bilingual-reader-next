@@ -24,6 +24,7 @@ import useManageThreeSecondLoopMemo from './hooks/useManageThreeSecondLoopMemo';
 import { getSecondsLoopedTranscriptData } from './utils/get-seconds-looped-transcript-data';
 import { useSecondsStateMemoized } from './hooks/useSecondsStateMemoized';
 import { useTranscriptMetaMemoized } from './hooks/useTranscriptMetaMemoized';
+import { useWordMetaMemoized } from './hooks/useWordMetaMemoized';
 import {
   ContentTypes,
   FormattedTranscriptTypes,
@@ -770,52 +771,11 @@ export const LearningScreenProvider = ({
     contentMetaWordMemoized,
     wordsForSelectedTopicMemoized,
     firstWordDueTime,
-  } = useMemo(() => {
-    if (wordsState.length === 0) {
-      return {
-        contentMetaWordMemoized: [],
-        wordsForSelectedTopicMemoized: [],
-        firstWordDueTime: null,
-      };
-    }
-
-    const now = new Date();
-
-    const allWords = [] as WordTypes[];
-    const dueWords = [] as WordTypes[];
-
-    wordsState.forEach((wordItem) => {
-      if (wordItem.originalContext === selectedContentTitleState) {
-        allWords.push(wordItem);
-        if (wordItem.isDue) {
-          dueWords.push(wordItem);
-        } else if (isDueCheck(wordItem, now)) {
-          dueWords.push(wordItem);
-        }
-      }
-    });
-
-    // Sort all words by due status
-    const sortedAllWords = allWords.sort(
-      (a, b) => Number(b.isDue) - Number(a.isDue),
-    );
-
-    const firstWordDueTime =
-      enableWordReviewState && dueWords.length > 0
-        ? (dueWords.reduce((earliest, curr) =>
-            (curr.time ?? Infinity) < (earliest.time ?? Infinity)
-              ? curr
-              : earliest,
-          ).time ?? null)
-        : null;
-    // comeback to fix this!
-
-    return {
-      contentMetaWordMemoized: dueWords,
-      wordsForSelectedTopicMemoized: sortedAllWords,
-      firstWordDueTime,
-    };
-  }, [selectedContentTitleState, wordsState, enableWordReviewState]);
+  } = useWordMetaMemoized({
+    selectedContentTitleState,
+    wordsState,
+    enableWordReviewState,
+  });
 
   const handleBulkReviews = async () => {
     // const emptyCard = getEmptyCard();

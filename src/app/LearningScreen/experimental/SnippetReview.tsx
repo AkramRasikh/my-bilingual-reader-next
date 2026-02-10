@@ -69,8 +69,6 @@ const SnippetReview = ({
     setEndIndexKeyState(endIndexKeyState - 1);
   };
 
-
-  
   const onMoveRight = () => {
     setStartIndexKeyState(startIndexKeyState + 1);
     setEndIndexKeyState(endIndexKeyState + 1);
