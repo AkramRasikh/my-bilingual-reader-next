@@ -22,11 +22,15 @@ export const useSavedSnippetsMemoized = (
 ) => {
   return useMemo(() => {
     const overlappingSnippetElements = [] as SavedSnippetsMemoizedProps[];
-    const snippetsWithVocab = [] as Snippet &
-      Pick<ContentTranscriptTypes, 'vocab'>;
+    const snippetsWithVocab: Array<
+      Snippet & Pick<ContentTranscriptTypes, 'vocab'>
+    > = [];
 
     if (!snippets) {
-      return [];
+      return {
+        overlappingSnippetElements,
+        snippetsWithVocab,
+      };
     }
 
     snippets.forEach((snippetData) => {
@@ -45,7 +49,10 @@ export const useSavedSnippetsMemoized = (
       });
 
       if (!overlappingSnippetMetaDataGivenTime) {
-        return;
+        return {
+          overlappingSnippetElements,
+          snippetsWithVocab,
+        };
       }
 
       const snippetDataForOverlappingSnippetData = {
