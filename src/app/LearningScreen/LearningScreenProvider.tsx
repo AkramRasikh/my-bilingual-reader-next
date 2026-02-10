@@ -18,13 +18,13 @@ import { useOverlappedSentencesViableForReviewMemo } from './hooks/useOverlapped
 import { isDueCheck } from '@/utils/is-due-check';
 import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
 import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
-import { mapSentenceIdsToSeconds } from './utils/map-sentence-ids-to-seconds';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { WordTypes } from '../types/word-types';
 import { sliceTranscriptViaPercentageOverlap } from './utils/slice-transcript-via-percentage-overlap';
 import { isTrimmedLang } from '../languages';
 import useManageThreeSecondLoopMemo from './hooks/useManageThreeSecondLoopMemo';
 import { getSecondsLoopedTranscriptData } from './utils/get-seconds-looped-transcript-data';
+import { useSecondsStateMemoized } from './hooks/useSecondsStateMemoized';
 import {
   ContentTypes,
   FormattedTranscriptTypes,
@@ -584,17 +584,10 @@ export const LearningScreenProvider = ({
     }
   };
 
-  const secondsStateMemoized = useMemo(() => {
-    if (!mediaDuration) {
-      return [];
-    }
-    const arrOfSeconds = mapSentenceIdsToSeconds({
-      content: selectedContentStateMemoized.content,
-      duration: mediaDuration,
-    });
-
-    return arrOfSeconds;
-  }, [mediaDuration, selectedContentStateMemoized]);
+  const secondsStateMemoized = useSecondsStateMemoized({
+    content,
+    mediaDuration,
+  });
 
   const getLoopTranscriptSegment = ({
     startTime,
