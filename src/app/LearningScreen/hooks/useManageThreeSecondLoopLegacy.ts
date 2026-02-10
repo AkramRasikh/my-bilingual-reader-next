@@ -49,7 +49,9 @@ export const threeSecondLoopLogicLegacy = ({
         percentageOverlap: Number(percentageOverlap.toFixed(2)),
         targetLang: item.targetLang,
         startPoint: Number(startPoint.toFixed(2)),
-        vocab: item?.vocab,
+        vocab: item?.vocab ?? [
+          { surfaceForm: item.targetLang, meaning: 'n/a' },
+        ],
       });
     }
   });

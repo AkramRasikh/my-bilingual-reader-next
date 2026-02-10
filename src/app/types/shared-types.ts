@@ -1,4 +1,5 @@
 import { Card, State } from 'ts-fsrs';
+import { Vocab } from './content-types';
 
 export interface ReviewDataTypes extends Card {
   ease?: number;
@@ -15,4 +16,5 @@ export interface OverlappingSnippetData {
   startPoint: number;
   overlappedSeconds?: number[];
   sentenceSeconds?: number[];
+  vocab: Vocab[];
 }

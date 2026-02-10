@@ -13,6 +13,18 @@ const SentenceBreakdownHover = ({
   color,
   wordIsSaved,
 }) => {
+  const placeholder = meaning === 'n/a';
+  if (placeholder) {
+    return (
+      <span
+        style={{
+          color: 'black',
+        }}
+      >
+        {surfaceForm}
+      </span>
+    );
+  }
   return (
     <HoverCard>
       <HoverCardTrigger

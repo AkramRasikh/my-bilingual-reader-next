@@ -449,10 +449,6 @@ export function useGamepad(
                 }
                 return;
               }
-              if (index === BUTTONS.B_BTN && lButtonHeldRef.current) {
-                dispatchSnippetLoopEvent('snippet-loop-save');
-                return;
-              }
             }
 
             // Map buttons to actions
