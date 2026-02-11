@@ -33,6 +33,8 @@ const LearningScreenLeftSideContainer = () => {
     snippetsWithDueStatusMemoized,
     isInReviewMode,
     isBreakingDownSentenceArrState,
+    currentTime,
+    sentenceMapMemoized,
   } = useLearningScreen();
   const { languageSelectedState, handleSaveWord } = useFetchData();
 
@@ -69,6 +71,9 @@ const LearningScreenLeftSideContainer = () => {
           threeSecondLoopState={threeSecondLoopState}
           handleSaveSnippet={handleSaveSnippet}
           overlappingTextMemoized={overlappingTextMemoized}
+          contentMetaWordMemoized={wordsForSelectedTopic}
+          currentTime={currentTime}
+          sentenceMapMemoized={sentenceMapMemoized}
         />
       ) : (
         <div>

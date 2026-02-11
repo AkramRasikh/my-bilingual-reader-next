@@ -5,6 +5,31 @@ import clsx from 'clsx';
 import LearningScreenLoopBtn from './LearningScreen/LearningScreenLoopBtn';
 import { Button } from '@/components/ui/button';
 import { Loader2, SaveIcon } from 'lucide-react';
+import VideoOverlay from './VideoOverlay';
+import { WordTypes } from './types/word-types';
+import { SentenceMapItemTypes } from './types/content-types';
+
+interface OverlappingTextMemoized {
+  targetLang: string;
+  baseLang?: string;
+  suggestedFocusText?: string;
+}
+
+interface VideoPlayerProps {
+  url: string;
+  ref: React.RefObject<HTMLVideoElement | HTMLAudioElement>;
+  handleTimeUpdate: () => void;
+  onLoadedMetadata: () => void;
+  setIsVideoPlaying: (playing: boolean) => void;
+  threeSecondLoopState: number | null;
+  handleSaveSnippet?: (
+    data: OverlappingTextMemoized & { focusedText: string },
+  ) => Promise<void>;
+  overlappingTextMemoized: OverlappingTextMemoized | null;
+  contentMetaWordMemoized?: WordTypes[];
+  currentTime?: number;
+  sentenceMapMemoized?: Record<string, SentenceMapItemTypes>;
+}
 
 const VideoPlayer = ({
   url,
@@ -15,13 +40,17 @@ const VideoPlayer = ({
   threeSecondLoopState,
   handleSaveSnippet,
   overlappingTextMemoized,
-}) => {
+  contentMetaWordMemoized = [],
+  currentTime = 0,
+  sentenceMapMemoized = {},
+}: VideoPlayerProps) => {
   const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
     useState(false);
   const [highlightedTextFocusLoopState, setHighlightedTextFocusLoopState] =
     useState('');
+  const [showTransliteration, setShowTransliteration] = useState(false);
 
-  const masterTextRef = useRef(null);
+  const masterTextRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -58,13 +87,17 @@ const VideoPlayer = ({
       video.removeEventListener('play', handlePlay);
       video.removeEventListener('pause', handlePause);
     };
-  }, []);
+  }, [ref, setIsVideoPlaying]);
 
   const handleSaveSnippetFlow = async () => {
+    if (!handleSaveSnippet || !overlappingTextMemoized) return;
+
     try {
       setIsLoadingSaveSnippetState(true);
       await handleSaveSnippet({
-        ...overlappingTextMemoized,
+        targetLang: overlappingTextMemoized.targetLang,
+        baseLang: overlappingTextMemoized.baseLang,
+        suggestedFocusText: overlappingTextMemoized.suggestedFocusText,
         focusedText: highlightedTextFocusLoopState,
       });
     } finally {
@@ -75,16 +108,35 @@ const VideoPlayer = ({
 
   return (
     <div className='flex flex-col'>
-      <video
-        ref={ref}
-        src={videoUrl}
-        controls
-        className='w-full rounded-lg shadow-lg m-auto'
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={onLoadedMetadata}
-      >
-        Your browser does not support the video tag.
-      </video>
+      <div className='relative'>
+        <video
+          ref={ref as React.RefObject<HTMLVideoElement>}
+          src={videoUrl}
+          controls
+          className='w-full rounded-lg shadow-lg m-auto'
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={onLoadedMetadata}
+        >
+          Your browser does not support the video tag.
+        </video>
+        <VideoOverlay
+          contentMetaWordMemoized={contentMetaWordMemoized}
+          currentTime={currentTime}
+          showTransliteration={showTransliteration}
+          sentenceMapMemoized={sentenceMapMemoized}
+        />
+      </div>
+      <div className='flex items-center gap-2 px-2 py-1'>
+        <label className='flex items-center gap-2 text-sm cursor-pointer'>
+          <input
+            type='checkbox'
+            checked={showTransliteration}
+            onChange={(e) => setShowTransliteration(e.target.checked)}
+            className='cursor-pointer'
+          />
+          <span>Show transliteration</span>
+        </label>
+      </div>
       {threeSecondLoopState && <LearningScreenLoopUI />}{' '}
       <div
         className={clsx(

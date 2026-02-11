@@ -634,6 +634,8 @@ export const LearningScreenProvider = ({
     }
   };
 
+  const contentSnippets = selectedContentStateMemoized?.snippets || [];
+
   const {
     contentMetaWordMemoized,
     wordsForSelectedTopicMemoized,
@@ -642,6 +644,7 @@ export const LearningScreenProvider = ({
     selectedContentTitleState,
     wordsState,
     enableWordReviewState,
+    contentSnippets,
   });
 
   const handleBulkReviews = async () => {
@@ -990,7 +993,7 @@ export const LearningScreenProvider = ({
         overlappingTextMemoized,
         savedSnippetsMemoized: overlappingSnippetElements,
         handleUpdateSnippet,
-        contentSnippets: selectedContentStateMemoized?.snippets || [],
+        contentSnippets,
         sentenceMapMemoized,
         getSentenceDataOfOverlappingWordsDuringSave,
         setScrollToElState,
