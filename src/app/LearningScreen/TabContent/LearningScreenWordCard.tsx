@@ -4,6 +4,7 @@ import useLearningScreen from '../useLearningScreen';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import clsx from 'clsx';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
+import { getWordTimeFromSnippets } from '@/utils/get-word-time-from-snippets';
 
 const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
   const [collapseState, setCollapseState] = useState(false);
@@ -23,27 +24,7 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
   } = useFetchData();
 
   const wordHasOverlappingSnippetTime = useMemo(() => {
-    // Preference non-preSnippets first
-    const matchesWord = (item) =>
-      item?.focusedText?.includes(word.surfaceForm) ||
-      item?.focusedText?.includes(word.baseForm) ||
-      item?.suggestedFocusText?.includes(word.surfaceForm) ||
-      item?.suggestedFocusText?.includes(word.baseForm);
-
-    // Try to find a non-preSnippet first
-    let overlappedWord = contentSnippets.find(
-      (item) => matchesWord(item) && !item?.isPreSnippet,
-    );
-
-    // Fall back to any matching snippet (including preSnippets)
-    if (!overlappedWord) {
-      overlappedWord = contentSnippets.find(matchesWord);
-    }
-
-    if (overlappedWord) {
-      const time = overlappedWord.time;
-      return overlappedWord?.isContract ? time - 0.75 : time - 1.5;
-    }
+    return getWordTimeFromSnippets(word, contentSnippets);
   }, [word, contentSnippets]);
 
   useEffect(() => {

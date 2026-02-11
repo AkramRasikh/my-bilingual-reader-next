@@ -1,11 +1,14 @@
 import { useMemo } from 'react';
 import { isDueCheck } from '@/utils/is-due-check';
 import { WordTypes } from '@/app/types/word-types';
+import { Snippet } from '@/app/types/content-types';
+import { getWordTimeFromSnippets } from '@/utils/get-word-time-from-snippets';
 
 type UseWordMetaMemoizedArgs = {
   selectedContentTitleState: string;
   wordsState: WordTypes[];
   enableWordReviewState: boolean;
+  contentSnippets: Snippet[];
 };
 
 type WordMetaMemoized = {
@@ -18,6 +21,7 @@ export const useWordMetaMemoized = ({
   selectedContentTitleState,
   wordsState,
   enableWordReviewState,
+  contentSnippets,
 }: UseWordMetaMemoizedArgs): WordMetaMemoized => {
   return useMemo(() => {
     if (wordsState.length === 0) {
@@ -35,11 +39,18 @@ export const useWordMetaMemoized = ({
 
     wordsState.forEach((wordItem) => {
       if (wordItem.originalContext === selectedContentTitleState) {
-        allWords.push(wordItem);
-        if (wordItem.isDue) {
-          dueWords.push(wordItem);
-        } else if (isDueCheck(wordItem, now)) {
-          dueWords.push(wordItem);
+        // Get more precise time from overlapping snippets
+        const snippetTime = getWordTimeFromSnippets(wordItem, contentSnippets);
+        const wordWithPreciseTime = {
+          ...wordItem,
+          time: snippetTime ?? wordItem.time,
+        };
+
+        allWords.push(wordWithPreciseTime);
+        if (wordWithPreciseTime.isDue) {
+          dueWords.push(wordWithPreciseTime);
+        } else if (isDueCheck(wordWithPreciseTime, now)) {
+          dueWords.push(wordWithPreciseTime);
         }
       }
     });
@@ -62,5 +73,10 @@ export const useWordMetaMemoized = ({
       wordsForSelectedTopicMemoized: sortedAllWords,
       firstWordDueTime,
     };
-  }, [selectedContentTitleState, wordsState, enableWordReviewState]);
+  }, [
+    selectedContentTitleState,
+    wordsState,
+    enableWordReviewState,
+    contentSnippets,
+  ]);
 };
