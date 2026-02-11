@@ -11,6 +11,7 @@ const SentenceBreakdownTargetLang = ({
   handleAddIndexToArr,
   handleOnMouseExit,
   languageSelectedState,
+  isSnippetReview,
 }) => {
   const isArabic = languageSelectedState === arabic;
   const addSpace = !isTrimmedLang(languageSelectedState);
@@ -41,6 +42,8 @@ const SentenceBreakdownTargetLang = ({
                 color={color}
                 wordIsSaved={wordIsSaved}
                 surfaceForm={surfaceForm}
+                isSnippetReview={isSnippetReview}
+                languageSelectedState={languageSelectedState}
               />
             ) : (
               <SentenceBreakdownHover
@@ -49,6 +52,8 @@ const SentenceBreakdownTargetLang = ({
                 meaning={meaning}
                 color={color}
                 wordIsSaved={wordIsSaved}
+                isSnippetReview={isSnippetReview}
+                languageSelectedState={languageSelectedState}
               />
             )}
             {addSpace && '\u00A0'}

@@ -5,6 +5,8 @@ import {
 } from '@/components/ui/hover-card';
 
 import { Button } from '@/components/ui/button';
+import { pinyin } from 'pinyin-pro';
+import { chinese } from '@/app/languages';
 
 const SentenceBreakdownHover = ({
   handleSaveFunc,
@@ -12,8 +14,14 @@ const SentenceBreakdownHover = ({
   meaning,
   color,
   wordIsSaved,
+  isSnippetReview,
+  languageSelectedState,
 }) => {
   const placeholder = meaning === 'n/a';
+  const showPinyin = isSnippetReview && languageSelectedState === chinese;
+  const pinyinText = showPinyin
+    ? pinyin(surfaceForm, { toneType: 'symbol' })
+    : '';
   if (placeholder) {
     return (
       <span
@@ -34,11 +42,15 @@ const SentenceBreakdownHover = ({
         }}
       >
         <span
+          className={
+            showPinyin ? 'inline-flex flex-col items-center' : undefined
+          }
           style={{
             color,
           }}
         >
-          {surfaceForm}
+          <span>{surfaceForm}</span>
+          {showPinyin && <span className='text-[12px]'>{pinyinText}</span>}
         </span>
       </HoverCardTrigger>
       <HoverCardContent

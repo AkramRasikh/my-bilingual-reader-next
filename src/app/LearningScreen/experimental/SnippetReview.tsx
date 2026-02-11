@@ -339,6 +339,7 @@ const SnippetReview = ({
                       handleSaveFunc={handleSaveFunc}
                       sentenceStructure={''}
                       languageSelectedState={languageSelectedState}
+                      isSnippetReview
                     />
                   </div>
                 )}
