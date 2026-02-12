@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { PauseIcon, PlayIcon, RabbitIcon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useLearningScreen from '../useLearningScreen';
-import FormattedSentence from '@/components/custom/FormattedSentence';
+import FormattedSentenceSnippet from '@/components/custom/FormattedSentenceSnippet';
 import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
@@ -13,8 +13,9 @@ import HighlightedText from '@/components/custom/HighlightedText';
 import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
 import { ContentTranscriptTypes, Snippet } from '@/app/types/content-types';
 import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
-import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
 import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/useSnippetLoopEvents';
+import getColorByIndex from '@/utils/get-color-by-index';
+import { pinyin } from 'pinyin-pro';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -246,30 +247,83 @@ const SnippetReview = ({
     snippetData.isContracted,
   ]);
 
-  const { targetLangformatted, wordsFromSentence, wordsInSuggestedText } =
-    useMemo(() => {
-      const wordsInSuggestedText = findAllInstancesOfWordsInSentence(
-        snippetData?.focusedText || snippetData?.suggestedFocusText || '',
-        wordsState,
-      );
+  const {
+    // targetLangformatted,
+    wordsFromSentence,
+    wordsInSuggestedText,
+    targetLangWithVocabStartIndex,
+  } = useMemo(() => {
+    const wordsInSuggestedText = findAllInstancesOfWordsInSentence(
+      snippetData?.focusedText || snippetData?.suggestedFocusText || '',
+      wordsState,
+    );
 
-      const wordsFromSentence = findAllInstancesOfWordsInSentence(
-        snippetData.targetLang,
-        wordsState,
-      );
+    const wordsFromSentence = findAllInstancesOfWordsInSentence(
+      snippetData.targetLang,
+      wordsState,
+    );
 
-      const targetLangformatted = underlineWordsInSentence(
-        snippetData.targetLang,
-        wordsFromSentence,
-        true,
-      );
+    const targetLangformatted = underlineWordsInSentence(
+      snippetData.targetLang,
+      wordsFromSentence,
+      true,
+    );
 
-      return {
-        targetLangformatted,
-        wordsFromSentence,
-        wordsInSuggestedText,
-      };
-    }, [snippetData, wordsState]);
+    // Build a new array with vocab startIndex mapped onto the relevant targetLangformatted chunks
+    let targetLangWithVocabStartIndex = [...targetLangformatted];
+    if (snippetData.vocab && snippetData.vocab.length > 0) {
+      snippetData.vocab.forEach((vocabItem, vocabIdx) => {
+        const { surfaceForm } = vocabItem;
+        if (!surfaceForm) return;
+        // Find all occurrences of the vocab surfaceForm in the sentence
+        let start = 0;
+        while (start < targetLangformatted.length) {
+          // Try to match the vocab surfaceForm at this position
+          let match = true;
+          for (let j = 0; j < surfaceForm.length; j++) {
+            if (targetLangformatted[start + j]?.text !== surfaceForm[j]) {
+              match = false;
+              break;
+            }
+          }
+          if (match) {
+            // Assign startIndex to all matched chars
+            for (let j = 0; j < surfaceForm.length; j++) {
+              targetLangWithVocabStartIndex[start + j] = {
+                ...targetLangWithVocabStartIndex[start + j],
+                startIndex: vocabIdx,
+              };
+            }
+            // Move past this match to avoid overlapping
+            start += surfaceForm.length;
+          } else {
+            start++;
+          }
+        }
+      });
+    }
+
+    return {
+      targetLangformatted,
+      wordsFromSentence,
+      wordsInSuggestedText,
+      targetLangWithVocabStartIndex,
+    };
+  }, [snippetData, wordsState]);
+
+  const pinyinTing = targetLangWithVocabStartIndex.slice(
+    Math.max(0, matchStartKey - 5),
+    // matchEndKey,
+    Math.min(targetLangWithVocabStartIndex.length, matchEndKey + 6),
+  );
+  // console.log('## ', {
+  //   targetLangformatted,
+  //   vocab,
+  //   targetLangWithVocabStartIndex,
+  //   matchStartKey,
+  //   matchEndKey,
+  //   pinyinTing,
+  // });
 
   const handleReviewSnippetsFinal = async (
     arg: HandleReviewSnippetsFinalArg,
@@ -315,10 +369,53 @@ const SnippetReview = ({
                 )}
               </div>
               <div className='w-full'>
+                <div className='mb-1 text-md bg-amber-200/25 m-auto w-fit px-1 rounded'>
+                  {/* <div className='text-center'>
+                    {pinyinTing.map((item, index) => (
+                      <span
+                        key={index}
+                        style={{ color: getColorByIndex(item?.startIndex) }}
+                      >
+                        {item.text}
+                      </span>
+                    ))}
+                  </div> */}
+                  <div className='text-center'>
+                    {pinyinTing.map((item, index) => {
+                      const prev = pinyinTing[index - 1];
+                      const addSpace =
+                        index > 0 && item?.startIndex !== prev?.startIndex;
+                      //
+                      return (
+                        <span
+                          key={index}
+                          style={{
+                            color: getColorByIndex(item?.startIndex),
+                            opacity:
+                              index < matchStartKey || index > matchEndKey
+                                ? 0.35
+                                : 1,
+                            fontStyle:
+                              index < matchStartKey || index > matchEndKey
+                                ? 'italic'
+                                : 'bold',
+                            textDecorationLine:
+                              index < matchStartKey || index > matchEndKey
+                                ? 'none'
+                                : 'underline',
+                          }}
+                        >
+                          {addSpace && ' '}
+                          {pinyin(item.text, { toneType: 'symbol' })}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
                 <div className='flex text-align-justify'>
-                  <FormattedSentence
+                  <FormattedSentenceSnippet
                     ref={ulRef}
-                    targetLangformatted={targetLangformatted}
+                    targetLangformatted={targetLangWithVocabStartIndex}
                     handleMouseLeave={handleMouseLeave}
                     handleMouseEnter={handleMouseEnter}
                     wordPopUpState={wordPopUpState}
@@ -331,7 +428,7 @@ const SnippetReview = ({
                     matchEndKey={matchEndKey}
                   />
                 </div>
-                {vocab?.length > 0 && (
+                {/* {vocab?.length > 0 && (
                   <div className='mt-2'>
                     <SentenceBreakdown
                       vocab={vocab}
@@ -344,7 +441,7 @@ const SnippetReview = ({
                       isSnippetReview
                     />
                   </div>
-                )}
+                )} */}
                 {highlightedTextState && (
                   <HighlightedText
                     isLoadingState={
