@@ -75,18 +75,22 @@ const VideoOverlay = ({
       });
 
       // Helper function to find the sentence containing a word based on time
-      const findSentenceForWord = (word: WordTypes): SentenceMapItemTypes | null => {
+      const findSentenceForWord = (
+        word: WordTypes,
+      ): SentenceMapItemTypes | null => {
         const wordTime = word.time || 0;
         // Find sentences within 3 seconds of the word's time
-        const candidates = Object.values(sentenceMapMemoized).filter((sentence) => {
-          return Math.abs(sentence.time - wordTime) < 3;
-        });
-        
-        // Prefer sentence that contains the word's surfaceForm
-        const exactMatch = candidates.find((sentence) => 
-          sentence.targetLang.includes(word.surfaceForm)
+        const candidates = Object.values(sentenceMapMemoized).filter(
+          (sentence) => {
+            return Math.abs(sentence.time - wordTime) < 3;
+          },
         );
-        
+
+        // Prefer sentence that contains the word's surfaceForm
+        const exactMatch = candidates.find((sentence) =>
+          sentence.targetLang.includes(word.surfaceForm),
+        );
+
         return exactMatch || null;
       };
 
@@ -185,12 +189,12 @@ const VideoOverlay = ({
             key={`group-${group.time}-${index}`}
             className='absolute transition-all duration-300 ease-in-out'
             style={{
-              top: `${10 + group.stackIndex * 80}px`,
+              top: `${10 + group.stackIndex * 60}px`,
               right: '10px',
               opacity: group.opacity,
             }}
           >
-            <div className='bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-lg shadow-lg'>
+            <div className='bg-black/40 backdrop-blur-sm text-white px-4 py-2 rounded-lg shadow-lg'>
               <div className='flex flex-col gap-1'>
                 <div className='font-bold text-lg m-auto'>{surfaceForms}</div>
                 {showTransliteration && transliterations && (
