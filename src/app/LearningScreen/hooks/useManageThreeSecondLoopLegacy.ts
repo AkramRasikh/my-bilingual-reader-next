@@ -37,7 +37,7 @@ export const threeSecondLoopLogicLegacy = ({
         targetLang: item.targetLang,
         startPoint: Number(startPoint.toFixed(2)),
         vocab: item?.vocab ?? [
-          { surfaceForm: item.targetLang, meaning: 'n/a' },
+          { surfaceForm: item.targetLang, meaning: 'n/a', sentenceId: item.id },
         ],
       });
     }

@@ -9,6 +9,7 @@ const SentenceBreakdown = ({
   meaning,
   languageSelectedState,
   isSnippetReview,
+  handleBreakdownSentence,
 }) => {
   const [hoveredXStates, setHoveredXStates] = useState('');
 
@@ -32,6 +33,7 @@ const SentenceBreakdown = ({
         handleOnMouseExit={handleOnMouseExit}
         languageSelectedState={languageSelectedState}
         isSnippetReview={isSnippetReview}
+        handleBreakdownSentence={handleBreakdownSentence}
       />
       <hr className='m-1' />
       <SentenceBreakdownSyntacticStructure

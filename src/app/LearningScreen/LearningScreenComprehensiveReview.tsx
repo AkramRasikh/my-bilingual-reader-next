@@ -240,6 +240,7 @@ const LearningScreenComprehensiveReview = () => {
                   handleReviewSnippetsComprehensiveReview
                 }
                 isReadyForQuickReview={firstElIdInReview === item.id}
+                handleBreakdownSentence={handleBreakdownSentence}
               />
             );
           })}

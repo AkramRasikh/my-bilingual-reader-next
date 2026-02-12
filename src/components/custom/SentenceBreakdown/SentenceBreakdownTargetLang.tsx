@@ -12,6 +12,7 @@ const SentenceBreakdownTargetLang = ({
   handleOnMouseExit,
   languageSelectedState,
   isSnippetReview,
+  handleBreakdownSentence,
 }) => {
   const isArabic = languageSelectedState === arabic;
   const addSpace = !isTrimmedLang(languageSelectedState);
@@ -22,7 +23,7 @@ const SentenceBreakdownTargetLang = ({
       className={clsx('flex flex-wrap', isArabic ? 'text-right' : '')}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
-      {vocab.map(({ surfaceForm, meaning }, index) => {
+      {vocab.map(({ surfaceForm, meaning, sentenceId }, index) => {
         const wordIsSaved = thisSentencesSavedWords?.some(
           (item) =>
             item.surfaceForm === surfaceForm || item.baseForm === surfaceForm,
@@ -54,6 +55,8 @@ const SentenceBreakdownTargetLang = ({
                 wordIsSaved={wordIsSaved}
                 isSnippetReview={isSnippetReview}
                 languageSelectedState={languageSelectedState}
+                handleBreakdownSentence={handleBreakdownSentence}
+                sentenceId={sentenceId}
               />
             )}
             {addSpace && '\u00A0'}
