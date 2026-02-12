@@ -6,6 +6,7 @@ import LearningScreenLoopBtn from './LearningScreen/LearningScreenLoopBtn';
 import { Button } from '@/components/ui/button';
 import { Loader2, SaveIcon } from 'lucide-react';
 import VideoOverlay from './VideoOverlay';
+import VideoOverlayAllWords from './VideoOverlayAllWords';
 import { WordTypes } from './types/word-types';
 import { SentenceMapItemTypes } from './types/content-types';
 
@@ -48,6 +49,9 @@ const VideoPlayer = ({
     useState(false);
   const [highlightedTextFocusLoopState, setHighlightedTextFocusLoopState] =
     useState('');
+  const [overlayMode, setOverlayMode] = useState<'saved-words' | 'all-words'>(
+    'saved-words',
+  );
   const [showTransliteration, setShowTransliteration] = useState(false);
 
   const masterTextRef = useRef<HTMLParagraphElement>(null);
@@ -119,14 +123,23 @@ const VideoPlayer = ({
         >
           Your browser does not support the video tag.
         </video>
-        <VideoOverlay
-          contentMetaWordMemoized={contentMetaWordMemoized}
-          currentTime={currentTime}
-          showTransliteration={showTransliteration}
-          sentenceMapMemoized={sentenceMapMemoized}
-        />
+        {overlayMode === 'saved-words' ? (
+          <VideoOverlay
+            contentMetaWordMemoized={contentMetaWordMemoized}
+            currentTime={currentTime}
+            showTransliteration={showTransliteration}
+            sentenceMapMemoized={sentenceMapMemoized}
+          />
+        ) : (
+          <VideoOverlayAllWords
+            currentTime={currentTime}
+            sentenceMapMemoized={sentenceMapMemoized}
+            contentMetaWordMemoized={contentMetaWordMemoized}
+            showTransliteration={showTransliteration}
+          />
+        )}
       </div>
-      <div className='flex items-center gap-2 px-2 py-1'>
+      <div className='flex items-center gap-4 px-2 py-1'>
         <label className='flex items-center gap-2 text-sm cursor-pointer'>
           <input
             type='checkbox'
@@ -135,6 +148,17 @@ const VideoPlayer = ({
             className='cursor-pointer'
           />
           <span>Show transliteration</span>
+        </label>
+        <label className='flex items-center gap-2 text-sm cursor-pointer'>
+          <input
+            type='checkbox'
+            checked={overlayMode === 'all-words'}
+            onChange={(e) =>
+              setOverlayMode(e.target.checked ? 'all-words' : 'saved-words')
+            }
+            className='cursor-pointer'
+          />
+          <span>Show all words</span>
         </label>
       </div>
       {threeSecondLoopState && <LearningScreenLoopUI />}{' '}
