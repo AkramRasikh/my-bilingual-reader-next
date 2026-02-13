@@ -764,17 +764,16 @@ export const LearningScreenProvider = ({
 
   const handleBreakdownSentence = async ({
     sentenceId,
-    targetLang,
   }: {
     sentenceId: string;
-    targetLang: string;
   }) => {
+    const targetLangSentence = sentenceMapMemoized[sentenceId].targetLang;
     try {
       setIsBreakingDownSentenceArrState((prev) => [...prev, sentenceId]);
       await breakdownSentence({
         indexKey: selectedContentStateMemoized.id,
         sentenceId,
-        targetLang,
+        targetLang: targetLangSentence,
         contentIndex,
       });
     } finally {

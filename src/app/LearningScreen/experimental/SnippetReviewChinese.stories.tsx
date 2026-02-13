@@ -4,7 +4,6 @@ import SnippetReviewChinese from './SnippetReviewChinese';
 import { LearningScreenProvider } from '../LearningScreenProvider';
 import { FetchDataContext } from '@/app/Providers/FetchDataProvider';
 import type { FetchDataContextTypes } from '@/app/Providers/FetchDataProvider';
-import { content } from '@/app/Providers/useFetchInitData';
 
 // Mock data
 const mockSnippets = [
@@ -228,6 +227,7 @@ const mockSnippetPartiallyBrokenDown = {
     {
       meaning: 'n/a',
       surfaceForm: '今天我给大家唱段',
+      sentenceId: 'c0f3a3ec-afc2-4b45-a7c7-354c9000fdb6',
     },
     {
       meaning:

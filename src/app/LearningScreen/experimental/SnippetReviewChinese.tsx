@@ -1,8 +1,6 @@
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
-import { Button } from '@/components/ui/button';
-import clsx from 'clsx';
-import { PauseIcon, PlayIcon, RabbitIcon } from 'lucide-react';
+import SnippetReviewChineseAudioControls from './SnippetReviewChineseAudioControls';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useLearningScreen from '../useLearningScreen';
 import FormattedSentenceSnippet from '@/components/custom/FormattedSentenceSnippet';
@@ -16,6 +14,8 @@ import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
 import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/useSnippetLoopEvents';
 import getColorByIndex from '@/utils/get-color-by-index';
 import SnippetReviewPinyinHelper from './SnippetReviewPinyinHelper';
+import { HammerIcon } from 'lucide-react';
+import clsx from 'clsx';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -41,6 +41,8 @@ const SnippetReviewChinese = ({
   threeSecondLoopState,
   handleUpdateSnippetComprehensiveReview,
   isReadyForQuickReview,
+  handleBreakdownSentence,
+  isBreakingDownSentenceArrState,
 }: SnippetReviewProps) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
   const [endIndexKeyState, setEndIndexKeyState] = useState(0);
@@ -251,6 +253,7 @@ const SnippetReviewChinese = ({
     wordsFromSentence,
     wordsInSuggestedText,
     targetLangWithVocabStartIndex,
+    sentencesToBreakdown,
   } = useMemo(() => {
     const wordsInSuggestedText = findAllInstancesOfWordsInSentence(
       snippetData?.focusedText || snippetData?.suggestedFocusText || '',
@@ -272,7 +275,7 @@ const SnippetReviewChinese = ({
     let targetLangWithVocabStartIndex = [...targetLangformatted];
     if (snippetData.vocab && snippetData.vocab.length > 0) {
       snippetData.vocab.forEach((vocabItem, vocabIdx) => {
-        const { surfaceForm } = vocabItem;
+        const { surfaceForm, sentenceId } = vocabItem;
         if (!surfaceForm) return;
         // Find all occurrences of the vocab surfaceForm in the sentence
         let start = 0;
@@ -286,11 +289,12 @@ const SnippetReviewChinese = ({
             }
           }
           if (match) {
-            // Assign startIndex to all matched chars
+            // Assign startIndex and sentenceId (if available) to all matched chars
             for (let j = 0; j < surfaceForm.length; j++) {
               targetLangWithVocabStartIndex[start + j] = {
                 ...targetLangWithVocabStartIndex[start + j],
                 startIndex: vocabIdx,
+                ...(sentenceId ? { sentenceId, surfaceForm } : {}),
               };
             }
             // Move past this match to avoid overlapping
@@ -302,11 +306,30 @@ const SnippetReviewChinese = ({
       });
     }
 
+    // Collect unique sentenceIds (excluding null/undefined) and their first index and surfaceForm
+    const sentencesToBreakdownMap = new Map();
+    targetLangWithVocabStartIndex.forEach((item, idx) => {
+      if (item.sentenceId && !sentencesToBreakdownMap.has(item.sentenceId)) {
+        sentencesToBreakdownMap.set(item.sentenceId, {
+          startIndex: idx,
+          surfaceForm: item.surfaceForm,
+        });
+      }
+    });
+    const sentencesToBreakdown = Array.from(
+      sentencesToBreakdownMap.entries(),
+    ).map(([sentenceId, { startIndex, surfaceForm }]) => ({
+      sentenceId,
+      startIndex,
+      surfaceForm,
+    }));
+
     return {
       targetLangformatted,
       wordsFromSentence,
       wordsInSuggestedText,
       targetLangWithVocabStartIndex,
+      sentencesToBreakdown,
     };
   }, [snippetData, wordsState]);
 
@@ -316,14 +339,6 @@ const SnippetReviewChinese = ({
     pinyinStart,
     Math.min(targetLangWithVocabStartIndex.length, matchEndKey + 6),
   );
-  // console.log('## ', {
-  //   targetLangformatted,
-  //   vocab,
-  //   targetLangWithVocabStartIndex,
-  //   matchStartKey,
-  //   matchEndKey,
-  //   pinyinTing,
-  // });
 
   const handleReviewSnippetsFinal = async (
     arg: HandleReviewSnippetsFinalArg,
@@ -354,20 +369,11 @@ const SnippetReviewChinese = ({
         <div className='flex gap-3'>
           <div className='flex-1'>
             <div className='flex mb-2 gap-1'>
-              <div className='flex flex-col gap-2'>
-                <Button
-                  className={clsx(
-                    'h-7 w-7',
-                    thisIsPlaying ? 'bg-amber-300' : '',
-                  )}
-                  onClick={handlePlaySnippet}
-                >
-                  {thisIsPlaying ? <PauseIcon /> : <PlayIcon />}
-                </Button>
-                {snippetData?.isPreSnippet && (
-                  <RabbitIcon className='fill-amber-300 rounded m-auto mt-0' />
-                )}
-              </div>
+              <SnippetReviewChineseAudioControls
+                thisIsPlaying={thisIsPlaying}
+                handlePlaySnippet={handlePlaySnippet}
+                isPreSnippet={snippetData?.isPreSnippet}
+              />
               <div className='w-full text-center'>
                 <div className='flex text-align-justify'>
                   <FormattedSentenceSnippet
@@ -393,6 +399,46 @@ const SnippetReviewChinese = ({
                   pinyinStart={pinyinStart}
                   vocab={vocab}
                 />
+                {sentencesToBreakdown?.length > 0 && (
+                  <div
+                    className='mt-1 flex gap-2 justify-center'
+                    data-testid='breakdown-buttons-container'
+                  >
+                    {sentencesToBreakdown.map((sentencedata) => {
+                      const isThisLoading =
+                        isBreakingDownSentenceArrState?.includes(
+                          sentencedata.sentenceId,
+                        );
+                      return (
+                        <button
+                          key={sentencedata.sentenceId}
+                          className={'text-sm'}
+                          style={{
+                            color: getColorByIndex(sentencedata.startIndex),
+                          }}
+                          onDoubleClick={async () =>
+                            await handleBreakdownSentence({
+                              sentenceId: sentencedata.sentenceId,
+                            })
+                          }
+                          data-testid={`breakdown-button-${sentencedata.sentenceId}`}
+                        >
+                          <HammerIcon
+                            className={clsx(
+                              'mx-auto rounded-4xl',
+                              isThisLoading ? 'animate-bounce' : '',
+                            )}
+                            style={{
+                              fill: isThisLoading
+                                ? getColorByIndex(sentencedata.startIndex)
+                                : 'transparent',
+                            }}
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
                 {highlightedTextState && (
                   <HighlightedText
                     isLoadingState={
