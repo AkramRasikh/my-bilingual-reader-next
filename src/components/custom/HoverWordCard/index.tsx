@@ -16,6 +16,7 @@ const HoverWordCard = ({
   wordsFromSentence,
   hasHighlightedBackground,
   savedWords,
+  disableHighlightBackground,
 }) => {
   const isOriginalWordSettingState = useMemo(() => {
     return (
@@ -38,11 +39,11 @@ const HoverWordCard = ({
         asChild
         className={clsx(
           'p-0',
-          hasHighlightedBackground
+          hasHighlightedBackground && !disableHighlightBackground
             ? 'bg-yellow-200'
             : isOriginalWordSettingState
-            ? 'bg-blue-50 rounded'
-            : '',
+              ? 'bg-blue-50 rounded'
+              : '',
         )}
         style={{
           textDecorationLine: 'underline',

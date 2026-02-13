@@ -40,10 +40,11 @@ const FormattedSentenceSnippet = ({
             <span
               key={indexNested}
               className={clsx(
-                hasHighlightedBackground
-                  ? 'bg-gray-200 border shadow-md'
-                  : ' opacity-35',
+                hasHighlightedBackground ? 'bg-gray-200 border' : 'opacity-35',
               )}
+              style={{
+                color: getColorByIndex(hasStartIndex),
+              }}
             >
               <HoverWordCard
                 text={text}
@@ -55,6 +56,7 @@ const FormattedSentenceSnippet = ({
                 hasHighlightedBackground={hasHighlightedBackground}
                 originalText={item?.originalText}
                 savedWords={item?.savedWords}
+                disableHighlightBackground
               />
             </span>
           );
@@ -73,9 +75,7 @@ const FormattedSentenceSnippet = ({
               color: getColorByIndex(hasStartIndex),
             }}
             className={clsx(
-              hasHighlightedBackground
-                ? 'bg-gray-200 border shadow-md'
-                : 'opacity-35',
+              hasHighlightedBackground ? 'bg-gray-200 border' : 'opacity-35',
             )}
           >
             {text}
