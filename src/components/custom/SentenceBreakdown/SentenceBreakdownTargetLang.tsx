@@ -43,8 +43,6 @@ const SentenceBreakdownTargetLang = ({
                 color={color}
                 wordIsSaved={wordIsSaved}
                 surfaceForm={surfaceForm}
-                isSnippetReview={isSnippetReview}
-                languageSelectedState={languageSelectedState}
               />
             ) : (
               <SentenceBreakdownHover
@@ -53,8 +51,6 @@ const SentenceBreakdownTargetLang = ({
                 meaning={meaning}
                 color={color}
                 wordIsSaved={wordIsSaved}
-                isSnippetReview={isSnippetReview}
-                languageSelectedState={languageSelectedState}
                 handleBreakdownSentence={handleBreakdownSentence}
                 sentenceId={sentenceId}
               />
