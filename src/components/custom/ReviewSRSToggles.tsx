@@ -148,7 +148,7 @@ const ReviewSRSToggles = ({
       {reviewTogglesMap.map((btn, index) => (
         <Button
           key={index}
-          variant='outline'
+          variant='ghost'
           disabled={btn.disabled}
           onClick={() => handleNextReview(btn.difficultyNumber)}
           data-testid={btn.dataTestId}
