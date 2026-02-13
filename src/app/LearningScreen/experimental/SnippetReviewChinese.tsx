@@ -14,8 +14,6 @@ import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
 import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/useSnippetLoopEvents';
 import getColorByIndex from '@/utils/get-color-by-index';
 import SnippetReviewPinyinHelper from './SnippetReviewPinyinHelper';
-import { HammerIcon } from 'lucide-react';
-import clsx from 'clsx';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -373,6 +371,9 @@ const SnippetReviewChinese = ({
                 thisIsPlaying={thisIsPlaying}
                 handlePlaySnippet={handlePlaySnippet}
                 isPreSnippet={snippetData?.isPreSnippet}
+                sentencesToBreakdown={sentencesToBreakdown}
+                isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+                handleBreakdownSentence={handleBreakdownSentence}
               />
               <div className='w-full text-center'>
                 <div className='flex text-align-justify'>
@@ -399,46 +400,6 @@ const SnippetReviewChinese = ({
                   pinyinStart={pinyinStart}
                   vocab={vocab}
                 />
-                {sentencesToBreakdown?.length > 0 && (
-                  <div
-                    className='mt-1 flex gap-2 justify-center'
-                    data-testid='breakdown-buttons-container'
-                  >
-                    {sentencesToBreakdown.map((sentencedata) => {
-                      const isThisLoading =
-                        isBreakingDownSentenceArrState?.includes(
-                          sentencedata.sentenceId,
-                        );
-                      return (
-                        <button
-                          key={sentencedata.sentenceId}
-                          className={'text-sm'}
-                          style={{
-                            color: getColorByIndex(sentencedata.startIndex),
-                          }}
-                          onDoubleClick={async () =>
-                            await handleBreakdownSentence({
-                              sentenceId: sentencedata.sentenceId,
-                            })
-                          }
-                          data-testid={`breakdown-button-${sentencedata.sentenceId}`}
-                        >
-                          <HammerIcon
-                            className={clsx(
-                              'mx-auto rounded-4xl',
-                              isThisLoading ? 'animate-bounce' : '',
-                            )}
-                            style={{
-                              fill: isThisLoading
-                                ? getColorByIndex(sentencedata.startIndex)
-                                : 'transparent',
-                            }}
-                          />
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
                 {highlightedTextState && (
                   <HighlightedText
                     isLoadingState={
