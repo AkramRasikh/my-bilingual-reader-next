@@ -31,6 +31,7 @@ interface SnippetReviewProps {
     isRemoveReview?: boolean;
   }) => Promise<void>;
   isReadyForQuickReview: boolean;
+  handleBreakdownSentence: (arg: { sentenceId: string }) => Promise<void>;
 }
 
 const SnippetReview = ({
@@ -40,6 +41,7 @@ const SnippetReview = ({
   threeSecondLoopState,
   handleUpdateSnippetComprehensiveReview,
   isReadyForQuickReview,
+  handleBreakdownSentence,
 }: SnippetReviewProps) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
   const [endIndexKeyState, setEndIndexKeyState] = useState(0);
@@ -339,6 +341,8 @@ const SnippetReview = ({
                       handleSaveFunc={handleSaveFunc}
                       sentenceStructure={''}
                       languageSelectedState={languageSelectedState}
+                      handleBreakdownSentence={handleBreakdownSentence}
+                      isSnippetReview
                     />
                   </div>
                 )}

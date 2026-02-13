@@ -8,7 +8,7 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningScreenTabTranscriptNestedWordsReview';
 import ReviewTypeToggles from './components/ReviewTypeToggles';
 import { Snippet } from '../types/content-types';
-import SnippetReview from './experimental/SnippetReviewChinese';
+import SnippetReview from './experimental/SnippetReview';
 import { chinese } from '../languages';
 import SnippetReviewChinese from './experimental/SnippetReviewChinese';
 

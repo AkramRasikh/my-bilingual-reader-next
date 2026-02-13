@@ -1,9 +1,9 @@
+import React, { useState } from 'react';
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
-
 import { Button } from '@/components/ui/button';
 
 const SentenceBreakdownHover = ({
@@ -12,16 +12,54 @@ const SentenceBreakdownHover = ({
   meaning,
   color,
   wordIsSaved,
+  handleBreakdownSentence,
+  sentenceId,
 }) => {
+  const [loading, setLoading] = useState(false);
   const placeholder = meaning === 'n/a';
+
+  const handleDoubleClick = async () => {
+    if (!handleBreakdownSentence) return;
+    setLoading(true);
+    try {
+      await handleBreakdownSentence({ sentenceId, targetLang: surfaceForm });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (placeholder) {
     return (
       <span
-        style={{
-          color: 'black',
-        }}
+        className={`text-black relative select-text shadow-md ${handleBreakdownSentence ? 'cursor-pointer' : ''} ${loading ? 'opacity-50' : ''}`}
+        onDoubleClick={handleDoubleClick}
       >
         {surfaceForm}
+        {loading && (
+          <span
+            className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none'
+            aria-label='Loading'
+          >
+            <svg
+              width='16'
+              height='16'
+              viewBox='0 0 16 16'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+              className='animate-spin'
+            >
+              <circle
+                cx='8'
+                cy='8'
+                r='7'
+                stroke='#888'
+                strokeWidth='2'
+                strokeDasharray='10 10'
+                strokeLinecap='round'
+              />
+            </svg>
+          </span>
+        )}
       </span>
     );
   }
