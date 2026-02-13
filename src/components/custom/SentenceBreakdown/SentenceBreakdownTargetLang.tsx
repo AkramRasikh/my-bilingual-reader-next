@@ -11,7 +11,6 @@ const SentenceBreakdownTargetLang = ({
   handleAddIndexToArr,
   handleOnMouseExit,
   languageSelectedState,
-  isSnippetReview,
   handleBreakdownSentence,
 }) => {
   const isArabic = languageSelectedState === arabic;

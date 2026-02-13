@@ -8,7 +8,6 @@ const SentenceBreakdown = ({
   handleSaveFunc,
   meaning,
   languageSelectedState,
-  isSnippetReview,
   handleBreakdownSentence,
 }) => {
   const [hoveredXStates, setHoveredXStates] = useState('');
@@ -32,7 +31,6 @@ const SentenceBreakdown = ({
         handleAddIndexToArr={handleAddIndexToArr}
         handleOnMouseExit={handleOnMouseExit}
         languageSelectedState={languageSelectedState}
-        isSnippetReview={isSnippetReview}
         handleBreakdownSentence={handleBreakdownSentence}
       />
       <hr className='m-1' />

@@ -342,7 +342,6 @@ const SnippetReview = ({
                       sentenceStructure={''}
                       languageSelectedState={languageSelectedState}
                       handleBreakdownSentence={handleBreakdownSentence}
-                      isSnippetReview
                     />
                   </div>
                 )}
