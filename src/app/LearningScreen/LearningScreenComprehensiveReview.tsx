@@ -8,7 +8,9 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningScreenTabTranscriptNestedWordsReview';
 import ReviewTypeToggles from './components/ReviewTypeToggles';
 import { Snippet } from '../types/content-types';
-import SnippetReview from './experimental/SnippetReview';
+import SnippetReview from './experimental/SnippetReviewChinese';
+import { chinese } from '../languages';
+import SnippetReviewChinese from './experimental/SnippetReviewChinese';
 
 interface HandleReviewSnippetsComprehensiveReviewProps {
   snippetData: Snippet;
@@ -229,6 +231,22 @@ const LearningScreenComprehensiveReview = () => {
       {postSnippetsMemoized?.length > 0 ? (
         <div className='flex flex-col gap-2 mb-2'>
           {postSnippetsMemoized.map((item) => {
+            if (languageSelectedState === chinese) {
+              return (
+                <SnippetReviewChinese
+                  key={item.id}
+                  snippetData={item}
+                  handleLoopHere={handleLoopHere}
+                  isVideoPlaying={isVideoPlaying}
+                  threeSecondLoopState={threeSecondLoopState}
+                  handleUpdateSnippetComprehensiveReview={
+                    handleReviewSnippetsComprehensiveReview
+                  }
+                  isReadyForQuickReview={firstElIdInReview === item.id}
+                  handleBreakdownSentence={handleBreakdownSentence}
+                />
+              );
+            }
             return (
               <SnippetReview
                 key={item.id}
