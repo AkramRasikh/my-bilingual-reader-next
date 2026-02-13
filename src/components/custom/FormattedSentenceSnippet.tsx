@@ -36,7 +36,9 @@ const FormattedSentenceSnippet = ({
             <span
               key={indexNested}
               className={clsx(
-                hasHighlightedBackground ? 'bg-gray-200 border shadow-md' : '',
+                hasHighlightedBackground
+                  ? 'bg-gray-200 border shadow-md'
+                  : ' opacity-35',
               )}
             >
               <HoverWordCard
@@ -67,7 +69,9 @@ const FormattedSentenceSnippet = ({
               color: getColorByIndex(hasStartIndex),
             }}
             className={clsx(
-              hasHighlightedBackground ? 'bg-gray-200 border shadow-md' : '',
+              hasHighlightedBackground
+                ? 'bg-gray-200 border shadow-md'
+                : 'opacity-35',
             )}
           >
             {text}
