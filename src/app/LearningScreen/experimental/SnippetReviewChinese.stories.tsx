@@ -174,6 +174,85 @@ const mockSnippets = [
   },
 ];
 
+const mockSnippetNoVocab = {
+  baseLang: "Today I'll sing you aA tongue twister, okay?",
+  id: 'c0f3a3ec-afc2-4b45-a7c7-354c9000fdb6',
+  isPreSnippet: true,
+  isContracted: true,
+  reviewData: {
+    difficulty: 8.33753767,
+    due: '2026-02-13T05:00:00.000Z',
+    ease: 2.5,
+    elapsed_days: 1,
+    interval: 0,
+    lapses: 0,
+    last_review: '2026-02-10T10:17:43.811Z',
+    reps: 6,
+    scheduled_days: 3,
+    stability: 4.11038388,
+    state: 2,
+  },
+  suggestedFocusText: '数来宝绕',
+  targetLang: '今天我给大家唱段数来宝绕口令好不好？',
+  time: 93.725754,
+  vocab: [
+    {
+      meaning: 'n/a',
+      surfaceForm: '今天我给大家唱段数来宝绕口令好不好？',
+    },
+  ],
+};
+
+const mockSnippetPartiallyBrokenDown = {
+  baseLang: "Today I'll sing you aA tongue twister, okay?",
+  id: 'c0f3a3ec-afc2-4b45-a7c7-354c9000fdb6',
+  isPreSnippet: true,
+  isContracted: true,
+  reviewData: {
+    difficulty: 8.33753767,
+    due: '2026-02-13T05:00:00.000Z',
+    ease: 2.5,
+    elapsed_days: 1,
+    interval: 0,
+    lapses: 0,
+    last_review: '2026-02-10T10:17:43.811Z',
+    reps: 6,
+    scheduled_days: 3,
+    stability: 4.11038388,
+    state: 2,
+  },
+  suggestedFocusText: '数来宝绕',
+  targetLang: '今天我给大家唱段数来宝绕口令好不好？',
+  time: 93.725754,
+  vocab: [
+    {
+      meaning: 'n/a',
+      surfaceForm: '今天我给大家唱段',
+    },
+    {
+      meaning:
+        'a traditional Chinese folk art form involving rhythmic storytelling or singing, often with bamboo clappers',
+      surfaceForm: '数来宝',
+    },
+    {
+      meaning: 'tongue twister',
+      surfaceForm: '绕口令',
+    },
+    {
+      meaning: 'good',
+      surfaceForm: '好',
+    },
+    {
+      meaning: 'not good, bad',
+      surfaceForm: '不好',
+    },
+    {
+      meaning: 'question mark',
+      surfaceForm: '？',
+    },
+  ],
+};
+
 // Minimal mock fetch context for Chinese
 const mockFetchContextChinese: FetchDataContextTypes = {
   languageSelectedState: 'chinese',
@@ -432,5 +511,15 @@ export const FocusedSnippet: Story = {
 export const ContractedSnippet: Story = {
   args: {
     snippetData: mockSnippets[2],
+  },
+};
+export const SnippetNoVocab: Story = {
+  args: {
+    snippetData: mockSnippetNoVocab,
+  },
+};
+export const SnippetPartiallyBrokenDown: Story = {
+  args: {
+    snippetData: mockSnippetPartiallyBrokenDown,
   },
 };
