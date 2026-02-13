@@ -1,4 +1,4 @@
-import { arabic } from '@/app/languages';
+import { arabic, chinese } from '@/app/languages';
 import HoverWordCard from '@/components/custom/HoverWordCard';
 import getColorByIndex from '@/utils/get-color-by-index';
 import clsx from 'clsx';
@@ -18,11 +18,15 @@ const FormattedSentenceSnippet = ({
   matchEndKey,
 }) => {
   const isArabic = languageSelectedState === arabic;
+  const isChinese = languageSelectedState === chinese;
 
   return (
     <span
       ref={ref}
-      className={clsx(matchStartKey || matchEndKey ? 'm-0' : 'mt-auto mb-auto')}
+      className={clsx(
+        matchStartKey || matchEndKey ? 'm-0' : 'mt-auto mb-auto',
+        isChinese ? 'text-center m-auto' : '',
+      )}
       dir={isArabic ? 'rtl' : 'ltr'}
     >
       {targetLangformatted?.map((item, indexNested) => {

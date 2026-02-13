@@ -41,7 +41,6 @@ const SnippetReviewChinese = ({
   threeSecondLoopState,
   handleUpdateSnippetComprehensiveReview,
   isReadyForQuickReview,
-  handleBreakdownSentence,
 }: SnippetReviewProps) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
   const [endIndexKeyState, setEndIndexKeyState] = useState(0);
@@ -369,7 +368,7 @@ const SnippetReviewChinese = ({
                   <RabbitIcon className='fill-amber-300 rounded m-auto mt-0' />
                 )}
               </div>
-              <div className='w-full'>
+              <div className='w-full text-center'>
                 <div className='flex text-align-justify'>
                   <FormattedSentenceSnippet
                     ref={ulRef}
@@ -392,6 +391,7 @@ const SnippetReviewChinese = ({
                   matchStartKey={matchStartKey}
                   matchEndKey={matchEndKey}
                   pinyinStart={pinyinStart}
+                  vocab={vocab}
                 />
                 {highlightedTextState && (
                   <HighlightedText
