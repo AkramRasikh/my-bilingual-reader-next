@@ -30,6 +30,11 @@ export const useOverlappedSentencesViableForReviewMemo = (
     snippets.forEach((snippetEl) => {
       const snippetTime = snippetEl.time;
       const snippetIsContracted = snippetEl.isContracted;
+      const isUpforReview = snippetEl?.reviewData?.due;
+
+      if (!isUpforReview) {
+        return;
+      }
 
       const snippetStartTime = snippetTime - (snippetIsContracted ? 0.75 : 1.5);
       const snippetEndTime = snippetTime + (snippetIsContracted ? 0.75 : 1.5);

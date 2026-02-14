@@ -44,7 +44,9 @@ export const useSnippetDueMemoized = ({
         : null;
 
     return {
-      snippetsWithDueStatusMemoized,
+      snippetsWithDueStatusMemoized: snippetsWithDueStatusMemoized.sort(
+        (a, b) => a.time - b.time,
+      ),
       earliestSnippetDueTime,
     };
   }, [snippetsWithVocab, enableSnippetReviewState]);
