@@ -25,17 +25,17 @@ const SnippetReviewBoundaryToggles = ({
 }: SnippetReviewBoundaryTogglesProps) => (
   <div className='flex flex-col gap-2 m-auto justify-center mb-3'>
     <div className='flex flex-row gap-2 justify-center'>
-      <Button onClick={onMoveLeft} variant='outline' disabled={isLoading}>
+      <Button onClick={onMoveLeft} variant='ghost' disabled={isLoading}>
         <MoveLeftIcon />
       </Button>
-      <Button onClick={onMoveRight} variant='outline' disabled={isLoading}>
+      <Button onClick={onMoveRight} variant='ghost' disabled={isLoading}>
         <MoveRightIcon />
       </Button>
     </div>
     <div className='flex flex-row gap-2 justify-center'>
       <Button
         onClick={onContractLength}
-        variant='outline'
+        variant='ghost'
         disabled={isLoading}
         title='Contract snippet length'
       >
@@ -43,7 +43,7 @@ const SnippetReviewBoundaryToggles = ({
       </Button>
       <Button
         onClick={onExpandLength}
-        variant='outline'
+        variant='ghost'
         disabled={isLoading}
         title='Expand snippet length'
       >
@@ -59,7 +59,7 @@ const SnippetReviewBoundaryToggles = ({
         <Undo2Icon />
       </Button>
       <Button
-        variant='outline'
+        variant='ghost'
         disabled={!indexHasChanged || isLoading}
         onClick={onUpdateSnippet}
         className={clsx(
