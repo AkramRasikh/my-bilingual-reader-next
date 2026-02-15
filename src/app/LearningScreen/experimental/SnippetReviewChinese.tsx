@@ -63,7 +63,12 @@ const SnippetReviewChinese = ({
     selectedContentTitleState,
     sentenceMapMemoized,
   } = useLearningScreen();
-  const { languageSelectedState, wordsState, handleSaveWord } = useFetchData();
+  const {
+    languageSelectedState,
+    wordsState,
+    handleSaveWord,
+    handleDeleteWordDataProvider,
+  } = useFetchData();
 
   const onMoveLeft = () => {
     setStartIndexKeyState(startIndexKeyState - 1);
@@ -273,7 +278,7 @@ const SnippetReviewChinese = ({
     let targetLangWithVocabStartIndex = [...targetLangformatted];
     if (snippetData.vocab && snippetData.vocab.length > 0) {
       snippetData.vocab.forEach((vocabItem, vocabIdx) => {
-        const { surfaceForm, sentenceId } = vocabItem;
+        const { surfaceForm, sentenceId, meaning } = vocabItem;
         if (!surfaceForm) return;
         // Find all occurrences of the vocab surfaceForm in the sentence
         let start = 0;
@@ -292,7 +297,9 @@ const SnippetReviewChinese = ({
               targetLangWithVocabStartIndex[start + j] = {
                 ...targetLangWithVocabStartIndex[start + j],
                 startIndex: vocabIdx,
-                ...(sentenceId ? { sentenceId, surfaceForm } : {}),
+                surfaceForm,
+                meaning,
+                ...(sentenceId ? { sentenceId } : {}),
               };
             }
             // Move past this match to avoid overlapping
@@ -311,6 +318,7 @@ const SnippetReviewChinese = ({
         sentencesToBreakdownMap.set(item.sentenceId, {
           startIndex: idx,
           surfaceForm: item.surfaceForm,
+          meaning: item.meaning,
         });
       }
     });
@@ -380,16 +388,15 @@ const SnippetReviewChinese = ({
                   <FormattedSentenceSnippet
                     ref={ulRef}
                     targetLangformatted={targetLangWithVocabStartIndex}
-                    handleMouseLeave={handleMouseLeave}
-                    handleMouseEnter={handleMouseEnter}
                     wordPopUpState={wordPopUpState}
                     setWordPopUpState={setWordPopUpState}
                     wordsForSelectedTopic={wordsForSelectedTopic}
-                    handleDeleteWordDataProvider={() => {}}
+                    handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                     wordsFromSentence={wordsFromSentence}
                     languageSelectedState={languageSelectedState}
                     matchStartKey={matchStartKey}
                     matchEndKey={matchEndKey}
+                    handleSaveFunc={handleSaveFunc}
                   />
                 </div>
                 <SnippetReviewPinyinHelper
