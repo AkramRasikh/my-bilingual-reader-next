@@ -4,6 +4,7 @@ import AnimationWrapper from '../AnimationWrapper';
 import WordCardJapaneseKanjiBreakdown from './experimental/WordCardJapaneseKanjiBreakdown';
 import { extractKanji } from './experimental/utils/kanji-detector';
 import WordCardEditState from './WordCardEditState';
+import { japanese } from '@/app/languages';
 
 const WordCardInformation = ({
   baseForm,
@@ -14,6 +15,7 @@ const WordCardInformation = ({
   mnemonic,
   updateWordData,
   wordId,
+  languageSelectedState,
 }) => {
   const [wordData, setWordData] = useState({
     baseForm,
@@ -25,6 +27,8 @@ const WordCardInformation = ({
   });
 
   const [kanjiDataState, setKanjiDataState] = useState<any>(null);
+
+  const isJapanese = languageSelectedState === japanese;
 
   const wordDataArr = [
     {
@@ -93,7 +97,7 @@ const WordCardInformation = ({
             />
           );
         })}
-        {uniqueSetOfKanj?.length > 0 && (
+        {isJapanese && uniqueSetOfKanj?.length > 0 && (
           <WordCardJapaneseKanjiBreakdown
             kanji={hasKanji}
             uniqueSetOfKanj={uniqueSetOfKanj}

@@ -164,6 +164,7 @@ const WordCard = ({
                   definition={definition}
                   mnemonic={mnemonic}
                   updateWordData={updateWordData}
+                  languageSelectedState={languageSelectedState}
                 />
               )}
               <WordCardImage
