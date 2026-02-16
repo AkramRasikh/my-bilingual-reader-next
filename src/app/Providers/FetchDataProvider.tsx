@@ -174,6 +174,7 @@ export interface FetchDataContextTypes {
   handleDeleteSnippetFetchProvider: (
     params: HandleDeleteSnippetCallTypes,
   ) => Promise<void>;
+  sentenceDataKeyMapped: Record<string, SentenceTypes>;
 }
 
 export const FetchDataContext = createContext<FetchDataContextTypes>({
@@ -206,6 +207,7 @@ export const FetchDataContext = createContext<FetchDataContextTypes>({
   hasFetchedDataState: false,
   pureWordsMemoized: [],
   wordsToReviewOnMountState: 0,
+  sentenceDataKeyMapped: {},
 });
 
 type FetchDataProviderProps = {
@@ -314,6 +316,14 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
       isSetOneTime.current = false;
     }
   }, [wordsForReviewMemoized]);
+
+  const sentenceDataKeyMapped = useMemo(() => {
+    const map: { [key: string]: SentenceTypes } = {};
+    sentencesState.forEach((sentence) => {
+      map[sentence.id] = sentence;
+    });
+    return map;
+  }, [sentencesState]);
 
   const sentencesDueForReviewMemoized = useMemo(() => {
     if (sentencesState.length === 0) {
@@ -802,6 +812,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         handleSaveSnippetFetchProvider,
         handleDeleteSnippetFetchProvider,
         adhocSentenceCustomWord,
+        sentenceDataKeyMapped,
       }}
     >
       {children}

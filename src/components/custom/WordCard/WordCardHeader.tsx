@@ -48,6 +48,7 @@ const WordCardHeader = ({
           audioSrc={audioSrc}
           testId={`word-card-play-button-${id}-2`}
           language={languageSelectedState}
+          getSentenceFromContextId={getSentenceFromContextId}
         />
       ) : (
         adhocSentenceCustomWord && (

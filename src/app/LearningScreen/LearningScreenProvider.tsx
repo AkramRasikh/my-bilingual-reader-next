@@ -243,6 +243,7 @@ export const LearningScreenProvider = ({
     languageSelectedState,
     handleSaveSnippetFetchProvider,
     handleDeleteSnippetFetchProvider,
+    sentenceDataKeyMapped,
   } = useFetchData();
 
   const selectedContentTitleState = selectedContentStateMemoized.title;
@@ -901,7 +902,14 @@ export const LearningScreenProvider = ({
   });
   useGamepad(dispatch, threeSecondLoopState, isVideoPlaying);
 
-  const getSentenceFromContextId = (contextId: ContextIdType) => {
+  const getSentenceFromContextId = (
+    contextId: ContextIdType,
+    isAdditionalContext?: boolean,
+  ) => {
+    if (isAdditionalContext) {
+      const sentence = sentenceDataKeyMapped[contextId].targetLang;
+      return sentence || '';
+    }
     const sentence = sentenceMapMemoized[contextId].targetLang;
     return sentence || '';
   };
