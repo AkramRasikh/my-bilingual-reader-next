@@ -18,6 +18,10 @@ export type SentenceActions =
       sentenceId: SentenceTypes['id'];
       isRemoveReview?: boolean;
       updatedFieldFromDB?: Partial<SentenceTypes>;
+    }
+  | {
+      type: 'removeSentences';
+      sentenceIds: SentenceTypes['id'][];
     };
 
 export function sentencesReducer(
@@ -50,6 +54,10 @@ export function sentencesReducer(
         .filter((i) => isDueCheck(i, dateNow));
 
       return updatedSentences;
+    }
+    case 'removeSentences': {
+      const { sentenceIds } = action;
+      return state.filter((sentence) => !sentenceIds.includes(sentence.id));
     }
 
     default:

@@ -127,6 +127,7 @@ interface DeleteContentResponseCallTypes {
 
 interface DeleteWordResponseTypes {
   id: WordTypes['id'];
+  sentenceIds?: ContentTranscriptTypes['id'][];
 }
 
 export interface AdhocSentenceCustomWordCallTypes {
@@ -521,16 +522,31 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     wordId,
   }: HandleDeleteWordDataProviderCallTypes) => {
     try {
+      const wordData = wordsState.find((word) => word.id === wordId);
+      if (!wordData) {
+        setToastMessageState('Word not found locally ❌. Clear local data');
+        return;
+      }
+      const wordHasAdditionalContext = wordData.contexts.slice(1).length > 0;
       const deleteWordResponse = (await apiRequestWrapper({
         url: '/api/deleteWord',
         body: {
           id: wordId,
           language: languageSelectedState,
+          hasAdditionalContext: wordHasAdditionalContext,
         },
       })) as DeleteWordResponseTypes;
 
       const deletedWordId = deleteWordResponse.id;
+      const deletedSentenceIds = deleteWordResponse?.sentenceIds;
+
       dispatchWords({ type: 'removeWord', wordId: deletedWordId });
+      if (deletedSentenceIds) {
+        dispatchSentences({
+          type: 'removeSentences',
+          sentenceIds: deletedSentenceIds,
+        });
+      }
       setToastMessageState('Word deleted!');
       return true;
     } catch (error) {
