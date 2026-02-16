@@ -527,13 +527,17 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         setToastMessageState('Word not found locally ❌. Clear local data');
         return;
       }
-      const wordHasAdditionalContext = wordData.contexts.slice(1).length > 0;
+      const additionalContext =
+        wordData.contexts.slice(1).length > 0
+          ? wordData.contexts.slice(1)
+          : undefined;
+
       const deleteWordResponse = (await apiRequestWrapper({
         url: '/api/deleteWord',
         body: {
           id: wordId,
           language: languageSelectedState,
-          hasAdditionalContext: wordHasAdditionalContext,
+          additionalContext,
         },
       })) as DeleteWordResponseTypes;
 
@@ -610,16 +614,8 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
   }: UpdateWordDataProviderCallTypes) => {
     try {
       if (isRemoveReview) {
-        const res = await fetch('/api/deleteWord', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: wordId, language: languageSelectedState }),
-        });
-        const data = await res.json();
-
-        dispatchWords({ type: 'removeWord', wordId: data.id });
-        setToastMessageState('Successful learned word ✅');
-        return true;
+        const res = await handleDeleteWordDataProvider({ wordId });
+        return res;
       } else {
         const data = await apiRequestWrapper({
           url: '/api/updateWord',
