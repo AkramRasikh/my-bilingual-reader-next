@@ -33,6 +33,8 @@ const WordCard = ({
   handlePause,
   wordHasOverlappingSnippetTime,
   isReadyForQuickReview,
+  adhocSentenceCustomWord,
+  getSentenceFromContextId,
   ...rest
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
@@ -45,6 +47,8 @@ const WordCard = ({
     isLegacyWordWithNoReview || isDueCheck({ reviewData }, timeNow);
 
   const originalContextId = contexts[0];
+  const secondContextId = contexts[1];
+  const secondContextAudioUrl = secondContextId ? secondContextId : null;
 
   const cloudflareImageUrl = imageUrl
     ? getCloudflareImageURL(imageUrl, languageSelectedState)
@@ -135,15 +139,23 @@ const WordCard = ({
       isWordDue={isWordDue}
     >
       <AnimationWrapper>
-        <WordCardHeader
-          id={id}
-          textTitle={textTitle}
-          onClickPlayContext={handlePlayThisContext}
-          setOpenContentState={setOpenContentState}
-          openContentState={openContentState}
-          wordContextIsPlaying={wordContextIsPlaying}
-          wordHasOverlappingSnippetTime={wordHasOverlappingSnippetTime}
-        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <WordCardHeader
+            id={id}
+            textTitle={textTitle}
+            onClickPlayContext={handlePlayThisContext}
+            setOpenContentState={setOpenContentState}
+            openContentState={openContentState}
+            wordContextIsPlaying={wordContextIsPlaying}
+            wordHasOverlappingSnippetTime={wordHasOverlappingSnippetTime}
+            audioSrc={secondContextAudioUrl}
+            languageSelectedState={languageSelectedState}
+            adhocSentenceCustomWord={adhocSentenceCustomWord}
+            getSentenceFromContextId={getSentenceFromContextId}
+            surfaceForm={surfaceForm}
+            originalContextId={originalContextId}
+          />
+        </div>
 
         <WordCardConditionalContentWrapper
           setOpenContentState={setOpenContentState}

@@ -1,18 +1,26 @@
 import { Button } from '@/components/ui/button';
 import { CardTitle } from '@/components/ui/card';
 import clsx from 'clsx';
+import WordCardGenerateSentence from './WordCardGenerateSentence';
 import { LucidePause, LucidePlay, MoreVerticalIcon } from 'lucide-react';
+import WordCardSecondaryAudioWidget from './WordCardSecondaryAudioWidget';
 
 const WordCardHeader = ({
+  id,
   textTitle,
   onClickPlayContext,
+  audioSrc,
   setOpenContentState,
   openContentState,
+  languageSelectedState,
   wordContextIsPlaying,
   wordHasOverlappingSnippetTime,
-  id,
+  adhocSentenceCustomWord,
+  getSentenceFromContextId,
+  surfaceForm,
+  originalContextId,
 }) => (
-  <div className='flex gap-3 flex-wrap justify-between'>
+  <div className='flex gap-3 flex-wrap justify-between w-full'>
     <CardTitle
       style={{
         overflow: 'hidden',
@@ -35,6 +43,23 @@ const WordCardHeader = ({
       >
         {wordContextIsPlaying ? <LucidePause /> : <LucidePlay />}
       </Button>
+      {audioSrc ? (
+        <WordCardSecondaryAudioWidget
+          audioSrc={audioSrc}
+          testId={`word-card-play-button-${id}-2`}
+          language={languageSelectedState}
+        />
+      ) : (
+        adhocSentenceCustomWord && (
+          <WordCardGenerateSentence
+            id={id}
+            adhocSentenceCustomWord={adhocSentenceCustomWord}
+            getSentenceFromContextId={getSentenceFromContextId}
+            surfaceForm={surfaceForm}
+            originalContextId={originalContextId}
+          />
+        )
+      )}
       <Button
         variant={'secondary'}
         className={'h-3 w-3 p-3 bg-transparent'}
