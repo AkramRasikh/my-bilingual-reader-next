@@ -316,7 +316,7 @@ const SnippetReviewChinese = ({
     targetLangWithVocabStartIndex.forEach((item, idx) => {
       if (item.sentenceId && !sentencesToBreakdownMap.has(item.sentenceId)) {
         sentencesToBreakdownMap.set(item.sentenceId, {
-          startIndex: idx,
+          startIndex: item.startIndex,
           surfaceForm: item.surfaceForm,
           meaning: item.meaning,
         });
