@@ -129,6 +129,12 @@ interface DeleteWordResponseTypes {
   id: WordTypes['id'];
 }
 
+export interface AdhocSentenceCustomWordCallTypes {
+  id: WordTypes['id'];
+  inputWord: string;
+  context: string;
+}
+
 export interface FetchDataContextTypes {
   languageSelectedState: LanguageEnum;
   setLanguageSelectedState: (lang: LanguageEnum) => void;
@@ -158,6 +164,9 @@ export interface FetchDataContextTypes {
   wordsToReviewGivenOriginalContextId: Record<WordTypes['id'], WordTypes[]>;
   deleteContent: (params: DeleteContentCallTypes) => void;
   deleteVideo: (filePath: string) => Promise<boolean>;
+  adhocSentenceCustomWord: (
+    params: AdhocSentenceCustomWordCallTypes,
+  ) => Promise<void>;
   handleSaveSnippetFetchProvider: (
     params: HandleSaveSnippetCallTypes,
   ) => Promise<void>;
@@ -182,6 +191,7 @@ export const FetchDataContext = createContext<FetchDataContextTypes>({
   setToastMessageState: () => {},
   handleDeleteWordDataProvider: () => {},
   addImageDataProvider: () => {},
+  adhocSentenceCustomWord: async () => {},
   handleSaveSnippetFetchProvider: async () => {},
   handleDeleteSnippetFetchProvider: async () => {},
   wordsToReviewGivenOriginalContextId: {},
@@ -354,6 +364,38 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     } catch (error) {
       console.log('## breakdownSentence', { error });
       setToastMessageState('Sentence breakdown error 🧱🔨❌');
+    }
+  };
+
+  const adhocSentenceCustomWord = async ({
+    id,
+    inputWord,
+    context,
+  }: AdhocSentenceCustomWordCallTypes) => {
+    try {
+      const addedSentenceRes = (await apiRequestWrapper({
+        url: '/api/adhocSentenceCustomWord',
+        body: {
+          id,
+          inputWord,
+          context,
+          language: languageSelectedState,
+        },
+      })) as SentenceTypes;
+
+      dispatchSentences({
+        type: 'addSentence',
+        sentence: addedSentenceRes,
+      });
+      dispatchWords({
+        type: 'updateWordContext',
+        id: id,
+        newContext: addedSentenceRes.id,
+      });
+      setToastMessageState(`Created sentence ${inputWord} 👨🏽‍🎨`);
+    } catch (error) {
+      console.log('## adhocSentenceCustomWord', { error });
+      setToastMessageState('Sentence creation error ❌');
     }
   };
 
@@ -747,6 +789,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         deleteVideo,
         handleSaveSnippetFetchProvider,
         handleDeleteSnippetFetchProvider,
+        adhocSentenceCustomWord,
       }}
     >
       {children}

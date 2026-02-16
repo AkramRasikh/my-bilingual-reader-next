@@ -29,6 +29,11 @@ export type WordActions =
       type: 'updateWordData';
       wordId: WordTypes['id'];
       fields: Partial<WordTypes>;
+    }
+  | {
+      type: 'updateWordContext';
+      id: WordTypes['id'];
+      newContext: string; // the new context to add
     };
 
 export function wordsReducer(state: WordTypes[], action: WordActions) {
@@ -103,6 +108,16 @@ export function wordsReducer(state: WordTypes[], action: WordActions) {
           return {
             ...item,
             ...action.fields, // allows updating any field (imageUrl, reviewData, etc.)
+          };
+        }
+        return item;
+      });
+    case 'updateWordContext':
+      return state.map((item) => {
+        if (item.id === action.id) {
+          return {
+            ...item,
+            contexts: [...item.contexts, action.newContext], // Add the new context to the existing array
           };
         }
         return item;

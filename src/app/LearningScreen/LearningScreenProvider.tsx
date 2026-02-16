@@ -66,7 +66,10 @@ interface TopicWordsForReviewMemoizedProps extends WordTypes {
   time?: number;
 }
 
+export type ContextIdType = WordTypes['contexts'][number];
+
 export interface LearningScreenContextTypes {
+  getSentenceFromContextId: (contextId: ContextIdType) => string;
   handlePlayFromHere: (time: number) => void;
   handleTimeUpdate: () => void;
   handleLoadedMetadata: () => void;
@@ -898,6 +901,16 @@ export const LearningScreenProvider = ({
   });
   useGamepad(dispatch, threeSecondLoopState, isVideoPlaying);
 
+  // ...existing code...
+  console.log('## sentenceMapMemoized', sentenceMapMemoized);
+
+  const getSentenceFromContextId = (contextId: ContextIdType) => {
+    const sentence = sentenceMapMemoized[contextId].targetLang;
+    console.log('## sentence', sentence);
+
+    return sentence || '';
+  };
+
   return (
     <LearningScreenContext.Provider
       value={{
@@ -993,6 +1006,7 @@ export const LearningScreenProvider = ({
         handleQuickSaveSnippet,
         overlappedSentencesViableForReviewMemoized,
         handleAddOverlappedSnippetsToReview,
+        getSentenceFromContextId,
       }}
     >
       {children}

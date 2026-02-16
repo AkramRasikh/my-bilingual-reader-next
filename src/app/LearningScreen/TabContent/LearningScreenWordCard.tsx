@@ -15,11 +15,13 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
     masterPlay,
     contentSnippets,
     handlePlayFromHere,
+    getSentenceFromContextId,
   } = useLearningScreen();
   const {
     languageSelectedState,
     updateWordDataProvider,
     addImageDataProvider,
+    adhocSentenceCustomWord,
   } = useFetchData();
 
   const wordHasOverlappingSnippetTime = useMemo(() => {
@@ -116,6 +118,8 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
           handlePause={handlePause}
           wordHasOverlappingSnippetTime={wordHasOverlappingSnippetTime}
           isReadyForQuickReview={isReadyForQuickReview}
+          adhocSentenceCustomWord={adhocSentenceCustomWord}
+          getSentenceFromContextId={getSentenceFromContextId}
         />
       </div>
     </li>

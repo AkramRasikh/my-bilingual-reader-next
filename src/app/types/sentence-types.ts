@@ -5,7 +5,7 @@ export interface SentenceTypes {
   baseLang: string;
   hasAudio: boolean;
   targetLang: string;
-  topic: Topic; // think this one through
+  topic?: Topic; // think this one through
   matchedWordsId?: string[];
   matchedWordsSurface?: string[];
   reviewData?: ReviewDataTypes;
