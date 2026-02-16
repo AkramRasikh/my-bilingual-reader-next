@@ -901,13 +901,8 @@ export const LearningScreenProvider = ({
   });
   useGamepad(dispatch, threeSecondLoopState, isVideoPlaying);
 
-  // ...existing code...
-  console.log('## sentenceMapMemoized', sentenceMapMemoized);
-
   const getSentenceFromContextId = (contextId: ContextIdType) => {
     const sentence = sentenceMapMemoized[contextId].targetLang;
-    console.log('## sentence', sentence);
-
     return sentence || '';
   };
 
