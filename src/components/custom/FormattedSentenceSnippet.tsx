@@ -49,7 +49,7 @@ const FormattedSentenceSnippet = ({
               className={clsx(
                 hasHighlightedBackground ? 'bg-gray-200' : 'opacity-35',
                 played ? 'font-extrabold' : '',
-                'relative inline-block',
+                'relative',
               )}
               style={{
                 color: getColorByIndex(hasStartIndex),
@@ -76,10 +76,7 @@ const FormattedSentenceSnippet = ({
           return (
             <span
               key={indexNested}
-              className={clsx(
-                played ? 'font-extrabold' : '',
-                'relative inline-block',
-              )}
+              className={clsx(played ? 'font-extrabold' : '', 'relative')}
             >
               <FormattedSentenceSnippetProgressWidget played={played} />
               <FormattedSentenceSnippetBreakdownWidget
@@ -106,7 +103,7 @@ const FormattedSentenceSnippet = ({
             className={clsx(
               hasHighlightedBackground ? 'bg-gray-200' : 'opacity-35',
               played ? 'font-extrabold' : '',
-              'relative inline-block',
+              'relative',
             )}
           >
             <FormattedSentenceSnippetProgressWidget played={played} />
