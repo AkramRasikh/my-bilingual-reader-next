@@ -349,8 +349,7 @@ const SnippetReviewChinese = ({
                 startIndex: vocabIdx,
                 surfaceForm,
                 meaning,
-                secondForIndex:
-                  Number?.(getSecondForIndex(index)?.toFixed(2)) - 0.2,
+                secondForIndex: Number?.(getSecondForIndex(index)),
                 ...(sentenceId ? { sentenceId } : {}),
               };
             }
