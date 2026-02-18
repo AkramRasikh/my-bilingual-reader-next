@@ -41,6 +41,7 @@ const SnippetReviewChinese = ({
   isReadyForQuickReview,
   handleBreakdownSentence,
   isBreakingDownSentenceArrState,
+  ref,
 }: SnippetReviewProps) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
   const [endIndexKeyState, setEndIndexKeyState] = useState(0);
@@ -50,12 +51,17 @@ const SnippetReviewChinese = ({
     useState(false);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [isLoadingWordState, setIsLoadingWordState] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0); // Initialize currentTime to 0
   const thisIsPlaying =
     isVideoPlaying && threeSecondLoopState === snippetData.time;
   const isPreSnippet = snippetData?.isPreSnippet;
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
   const ulRef = useRef<NodeJS.Timeout | null>(null);
   const vocab = snippetData?.vocab;
+
+  const contractionAmount = snippetData?.isContracted ? 0.75 : 1.5;
+  const startTime = snippetData.time - contractionAmount;
+  const endTime = snippetData.time + contractionAmount;
 
   const {
     wordsForSelectedTopic,
@@ -163,6 +169,29 @@ const SnippetReviewChinese = ({
     lengthAdjustmentState,
   ]);
 
+  useEffect(() => {
+    let mounted = true;
+    const interval = setInterval(() => {
+      let newTime = currentTime;
+      // If ref is a video/audio element, get its currentTime
+      if (
+        ref &&
+        typeof ref.current !== 'undefined' &&
+        ref.current &&
+        typeof ref.current.currentTime === 'number'
+      ) {
+        newTime = ref.current.currentTime;
+      }
+      if (typeof newTime === 'number' && mounted) {
+        setCurrentTime(newTime);
+      }
+    }, 100);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, [ref]);
+
   const hasSnippetText = Boolean(textMatch);
 
   const handleSaveSnippetFlow = async () => {
@@ -251,6 +280,26 @@ const SnippetReviewChinese = ({
     snippetData.isContracted,
   ]);
 
+  // Function to get the second representation for a given index in the matchKey range
+  const getSecondForIndex = (index) => {
+    if (
+      typeof index !== 'number' ||
+      typeof matchStartKey !== 'number' ||
+      typeof matchEndKey !== 'number' ||
+      typeof startTime !== 'number' ||
+      typeof endTime !== 'number'
+    ) {
+      return null;
+    }
+    if (index < matchStartKey || index > matchEndKey) return null;
+    const totalKeys = matchEndKey - matchStartKey;
+    const totalTime = endTime - startTime;
+    if (totalKeys === 0) return startTime;
+    // Spread time evenly across keys
+    const t = (index - matchStartKey) / totalKeys;
+    return startTime + t * totalTime;
+  };
+
   const {
     // targetLangformatted,
     wordsFromSentence,
@@ -292,13 +341,16 @@ const SnippetReviewChinese = ({
             }
           }
           if (match) {
-            // Assign startIndex and sentenceId (if available) to all matched chars
+            // Assign startIndex, secondForIndex, and sentenceId (if available) to all matched chars
             for (let j = 0; j < surfaceForm.length; j++) {
-              targetLangWithVocabStartIndex[start + j] = {
-                ...targetLangWithVocabStartIndex[start + j],
+              const index = start + j;
+              targetLangWithVocabStartIndex[index] = {
+                ...targetLangWithVocabStartIndex[index],
                 startIndex: vocabIdx,
                 surfaceForm,
                 meaning,
+                secondForIndex:
+                  Number?.(getSecondForIndex(index)?.toFixed(2)) - 0.2,
                 ...(sentenceId ? { sentenceId } : {}),
               };
             }
@@ -337,7 +389,7 @@ const SnippetReviewChinese = ({
       targetLangWithVocabStartIndex,
       sentencesToBreakdown,
     };
-  }, [snippetData, wordsState]);
+  }, [snippetData, wordsState, matchStartKey, matchEndKey]);
 
   const pinyinStart = Math.max(0, matchStartKey - 5);
 
@@ -397,6 +449,7 @@ const SnippetReviewChinese = ({
                     matchStartKey={matchStartKey}
                     matchEndKey={matchEndKey}
                     handleSaveFunc={handleSaveFunc}
+                    currentTime={currentTime}
                   />
                 </div>
                 <SnippetReviewPinyinHelper

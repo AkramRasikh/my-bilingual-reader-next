@@ -87,9 +87,11 @@ const FormattedSentenceSnippet = ({
   matchStartKey,
   matchEndKey,
   handleSaveFunc,
+  currentTime,
 }) => {
   const isArabic = languageSelectedState === arabic;
   const isChinese = languageSelectedState === chinese;
+  const flooredTime = Math.floor(currentTime);
 
   return (
     <span
@@ -107,12 +109,16 @@ const FormattedSentenceSnippet = ({
           indexNested >= matchStartKey && indexNested <= matchEndKey;
         const hasStartIndex = item?.startIndex;
         const surfaceFormBreakdown = item?.surfaceForm;
+        const played =
+          hasHighlightedBackground && flooredTime >= item?.secondForIndex;
+
         if (isUnderlined) {
           return (
             <span
               key={indexNested}
               className={clsx(
                 hasHighlightedBackground ? 'bg-gray-200' : 'opacity-35',
+                played ? 'font-extrabold' : '',
               )}
               style={{
                 color: getColorByIndex(hasStartIndex),
@@ -136,7 +142,10 @@ const FormattedSentenceSnippet = ({
 
         if (!(item?.meaning === 'n/a' && surfaceFormBreakdown)) {
           return (
-            <span key={indexNested}>
+            <span
+              key={indexNested}
+              className={clsx(played ? 'font-extrabold' : '')}
+            >
               <FormattedSentenceBreakdownWidget
                 text={text}
                 indexNum={indexNested}
@@ -160,6 +169,7 @@ const FormattedSentenceSnippet = ({
             }}
             className={clsx(
               hasHighlightedBackground ? 'bg-gray-200 border' : 'opacity-35',
+              played ? 'font-extrabold' : '',
             )}
           >
             {text}

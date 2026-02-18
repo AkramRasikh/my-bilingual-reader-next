@@ -56,6 +56,7 @@ const LearningScreenComprehensiveReview = () => {
     setIsInReviewMode,
     selectedContentTitleState,
     handleUpdateSnippet,
+    ref,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -235,6 +236,7 @@ const LearningScreenComprehensiveReview = () => {
               return (
                 <SnippetReviewChinese
                   key={item.id}
+                  ref={ref}
                   snippetData={item}
                   handleLoopHere={handleLoopHere}
                   isVideoPlaying={isVideoPlaying}
