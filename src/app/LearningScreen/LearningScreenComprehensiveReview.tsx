@@ -57,6 +57,7 @@ const LearningScreenComprehensiveReview = () => {
     selectedContentTitleState,
     handleUpdateSnippet,
     ref,
+    currentTime,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -249,6 +250,7 @@ const LearningScreenComprehensiveReview = () => {
                   isBreakingDownSentenceArrState={
                     isBreakingDownSentenceArrState
                   }
+                  currentTimeTing={currentTime}
                 />
               );
             }

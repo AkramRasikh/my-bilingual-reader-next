@@ -41,7 +41,7 @@ const SnippetReviewChinese = ({
   isReadyForQuickReview,
   handleBreakdownSentence,
   isBreakingDownSentenceArrState,
-  ref,
+  currentTimeTing,
 }: SnippetReviewProps) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
   const [endIndexKeyState, setEndIndexKeyState] = useState(0);
@@ -51,7 +51,6 @@ const SnippetReviewChinese = ({
     useState(false);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [isLoadingWordState, setIsLoadingWordState] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0); // Initialize currentTime to 0
   const thisIsPlaying =
     isVideoPlaying && threeSecondLoopState === snippetData.time;
   const isPreSnippet = snippetData?.isPreSnippet;
@@ -168,29 +167,6 @@ const SnippetReviewChinese = ({
     startIndexKeyState,
     lengthAdjustmentState,
   ]);
-
-  useEffect(() => {
-    let mounted = true;
-    const interval = setInterval(() => {
-      let newTime = currentTime;
-      // If ref is a video/audio element, get its currentTime
-      if (
-        ref &&
-        typeof ref.current !== 'undefined' &&
-        ref.current &&
-        typeof ref.current.currentTime === 'number'
-      ) {
-        newTime = ref.current.currentTime;
-      }
-      if (typeof newTime === 'number' && mounted) {
-        setCurrentTime(newTime);
-      }
-    }, 100);
-    return () => {
-      mounted = false;
-      clearInterval(interval);
-    };
-  }, [ref]);
 
   const hasSnippetText = Boolean(textMatch);
 
@@ -448,7 +424,7 @@ const SnippetReviewChinese = ({
                     matchStartKey={matchStartKey}
                     matchEndKey={matchEndKey}
                     handleSaveFunc={handleSaveFunc}
-                    currentTime={currentTime}
+                    currentTime={currentTimeTing}
                   />
                 </div>
                 <SnippetReviewPinyinHelper
