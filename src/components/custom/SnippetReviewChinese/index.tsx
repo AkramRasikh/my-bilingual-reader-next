@@ -380,7 +380,7 @@ const SnippetReview = ({
 
   const pinyinStart = Math.max(0, matchStartKey - 5);
 
-  const correspondingRomanizedArr = targetLangWithVocabStartIndex.slice(
+  const slicedSnippetSegment = targetLangWithVocabStartIndex.slice(
     pinyinStart,
     Math.min(targetLangWithVocabStartIndex.length, matchEndKey + 6),
   );
@@ -441,7 +441,7 @@ const SnippetReview = ({
                 </div>
                 {isChinese && (
                   <SnippetReviewPinyinHelper
-                    correspondingRomanizedArr={correspondingRomanizedArr}
+                    slicedSnippetSegment={slicedSnippetSegment}
                     getColorByIndex={getColorByIndex}
                     matchStartKey={matchStartKey}
                     matchEndKey={matchEndKey}
@@ -449,7 +449,7 @@ const SnippetReview = ({
                   />
                 )}
                 <SnippetReviewBreakdownDefinitions
-                  correspondingRomanizedArr={correspondingRomanizedArr}
+                  slicedSnippetSegment={slicedSnippetSegment}
                   getColorByIndex={getColorByIndex}
                   matchStartKey={matchStartKey}
                   matchEndKey={matchEndKey}

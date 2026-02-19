@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface SnippetReviewBreakdownDefinitionsProps {
-  correspondingRomanizedArr: Array<{ startIndex?: number }>;
+  slicedSnippetSegment: Array<{ startIndex?: number }>;
   vocab: Record<number, { meaning: string }>;
   getColorByIndex: (index?: number) => string;
   matchStartKey: number;
@@ -12,7 +12,7 @@ interface SnippetReviewBreakdownDefinitionsProps {
 const SnippetReviewBreakdownDefinitions: React.FC<
   SnippetReviewBreakdownDefinitionsProps
 > = ({
-  correspondingRomanizedArr,
+  slicedSnippetSegment,
   vocab,
   getColorByIndex,
   matchStartKey,
@@ -21,8 +21,8 @@ const SnippetReviewBreakdownDefinitions: React.FC<
 }) => {
   return (
     <div>
-      {correspondingRomanizedArr.map((item, index) => {
-        const prev = correspondingRomanizedArr[index - 1];
+      {slicedSnippetSegment.map((item, index) => {
+        const prev = slicedSnippetSegment[index - 1];
         const addSpace = index > 0 && item?.startIndex !== prev?.startIndex;
         let correspondingMeaning = vocab[item?.startIndex]?.meaning;
         // Return null if meaning is 'n/a' or startIndex is the same as previous

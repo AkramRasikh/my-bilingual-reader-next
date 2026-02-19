@@ -7,7 +7,7 @@ interface correspondingRomanized {
 }
 
 interface SnippetReviewPinyinHelperProps {
-  correspondingRomanizedArr: correspondingRomanized[];
+  slicedSnippetSegment: correspondingRomanized[];
   getColorByIndex: (index?: number) => string;
   matchStartKey: number;
   matchEndKey: number;
@@ -15,7 +15,7 @@ interface SnippetReviewPinyinHelperProps {
 }
 
 const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
-  correspondingRomanizedArr,
+  slicedSnippetSegment,
   getColorByIndex,
   matchStartKey,
   matchEndKey,
@@ -24,8 +24,8 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
   return (
     // <div className='my-2 text-md px-1 rounded w-full'>
     <div>
-      {correspondingRomanizedArr.map((item, index) => {
-        const prev = correspondingRomanizedArr[index - 1];
+      {slicedSnippetSegment.map((item, index) => {
+        const prev = slicedSnippetSegment[index - 1];
         const addSpace = index > 0 && item?.startIndex !== prev?.startIndex;
         return (
           <span
