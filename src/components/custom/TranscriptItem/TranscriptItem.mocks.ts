@@ -343,6 +343,80 @@ export const mockArabicContentItem: FormattedTranscriptTypes = {
   helperReviewSentence: false,
 };
 
+export const mockArabicContentItem2: FormattedTranscriptTypes = {
+  id: 'a7c3d2b1-6e4f-4a91-9c3e-2b7d8f5a9e10',
+  baseLang:
+    'The economic crisis in Lebanon has worsened amid political instability and growing international pressure.',
+  targetLang:
+    'الأزمة الاقتصادية في لبنان تفاقمت وسط عدم الاستقرار السياسي والضغوط الدولية المتزايدة.',
+  time: 21,
+  isDue: false,
+  meaning:
+    'The economic crisis in Lebanon has worsened amid political instability and growing international pressure.',
+  sentenceStructure:
+    'الأزمة (the crisis) + الاقتصادية (economic) + في (in) + لبنان (Lebanon) + تفاقمت (has worsened) + وسط (amid) + عدم (lack of) + الاستقرار (stability) + السياسي (political) + و (and) + الضغوط (pressures) + الدولية (international) + المتزايدة (growing) + 。 (period)',
+  vocab: [
+    {
+      meaning: 'the crisis',
+      surfaceForm: 'الأزمة',
+    },
+    {
+      meaning: 'economic',
+      surfaceForm: 'الاقتصادية',
+    },
+    {
+      meaning: 'in',
+      surfaceForm: 'في',
+    },
+    {
+      meaning: 'Lebanon',
+      surfaceForm: 'لبنان',
+    },
+    {
+      meaning: 'has worsened',
+      surfaceForm: 'تفاقمت',
+    },
+    {
+      meaning: 'amid',
+      surfaceForm: 'وسط',
+    },
+    {
+      meaning: 'lack of',
+      surfaceForm: 'عدم',
+    },
+    {
+      meaning: 'stability',
+      surfaceForm: 'الاستقرار',
+    },
+    {
+      meaning: 'political',
+      surfaceForm: 'السياسي',
+    },
+    {
+      meaning: 'and',
+      surfaceForm: 'و',
+    },
+    {
+      meaning: 'pressures',
+      surfaceForm: 'الضغوط',
+    },
+    {
+      meaning: 'international',
+      surfaceForm: 'الدولية',
+    },
+    {
+      meaning: 'growing',
+      surfaceForm: 'المتزايدة',
+    },
+  ],
+  targetLangformatted: underlineWordsInSentence(
+    'الأزمة الاقتصادية في لبنان تفاقمت وسط عدم الاستقرار السياسي والضغوط الدولية المتزايدة.',
+    [],
+  ),
+  wordsFromSentence: [],
+  helperReviewSentence: false,
+};
+
 export const mockFrenchContentItem: FormattedTranscriptTypes = {
   id: '1f7d0f92-8aa6-4a5b-9e2d-3c45b6b7f7c1',
   baseLang:

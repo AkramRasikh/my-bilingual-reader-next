@@ -15,6 +15,25 @@ type UseOverlappingTextMemoizedArgs = {
   loopedTranscriptMemoized: FormattedTranscriptTypes[];
 };
 
+export const getOverlappingText = (
+  overlappingSnippetDataMemoised: OverlappingSnippetData[],
+  loopedTranscriptMemoized: FormattedTranscriptTypes[],
+) => {
+  const overlappingIds = overlappingSnippetDataMemoised.map((item) => item.id);
+  const entries = loopedTranscriptMemoized.filter((x) =>
+    overlappingIds.includes(x.id),
+  );
+  const targetLang = entries.map((item) => item.targetLang).join('');
+  const baseLang = entries.map((item) => item.baseLang).join('');
+  return {
+    targetLang,
+    baseLang,
+    suggestedFocusText: sliceTranscriptViaPercentageOverlap(
+      overlappingSnippetDataMemoised,
+    ),
+  };
+};
+
 export const useOverlappingTextMemoized = ({
   threeSecondLoopState,
   overlappingSnippetDataMemoised,
@@ -28,24 +47,10 @@ export const useOverlappingTextMemoized = ({
     ) {
       return null;
     }
-
-    const overlappingIds = overlappingSnippetDataMemoised.map(
-      (item) => item.id,
+    return getOverlappingText(
+      overlappingSnippetDataMemoised,
+      loopedTranscriptMemoized,
     );
-    const entries = loopedTranscriptMemoized.filter((x) =>
-      overlappingIds.includes(x.id),
-    );
-
-    const targetLang = entries.map((item) => item.targetLang).join('');
-    const baseLang = entries.map((item) => item.baseLang).join('');
-
-    return {
-      targetLang,
-      baseLang,
-      suggestedFocusText: sliceTranscriptViaPercentageOverlap(
-        overlappingSnippetDataMemoised,
-      ),
-    };
   }, [
     overlappingSnippetDataMemoised,
     threeSecondLoopState,

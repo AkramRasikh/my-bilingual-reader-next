@@ -1,6 +1,92 @@
 // mockSnippets and related mock data for SnippetReviewChinese stories
 
 import type { FetchDataContextTypes } from '@/app/Providers/FetchDataProvider';
+import {
+  mockArabicContentItem,
+  mockArabicContentItem2,
+} from '../TranscriptItem/TranscriptItem.mocks';
+import { getOverlappingText } from '@/app/LearningScreen/hooks/useOverlappingTextMemoized';
+import { getSecondsLoopedTranscriptData } from '@/app/LearningScreen/utils/get-seconds-looped-transcript-data';
+import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
+import { Snippet } from '@/app/types/content-types';
+
+const mockArabicTranscript = [
+  {
+    ...mockArabicContentItem,
+    prevSentence: null,
+    thisSentence: mockArabicContentItem.time,
+    isUpForReview: false,
+    isDue: false,
+    nextSentence: mockArabicContentItem2.time,
+    index: 0,
+    targetLangformatted: underlineWordsInSentence(
+      mockArabicContentItem.targetLang,
+      [],
+      true,
+    ),
+  },
+  ,
+  {
+    ...mockArabicContentItem2,
+    prevSentence: mockArabicContentItem.time,
+    thisSentence: mockArabicContentItem2.time,
+    isUpForReview: false,
+    isDue: false,
+    nextSentence: null,
+    index: 1,
+    targetLangformatted: underlineWordsInSentence(
+      mockArabicContentItem2.targetLang,
+      [],
+      true,
+    ),
+  },
+];
+const getSecondsLoopedTranscriptDataMock = getSecondsLoopedTranscriptData({
+  formattedTranscriptState: mockArabicTranscript,
+  loopStartTime: 20,
+  loopEndTime: 23,
+  mediaDuration: 100,
+});
+
+// console.log(
+//   '## getSecondsLoopedTranscriptDataMock',
+//   getSecondsLoopedTranscriptDataMock,
+// );
+// console.log(
+//   '## getSecondsLoopedTranscriptDataMock',
+//   getSecondsLoopedTranscriptDataMock,
+// );
+
+// mockArabicContentItem2,
+const overlappingArabicText = getOverlappingText(
+  getSecondsLoopedTranscriptDataMock,
+  mockArabicTranscript,
+);
+
+// console.log('## overlappingArabicText ', overlappingArabicText);
+
+export const mockArabicSnippet = {
+  id: 'mock-arabic-snippet-id',
+  baseLang: 'Thank youSeeing the audience at Washasuch enthusiastic applause',
+  isContracted: false,
+  isPreSnippet: true,
+  time: 21,
+  reviewData: {
+    difficulty: 6.70746009,
+    due: '2026-02-13T05:00:00.000Z',
+    ease: 2.5,
+    elapsed_days: 2,
+    interval: 0,
+    lapses: 0,
+    last_review: '2026-02-10T10:19:53.195Z',
+    reps: 3,
+    scheduled_days: 3,
+    stability: 4.85428674,
+    state: 2,
+  },
+  ...overlappingArabicText,
+  vocab: [...mockArabicContentItem.vocab, ...mockArabicContentItem2.vocab],
+} as Snippet;
 
 export const mockSnippets = [
   {

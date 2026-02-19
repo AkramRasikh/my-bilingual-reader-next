@@ -7,6 +7,7 @@ import {
   mockSnippetNoVocab,
   mockSnippetPartiallyBrokenDown,
   mockSelectedContentChinese,
+  mockArabicSnippet,
 } from './SnippetReviewChinese.mocks';
 import { testSquashedOverlappingSnippetDataJapanese } from '@/app/LearningScreen/experimental/SnippetReview.mocks';
 
@@ -80,9 +81,17 @@ export const SnippetPartiallyBrokenDown: Story = {
     snippetData: mockSnippetPartiallyBrokenDown,
   },
 };
+
 export const DefaultJapanese: Story = {
   args: {
     snippetData: testSquashedOverlappingSnippetDataJapanese,
     languageSelectedState: LanguageEnum.Japanese,
+  },
+};
+
+export const DefaultArabic: Story = {
+  args: {
+    snippetData: mockArabicSnippet,
+    languageSelectedState: LanguageEnum.Arabic,
   },
 };
