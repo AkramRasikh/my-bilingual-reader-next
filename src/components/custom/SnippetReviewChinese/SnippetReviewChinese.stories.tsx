@@ -1,9 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import type { ReactNode } from 'react';
-import SnippetReviewChinese from './SnippetReviewChinese';
-import { LearningScreenProvider } from '../LearningScreenProvider';
-import { FetchDataContext } from '@/app/Providers/FetchDataProvider';
+import SnippetReviewChinese from './index';
 import type { FetchDataContextTypes } from '@/app/Providers/FetchDataProvider';
+import { LanguageEnum } from '@/app/languages';
 
 // Mock data
 const mockSnippets = [
@@ -443,44 +441,31 @@ const mockSelectedContentChinese = {
       time: 116,
     },
   ],
-
-  // Add any other fields required by LearningScreenProvider
 };
-
-const MockFetchProvider = ({
-  children,
-  value,
-}: {
-  children: ReactNode;
-  value: FetchDataContextTypes;
-}) => (
-  <FetchDataContext.Provider value={value}>
-    {children}
-  </FetchDataContext.Provider>
-);
 
 const SnippetReviewChineseStoryRoot = ({
   snippetData,
 }: {
   snippetData: (typeof mockSnippets)[0];
 }) => (
-  <MockFetchProvider value={mockFetchContextChinese}>
-    <LearningScreenProvider
-      selectedContentStateMemoized={mockSelectedContentChinese}
-    >
-      <div className='max-w-3xl p-4'>
-        <SnippetReviewChinese
-          snippetData={snippetData}
-          handleLoopHere={() => {}}
-          isVideoPlaying={false}
-          threeSecondLoopState={null}
-          handleUpdateSnippetComprehensiveReview={async () => {}}
-          isReadyForQuickReview={true}
-          handleBreakdownSentence={() => {}}
-        />
-      </div>
-    </LearningScreenProvider>
-  </MockFetchProvider>
+  <SnippetReviewChinese
+    snippetData={snippetData}
+    handleLoopHere={() => {}}
+    isVideoPlaying={false}
+    threeSecondLoopState={null}
+    handleUpdateSnippetComprehensiveReview={async () => {}}
+    isReadyForQuickReview={true}
+    handleBreakdownSentence={async () => {}}
+    isBreakingDownSentenceArrState={[]}
+    currentTime={0}
+    getSentenceDataOfOverlappingWordsDuringSave={() => null}
+    selectedContentTitleState={mockSelectedContentChinese.title}
+    sentenceMapMemoized={{}}
+    languageSelectedState={LanguageEnum.Chinese}
+    wordsState={[]}
+    handleSaveWord={async () => {}}
+    handleDeleteWordDataProvider={async () => {}}
+  />
 );
 
 const meta = {
@@ -496,7 +481,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const PreSnippet: Story = {
+export const DefaultSnippet: Story = {
   args: {
     snippetData: mockSnippets[0],
   },
@@ -518,6 +503,7 @@ export const SnippetNoVocab: Story = {
     snippetData: mockSnippetNoVocab,
   },
 };
+
 export const SnippetPartiallyBrokenDown: Story = {
   args: {
     snippetData: mockSnippetPartiallyBrokenDown,
