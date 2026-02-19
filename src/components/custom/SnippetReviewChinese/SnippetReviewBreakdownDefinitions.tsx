@@ -1,32 +1,43 @@
-import { pinyin } from 'pinyin-pro';
 import React from 'react';
 
-interface correspondingRomanized {
-  text: string;
-  startIndex?: number;
-}
-
-interface SnippetReviewPinyinHelperProps {
-  correspondingRomanizedArr: correspondingRomanized[];
+interface SnippetReviewBreakdownDefinitionsProps {
+  correspondingRomanizedArr: Array<{ startIndex?: number }>;
+  vocab: Record<number, { meaning: string }>;
   getColorByIndex: (index?: number) => string;
   matchStartKey: number;
   matchEndKey: number;
   pinyinStart: number;
 }
 
-const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
+const SnippetReviewBreakdownDefinitions: React.FC<
+  SnippetReviewBreakdownDefinitionsProps
+> = ({
   correspondingRomanizedArr,
+  vocab,
   getColorByIndex,
   matchStartKey,
   matchEndKey,
   pinyinStart,
 }) => {
   return (
-    // <div className='my-2 text-md px-1 rounded w-full'>
     <div>
       {correspondingRomanizedArr.map((item, index) => {
         const prev = correspondingRomanizedArr[index - 1];
         const addSpace = index > 0 && item?.startIndex !== prev?.startIndex;
+        let correspondingMeaning = vocab[item?.startIndex]?.meaning;
+        // Return null if meaning is 'n/a' or startIndex is the same as previous
+        if (
+          correspondingMeaning === 'n/a' ||
+          (index > 0 && item?.startIndex === prev?.startIndex)
+        ) {
+          return null;
+        }
+        if (
+          typeof correspondingMeaning === 'string' &&
+          correspondingMeaning.length > 20
+        ) {
+          correspondingMeaning = correspondingMeaning.slice(0, 20) + '…';
+        }
         return (
           <span
             key={index}
@@ -40,10 +51,11 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
                 index < Math.max(0, matchStartKey - 5) || index > matchEndKey
                   ? 'italic'
                   : 'bold',
+              fontSize: '10px',
             }}
           >
             {addSpace && ' '}
-            {pinyin(item.text, { toneType: 'symbol' })}
+            {correspondingMeaning}
           </span>
         );
       })}
@@ -51,4 +63,4 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
   );
 };
 
-export default SnippetReviewPinyinHelper;
+export default SnippetReviewBreakdownDefinitions;

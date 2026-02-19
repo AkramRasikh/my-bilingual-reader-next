@@ -22,6 +22,7 @@ import {
   HandleDeleteWordDataProviderCallTypes,
   HandleSaveWordCallTypes,
 } from '@/app/Providers/FetchDataProvider';
+import SnippetReviewBreakdownDefinitions from './SnippetReviewBreakdownDefinitions';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -90,6 +91,7 @@ const SnippetReview = ({
   const contractionAmount = snippetData?.isContracted ? 0.75 : 1.5;
   const startTime = snippetData.time - contractionAmount;
   const endTime = snippetData.time + contractionAmount;
+  const isChinese = languageSelectedState === LanguageEnum.Chinese;
 
   const onMoveLeft = () => {
     const stopUserSpillingOverStartPoint = !(matchStartKey <= 0);
@@ -118,7 +120,6 @@ const SnippetReview = ({
   };
 
   const onContractLength = () => {
-    // Prevent contracting below a minimum length (e.g., 1 character)
     if (matchEndKey - matchStartKey < 1) return;
     setLengthAdjustmentState(lengthAdjustmentState - 1);
   };
@@ -379,7 +380,7 @@ const SnippetReview = ({
 
   const pinyinStart = Math.max(0, matchStartKey - 5);
 
-  const pinyinTing = targetLangWithVocabStartIndex.slice(
+  const correspondingRomanizedArr = targetLangWithVocabStartIndex.slice(
     pinyinStart,
     Math.min(targetLangWithVocabStartIndex.length, matchEndKey + 6),
   );
@@ -438,8 +439,17 @@ const SnippetReview = ({
                     isReadyForQuickReview={isReadyForQuickReview}
                   />
                 </div>
-                <SnippetReviewPinyinHelper
-                  pinyinTing={pinyinTing}
+                {isChinese && (
+                  <SnippetReviewPinyinHelper
+                    correspondingRomanizedArr={correspondingRomanizedArr}
+                    getColorByIndex={getColorByIndex}
+                    matchStartKey={matchStartKey}
+                    matchEndKey={matchEndKey}
+                    pinyinStart={pinyinStart}
+                  />
+                )}
+                <SnippetReviewBreakdownDefinitions
+                  correspondingRomanizedArr={correspondingRomanizedArr}
                   getColorByIndex={getColorByIndex}
                   matchStartKey={matchStartKey}
                   matchEndKey={matchEndKey}
