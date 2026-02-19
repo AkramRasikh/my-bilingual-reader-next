@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
-import { Button } from '../ui/button';
+import { Button } from '../../ui/button';
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from '../ui/hover-card';
+} from '../../ui/hover-card';
 
 interface FormattedSentenceSnippetBreakdownWidgetProps {
   text: string;
