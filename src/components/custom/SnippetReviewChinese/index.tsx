@@ -92,20 +92,34 @@ const SnippetReview = ({
   const endTime = snippetData.time + contractionAmount;
 
   const onMoveLeft = () => {
+    const stopUserSpillingOverStartPoint = !(matchStartKey <= 0);
+    if (!stopUserSpillingOverStartPoint) return;
     setStartIndexKeyState(startIndexKeyState - 1);
     setEndIndexKeyState(endIndexKeyState - 1);
   };
 
   const onMoveRight = () => {
+    const stopUserSpillingOverEndPoint = !(
+      matchEndKey >=
+      snippetData.targetLang.length - 1
+    );
+    if (!stopUserSpillingOverEndPoint) return;
     setStartIndexKeyState(startIndexKeyState + 1);
     setEndIndexKeyState(endIndexKeyState + 1);
   };
 
   const onExpandLength = () => {
+    const stopUserSpillingOverEndPoint = !(
+      matchEndKey >=
+      snippetData.targetLang.length - 1
+    );
+    if (!stopUserSpillingOverEndPoint) return;
     setLengthAdjustmentState(lengthAdjustmentState + 1);
   };
 
   const onContractLength = () => {
+    // Prevent contracting below a minimum length (e.g., 1 character)
+    if (matchEndKey - matchStartKey < 1) return;
     setLengthAdjustmentState(lengthAdjustmentState - 1);
   };
 
