@@ -7,11 +7,21 @@ import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-
 import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
 import HighlightedText from '@/components/custom/HighlightedText';
 import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
-import { ContentTranscriptTypes, Snippet } from '@/app/types/content-types';
+import {
+  ContentTranscriptTypes,
+  SentenceMapItemTypes,
+  Snippet,
+} from '@/app/types/content-types';
 import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/useSnippetLoopEvents';
 import getColorByIndex from '@/utils/get-color-by-index';
 import SnippetReviewPinyinHelper from './SnippetReviewPinyinHelper';
 import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
+import { LanguageEnum } from '@/app/languages';
+import { WordTypes } from '@/app/types/word-types';
+import {
+  HandleDeleteWordDataProviderCallTypes,
+  HandleSaveWordCallTypes,
+} from '@/app/Providers/FetchDataProvider';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -28,6 +38,21 @@ interface SnippetReviewProps {
     isRemoveReview?: boolean;
   }) => Promise<void>;
   isReadyForQuickReview: boolean;
+  handleBreakdownSentence: (arg: { sentenceId: string }) => Promise<void>;
+  isBreakingDownSentenceArrState?: string[];
+  currentTime?: number;
+  getSentenceDataOfOverlappingWordsDuringSave: (
+    time: number,
+    highlightedText: string,
+  ) => string | null;
+  selectedContentTitleState: string;
+  sentenceMapMemoized: Record<string, SentenceMapItemTypes>;
+  languageSelectedState: LanguageEnum;
+  wordsState: WordTypes[];
+  handleSaveWord: (params: HandleSaveWordCallTypes) => void;
+  handleDeleteWordDataProvider: (
+    params: HandleDeleteWordDataProviderCallTypes,
+  ) => void;
 }
 
 const SnippetReview = ({

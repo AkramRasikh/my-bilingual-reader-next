@@ -64,7 +64,7 @@ interface UpdateContentMetaDataCallTypes {
   contentIndex: ContentStateTypes['contentIndex'];
 }
 
-interface HandleSaveWordCallTypes {
+export interface HandleSaveWordCallTypes {
   highlightedWord: string;
   highlightedWordSentenceId: SentenceTypes['id'] | ContentStateTypes['id'];
   contextSentence?: string;
@@ -91,7 +91,7 @@ interface HandleDeleteSnippetCallTypes {
   contentIndex: ContentStateTypes['contentIndex'];
 }
 
-interface HandleDeleteWordDataProviderCallTypes {
+export interface HandleDeleteWordDataProviderCallTypes {
   wordId: WordTypes['id'];
 }
 interface UpdateWordDataProviderCallTypes {
