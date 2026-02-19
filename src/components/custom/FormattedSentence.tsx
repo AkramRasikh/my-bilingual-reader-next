@@ -9,7 +9,6 @@ const FormattedSentence = ({
   handleMouseEnter,
   wordPopUpState,
   setWordPopUpState,
-  wordsForSelectedTopic,
   handleDeleteWordDataProvider,
   wordsFromSentence,
   languageSelectedState,
@@ -37,7 +36,6 @@ const FormattedSentence = ({
               text={text}
               wordPopUpState={wordPopUpState}
               setWordPopUpState={setWordPopUpState}
-              wordsForSelectedTopic={wordsForSelectedTopic}
               handleDeleteWordDataProvider={handleDeleteWordDataProvider}
               wordsFromSentence={wordsFromSentence}
               hasHighlightedBackground={hasHighlightedBackground}

@@ -61,7 +61,6 @@ const LearningScreenSnippetReview = ({
   const ulRef = useRef<NodeJS.Timeout | null>(null);
 
   const {
-    wordsForSelectedTopic,
     getSentenceDataOfOverlappingWordsDuringSave,
     selectedContentTitleState,
     sentenceMapMemoized,
@@ -301,7 +300,6 @@ const LearningScreenSnippetReview = ({
                 handleMouseEnter={handleMouseEnter}
                 wordPopUpState={wordPopUpState}
                 setWordPopUpState={setWordPopUpState}
-                wordsForSelectedTopic={wordsForSelectedTopic}
                 handleDeleteWordDataProvider={() => {}}
                 wordsFromSentence={wordsFromSentence}
                 languageSelectedState={languageSelectedState}

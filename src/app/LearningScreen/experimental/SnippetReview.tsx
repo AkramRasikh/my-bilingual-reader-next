@@ -59,7 +59,6 @@ const SnippetReview = ({
   const vocab = snippetData?.vocab;
 
   const {
-    wordsForSelectedTopic,
     getSentenceDataOfOverlappingWordsDuringSave,
     selectedContentTitleState,
     sentenceMapMemoized,
@@ -324,7 +323,6 @@ const SnippetReview = ({
                     handleMouseEnter={handleMouseEnter}
                     wordPopUpState={wordPopUpState}
                     setWordPopUpState={setWordPopUpState}
-                    wordsForSelectedTopic={wordsForSelectedTopic}
                     handleDeleteWordDataProvider={() => {}}
                     wordsFromSentence={wordsFromSentence}
                     languageSelectedState={languageSelectedState}

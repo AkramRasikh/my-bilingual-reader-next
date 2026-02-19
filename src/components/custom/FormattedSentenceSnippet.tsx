@@ -11,7 +11,6 @@ const FormattedSentenceSnippet = ({
   targetLangformatted,
   wordPopUpState,
   setWordPopUpState,
-  wordsForSelectedTopic,
   handleDeleteWordDataProvider,
   wordsFromSentence,
   languageSelectedState,
@@ -63,7 +62,6 @@ const FormattedSentenceSnippet = ({
                 text={text}
                 wordPopUpState={wordPopUpState}
                 setWordPopUpState={setWordPopUpState}
-                wordsForSelectedTopic={wordsForSelectedTopic}
                 handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                 wordsFromSentence={wordsFromSentence}
                 hasHighlightedBackground={hasHighlightedBackground}

@@ -3,7 +3,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
-import { useMemo } from 'react';
 import clsx from 'clsx';
 import HoverWordCardActive from './HoverWordCardActive';
 
@@ -11,21 +10,12 @@ const HoverWordCard = ({
   text,
   wordPopUpState,
   setWordPopUpState,
-  wordsForSelectedTopic,
   handleDeleteWordDataProvider,
   wordsFromSentence,
   hasHighlightedBackground,
   savedWords,
   disableHighlightBackground,
 }) => {
-  const isOriginalWordSettingState = useMemo(() => {
-    return (
-      wordsForSelectedTopic?.some(
-        (item) => text === item.baseForm || text === item.surfaceForm,
-      ) || false
-    );
-  }, [wordsForSelectedTopic, text]);
-
   const onHoverTrigger = () => {
     const hoverTings = wordsFromSentence?.filter((item) =>
       savedWords?.includes(item.id),
@@ -41,9 +31,7 @@ const HoverWordCard = ({
           'p-0',
           hasHighlightedBackground && !disableHighlightBackground
             ? 'bg-yellow-200'
-            : isOriginalWordSettingState
-              ? 'bg-blue-50 rounded'
-              : '',
+            : '',
         )}
         style={{
           textDecorationLine: 'underline',

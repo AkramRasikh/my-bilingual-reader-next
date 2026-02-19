@@ -7,10 +7,10 @@ import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/Trans
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningScreenTabTranscriptNestedWordsReview';
 import ReviewTypeToggles from './components/ReviewTypeToggles';
+import SnippetReviewChinese from '@/components/custom/SnippetReviewChinese';
 import { Snippet } from '../types/content-types';
 import SnippetReview from './experimental/SnippetReview';
 import { chinese } from '../languages';
-import SnippetReviewChinese from './experimental/SnippetReviewChinese';
 
 interface HandleReviewSnippetsComprehensiveReviewProps {
   snippetData: Snippet;
@@ -58,6 +58,8 @@ const LearningScreenComprehensiveReview = () => {
     handleUpdateSnippet,
     ref,
     currentTime,
+    getSentenceDataOfOverlappingWordsDuringSave,
+    sentenceMapMemoized,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -251,6 +253,15 @@ const LearningScreenComprehensiveReview = () => {
                     isBreakingDownSentenceArrState
                   }
                   currentTime={currentTime}
+                  getSentenceDataOfOverlappingWordsDuringSave={
+                    getSentenceDataOfOverlappingWordsDuringSave
+                  }
+                  selectedContentTitleState={selectedContentTitleState}
+                  sentenceMapMemoized={sentenceMapMemoized}
+                  languageSelectedState={languageSelectedState}
+                  wordsState={wordsState}
+                  handleSaveWord={handleSaveWord}
+                  handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                 />
               );
             }

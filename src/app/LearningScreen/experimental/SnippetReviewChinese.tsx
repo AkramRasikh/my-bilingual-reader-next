@@ -63,7 +63,6 @@ const SnippetReviewChinese = ({
   const endTime = snippetData.time + contractionAmount;
 
   const {
-    wordsForSelectedTopic,
     getSentenceDataOfOverlappingWordsDuringSave,
     selectedContentTitleState,
     sentenceMapMemoized,
@@ -418,7 +417,6 @@ const SnippetReviewChinese = ({
                     targetLangformatted={targetLangWithVocabStartIndex}
                     wordPopUpState={wordPopUpState}
                     setWordPopUpState={setWordPopUpState}
-                    wordsForSelectedTopic={wordsForSelectedTopic}
                     handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                     wordsFromSentence={wordsFromSentence}
                     languageSelectedState={languageSelectedState}

@@ -40,7 +40,6 @@ const SnippetReview = ({
   handleBreakdownSentence,
   isBreakingDownSentenceArrState,
   currentTime,
-  wordsForSelectedTopic,
   getSentenceDataOfOverlappingWordsDuringSave,
   selectedContentTitleState,
   sentenceMapMemoized,
@@ -390,7 +389,6 @@ const SnippetReview = ({
                     targetLangformatted={targetLangWithVocabStartIndex}
                     wordPopUpState={wordPopUpState}
                     setWordPopUpState={setWordPopUpState}
-                    wordsForSelectedTopic={wordsForSelectedTopic}
                     handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                     wordsFromSentence={wordsFromSentence}
                     languageSelectedState={languageSelectedState}
