@@ -19,6 +19,7 @@ const FormattedSentenceSnippet = ({
   matchEndKey,
   handleSaveFunc,
   currentTime,
+  isReadyForQuickReview,
 }) => {
   const isArabic = languageSelectedState === arabic;
   const isChinese = languageSelectedState === chinese;
@@ -55,7 +56,9 @@ const FormattedSentenceSnippet = ({
                 color: getColorByIndex(hasStartIndex),
               }}
             >
-              <FormattedSentenceSnippetProgressWidget played={played} />
+              {isReadyForQuickReview && (
+                <FormattedSentenceSnippetProgressWidget played={played} />
+              )}
               <HoverWordCard
                 text={text}
                 wordPopUpState={wordPopUpState}
@@ -78,7 +81,9 @@ const FormattedSentenceSnippet = ({
               key={indexNested}
               className={clsx(played ? 'font-extrabold' : '', 'relative')}
             >
-              <FormattedSentenceSnippetProgressWidget played={played} />
+              {isReadyForQuickReview && (
+                <FormattedSentenceSnippetProgressWidget played={played} />
+              )}
               <FormattedSentenceSnippetBreakdownWidget
                 text={text}
                 indexNum={indexNested}
@@ -106,7 +111,9 @@ const FormattedSentenceSnippet = ({
               'relative',
             )}
           >
-            <FormattedSentenceSnippetProgressWidget played={played} />
+            {isReadyForQuickReview && (
+              <FormattedSentenceSnippetProgressWidget played={played} />
+            )}
             {text}
           </span>
         );

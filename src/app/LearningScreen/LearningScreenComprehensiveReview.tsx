@@ -250,7 +250,7 @@ const LearningScreenComprehensiveReview = () => {
                   isBreakingDownSentenceArrState={
                     isBreakingDownSentenceArrState
                   }
-                  currentTimeTing={currentTime}
+                  currentTime={currentTime}
                 />
               );
             }

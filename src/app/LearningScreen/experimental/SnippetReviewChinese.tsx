@@ -41,7 +41,7 @@ const SnippetReviewChinese = ({
   isReadyForQuickReview,
   handleBreakdownSentence,
   isBreakingDownSentenceArrState,
-  currentTimeTing,
+  currentTime,
 }: SnippetReviewProps) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
   const [endIndexKeyState, setEndIndexKeyState] = useState(0);
@@ -425,7 +425,8 @@ const SnippetReviewChinese = ({
                     matchStartKey={matchStartKey}
                     matchEndKey={matchEndKey}
                     handleSaveFunc={handleSaveFunc}
-                    currentTime={currentTimeTing}
+                    currentTime={currentTime}
+                    isReadyForQuickReview={isReadyForQuickReview}
                   />
                 </div>
                 <SnippetReviewPinyinHelper
