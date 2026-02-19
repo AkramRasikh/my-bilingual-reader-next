@@ -1,10 +1,10 @@
 import React from 'react';
-import FormattedSentenceSnippetProgressWidget from './FormattedSentenceSnippetProgressWidget';
+import FormattedSentenceSnippetProgressWidget from './SnippetReviewProgressWidget';
 import { arabic, chinese } from '@/app/languages';
 import HoverWordCard from '@/components/custom/HoverWordCard';
 import getColorByIndex from '@/utils/get-color-by-index';
 import clsx from 'clsx';
-import FormattedSentenceSnippetBreakdownWidget from './FormattedSentenceSnippetBreakdownWidget';
+import FormattedSentenceSnippetBreakdownWidget from './SnippetReviewContentBreakdownWidget';
 
 const FormattedSentenceSnippet = ({
   ref,

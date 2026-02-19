@@ -2,7 +2,7 @@ import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
 import SnippetReviewChineseAudioControls from './SnippetReviewChineseAudioControls';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import FormattedSentenceSnippet from '@/components/custom/SnippetReviewChinese/FormattedSentenceSnippet';
+import FormattedSentenceSnippet from '@/components/custom/SnippetReviewChinese/SnippetReviewContent';
 import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
 import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
 import HighlightedText from '@/components/custom/HighlightedText';
