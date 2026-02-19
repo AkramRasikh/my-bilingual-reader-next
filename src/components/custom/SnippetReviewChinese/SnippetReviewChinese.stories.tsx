@@ -457,7 +457,6 @@ const SnippetReviewChineseStoryRoot = ({
     isReadyForQuickReview={true}
     handleBreakdownSentence={async () => {}}
     isBreakingDownSentenceArrState={[]}
-    currentTime={0}
     getSentenceDataOfOverlappingWordsDuringSave={() => null}
     selectedContentTitleState={mockSelectedContentChinese.title}
     sentenceMapMemoized={{}}
@@ -465,6 +464,7 @@ const SnippetReviewChineseStoryRoot = ({
     wordsState={[]}
     handleSaveWord={async () => {}}
     handleDeleteWordDataProvider={async () => {}}
+    currentTime={snippetData.time - 0.3}
   />
 );
 
