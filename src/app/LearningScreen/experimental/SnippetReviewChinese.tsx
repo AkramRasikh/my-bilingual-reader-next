@@ -1,6 +1,6 @@
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
-import SnippetReviewChineseAudioControls from './SnippetReviewChineseAudioControls';
+import SnippetReviewChineseAudioControls from '../../../components/custom/SnippetReview/SnippetReviewChineseAudioControls';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useLearningScreen from '../useLearningScreen';
 import FormattedSentenceSnippet from '@/components/custom/FormattedSentenceSnippet';
@@ -10,10 +10,10 @@ import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/f
 import HighlightedText from '@/components/custom/HighlightedText';
 import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
 import { ContentTranscriptTypes, Snippet } from '@/app/types/content-types';
-import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
+import SnippetReviewBoundaryToggles from '../../../components/custom/SnippetReview/SnippetReviewBoundaryToggles';
 import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/useSnippetLoopEvents';
 import getColorByIndex from '@/utils/get-color-by-index';
-import SnippetReviewPinyinHelper from './SnippetReviewPinyinHelper';
+import SnippetReviewPinyinHelper from '../../../components/custom/SnippetReview/SnippetReviewPinyinHelper';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;

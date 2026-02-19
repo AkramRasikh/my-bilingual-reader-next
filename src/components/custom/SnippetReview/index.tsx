@@ -1,20 +1,17 @@
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
-import { Button } from '@/components/ui/button';
-import clsx from 'clsx';
-import { PauseIcon, PlayIcon, RabbitIcon } from 'lucide-react';
+import SnippetReviewChineseAudioControls from './SnippetReviewChineseAudioControls';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import useLearningScreen from '../useLearningScreen';
-import FormattedSentence from '@/components/custom/FormattedSentence';
+import FormattedSentenceSnippet from '@/components/custom/FormattedSentenceSnippet';
 import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
-import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
 import HighlightedText from '@/components/custom/HighlightedText';
 import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
 import { ContentTranscriptTypes, Snippet } from '@/app/types/content-types';
-import SnippetReviewBoundaryToggles from '../../../components/custom/SnippetReview/SnippetReviewBoundaryToggles';
-import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
 import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/useSnippetLoopEvents';
+import getColorByIndex from '@/utils/get-color-by-index';
+import SnippetReviewPinyinHelper from './SnippetReviewPinyinHelper';
+import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -31,7 +28,6 @@ interface SnippetReviewProps {
     isRemoveReview?: boolean;
   }) => Promise<void>;
   isReadyForQuickReview: boolean;
-  handleBreakdownSentence: (arg: { sentenceId: string }) => Promise<void>;
 }
 
 const SnippetReview = ({
@@ -42,6 +38,16 @@ const SnippetReview = ({
   handleUpdateSnippetComprehensiveReview,
   isReadyForQuickReview,
   handleBreakdownSentence,
+  isBreakingDownSentenceArrState,
+  currentTime,
+  wordsForSelectedTopic,
+  getSentenceDataOfOverlappingWordsDuringSave,
+  selectedContentTitleState,
+  sentenceMapMemoized,
+  languageSelectedState,
+  wordsState,
+  handleSaveWord,
+  handleDeleteWordDataProvider,
 }: SnippetReviewProps) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
   const [endIndexKeyState, setEndIndexKeyState] = useState(0);
@@ -54,17 +60,12 @@ const SnippetReview = ({
   const thisIsPlaying =
     isVideoPlaying && threeSecondLoopState === snippetData.time;
   const isPreSnippet = snippetData?.isPreSnippet;
-  const hoverTimer = useRef<NodeJS.Timeout | null>(null);
   const ulRef = useRef<NodeJS.Timeout | null>(null);
   const vocab = snippetData?.vocab;
 
-  const {
-    wordsForSelectedTopic,
-    getSentenceDataOfOverlappingWordsDuringSave,
-    selectedContentTitleState,
-    sentenceMapMemoized,
-  } = useLearningScreen();
-  const { languageSelectedState, wordsState, handleSaveWord } = useFetchData();
+  const contractionAmount = snippetData?.isContracted ? 0.75 : 1.5;
+  const startTime = snippetData.time - contractionAmount;
+  const endTime = snippetData.time + contractionAmount;
 
   const onMoveLeft = () => {
     setStartIndexKeyState(startIndexKeyState - 1);
@@ -121,26 +122,6 @@ const SnippetReview = ({
       setHighlightedTextState('');
       setWordPopUpState([]);
       setIsLoadingWordState(false);
-    }
-  };
-
-  const handleMouseEnter = (text) => {
-    hoverTimer.current = setTimeout(() => {
-      const wordsAmongstHighlightedText = wordsState?.filter((item) => {
-        if (item.baseForm === text || item.surfaceForm === text) {
-          return true;
-        }
-        return false;
-      });
-
-      setWordPopUpState(wordsAmongstHighlightedText);
-    }, 300);
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverTimer.current) {
-      clearTimeout(hoverTimer.current); // Cancel if left early
-      hoverTimer.current = null;
     }
   };
 
@@ -247,30 +228,123 @@ const SnippetReview = ({
     snippetData.isContracted,
   ]);
 
-  const { targetLangformatted, wordsFromSentence, wordsInSuggestedText } =
-    useMemo(() => {
-      const wordsInSuggestedText = findAllInstancesOfWordsInSentence(
-        snippetData?.focusedText || snippetData?.suggestedFocusText || '',
-        wordsState,
-      );
+  // Function to get the second representation for a given index in the matchKey range
+  const getSecondForIndex = (index) => {
+    if (
+      typeof index !== 'number' ||
+      typeof matchStartKey !== 'number' ||
+      typeof matchEndKey !== 'number' ||
+      typeof startTime !== 'number' ||
+      typeof endTime !== 'number'
+    ) {
+      return null;
+    }
+    if (index < matchStartKey || index > matchEndKey) return null;
+    const totalKeys = matchEndKey - matchStartKey;
+    const totalTime = endTime - startTime;
+    if (totalKeys === 0) return startTime;
+    // Spread time evenly across keys
+    const t = (index - matchStartKey) / totalKeys;
+    return startTime + t * totalTime;
+  };
 
-      const wordsFromSentence = findAllInstancesOfWordsInSentence(
-        snippetData.targetLang,
-        wordsState,
-      );
+  const {
+    // targetLangformatted,
+    wordsFromSentence,
+    wordsInSuggestedText,
+    targetLangWithVocabStartIndex,
+    sentencesToBreakdown,
+  } = useMemo(() => {
+    const wordsInSuggestedText = findAllInstancesOfWordsInSentence(
+      snippetData?.focusedText || snippetData?.suggestedFocusText || '',
+      wordsState,
+    );
 
-      const targetLangformatted = underlineWordsInSentence(
-        snippetData.targetLang,
-        wordsFromSentence,
-        true,
-      );
+    const wordsFromSentence = findAllInstancesOfWordsInSentence(
+      snippetData.targetLang,
+      wordsState,
+    );
 
-      return {
-        targetLangformatted,
-        wordsFromSentence,
-        wordsInSuggestedText,
-      };
-    }, [snippetData, wordsState]);
+    const targetLangformatted = underlineWordsInSentence(
+      snippetData.targetLang,
+      wordsFromSentence,
+      true,
+    );
+
+    // Build a new array with vocab startIndex mapped onto the relevant targetLangformatted chunks
+    let targetLangWithVocabStartIndex = [...targetLangformatted];
+    if (snippetData.vocab && snippetData.vocab.length > 0) {
+      snippetData.vocab.forEach((vocabItem, vocabIdx) => {
+        const { surfaceForm, sentenceId, meaning } = vocabItem;
+        if (!surfaceForm) return;
+        // Find all occurrences of the vocab surfaceForm in the sentence
+        let start = 0;
+        while (start < targetLangformatted.length) {
+          // Try to match the vocab surfaceForm at this position
+          let match = true;
+          for (let j = 0; j < surfaceForm.length; j++) {
+            if (targetLangformatted[start + j]?.text !== surfaceForm[j]) {
+              match = false;
+              break;
+            }
+          }
+          if (match) {
+            // Assign startIndex, secondForIndex, and sentenceId (if available) to all matched chars
+            for (let j = 0; j < surfaceForm.length; j++) {
+              const index = start + j;
+              targetLangWithVocabStartIndex[index] = {
+                ...targetLangWithVocabStartIndex[index],
+                startIndex: vocabIdx,
+                surfaceForm,
+                meaning,
+                secondForIndex:
+                  isReadyForQuickReview && Number?.(getSecondForIndex(index)),
+                ...(sentenceId ? { sentenceId } : {}),
+              };
+            }
+            // Move past this match to avoid overlapping
+            start += surfaceForm.length;
+          } else {
+            start++;
+          }
+        }
+      });
+    }
+
+    // Collect unique sentenceIds (excluding null/undefined) and their first index and surfaceForm
+    const sentencesToBreakdownMap = new Map();
+    targetLangWithVocabStartIndex.forEach((item, idx) => {
+      if (item.sentenceId && !sentencesToBreakdownMap.has(item.sentenceId)) {
+        sentencesToBreakdownMap.set(item.sentenceId, {
+          startIndex: item.startIndex,
+          surfaceForm: item.surfaceForm,
+          meaning: item.meaning,
+        });
+      }
+    });
+    const sentencesToBreakdown = Array.from(
+      sentencesToBreakdownMap.entries(),
+    ).map(([sentenceId, { startIndex, surfaceForm }]) => ({
+      sentenceId,
+      startIndex,
+      surfaceForm,
+    }));
+
+    return {
+      targetLangformatted,
+      wordsFromSentence,
+      wordsInSuggestedText,
+      targetLangWithVocabStartIndex,
+      sentencesToBreakdown,
+    };
+  }, [snippetData, wordsState, matchStartKey, matchEndKey]);
+
+  const pinyinStart = Math.max(0, matchStartKey - 5);
+
+  const pinyinTing = targetLangWithVocabStartIndex.slice(
+    pinyinStart,
+    Math.min(targetLangWithVocabStartIndex.length, matchEndKey + 6),
+  );
 
   const handleReviewSnippetsFinal = async (
     arg: HandleReviewSnippetsFinalArg,
@@ -301,50 +375,40 @@ const SnippetReview = ({
         <div className='flex gap-3'>
           <div className='flex-1'>
             <div className='flex mb-2 gap-1'>
-              <div className='flex flex-col gap-2'>
-                <Button
-                  className={clsx(
-                    'h-7 w-7',
-                    thisIsPlaying ? 'bg-amber-300' : '',
-                  )}
-                  onClick={handlePlaySnippet}
-                >
-                  {thisIsPlaying ? <PauseIcon /> : <PlayIcon />}
-                </Button>
-                {snippetData?.isPreSnippet && (
-                  <RabbitIcon className='fill-amber-300 rounded m-auto mt-0' />
-                )}
-              </div>
-              <div className='w-full'>
+              <SnippetReviewChineseAudioControls
+                thisIsPlaying={thisIsPlaying}
+                handlePlaySnippet={handlePlaySnippet}
+                isPreSnippet={snippetData?.isPreSnippet}
+                sentencesToBreakdown={sentencesToBreakdown}
+                isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+                handleBreakdownSentence={handleBreakdownSentence}
+              />
+              <div className='w-full text-center'>
                 <div className='flex text-align-justify'>
-                  <FormattedSentence
+                  <FormattedSentenceSnippet
                     ref={ulRef}
-                    targetLangformatted={targetLangformatted}
-                    handleMouseLeave={handleMouseLeave}
-                    handleMouseEnter={handleMouseEnter}
+                    targetLangformatted={targetLangWithVocabStartIndex}
                     wordPopUpState={wordPopUpState}
                     setWordPopUpState={setWordPopUpState}
                     wordsForSelectedTopic={wordsForSelectedTopic}
-                    handleDeleteWordDataProvider={() => {}}
+                    handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                     wordsFromSentence={wordsFromSentence}
                     languageSelectedState={languageSelectedState}
                     matchStartKey={matchStartKey}
                     matchEndKey={matchEndKey}
+                    handleSaveFunc={handleSaveFunc}
+                    currentTime={currentTime}
+                    isReadyForQuickReview={isReadyForQuickReview}
                   />
                 </div>
-                {vocab?.length > 0 && (
-                  <div className='mt-2'>
-                    <SentenceBreakdown
-                      vocab={vocab}
-                      meaning={''}
-                      thisSentencesSavedWords={wordsFromSentence}
-                      handleSaveFunc={handleSaveFunc}
-                      sentenceStructure={''}
-                      languageSelectedState={languageSelectedState}
-                      handleBreakdownSentence={handleBreakdownSentence}
-                    />
-                  </div>
-                )}
+                <SnippetReviewPinyinHelper
+                  pinyinTing={pinyinTing}
+                  getColorByIndex={getColorByIndex}
+                  matchStartKey={matchStartKey}
+                  matchEndKey={matchEndKey}
+                  pinyinStart={pinyinStart}
+                  vocab={vocab}
+                />
                 {highlightedTextState && (
                   <HighlightedText
                     isLoadingState={
