@@ -12,7 +12,7 @@ import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/f
 import HighlightedText from '@/components/custom/HighlightedText';
 import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
 import { ContentTranscriptTypes, Snippet } from '@/app/types/content-types';
-import SnippetReviewBoundaryToggles from '../../../components/custom/SnippetReview/SnippetReviewBoundaryToggles';
+import SnippetReviewBoundaryToggles from '../../../components/custom/SnippetReviewChinese/SnippetReviewBoundaryToggles';
 import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
 import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/useSnippetLoopEvents';
 
