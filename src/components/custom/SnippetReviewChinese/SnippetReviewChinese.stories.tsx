@@ -11,6 +11,7 @@ import {
   mockFrenchSnippet,
 } from './SnippetReviewChinese.mocks';
 import { testSquashedOverlappingSnippetDataJapanese } from '@/app/LearningScreen/experimental/SnippetReview.mocks';
+import { WordTypes } from '@/app/types/word-types';
 
 type SnippetReviewChineseStoryRootProps = {
   snippetData: (typeof mockSnippets)[0];
@@ -20,6 +21,7 @@ type SnippetReviewChineseStoryRootProps = {
 const SnippetReviewChineseStoryRoot = ({
   snippetData,
   languageSelectedState = LanguageEnum.Chinese,
+  wordsState = [],
 }: SnippetReviewChineseStoryRootProps) => (
   <SnippetReviewChinese
     snippetData={snippetData}
@@ -34,7 +36,7 @@ const SnippetReviewChineseStoryRoot = ({
     selectedContentTitleState={mockSelectedContentChinese.title}
     sentenceMapMemoized={{}}
     languageSelectedState={languageSelectedState}
-    wordsState={[]}
+    wordsState={wordsState}
     handleSaveWord={async () => {}}
     handleDeleteWordDataProvider={async () => {}}
     currentTime={snippetData.time - 0.3}
@@ -100,5 +102,29 @@ export const DefaultFrench: Story = {
   args: {
     snippetData: mockFrenchSnippet,
     languageSelectedState: LanguageEnum.French,
+    wordsState: [
+      {
+        id: 'word1',
+        baseForm: 'enthousiaste',
+        surfaceForm: 'enthousiaste',
+        definition: 'enthusiastic',
+        phonetic: 'ɑ̃tuzjast',
+        transliteration: 'ɑ̃tuzjast',
+        originalContext: 'sentence-1',
+        reviewData: {
+          difficulty: 6.70746009,
+          due: '2026-02-13T05:00:00.000Z',
+          ease: 2.5,
+          elapsed_days: 2,
+          interval: 0,
+          lapses: 0,
+          last_review: '2026-02-10T10:19:53.195Z',
+          reps: 3,
+          scheduled_days: 3,
+          stability: 4.85428674,
+          state: 2,
+        },
+      } as WordTypes,
+    ],
   },
 };
