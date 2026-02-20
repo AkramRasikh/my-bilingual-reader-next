@@ -67,7 +67,8 @@ const overlappingArabicText = getOverlappingText(
 
 export const mockArabicSnippet = {
   id: 'mock-arabic-snippet-id',
-  baseLang: 'Thank youSeeing the audience at Washasuch enthusiastic applause',
+  baseLang:
+    mockArabicContentItem.baseLang + ' ' + mockArabicContentItem2.baseLang,
   isContracted: false,
   isPreSnippet: true,
   time: 21,
@@ -86,6 +87,49 @@ export const mockArabicSnippet = {
   },
   ...overlappingArabicText,
   vocab: [...mockArabicContentItem.vocab, ...mockArabicContentItem2.vocab],
+} as Snippet;
+
+// French equivalent mock
+export const mockFrenchSnippet = {
+  id: 'mock-french-snippet-id',
+  baseLang:
+    'Merci de voir le public à Washa' +
+    ' ' +
+    'un applaudissement aussi enthousiaste',
+  isContracted: false,
+  isPreSnippet: true,
+  time: 21,
+  reviewData: {
+    difficulty: 6.70746009,
+    due: '2026-02-13T05:00:00.000Z',
+    ease: 2.5,
+    elapsed_days: 2,
+    interval: 0,
+    lapses: 0,
+    last_review: '2026-02-10T10:19:53.195Z',
+    reps: 3,
+    scheduled_days: 3,
+    stability: 4.85428674,
+    state: 2,
+  },
+  // Simulate overlapping text for French
+  suggestedFocusText: 'voir le public',
+  targetLang:
+    'Merci de voir le public à Washa avec un applaudissement aussi enthousiaste',
+  vocab: [
+    { surfaceForm: 'Merci', meaning: 'thank you', sentenceId: 'fr-1' },
+    {
+      surfaceForm: 'voir le public',
+      meaning: 'see the audience',
+      sentenceId: 'fr-2',
+    },
+    { surfaceForm: 'applaudissement', meaning: 'applause', sentenceId: 'fr-3' },
+    {
+      surfaceForm: 'enthousiaste',
+      meaning: 'enthusiastic',
+      sentenceId: 'fr-4',
+    },
+  ],
 } as Snippet;
 
 export const mockSnippets = [
