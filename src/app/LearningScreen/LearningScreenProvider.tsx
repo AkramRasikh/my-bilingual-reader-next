@@ -838,6 +838,7 @@ export const LearningScreenProvider = ({
     threeSecondLoopState,
     overlappingSnippetDataMemoised,
     loopedTranscriptMemoized,
+    isTrimmed: isTrimmedLang(languageSelectedState),
   });
 
   const overlappedSentencesViableForReviewMemoized =
