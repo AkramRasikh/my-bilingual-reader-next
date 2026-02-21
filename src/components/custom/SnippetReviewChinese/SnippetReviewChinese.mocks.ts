@@ -25,7 +25,6 @@ const mockArabicTranscript = [
       true,
     ),
   },
-  ,
   {
     ...mockArabicContentItem2,
     prevSentence: mockArabicContentItem.time,

@@ -1,5 +1,7 @@
-import { pinyin } from 'pinyin-pro';
 import React from 'react';
+import { LanguageEnum } from '@/app/languages';
+import { pinyin } from 'pinyin-pro';
+import arabicTransliterate from 'arabic-transliterate';
 
 interface correspondingRomanized {
   text: string;
@@ -12,6 +14,7 @@ interface SnippetReviewPinyinHelperProps {
   matchStartKey: number;
   matchEndKey: number;
   pinyinStart: number;
+  languageSelectedState: LanguageEnum;
 }
 
 const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
@@ -20,9 +23,10 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
   matchStartKey,
   matchEndKey,
   pinyinStart,
+  languageSelectedState,
 }) => {
+  const isArabic = languageSelectedState === LanguageEnum.Arabic;
   return (
-    // <div className='my-2 text-md px-1 rounded w-full'>
     <div>
       {slicedSnippetSegment.map((item, index) => {
         const prev = slicedSnippetSegment[index - 1];
@@ -43,7 +47,9 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
             }}
           >
             {addSpace && ' '}
-            {pinyin(item.text, { toneType: 'symbol' })}
+            {isArabic
+              ? arabicTransliterate(item.text, 'arabic2latin', 'Arabic')
+              : pinyin(item.text, { toneType: 'symbol' })}
           </span>
         );
       })}

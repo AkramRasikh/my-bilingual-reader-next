@@ -92,7 +92,7 @@ const SnippetReview = ({
   const startTime = snippetData.time - contractionAmount;
   const endTime = snippetData.time + contractionAmount;
   const isChinese = languageSelectedState === LanguageEnum.Chinese;
-
+  const isArabic = languageSelectedState === LanguageEnum.Arabic;
   const onMoveLeft = () => {
     const stopUserSpillingOverStartPoint = !(matchStartKey <= 0);
     if (!stopUserSpillingOverStartPoint) return;
@@ -439,15 +439,18 @@ const SnippetReview = ({
                     isReadyForQuickReview={isReadyForQuickReview}
                   />
                 </div>
-                {isChinese && (
-                  <SnippetReviewPinyinHelper
-                    slicedSnippetSegment={slicedSnippetSegment}
-                    getColorByIndex={getColorByIndex}
-                    matchStartKey={matchStartKey}
-                    matchEndKey={matchEndKey}
-                    pinyinStart={pinyinStart}
-                  />
-                )}
+                {isChinese ||
+                  (isArabic && (
+                    <SnippetReviewPinyinHelper
+                      slicedSnippetSegment={slicedSnippetSegment}
+                      getColorByIndex={getColorByIndex}
+                      matchStartKey={matchStartKey}
+                      matchEndKey={matchEndKey}
+                      pinyinStart={pinyinStart}
+                      languageSelectedState={languageSelectedState}
+                    />
+                  ))}
+
                 <SnippetReviewBreakdownDefinitions
                   slicedSnippetSegment={slicedSnippetSegment}
                   getColorByIndex={getColorByIndex}
