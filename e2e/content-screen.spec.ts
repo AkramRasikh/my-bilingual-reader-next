@@ -1602,7 +1602,7 @@ test.describe('Word tab section', () => {
 
     // Verify the specific Japanese text is visible
     const japaneseText = page.getByText(
-      '堀/え、音声言語は使わなかったってこと？水/音声言語はね、使われていたみたいです。',
+      '堀/いや、音声言語の方が優れてない？っていう気持ちがやっぱありますね、ベースに。水/はい。はい。',
     );
     await expect(japaneseText).toBeVisible();
 
