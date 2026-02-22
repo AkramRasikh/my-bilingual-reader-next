@@ -7,7 +7,7 @@ import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/Trans
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningScreenTabTranscriptNestedWordsReview';
 import ReviewTypeToggles from './components/ReviewTypeToggles';
-import SnippetReviewChinese from '@/components/custom/SnippetReviewChinese';
+import SnippetReviewChinese from '@/components/custom/SnippetReview';
 import { Snippet } from '../types/content-types';
 
 interface HandleReviewSnippetsComprehensiveReviewProps {

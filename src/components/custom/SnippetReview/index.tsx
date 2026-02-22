@@ -1,20 +1,27 @@
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
-import { Button } from '@/components/ui/button';
-import clsx from 'clsx';
-import { PauseIcon, PlayIcon, RabbitIcon } from 'lucide-react';
+import SnippetReviewChineseAudioControls from './SnippetReviewAudioControls';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import useLearningScreen from '../useLearningScreen';
-import FormattedSentence from '@/components/custom/FormattedSentence';
-import { underlineWordsInSentence } from '@/utils/sentence-formatting/underline-words-in-sentences';
-import { useFetchData } from '@/app/Providers/FetchDataProvider';
-import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
+import FormattedSentenceSnippet from '@/components/custom/SnippetReview/SnippetReviewContent';
 import HighlightedText from '@/components/custom/HighlightedText';
 import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
-import { ContentTranscriptTypes, Snippet } from '@/app/types/content-types';
-import SnippetReviewBoundaryToggles from '../../../components/custom/SnippetReviewChinese/SnippetReviewBoundaryToggles';
-import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
+import {
+  ContentTranscriptTypes,
+  SentenceMapItemTypes,
+  Snippet,
+} from '@/app/types/content-types';
 import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/useSnippetLoopEvents';
+import getColorByIndex from '@/utils/get-color-by-index';
+import SnippetReviewPinyinHelper from './SnippetReviewPinyinHelper';
+import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
+import { LanguageEnum } from '@/app/languages';
+import { WordTypes } from '@/app/types/word-types';
+import {
+  HandleDeleteWordDataProviderCallTypes,
+  HandleSaveWordCallTypes,
+} from '@/app/Providers/FetchDataProvider';
+import SnippetReviewBreakdownDefinitions from './SnippetReviewBreakdownDefinitions';
+import { useSnippetReviewDataMemoized } from './useSnippetReviewDataMemoized';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -32,6 +39,20 @@ interface SnippetReviewProps {
   }) => Promise<void>;
   isReadyForQuickReview: boolean;
   handleBreakdownSentence: (arg: { sentenceId: string }) => Promise<void>;
+  isBreakingDownSentenceArrState?: string[];
+  currentTime?: number;
+  getSentenceDataOfOverlappingWordsDuringSave: (
+    time: number,
+    highlightedText: string,
+  ) => string | null;
+  selectedContentTitleState: string;
+  sentenceMapMemoized: Record<string, SentenceMapItemTypes>;
+  languageSelectedState: LanguageEnum;
+  wordsState: WordTypes[];
+  handleSaveWord: (params: HandleSaveWordCallTypes) => void;
+  handleDeleteWordDataProvider: (
+    params: HandleDeleteWordDataProviderCallTypes,
+  ) => void;
 }
 
 const SnippetReview = ({
@@ -42,6 +63,15 @@ const SnippetReview = ({
   handleUpdateSnippetComprehensiveReview,
   isReadyForQuickReview,
   handleBreakdownSentence,
+  isBreakingDownSentenceArrState,
+  currentTime,
+  getSentenceDataOfOverlappingWordsDuringSave,
+  selectedContentTitleState,
+  sentenceMapMemoized,
+  languageSelectedState,
+  wordsState,
+  handleSaveWord,
+  handleDeleteWordDataProvider,
 }: SnippetReviewProps) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
   const [endIndexKeyState, setEndIndexKeyState] = useState(0);
@@ -54,32 +84,42 @@ const SnippetReview = ({
   const thisIsPlaying =
     isVideoPlaying && threeSecondLoopState === snippetData.time;
   const isPreSnippet = snippetData?.isPreSnippet;
-  const hoverTimer = useRef<NodeJS.Timeout | null>(null);
   const ulRef = useRef<NodeJS.Timeout | null>(null);
   const vocab = snippetData?.vocab;
 
-  const {
-    getSentenceDataOfOverlappingWordsDuringSave,
-    selectedContentTitleState,
-    sentenceMapMemoized,
-  } = useLearningScreen();
-  const { languageSelectedState, wordsState, handleSaveWord } = useFetchData();
-
+  const contractionAmount = snippetData?.isContracted ? 0.75 : 1.5;
+  const startTime = snippetData.time - contractionAmount;
+  const endTime = snippetData.time + contractionAmount;
+  const isChinese = languageSelectedState === LanguageEnum.Chinese;
+  const isArabic = languageSelectedState === LanguageEnum.Arabic;
   const onMoveLeft = () => {
+    const stopUserSpillingOverStartPoint = !(matchStartKey <= 0);
+    if (!stopUserSpillingOverStartPoint) return;
     setStartIndexKeyState(startIndexKeyState - 1);
     setEndIndexKeyState(endIndexKeyState - 1);
   };
 
   const onMoveRight = () => {
+    const stopUserSpillingOverEndPoint = !(
+      matchEndKey >=
+      snippetData.targetLang.length - 1
+    );
+    if (!stopUserSpillingOverEndPoint) return;
     setStartIndexKeyState(startIndexKeyState + 1);
     setEndIndexKeyState(endIndexKeyState + 1);
   };
 
   const onExpandLength = () => {
+    const stopUserSpillingOverEndPoint = !(
+      matchEndKey >=
+      snippetData.targetLang.length - 1
+    );
+    if (!stopUserSpillingOverEndPoint) return;
     setLengthAdjustmentState(lengthAdjustmentState + 1);
   };
 
   const onContractLength = () => {
+    if (matchEndKey - matchStartKey < 1) return;
     setLengthAdjustmentState(lengthAdjustmentState - 1);
   };
 
@@ -120,26 +160,6 @@ const SnippetReview = ({
       setHighlightedTextState('');
       setWordPopUpState([]);
       setIsLoadingWordState(false);
-    }
-  };
-
-  const handleMouseEnter = (text) => {
-    hoverTimer.current = setTimeout(() => {
-      const wordsAmongstHighlightedText = wordsState?.filter((item) => {
-        if (item.baseForm === text || item.surfaceForm === text) {
-          return true;
-        }
-        return false;
-      });
-
-      setWordPopUpState(wordsAmongstHighlightedText);
-    }, 300);
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverTimer.current) {
-      clearTimeout(hoverTimer.current); // Cancel if left early
-      hoverTimer.current = null;
     }
   };
 
@@ -246,30 +266,46 @@ const SnippetReview = ({
     snippetData.isContracted,
   ]);
 
-  const { targetLangformatted, wordsFromSentence, wordsInSuggestedText } =
-    useMemo(() => {
-      const wordsInSuggestedText = findAllInstancesOfWordsInSentence(
-        snippetData?.focusedText || snippetData?.suggestedFocusText || '',
-        wordsState,
-      );
+  // Function to get the second representation for a given index in the matchKey range
+  const getSecondForIndex = (index) => {
+    if (
+      typeof index !== 'number' ||
+      typeof matchStartKey !== 'number' ||
+      typeof matchEndKey !== 'number' ||
+      typeof startTime !== 'number' ||
+      typeof endTime !== 'number'
+    ) {
+      return null;
+    }
+    if (index < matchStartKey || index > matchEndKey) return null;
+    const totalKeys = matchEndKey - matchStartKey;
+    const totalTime = endTime - startTime;
+    if (totalKeys === 0) return startTime;
+    // Spread time evenly across keys
+    const t = (index - matchStartKey) / totalKeys;
+    return startTime + t * totalTime;
+  };
 
-      const wordsFromSentence = findAllInstancesOfWordsInSentence(
-        snippetData.targetLang,
-        wordsState,
-      );
+  const {
+    wordsFromSentence,
+    wordsInSuggestedText,
+    targetLangWithVocabStartIndex,
+    sentencesToBreakdown,
+  } = useSnippetReviewDataMemoized({
+    snippetData,
+    wordsState,
+    matchStartKey,
+    matchEndKey,
+    isReadyForQuickReview,
+    getSecondForIndex,
+  });
 
-      const targetLangformatted = underlineWordsInSentence(
-        snippetData.targetLang,
-        wordsFromSentence,
-        true,
-      );
+  const pinyinStart = Math.max(0, matchStartKey - 5);
 
-      return {
-        targetLangformatted,
-        wordsFromSentence,
-        wordsInSuggestedText,
-      };
-    }, [snippetData, wordsState]);
+  const slicedSnippetSegment = targetLangWithVocabStartIndex.slice(
+    pinyinStart,
+    Math.min(targetLangWithVocabStartIndex.length, matchEndKey + 6),
+  );
 
   const handleReviewSnippetsFinal = async (
     arg: HandleReviewSnippetsFinalArg,
@@ -300,49 +336,51 @@ const SnippetReview = ({
         <div className='flex gap-3'>
           <div className='flex-1'>
             <div className='flex mb-2 gap-1'>
-              <div className='flex flex-col gap-2'>
-                <Button
-                  className={clsx(
-                    'h-7 w-7',
-                    thisIsPlaying ? 'bg-amber-300' : '',
-                  )}
-                  onClick={handlePlaySnippet}
-                >
-                  {thisIsPlaying ? <PauseIcon /> : <PlayIcon />}
-                </Button>
-                {snippetData?.isPreSnippet && (
-                  <RabbitIcon className='fill-amber-300 rounded m-auto mt-0' />
-                )}
-              </div>
-              <div className='w-full'>
+              <SnippetReviewChineseAudioControls
+                thisIsPlaying={thisIsPlaying}
+                handlePlaySnippet={handlePlaySnippet}
+                isPreSnippet={snippetData?.isPreSnippet}
+                sentencesToBreakdown={sentencesToBreakdown}
+                isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+                handleBreakdownSentence={handleBreakdownSentence}
+              />
+              <div className='w-full text-center'>
                 <div className='flex text-align-justify'>
-                  <FormattedSentence
+                  <FormattedSentenceSnippet
                     ref={ulRef}
-                    targetLangformatted={targetLangformatted}
-                    handleMouseLeave={handleMouseLeave}
-                    handleMouseEnter={handleMouseEnter}
+                    targetLangformatted={targetLangWithVocabStartIndex}
                     wordPopUpState={wordPopUpState}
                     setWordPopUpState={setWordPopUpState}
-                    handleDeleteWordDataProvider={() => {}}
+                    handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                     wordsFromSentence={wordsFromSentence}
                     languageSelectedState={languageSelectedState}
                     matchStartKey={matchStartKey}
                     matchEndKey={matchEndKey}
+                    handleSaveFunc={handleSaveFunc}
+                    currentTime={currentTime}
+                    isReadyForQuickReview={isReadyForQuickReview}
                   />
                 </div>
-                {vocab?.length > 0 && (
-                  <div className='mt-2'>
-                    <SentenceBreakdown
-                      vocab={vocab}
-                      meaning={''}
-                      thisSentencesSavedWords={wordsFromSentence}
-                      handleSaveFunc={handleSaveFunc}
-                      sentenceStructure={''}
+                {isChinese ||
+                  (isArabic && (
+                    <SnippetReviewPinyinHelper
+                      slicedSnippetSegment={slicedSnippetSegment}
+                      getColorByIndex={getColorByIndex}
+                      matchStartKey={matchStartKey}
+                      matchEndKey={matchEndKey}
+                      pinyinStart={pinyinStart}
                       languageSelectedState={languageSelectedState}
-                      handleBreakdownSentence={handleBreakdownSentence}
                     />
-                  </div>
-                )}
+                  ))}
+
+                <SnippetReviewBreakdownDefinitions
+                  slicedSnippetSegment={slicedSnippetSegment}
+                  getColorByIndex={getColorByIndex}
+                  matchStartKey={matchStartKey}
+                  matchEndKey={matchEndKey}
+                  pinyinStart={pinyinStart}
+                  vocab={vocab}
+                />
                 {highlightedTextState && (
                   <HighlightedText
                     isLoadingState={

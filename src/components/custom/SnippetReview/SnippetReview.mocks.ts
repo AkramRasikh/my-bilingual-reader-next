@@ -47,22 +47,11 @@ const getSecondsLoopedTranscriptDataMock = getSecondsLoopedTranscriptData({
   mediaDuration: 100,
 });
 
-// console.log(
-//   '## getSecondsLoopedTranscriptDataMock',
-//   getSecondsLoopedTranscriptDataMock,
-// );
-// console.log(
-//   '## getSecondsLoopedTranscriptDataMock',
-//   getSecondsLoopedTranscriptDataMock,
-// );
-
-// mockArabicContentItem2,
 const overlappingArabicText = getOverlappingText(
   getSecondsLoopedTranscriptDataMock,
   mockArabicTranscript,
+  false,
 );
-
-// console.log('## overlappingArabicText ', overlappingArabicText);
 
 export const mockArabicSnippet = {
   id: 'mock-arabic-snippet-id',
