@@ -78,7 +78,7 @@ const FormattedSentenceSnippetBreakdownWidget: React.FC<
         className='w-fit p-2 flex gap-3 flex-col'
         data-testid='sentence-breakdown-hover-content'
       >
-        <div className='flex gap-1'>
+        <div className='flex gap-1 mx-auto'>
           <Button
             data-testid='breakdown-save-word-deepseek-button'
             variant='secondary'
