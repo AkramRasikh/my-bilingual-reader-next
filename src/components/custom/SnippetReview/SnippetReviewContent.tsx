@@ -48,7 +48,6 @@ const FormattedSentenceSnippet = ({
               key={indexNested}
               className={clsx(
                 hasHighlightedBackground ? 'bg-gray-200' : 'opacity-35',
-                played ? 'font-extrabold' : '',
                 'relative',
               )}
               style={{
@@ -75,10 +74,7 @@ const FormattedSentenceSnippet = ({
 
         if (!(item?.meaning === 'n/a' && surfaceFormBreakdown)) {
           return (
-            <span
-              key={indexNested}
-              className={clsx(played ? 'font-extrabold' : '', 'relative')}
-            >
+            <span key={indexNested} className={'relative'}>
               {isReadyForQuickReview && (
                 <FormattedSentenceSnippetProgressWidget played={played} />
               )}
@@ -105,7 +101,6 @@ const FormattedSentenceSnippet = ({
             }}
             className={clsx(
               hasHighlightedBackground ? 'bg-gray-200' : 'opacity-35',
-              played ? 'font-extrabold' : '',
               'relative',
             )}
           >

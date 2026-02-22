@@ -2,6 +2,7 @@ import React from 'react';
 import { LanguageEnum } from '@/app/languages';
 import { pinyin } from 'pinyin-pro';
 import arabicTransliterate from 'arabic-transliterate';
+import FormattedSentenceSnippetProgressWidget from './SnippetReviewProgressWidget';
 
 interface correspondingRomanized {
   text: string;
@@ -15,6 +16,8 @@ interface SnippetReviewPinyinHelperProps {
   matchEndKey: number;
   pinyinStart: number;
   languageSelectedState: LanguageEnum;
+  isReadyForQuickReview?: boolean;
+  currentTime?: number;
 }
 
 const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
@@ -24,6 +27,8 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
   matchEndKey,
   pinyinStart,
   languageSelectedState,
+  isReadyForQuickReview,
+  currentTime,
 }) => {
   const isArabic = languageSelectedState === LanguageEnum.Arabic;
   return (
@@ -31,9 +36,14 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
       {slicedSnippetSegment.map((item, index) => {
         const prev = slicedSnippetSegment[index - 1];
         const addSpace = index > 0 && item?.startIndex !== prev?.startIndex;
+        const hasHighlightedBackground =
+          index >= matchStartKey && index <= matchEndKey;
+        const played =
+          hasHighlightedBackground && currentTime >= item?.secondForIndex;
         return (
           <span
             key={index}
+            className='relative'
             style={{
               color: getColorByIndex(item?.startIndex),
               opacity:
@@ -46,6 +56,9 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
                   : 'bold',
             }}
           >
+            {isArabic && isReadyForQuickReview && (
+              <FormattedSentenceSnippetProgressWidget played={played} />
+            )}
             {addSpace && ' '}
             {isArabic
               ? arabicTransliterate(item.text, 'arabic2latin', 'Arabic')

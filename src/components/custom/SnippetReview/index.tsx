@@ -370,6 +370,8 @@ const SnippetReview = ({
                       matchEndKey={matchEndKey}
                       pinyinStart={pinyinStart}
                       languageSelectedState={languageSelectedState}
+                      isReadyForQuickReview={isReadyForQuickReview}
+                      currentTime={currentTime}
                     />
                   ))}
 
