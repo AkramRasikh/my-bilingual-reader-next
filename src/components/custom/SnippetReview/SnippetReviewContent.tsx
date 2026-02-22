@@ -86,6 +86,7 @@ const FormattedSentenceSnippet = ({
                 surfaceFormBreakdown={surfaceFormBreakdown}
                 meaning={item?.meaning}
                 handleSaveFunc={handleSaveFunc}
+                languageSelectedState={languageSelectedState}
               />
             </span>
           );
