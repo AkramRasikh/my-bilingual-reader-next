@@ -51,6 +51,7 @@ export const getOverlappingText = (
     baseLang,
     suggestedFocusText: sliceTranscriptViaPercentageOverlap(
       overlappingSnippetDataMemoised,
+      !isTrimmed,
     ),
   };
 };

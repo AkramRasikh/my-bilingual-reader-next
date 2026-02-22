@@ -17,7 +17,6 @@ import {
 import { useOverlappedSentencesViableForReviewMemo } from './hooks/useOverlappedSentencesViableForReviewMemo';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import { WordTypes } from '../types/word-types';
-import { sliceTranscriptViaPercentageOverlap } from './utils/slice-transcript-via-percentage-overlap';
 import { isTrimmedLang } from '../languages';
 import useManageThreeSecondLoopMemo from './hooks/useManageThreeSecondLoopMemo';
 import { getSecondsLoopedTranscriptData } from './utils/get-seconds-looped-transcript-data';
@@ -27,7 +26,10 @@ import { useWordMetaMemoized } from './hooks/useWordMetaMemoized';
 import { useTopicWordsForReviewMemoized } from './hooks/useTopicWordsForReviewMemoized';
 import { useSnippetDueMemoized } from './hooks/useSnippetDueMemoized';
 import { useLoopedTranscriptMemoized } from './hooks/useLoopedTranscriptMemoized';
-import { useOverlappingTextMemoized } from './hooks/useOverlappingTextMemoized';
+import {
+  getOverlappingText,
+  useOverlappingTextMemoized,
+} from './hooks/useOverlappingTextMemoized';
 import { useMediaControls } from './hooks/useMediaControls';
 import {
   ContentTypes,
@@ -344,15 +346,11 @@ export const LearningScreenProvider = ({
     }
 
     const overlappingIds = resultOfThis.map((item) => item.id);
-    const entries = loopedTranscriptSegment.filter((x) =>
-      overlappingIds.includes(x.id),
-    );
 
-    const targetLang = entries.map((item) => item.targetLang).join('');
-    const baseLang = entries.map((item) => item.baseLang).join('');
-    const suggestedFocusText = sliceTranscriptViaPercentageOverlap(
+    const { targetLang, baseLang, suggestedFocusText } = getOverlappingText(
       resultOfThis,
-      !isTrimmedLang(languageSelectedState),
+      loopedTranscriptSegment,
+      isTrimmedLang(languageSelectedState),
     );
 
     const finalSnippetObject = {

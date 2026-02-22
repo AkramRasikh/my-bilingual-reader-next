@@ -9,8 +9,6 @@ import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningS
 import ReviewTypeToggles from './components/ReviewTypeToggles';
 import SnippetReviewChinese from '@/components/custom/SnippetReviewChinese';
 import { Snippet } from '../types/content-types';
-import SnippetReview from './experimental/SnippetReview';
-import { chinese } from '../languages';
 
 interface HandleReviewSnippetsComprehensiveReviewProps {
   snippetData: Snippet;
@@ -235,39 +233,10 @@ const LearningScreenComprehensiveReview = () => {
       {postSnippetsMemoized?.length > 0 ? (
         <div className='flex flex-col gap-2 mb-2'>
           {postSnippetsMemoized.map((item) => {
-            if (languageSelectedState === chinese) {
-              return (
-                <SnippetReviewChinese
-                  key={item.id}
-                  ref={ref}
-                  snippetData={item}
-                  handleLoopHere={handleLoopHere}
-                  isVideoPlaying={isVideoPlaying}
-                  threeSecondLoopState={threeSecondLoopState}
-                  handleUpdateSnippetComprehensiveReview={
-                    handleReviewSnippetsComprehensiveReview
-                  }
-                  isReadyForQuickReview={firstElIdInReview === item.id}
-                  handleBreakdownSentence={handleBreakdownSentence}
-                  isBreakingDownSentenceArrState={
-                    isBreakingDownSentenceArrState
-                  }
-                  currentTime={currentTime}
-                  getSentenceDataOfOverlappingWordsDuringSave={
-                    getSentenceDataOfOverlappingWordsDuringSave
-                  }
-                  selectedContentTitleState={selectedContentTitleState}
-                  sentenceMapMemoized={sentenceMapMemoized}
-                  languageSelectedState={languageSelectedState}
-                  wordsState={wordsState}
-                  handleSaveWord={handleSaveWord}
-                  handleDeleteWordDataProvider={handleDeleteWordDataProvider}
-                />
-              );
-            }
             return (
-              <SnippetReview
+              <SnippetReviewChinese
                 key={item.id}
+                ref={ref}
                 snippetData={item}
                 handleLoopHere={handleLoopHere}
                 isVideoPlaying={isVideoPlaying}
@@ -277,6 +246,17 @@ const LearningScreenComprehensiveReview = () => {
                 }
                 isReadyForQuickReview={firstElIdInReview === item.id}
                 handleBreakdownSentence={handleBreakdownSentence}
+                isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+                currentTime={currentTime}
+                getSentenceDataOfOverlappingWordsDuringSave={
+                  getSentenceDataOfOverlappingWordsDuringSave
+                }
+                selectedContentTitleState={selectedContentTitleState}
+                sentenceMapMemoized={sentenceMapMemoized}
+                languageSelectedState={languageSelectedState}
+                wordsState={wordsState}
+                handleSaveWord={handleSaveWord}
+                handleDeleteWordDataProvider={handleDeleteWordDataProvider}
               />
             );
           })}

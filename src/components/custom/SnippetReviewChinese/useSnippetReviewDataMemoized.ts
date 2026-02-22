@@ -55,13 +55,15 @@ export function useSnippetReviewDataMemoized({
           if (match) {
             for (let j = 0; j < surfaceForm.length; j++) {
               const index = start + j;
+              const secondForIndex =
+                isReadyForQuickReview && Number?.(getSecondForIndex(index));
+
               targetLangWithVocabStartIndex[index] = {
                 ...targetLangWithVocabStartIndex[index],
                 startIndex: vocabIdx,
                 surfaceForm,
                 meaning,
-                secondForIndex:
-                  isReadyForQuickReview && Number?.(getSecondForIndex(index)),
+                secondForIndex,
                 ...(sentenceId ? { sentenceId } : {}),
               };
             }
