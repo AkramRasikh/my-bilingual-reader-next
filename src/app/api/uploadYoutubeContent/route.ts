@@ -1,10 +1,13 @@
-import { uploadAudioCloudflare } from '@/app/shared-apis/upload-audio-cloudflare';
+import {
+  uploadAudioCloudflare,
+  uploadVideoCloudflare,
+} from '@/app/shared-apis/upload-audio-cloudflare';
 import { addContentLogic } from './uploadContentToFirebase';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req) {
   try {
-    const { url, title, language, publicAudioUrl, transcript } =
+    const { url, title, language, publicAudioUrl, publicVideoUrl, transcript } =
       await req.json();
 
     let contentUploaded = false;
@@ -24,6 +27,11 @@ export async function POST(req) {
 
     audioUploaded = await uploadAudioCloudflare({
       localAudioPath: 'http://localhost:3000' + publicAudioUrl,
+      cloudFlareAudioName: title,
+      language,
+    });
+    await uploadVideoCloudflare({
+      localAudioPath: 'http://localhost:3000' + publicVideoUrl,
       cloudFlareAudioName: title,
       language,
     });

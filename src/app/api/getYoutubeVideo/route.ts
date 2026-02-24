@@ -103,7 +103,11 @@ export async function POST(req) {
 
     try {
       await downloadYoutubeAudio({ outTemplate: audioOutputPath, url });
-      await downloadYoutubeVideo({ outTemplate: videoOutputPath, url });
+      await downloadYoutubeVideo({
+        outTemplate: videoOutputPath,
+        url,
+        skipError: true,
+      });
     } catch (error) {
       console.log('## failed to get audio ', error);
     }
@@ -118,6 +122,7 @@ export async function POST(req) {
     }
 
     const publicUrl = `/youtube/${encodeURIComponent(file)}`; // served from /public
+    const publicVideoUrl = `/youtube-video/${encodeURIComponent(file)}`; // served from /public
 
     try {
       await downloadBaseLangHumanSubs({ outputTemplate, url });
@@ -183,6 +188,7 @@ export async function POST(req) {
           language === chinese || language === japanese,
         ),
         publicUrl,
+        publicVideoUrl,
       }),
       {
         headers: { 'Content-Type': 'application/json' },

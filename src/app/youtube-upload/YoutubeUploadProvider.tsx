@@ -96,6 +96,9 @@ export function YoutubeUploadProvider({ children }) {
           title: form.title,
           language: form.language.toLowerCase(),
           publicAudioUrl: publicAudioUrlState,
+          publicVideoUrl: publicAudioUrlState
+            .replace(/\.mp3$/, '.mp4')
+            .replace('youtube', 'youtube-video'),
           transcript: transcriptState.map(({ originalIndex, ...rest }) => rest),
         }),
       });
