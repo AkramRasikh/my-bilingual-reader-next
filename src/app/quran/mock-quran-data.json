@@ -1,0 +1,1443 @@
+{
+    "chapterId": "93",
+    "reciterId": "7",
+    "verse": [
+        {
+            "id": 6080,
+            "verseNumber": 1,
+            "verseKey": "93:1",
+            "hizbNumber": 60,
+            "rubElHizbNumber": 238,
+            "rukuNumber": 537,
+            "manzilNumber": 7,
+            "sajdahNumber": null,
+            "pageNumber": 596,
+            "juzNumber": 30,
+            "words": [
+                {
+                    "id": 70,
+                    "position": 1,
+                    "audioUrl": "wbw/093_001_001.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﱹ",
+                    "codeV1": "ﭲ",
+                    "textUthmani": "وَٱلضُّحَىٰ",
+                    "pageNumber": 596,
+                    "lineNumber": 8,
+                    "text": "ﱹ",
+                    "translation": {
+                        "text": "By the morning brightness",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "wal-ḍuḥā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 71,
+                    "position": 2,
+                    "audioUrl": null,
+                    "charTypeName": "end",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﱺ",
+                    "codeV1": "ﭳ",
+                    "textUthmani": "١",
+                    "pageNumber": 596,
+                    "lineNumber": 8,
+                    "text": "ﱺ",
+                    "translation": {
+                        "text": "(1)",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": null,
+                        "languageName": "english"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 6081,
+            "verseNumber": 2,
+            "verseKey": "93:2",
+            "hizbNumber": 60,
+            "rubElHizbNumber": 238,
+            "rukuNumber": 537,
+            "manzilNumber": 7,
+            "sajdahNumber": null,
+            "pageNumber": 596,
+            "juzNumber": 30,
+            "words": [
+                {
+                    "id": 1191,
+                    "position": 1,
+                    "audioUrl": "wbw/093_002_001.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﱻ",
+                    "codeV1": "ﭴ",
+                    "textUthmani": "وَٱلَّيْلِ",
+                    "pageNumber": 596,
+                    "lineNumber": 8,
+                    "text": "ﱻ",
+                    "translation": {
+                        "text": "And the night",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "wa-al-layli",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 1192,
+                    "position": 2,
+                    "audioUrl": "wbw/093_002_002.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﱼ",
+                    "codeV1": "ﭵ",
+                    "textUthmani": "إِذَا",
+                    "pageNumber": 596,
+                    "lineNumber": 8,
+                    "text": "ﱼ",
+                    "translation": {
+                        "text": "when",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "idhā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 1193,
+                    "position": 3,
+                    "audioUrl": "wbw/093_002_003.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﱽ",
+                    "codeV1": "ﭶ",
+                    "textUthmani": "سَجَىٰ",
+                    "pageNumber": 596,
+                    "lineNumber": 8,
+                    "text": "ﱽ",
+                    "translation": {
+                        "text": "it covers with darkness",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "sajā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 1194,
+                    "position": 4,
+                    "audioUrl": null,
+                    "charTypeName": "end",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﱾ",
+                    "codeV1": "ﭷ",
+                    "textUthmani": "٢",
+                    "pageNumber": 596,
+                    "lineNumber": 8,
+                    "text": "ﱾ",
+                    "translation": {
+                        "text": "(2)",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": null,
+                        "languageName": "english"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 6082,
+            "verseNumber": 3,
+            "verseKey": "93:3",
+            "hizbNumber": 60,
+            "rubElHizbNumber": 238,
+            "rukuNumber": 537,
+            "manzilNumber": 7,
+            "sajdahNumber": null,
+            "pageNumber": 596,
+            "juzNumber": 30,
+            "words": [
+                {
+                    "id": 2251,
+                    "position": 1,
+                    "audioUrl": "wbw/093_003_001.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﱿ",
+                    "codeV1": "ﭸ",
+                    "textUthmani": "مَا",
+                    "pageNumber": 596,
+                    "lineNumber": 8,
+                    "text": "ﱿ",
+                    "translation": {
+                        "text": "Not",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "mā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 2252,
+                    "position": 2,
+                    "audioUrl": "wbw/093_003_002.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲀ",
+                    "codeV1": "ﭹ",
+                    "textUthmani": "وَدَّعَكَ",
+                    "pageNumber": 596,
+                    "lineNumber": 8,
+                    "text": "ﲀ",
+                    "translation": {
+                        "text": "has forsaken you",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "waddaʿaka",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 2253,
+                    "position": 3,
+                    "audioUrl": "wbw/093_003_003.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲁ",
+                    "codeV1": "ﭺ",
+                    "textUthmani": "رَبُّكَ",
+                    "pageNumber": 596,
+                    "lineNumber": 8,
+                    "text": "ﲁ",
+                    "translation": {
+                        "text": "your Lord",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "rabbuka",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 2254,
+                    "position": 4,
+                    "audioUrl": "wbw/093_003_004.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲂ",
+                    "codeV1": "ﭻ",
+                    "textUthmani": "وَمَا",
+                    "pageNumber": 596,
+                    "lineNumber": 8,
+                    "text": "ﲂ",
+                    "translation": {
+                        "text": "and not",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "wamā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 2255,
+                    "position": 5,
+                    "audioUrl": "wbw/093_003_005.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲃ",
+                    "codeV1": "ﭼ",
+                    "textUthmani": "قَلَىٰ",
+                    "pageNumber": 596,
+                    "lineNumber": 8,
+                    "text": "ﲃ",
+                    "translation": {
+                        "text": "He is displeased",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "qalā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 2256,
+                    "position": 6,
+                    "audioUrl": null,
+                    "charTypeName": "end",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲄ",
+                    "codeV1": "ﭽ",
+                    "textUthmani": "٣",
+                    "pageNumber": 596,
+                    "lineNumber": 8,
+                    "text": "ﲄ",
+                    "translation": {
+                        "text": "(3)",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": null,
+                        "languageName": "english"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 6083,
+            "verseNumber": 4,
+            "verseKey": "93:4",
+            "hizbNumber": 60,
+            "rubElHizbNumber": 238,
+            "rukuNumber": 537,
+            "manzilNumber": 7,
+            "sajdahNumber": null,
+            "pageNumber": 596,
+            "juzNumber": 30,
+            "words": [
+                {
+                    "id": 3555,
+                    "position": 1,
+                    "audioUrl": "wbw/093_004_001.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲅ",
+                    "codeV1": "ﭾ",
+                    "textUthmani": "وَلَلْـَٔاخِرَةُ",
+                    "pageNumber": 596,
+                    "lineNumber": 9,
+                    "text": "ﲅ",
+                    "translation": {
+                        "text": "And surely the Hereafter",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "walalākhiratu",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 3556,
+                    "position": 2,
+                    "audioUrl": "wbw/093_004_002.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲆ",
+                    "codeV1": "ﭿ",
+                    "textUthmani": "خَيْرٌۭ",
+                    "pageNumber": 596,
+                    "lineNumber": 9,
+                    "text": "ﲆ",
+                    "translation": {
+                        "text": "(is) better",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "khayrun",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 3557,
+                    "position": 3,
+                    "audioUrl": "wbw/093_004_003.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲇ",
+                    "codeV1": "ﮀ",
+                    "textUthmani": "لَّكَ",
+                    "pageNumber": 596,
+                    "lineNumber": 9,
+                    "text": "ﲇ",
+                    "translation": {
+                        "text": "for you",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "laka",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 3558,
+                    "position": 4,
+                    "audioUrl": "wbw/093_004_004.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲈ",
+                    "codeV1": "ﮁ",
+                    "textUthmani": "مِنَ",
+                    "pageNumber": 596,
+                    "lineNumber": 9,
+                    "text": "ﲈ",
+                    "translation": {
+                        "text": "than",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "mina",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 3559,
+                    "position": 5,
+                    "audioUrl": "wbw/093_004_005.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲉ",
+                    "codeV1": "ﮂ",
+                    "textUthmani": "ٱلْأُولَىٰ",
+                    "pageNumber": 596,
+                    "lineNumber": 9,
+                    "text": "ﲉ",
+                    "translation": {
+                        "text": "the first",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "l-ūlā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 3560,
+                    "position": 6,
+                    "audioUrl": null,
+                    "charTypeName": "end",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲊ",
+                    "codeV1": "ﮃ",
+                    "textUthmani": "٤",
+                    "pageNumber": 596,
+                    "lineNumber": 9,
+                    "text": "ﲊ",
+                    "translation": {
+                        "text": "(4)",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": null,
+                        "languageName": "english"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 6084,
+            "verseNumber": 5,
+            "verseKey": "93:5",
+            "hizbNumber": 60,
+            "rubElHizbNumber": 238,
+            "rukuNumber": 537,
+            "manzilNumber": 7,
+            "sajdahNumber": null,
+            "pageNumber": 596,
+            "juzNumber": 30,
+            "words": [
+                {
+                    "id": 4814,
+                    "position": 1,
+                    "audioUrl": "wbw/093_005_001.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲋ",
+                    "codeV1": "ﮄ",
+                    "textUthmani": "وَلَسَوْفَ",
+                    "pageNumber": 596,
+                    "lineNumber": 9,
+                    "text": "ﲋ",
+                    "translation": {
+                        "text": "And soon",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "walasawfa",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 4815,
+                    "position": 2,
+                    "audioUrl": "wbw/093_005_002.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲌ",
+                    "codeV1": "ﮅ",
+                    "textUthmani": "يُعْطِيكَ",
+                    "pageNumber": 596,
+                    "lineNumber": 9,
+                    "text": "ﲌ",
+                    "translation": {
+                        "text": "will give you",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "yuʿ'ṭīka",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 4816,
+                    "position": 3,
+                    "audioUrl": "wbw/093_005_003.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲍ",
+                    "codeV1": "ﮆ",
+                    "textUthmani": "رَبُّكَ",
+                    "pageNumber": 596,
+                    "lineNumber": 9,
+                    "text": "ﲍ",
+                    "translation": {
+                        "text": "your Lord",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "rabbuka",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 4817,
+                    "position": 4,
+                    "audioUrl": "wbw/093_005_004.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲎ",
+                    "codeV1": "ﮇ",
+                    "textUthmani": "فَتَرْضَىٰٓ",
+                    "pageNumber": 596,
+                    "lineNumber": 10,
+                    "text": "ﲎ",
+                    "translation": {
+                        "text": "then you will be satisfied",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "fatarḍā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 4818,
+                    "position": 5,
+                    "audioUrl": null,
+                    "charTypeName": "end",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲏ",
+                    "codeV1": "ﮈ",
+                    "textUthmani": "٥",
+                    "pageNumber": 596,
+                    "lineNumber": 10,
+                    "text": "ﲏ",
+                    "translation": {
+                        "text": "(5)",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": null,
+                        "languageName": "english"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 6085,
+            "verseNumber": 6,
+            "verseKey": "93:6",
+            "hizbNumber": 60,
+            "rubElHizbNumber": 238,
+            "rukuNumber": 537,
+            "manzilNumber": 7,
+            "sajdahNumber": null,
+            "pageNumber": 596,
+            "juzNumber": 30,
+            "words": [
+                {
+                    "id": 5889,
+                    "position": 1,
+                    "audioUrl": "wbw/093_006_001.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲐ",
+                    "codeV1": "ﮉ",
+                    "textUthmani": "أَلَمْ",
+                    "pageNumber": 596,
+                    "lineNumber": 10,
+                    "text": "ﲐ",
+                    "translation": {
+                        "text": "Did not",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "alam",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 5890,
+                    "position": 2,
+                    "audioUrl": "wbw/093_006_002.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲑ",
+                    "codeV1": "ﮊ",
+                    "textUthmani": "يَجِدْكَ",
+                    "pageNumber": 596,
+                    "lineNumber": 10,
+                    "text": "ﲑ",
+                    "translation": {
+                        "text": "He find you",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "yajid'ka",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 5891,
+                    "position": 3,
+                    "audioUrl": "wbw/093_006_003.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲒ",
+                    "codeV1": "ﮋ",
+                    "textUthmani": "يَتِيمًۭا",
+                    "pageNumber": 596,
+                    "lineNumber": 10,
+                    "text": "ﲒ",
+                    "translation": {
+                        "text": "an orphan",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "yatīman",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 5892,
+                    "position": 4,
+                    "audioUrl": "wbw/093_006_004.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲓ",
+                    "codeV1": "ﮌ",
+                    "textUthmani": "فَـَٔاوَىٰ",
+                    "pageNumber": 596,
+                    "lineNumber": 10,
+                    "text": "ﲓ",
+                    "translation": {
+                        "text": "and give shelter",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "faāwā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 5893,
+                    "position": 5,
+                    "audioUrl": null,
+                    "charTypeName": "end",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲔ",
+                    "codeV1": "ﮍ",
+                    "textUthmani": "٦",
+                    "pageNumber": 596,
+                    "lineNumber": 10,
+                    "text": "ﲔ",
+                    "translation": {
+                        "text": "(6)",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": null,
+                        "languageName": "english"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 6086,
+            "verseNumber": 7,
+            "verseKey": "93:7",
+            "hizbNumber": 60,
+            "rubElHizbNumber": 238,
+            "rukuNumber": 537,
+            "manzilNumber": 7,
+            "sajdahNumber": null,
+            "pageNumber": 596,
+            "juzNumber": 30,
+            "words": [
+                {
+                    "id": 7732,
+                    "position": 1,
+                    "audioUrl": "wbw/093_007_001.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲕ",
+                    "codeV1": "ﮎ",
+                    "textUthmani": "وَوَجَدَكَ",
+                    "pageNumber": 596,
+                    "lineNumber": 10,
+                    "text": "ﲕ",
+                    "translation": {
+                        "text": "And He found you",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "wawajadaka",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 7733,
+                    "position": 2,
+                    "audioUrl": "wbw/093_007_002.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲖ",
+                    "codeV1": "ﮏ",
+                    "textUthmani": "ضَآلًّۭا",
+                    "pageNumber": 596,
+                    "lineNumber": 10,
+                    "text": "ﲖ",
+                    "translation": {
+                        "text": "lost",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "ḍāllan",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 7734,
+                    "position": 3,
+                    "audioUrl": "wbw/093_007_003.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲗ",
+                    "codeV1": "ﮐ",
+                    "textUthmani": "فَهَدَىٰ",
+                    "pageNumber": 596,
+                    "lineNumber": 10,
+                    "text": "ﲗ",
+                    "translation": {
+                        "text": "so He guided",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "fahadā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 7735,
+                    "position": 4,
+                    "audioUrl": null,
+                    "charTypeName": "end",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲘ",
+                    "codeV1": "ﮑ",
+                    "textUthmani": "٧",
+                    "pageNumber": 596,
+                    "lineNumber": 11,
+                    "text": "ﲘ",
+                    "translation": {
+                        "text": "(7)",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": null,
+                        "languageName": "english"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 6087,
+            "verseNumber": 8,
+            "verseKey": "93:8",
+            "hizbNumber": 60,
+            "rubElHizbNumber": 238,
+            "rukuNumber": 537,
+            "manzilNumber": 7,
+            "sajdahNumber": null,
+            "pageNumber": 596,
+            "juzNumber": 30,
+            "words": [
+                {
+                    "id": 8971,
+                    "position": 1,
+                    "audioUrl": "wbw/093_008_001.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲙ",
+                    "codeV1": "ﮒ",
+                    "textUthmani": "وَوَجَدَكَ",
+                    "pageNumber": 596,
+                    "lineNumber": 11,
+                    "text": "ﲙ",
+                    "translation": {
+                        "text": "And He found you",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "wawajadaka",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 8972,
+                    "position": 2,
+                    "audioUrl": "wbw/093_008_002.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲚ",
+                    "codeV1": "ﮓ",
+                    "textUthmani": "عَآئِلًۭا",
+                    "pageNumber": 596,
+                    "lineNumber": 11,
+                    "text": "ﲚ",
+                    "translation": {
+                        "text": "in need",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "ʿāilan",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 8973,
+                    "position": 3,
+                    "audioUrl": "wbw/093_008_003.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲛ",
+                    "codeV1": "ﮔ",
+                    "textUthmani": "فَأَغْنَىٰ",
+                    "pageNumber": 596,
+                    "lineNumber": 11,
+                    "text": "ﲛ",
+                    "translation": {
+                        "text": "so He made self-sufficient",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "fa-aghnā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 8974,
+                    "position": 4,
+                    "audioUrl": null,
+                    "charTypeName": "end",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲜ",
+                    "codeV1": "ﮕ",
+                    "textUthmani": "٨",
+                    "pageNumber": 596,
+                    "lineNumber": 11,
+                    "text": "ﲜ",
+                    "translation": {
+                        "text": "(8)",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": null,
+                        "languageName": "english"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 6088,
+            "verseNumber": 9,
+            "verseKey": "93:9",
+            "hizbNumber": 60,
+            "rubElHizbNumber": 238,
+            "rukuNumber": 537,
+            "manzilNumber": 7,
+            "sajdahNumber": null,
+            "pageNumber": 596,
+            "juzNumber": 30,
+            "words": [
+                {
+                    "id": 10182,
+                    "position": 1,
+                    "audioUrl": "wbw/093_009_001.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲝ",
+                    "codeV1": "ﮖ",
+                    "textUthmani": "فَأَمَّا",
+                    "pageNumber": 596,
+                    "lineNumber": 11,
+                    "text": "ﲝ",
+                    "translation": {
+                        "text": "So as for",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "fa-ammā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 10183,
+                    "position": 2,
+                    "audioUrl": "wbw/093_009_002.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲞ",
+                    "codeV1": "ﮗ",
+                    "textUthmani": "ٱلْيَتِيمَ",
+                    "pageNumber": 596,
+                    "lineNumber": 11,
+                    "text": "ﲞ",
+                    "translation": {
+                        "text": "the orphan",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "l-yatīma",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 10184,
+                    "position": 3,
+                    "audioUrl": "wbw/093_009_003.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲟ",
+                    "codeV1": "ﮘ",
+                    "textUthmani": "فَلَا",
+                    "pageNumber": 596,
+                    "lineNumber": 11,
+                    "text": "ﲟ",
+                    "translation": {
+                        "text": "then (do) not",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "falā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 10185,
+                    "position": 4,
+                    "audioUrl": "wbw/093_009_004.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲠ",
+                    "codeV1": "ﮙ",
+                    "textUthmani": "تَقْهَرْ",
+                    "pageNumber": 596,
+                    "lineNumber": 11,
+                    "text": "ﲠ",
+                    "translation": {
+                        "text": "oppress",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "taqhar",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 10186,
+                    "position": 5,
+                    "audioUrl": null,
+                    "charTypeName": "end",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲡ",
+                    "codeV1": "ﮚ",
+                    "textUthmani": "٩",
+                    "pageNumber": 596,
+                    "lineNumber": 11,
+                    "text": "ﲡ",
+                    "translation": {
+                        "text": "(9)",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": null,
+                        "languageName": "english"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 6089,
+            "verseNumber": 10,
+            "verseKey": "93:10",
+            "hizbNumber": 60,
+            "rubElHizbNumber": 238,
+            "rukuNumber": 537,
+            "manzilNumber": 7,
+            "sajdahNumber": null,
+            "pageNumber": 596,
+            "juzNumber": 30,
+            "words": [
+                {
+                    "id": 11376,
+                    "position": 1,
+                    "audioUrl": "wbw/093_010_001.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲢ",
+                    "codeV1": "ﮛ",
+                    "textUthmani": "وَأَمَّا",
+                    "pageNumber": 596,
+                    "lineNumber": 12,
+                    "text": "ﲢ",
+                    "translation": {
+                        "text": "And as for",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "wa-ammā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 11377,
+                    "position": 2,
+                    "audioUrl": "wbw/093_010_002.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲣ",
+                    "codeV1": "ﮜ",
+                    "textUthmani": "ٱلسَّآئِلَ",
+                    "pageNumber": 596,
+                    "lineNumber": 12,
+                    "text": "ﲣ",
+                    "translation": {
+                        "text": "one who asks",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "l-sāila",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 11378,
+                    "position": 3,
+                    "audioUrl": "wbw/093_010_003.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲤ",
+                    "codeV1": "ﮝ",
+                    "textUthmani": "فَلَا",
+                    "pageNumber": 596,
+                    "lineNumber": 12,
+                    "text": "ﲤ",
+                    "translation": {
+                        "text": "then (do) not",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "falā",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 11379,
+                    "position": 4,
+                    "audioUrl": "wbw/093_010_004.mp3",
+                    "charTypeName": "word",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲥ",
+                    "codeV1": "ﮞ",
+                    "textUthmani": "تَنْهَرْ",
+                    "pageNumber": 596,
+                    "lineNumber": 12,
+                    "text": "ﲥ",
+                    "translation": {
+                        "text": "repel",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": "tanhar",
+                        "languageName": "english"
+                    }
+                },
+                {
+                    "id": 11380,
+                    "position": 5,
+                    "audioUrl": null,
+                    "charTypeName": "end",
+                    "v1Page": 596,
+                    "v2Page": 596,
+                    "codeV2": "ﲦ",
+                    "codeV1": "ﮟ",
+                    "textUthmani": "١٠",
+                    "pageNumber": 596,
+                    "lineNumber": 12,
+                    "text": "ﲦ",
+                    "translation": {
+                        "text": "(10)",
+                        "languageName": "english"
+                    },
+                    "transliteration": {
+                        "text": null,
+                        "languageName": "english"
+                    }
+                }
+            ]
+        }
+    ],
+    "audio": {
+        "id": 1095,
+        "chapterId": 93,
+        "fileSize": 1050752,
+        "format": "mp3",
+        "audioUrl": "https://download.quranicaudio.com/qdc/mishari_al_afasy/murattal/93.mp3"
+    },
+    "verseAudio": [
+        {
+            "verseKey": "93:1",
+            "segments": [
+                [
+                    0,
+                    1,
+                    60,
+                    1610
+                ]
+            ],
+            "url": "Alafasy/mp3/093001.mp3"
+        },
+        {
+            "verseKey": "93:2",
+            "segments": [
+                [
+                    0,
+                    1,
+                    30,
+                    1040
+                ],
+                [
+                    1,
+                    2,
+                    1050,
+                    1610
+                ],
+                [
+                    2,
+                    3,
+                    1620,
+                    2690
+                ]
+            ],
+            "url": "Alafasy/mp3/093002.mp3"
+        },
+        {
+            "verseKey": "93:3",
+            "segments": [
+                [
+                    0,
+                    1,
+                    70,
+                    490
+                ],
+                [
+                    1,
+                    2,
+                    500,
+                    1520
+                ],
+                [
+                    2,
+                    3,
+                    1530,
+                    2440
+                ],
+                [
+                    3,
+                    4,
+                    2450,
+                    3050
+                ],
+                [
+                    4,
+                    5,
+                    3060,
+                    3870
+                ]
+            ],
+            "url": "Alafasy/mp3/093003.mp3"
+        },
+        {
+            "verseKey": "93:4",
+            "segments": [
+                [
+                    0,
+                    1,
+                    30,
+                    1700
+                ],
+                [
+                    1,
+                    2,
+                    1710,
+                    2430
+                ],
+                [
+                    2,
+                    3,
+                    2440,
+                    3070
+                ],
+                [
+                    3,
+                    4,
+                    3080,
+                    3450
+                ],
+                [
+                    4,
+                    5,
+                    3460,
+                    4970
+                ]
+            ],
+            "url": "Alafasy/mp3/093004.mp3"
+        },
+        {
+            "verseKey": "93:5",
+            "segments": [
+                [
+                    0,
+                    1,
+                    30,
+                    1060
+                ],
+                [
+                    1,
+                    2,
+                    1070,
+                    2260
+                ],
+                [
+                    2,
+                    3,
+                    2270,
+                    3110
+                ],
+                [
+                    3,
+                    4,
+                    3120,
+                    4590
+                ]
+            ],
+            "url": "Alafasy/mp3/093005.mp3"
+        },
+        {
+            "verseKey": "93:6",
+            "segments": [
+                [
+                    0,
+                    1,
+                    30,
+                    590
+                ],
+                [
+                    1,
+                    2,
+                    600,
+                    1400
+                ],
+                [
+                    2,
+                    3,
+                    1410,
+                    3360
+                ],
+                [
+                    3,
+                    4,
+                    3370,
+                    4800
+                ]
+            ],
+            "url": "Alafasy/mp3/093006.mp3"
+        },
+        {
+            "verseKey": "93:7",
+            "segments": [
+                [
+                    0,
+                    1,
+                    30,
+                    1010
+                ],
+                [
+                    1,
+                    2,
+                    1020,
+                    5520
+                ],
+                [
+                    2,
+                    3,
+                    5530,
+                    6840
+                ]
+            ],
+            "url": "Alafasy/mp3/093007.mp3"
+        },
+        {
+            "verseKey": "93:8",
+            "segments": [
+                [
+                    0,
+                    1,
+                    30,
+                    1040
+                ],
+                [
+                    1,
+                    2,
+                    1050,
+                    4140
+                ],
+                [
+                    2,
+                    3,
+                    4150,
+                    5600
+                ]
+            ],
+            "url": "Alafasy/mp3/093008.mp3"
+        },
+        {
+            "verseKey": "93:9",
+            "segments": [
+                [
+                    0,
+                    1,
+                    30,
+                    1580
+                ],
+                [
+                    1,
+                    2,
+                    1590,
+                    2720
+                ],
+                [
+                    2,
+                    3,
+                    2730,
+                    3390
+                ],
+                [
+                    3,
+                    4,
+                    3400,
+                    4290
+                ]
+            ],
+            "url": "Alafasy/mp3/093009.mp3"
+        },
+        {
+            "verseKey": "93:10",
+            "segments": [
+                [
+                    0,
+                    1,
+                    30,
+                    1280
+                ],
+                [
+                    1,
+                    2,
+                    1290,
+                    4130
+                ],
+                [
+                    2,
+                    3,
+                    4140,
+                    4780
+                ],
+                [
+                    3,
+                    4,
+                    4790,
+                    5720
+                ]
+            ],
+            "url": "Alafasy/mp3/093010.mp3"
+        }
+    ]
+}
