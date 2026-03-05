@@ -57,6 +57,8 @@ type VerseModel = {
   words: WordCue[];
 };
 
+type DisplayMode = 'study' | 'reading';
+
 const HARDCODED_CHAPTER_ID = 93;
 const HARDCODED_RECITER_ID = '7';
 const VERSE_AUDIO_BASE_URL = 'https://verses.quran.com/';
@@ -94,6 +96,7 @@ export default function QuranPage() {
   const [currentVerseIndex, setCurrentVerseIndex] = React.useState(0);
   const [currentTimeMs, setCurrentTimeMs] = React.useState(0);
   const [isPlaying, setIsPlaying] = React.useState(false);
+  const [displayMode, setDisplayMode] = React.useState<DisplayMode>('study');
   const [wordStudyState, setWordStudyState] = React.useState<
     Record<
       string,
@@ -364,8 +367,160 @@ export default function QuranPage() {
 
       {!loading && verseModels.length > 0 && (
         <section>
-          <h2>Surah Words</h2>
-          {verseModels.map((verse, verseIndex) => {
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '0.5rem',
+              marginBottom: '0.5rem',
+            }}
+          >
+            <h2 style={{ margin: 0 }}>Surah Words</h2>
+            <div style={{ display: 'flex', gap: '0.35rem' }}>
+              <button
+                type='button'
+                onClick={() => setDisplayMode('study')}
+                style={{
+                  border: '1px solid #bbb',
+                  background: displayMode === 'study' ? '#fff4ce' : '#fff',
+                }}
+              >
+                Study View
+              </button>
+              <button
+                type='button'
+                onClick={() => setDisplayMode('reading')}
+                style={{
+                  border: '1px solid #bbb',
+                  background: displayMode === 'reading' ? '#fff4ce' : '#fff',
+                }}
+              >
+                Reading View
+              </button>
+            </div>
+          </div>
+
+          {displayMode === 'reading' && (
+            <article
+              style={{
+                border: '1px solid #e5e5e5',
+                borderRadius: '0.4rem',
+                padding: '0.8rem',
+                background: '#fff',
+              }}
+            >
+              <p
+                style={{
+                  margin: 0,
+                  direction: 'rtl',
+                  textAlign: 'right',
+                  fontSize: '1.55rem',
+                  lineHeight: 1.8,
+                }}
+              >
+                {verseModels.map((verse, verseIndex) => {
+                  const isCurrentVerse = verseIndex === currentVerseIndex;
+                  return (
+                    <React.Fragment key={`reading-ar-${verse.verseKey}`}>
+                      <span
+                        style={{
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => {
+                          void handlePlayVerseAtIndex(verseIndex);
+                        }}
+                      >
+                        {verse.words.map((word) => {
+                          const isActive =
+                            isCurrentVerse && activeWordId === word.id;
+
+                          return (
+                            <span
+                              key={`reading-ar-word-${word.id}`}
+                              style={{
+                                display: 'inline-block',
+                                background: isActive ? '#ffe08a' : 'transparent',
+                                borderRadius: '0.2rem',
+                                paddingInline: '0.1rem',
+                              }}
+                            >
+                              {word.arabic || '-'}
+                            </span>
+                          );
+                        })
+                        .flatMap((node, index) =>
+                          index < verse.words.length - 1 ? [node, ' '] : [node],
+                        )}
+                        <span
+                          style={{
+                            marginInlineStart: '0.3rem',
+                            color: '#666',
+                            fontSize: '1.2rem',
+                          }}
+                        >
+                          {verse.verseNumber}
+                        </span>
+                      </span>{' '}
+                    </React.Fragment>
+                  );
+                })}
+              </p>
+
+              <div
+                style={{
+                  marginTop: '0.8rem',
+                  borderTop: '1px solid #efefef',
+                  paddingTop: '0.7rem',
+                }}
+              >
+                {verseModels.map((verse, verseIndex) => {
+                  const isCurrentVerse = verseIndex === currentVerseIndex;
+                  return (
+                    <p
+                      key={`reading-tr-${verse.verseKey}`}
+                      style={{
+                        marginTop: 0,
+                        marginBottom: '0.35rem',
+                        color: '#444',
+                        lineHeight: 1.45,
+                        borderRadius: '0.2rem',
+                        paddingInline: '0.15rem',
+                        width: 'fit-content',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => {
+                        void handlePlayVerseAtIndex(verseIndex);
+                      }}
+                    >
+                      <span style={{ color: '#666' }}>{verse.verseNumber}. </span>
+                      {verse.words.map((word, wordIndex) => {
+                        const isActive = isCurrentVerse && activeWordId === word.id;
+
+                        return (
+                          <span
+                            key={`reading-tr-word-${word.id}`}
+                            style={{
+                              background: isActive ? '#ffe08a' : 'transparent',
+                              borderRadius: '0.2rem',
+                              paddingInline: '0.1rem',
+                              marginRight: '0.2rem',
+                            }}
+                          >
+                            {word.transliteration || '-'}
+                            {wordIndex < verse.words.length - 1 ? ' ' : ''}
+                          </span>
+                        );
+                      })}
+                    </p>
+                  );
+                })}
+              </div>
+            </article>
+          )}
+
+          {displayMode === 'study' &&
+            verseModels.map((verse, verseIndex) => {
             const isCurrentVerse = verseIndex === currentVerseIndex;
             const sentenceEnglish = verse.words
               .map((word) => word.english)
@@ -430,7 +585,11 @@ export default function QuranPage() {
                           borderRadius: isActive ? '0.2rem' : 0,
                         }}
                       >
-                        <span style={{ textDecoration: isStudied ? 'underline' : 'none' }}>
+                        <span
+                          style={{
+                            textDecoration: isStudied ? 'underline' : 'none',
+                          }}
+                        >
                           {word.arabic || '-'}
                         </span>
                         <button
@@ -528,7 +687,7 @@ export default function QuranPage() {
                 )}
               </article>
             );
-          })}
+            })}
         </section>
       )}
     </main>
