@@ -39,11 +39,13 @@ type ApiResponse = {
 
 type WordCue = {
   id: string;
+  studyKey: string;
   arabic: string;
   transliteration: string;
   english: string;
   startMs: number | null;
   endMs: number | null;
+  sourceWord: Word;
 };
 
 type VerseModel = {
@@ -63,6 +65,13 @@ const resolveVerseAudioUrl = (url: string | null | undefined) => {
   if (!url) return null;
   if (url.startsWith('http://') || url.startsWith('https://')) return url;
   return `${VERSE_AUDIO_BASE_URL}${url}`;
+};
+
+const buildStudyKey = (verseKey: string, wordIndex: number, word: Word) => {
+  if (typeof word.id === 'number') {
+    return `word-id:${word.id}`;
+  }
+  return `${verseKey}:${wordIndex}`;
 };
 
 const findSegmentForWord = (
@@ -85,6 +94,16 @@ export default function QuranPage() {
   const [currentVerseIndex, setCurrentVerseIndex] = React.useState(0);
   const [currentTimeMs, setCurrentTimeMs] = React.useState(0);
   const [isPlaying, setIsPlaying] = React.useState(false);
+  const [wordStudyState, setWordStudyState] = React.useState<
+    Record<
+      string,
+      {
+        word: Word;
+        verseKey: string;
+        wordIndex: number;
+      }
+    >
+  >({});
 
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
   const shouldAutoPlayNextRef = React.useRef(false);
@@ -129,11 +148,13 @@ export default function QuranPage() {
               const segment = findSegmentForWord(segments, wordIndex);
               return {
                 id: `${verse.verseKey}-${wordIndex}`,
+                studyKey: buildStudyKey(verse.verseKey, wordIndex, word),
                 arabic: word.textUthmani ?? word.text ?? '',
                 transliteration: word.transliteration?.text ?? '',
                 english: word.translation?.text ?? '',
                 startMs: segment?.[2] ?? null,
                 endMs: segment?.[3] ?? null,
+                sourceWord: word,
               };
             });
 
@@ -237,6 +258,28 @@ export default function QuranPage() {
 
     return activeWord?.id ?? null;
   }, [currentTimeMs, currentVerse]);
+
+  const toggleWordStudy = React.useCallback(
+    (verseKey: string, wordIndex: number, wordCue: WordCue) => {
+      setWordStudyState((prev) => {
+        if (prev[wordCue.studyKey]) {
+          const next = { ...prev };
+          delete next[wordCue.studyKey];
+          return next;
+        }
+
+        return {
+          ...prev,
+          [wordCue.studyKey]: {
+            word: wordCue.sourceWord,
+            verseKey,
+            wordIndex,
+          },
+        };
+      });
+    },
+    [],
+  );
 
   return (
     <main style={{ padding: '1rem', maxWidth: 1200, margin: '0 auto' }}>
@@ -374,15 +417,40 @@ export default function QuranPage() {
                 >
                   {verse.words.map((word, index) => {
                     const isActive = isCurrentVerse && activeWordId === word.id;
+                    const isStudied = Boolean(wordStudyState[word.studyKey]);
+
                     return (
                       <span
                         key={word.id}
                         style={{
+                          display: 'inline-flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
                           background: isActive ? '#ffe08a' : 'transparent',
                           borderRadius: isActive ? '0.2rem' : 0,
                         }}
                       >
-                        {word.arabic || '-'}
+                        <span style={{ textDecoration: isStudied ? 'underline' : 'none' }}>
+                          {word.arabic || '-'}
+                        </span>
+                        <button
+                          type='button'
+                          onClick={() => {
+                            toggleWordStudy(verse.verseKey, index, word);
+                          }}
+                          style={{
+                            marginTop: '0.1rem',
+                            fontSize: '0.55rem',
+                            lineHeight: 1,
+                            padding: '0.05rem 0.2rem',
+                            border: '1px solid #bbb',
+                            borderRadius: '0.2rem',
+                            background: isStudied ? '#fff4ce' : '#fff',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {isStudied ? 'Saved' : '+'}
+                        </button>
                         {index < verse.words.length - 1 ? ' ' : ''}
                       </span>
                     );
@@ -400,6 +468,8 @@ export default function QuranPage() {
                 >
                   {verse.words.map((word) => {
                     const isActive = isCurrentVerse && activeWordId === word.id;
+                    const isStudied = Boolean(wordStudyState[word.studyKey]);
+
                     return (
                       <span
                         key={`tr-${word.id}`}
@@ -408,6 +478,7 @@ export default function QuranPage() {
                           borderRadius: '0.25rem',
                           paddingInline: '0.15rem',
                           marginRight: '0.25rem',
+                          textDecoration: isStudied ? 'underline' : 'none',
                         }}
                       >
                         {word.transliteration || '-'}
