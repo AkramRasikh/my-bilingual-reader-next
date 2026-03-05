@@ -97,6 +97,7 @@ export default function QuranPage() {
   const [currentTimeMs, setCurrentTimeMs] = React.useState(0);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [displayMode, setDisplayMode] = React.useState<DisplayMode>('study');
+  const [showEnglishAids, setShowEnglishAids] = React.useState(false);
   const [wordStudyState, setWordStudyState] = React.useState<
     Record<
       string,
@@ -398,6 +399,16 @@ export default function QuranPage() {
               >
                 Reading View
               </button>
+              <button
+                type='button'
+                onClick={() => setShowEnglishAids((prev) => !prev)}
+                style={{
+                  border: '1px solid #bbb',
+                  background: showEnglishAids ? '#fff4ce' : '#fff',
+                }}
+              >
+                {showEnglishAids ? 'Hide English Aids' : 'Show English Aids'}
+              </button>
             </div>
           </div>
 
@@ -476,43 +487,87 @@ export default function QuranPage() {
               >
                 {verseModels.map((verse, verseIndex) => {
                   const isCurrentVerse = verseIndex === currentVerseIndex;
-                  return (
-                    <p
-                      key={`reading-tr-${verse.verseKey}`}
-                      style={{
-                        marginTop: 0,
-                        marginBottom: '0.35rem',
-                        color: '#444',
-                        lineHeight: 1.45,
-                        borderRadius: '0.2rem',
-                        paddingInline: '0.15rem',
-                        width: 'fit-content',
-                        cursor: 'pointer',
-                      }}
-                      onClick={() => {
-                        void handlePlayVerseAtIndex(verseIndex);
-                      }}
-                    >
-                      <span style={{ color: '#666' }}>{verse.verseNumber}. </span>
-                      {verse.words.map((word, wordIndex) => {
-                        const isActive = isCurrentVerse && activeWordId === word.id;
+                  const sentenceEnglish = verse.words
+                    .map((word) => word.english)
+                    .filter((text) => Boolean(text))
+                    .join(' ')
+                    .trim();
 
-                        return (
-                          <span
-                            key={`reading-tr-word-${word.id}`}
-                            style={{
-                              background: isActive ? '#ffe08a' : 'transparent',
-                              borderRadius: '0.2rem',
-                              paddingInline: '0.1rem',
-                              marginRight: '0.2rem',
-                            }}
-                          >
-                            {word.transliteration || '-'}
-                            {wordIndex < verse.words.length - 1 ? ' ' : ''}
-                          </span>
-                        );
-                      })}
-                    </p>
+                  return (
+                    <div key={`reading-tr-wrap-${verse.verseKey}`}>
+                      <p
+                        style={{
+                          marginTop: 0,
+                          marginBottom: '0.35rem',
+                          color: '#444',
+                          lineHeight: 1.45,
+                          borderRadius: '0.2rem',
+                          paddingInline: '0.15rem',
+                          width: 'fit-content',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => {
+                          void handlePlayVerseAtIndex(verseIndex);
+                        }}
+                      >
+                        <span style={{ color: '#666' }}>{verse.verseNumber}. </span>
+                        {verse.words.map((word, wordIndex) => {
+                          const isActive = isCurrentVerse && activeWordId === word.id;
+
+                          return (
+                            <span
+                              key={`reading-tr-word-${word.id}`}
+                              style={{
+                                display: 'inline-flex',
+                                flexDirection: 'column',
+                                alignItems: 'flex-start',
+                                background: isActive ? '#ffe08a' : 'transparent',
+                                borderRadius: '0.2rem',
+                                paddingInline: '0.1rem',
+                                marginRight: '0.2rem',
+                              }}
+                            >
+                              <span>
+                                {word.transliteration || '-'}
+                                {wordIndex < verse.words.length - 1 ? ' ' : ''}
+                              </span>
+                              {showEnglishAids && (
+                                <span
+                                  style={{
+                                    marginTop: '0.05rem',
+                                    fontStyle: 'normal',
+                                    fontSize: '0.78rem',
+                                    color: '#333',
+                                  }}
+                                >
+                                  {word.english || '-'}
+                                  {wordIndex < verse.words.length - 1 ? ' ' : ''}
+                                </span>
+                              )}
+                            </span>
+                          );
+                        })}
+                      </p>
+
+                      {showEnglishAids && sentenceEnglish && (
+                        <p
+                          style={{
+                            marginTop: '-0.1rem',
+                            marginBottom: '0.35rem',
+                            color: '#222',
+                            lineHeight: 1.45,
+                            fontSize: '0.95rem',
+                            paddingInline: '0.15rem',
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => {
+                            void handlePlayVerseAtIndex(verseIndex);
+                          }}
+                        >
+                          {sentenceEnglish}
+                        </p>
+                      )}
+                    </div>
                   );
                 })}
               </div>
@@ -633,6 +688,9 @@ export default function QuranPage() {
                       <span
                         key={`tr-${word.id}`}
                         style={{
+                          display: 'inline-flex',
+                          flexDirection: 'column',
+                          alignItems: 'flex-start',
                           background: isActive ? '#ffe08a' : 'transparent',
                           borderRadius: '0.25rem',
                           paddingInline: '0.15rem',
@@ -640,40 +698,26 @@ export default function QuranPage() {
                           textDecoration: isStudied ? 'underline' : 'none',
                         }}
                       >
-                        {word.transliteration || '-'}
+                        <span>{word.transliteration || '-'}</span>
+                        {showEnglishAids && (
+                          <span
+                            style={{
+                              marginTop: '0.05rem',
+                              fontStyle: 'normal',
+                              fontSize: '0.78rem',
+                              color: '#333',
+                              textDecoration: 'none',
+                            }}
+                          >
+                            {word.english || '-'}
+                          </span>
+                        )}
                       </span>
                     );
                   })}
                 </p>
 
-                <p
-                  style={{
-                    marginTop: '0.25rem',
-                    color: '#444',
-                    lineHeight: 1.45,
-                    fontSize: '0.95rem',
-                  }}
-                >
-                  {verse.words.map((word) => {
-                    const isActive = isCurrentVerse && activeWordId === word.id;
-                    return (
-                      <span
-                        key={`def-${word.id}`}
-                        style={{
-                          background: isActive ? '#ffe08a' : 'transparent',
-                          borderRadius: '0.25rem',
-                          paddingInline: '0.15rem',
-                          marginRight: '0.25rem',
-                        }}
-                      >
-                        {word.english || '-'}
-                        {' + '}
-                      </span>
-                    );
-                  })}
-                </p>
-
-                {sentenceEnglish && (
+                {showEnglishAids && sentenceEnglish && (
                   <p
                     style={{
                       marginTop: '0.2rem',
