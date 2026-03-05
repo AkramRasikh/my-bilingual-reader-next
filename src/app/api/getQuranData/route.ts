@@ -38,41 +38,83 @@ export async function POST(req: Request) {
       contentBaseUrl,
     });
 
-    const verse = await client.verses.findByChapter(chapterIdStr, {
-      words: true,
-      wordFields: {
-        v1Page: true,
-        v2Page: true,
-        codeV2: true,
-        codeV1: true,
-        textUthmani: true,
-      },
-    });
-
     const chapterAudio = await client.audio.findChapterRecitationById(
       reciterIdStr,
       chapterIdStr,
     );
 
-    const verseAudio = await client.audio.findVerseRecitationsByChapter(
-      chapterIdStr,
-      reciterIdStr,
-      { fields: { segments: true } },
-    );
+    const chapterMeta = await client.chapters.findById(chapterIdStr);
+    const expectedVerseCount = chapterMeta.versesCount;
 
-    console.log('## Resp:', {
-      verse,
-      audio: chapterAudio,
-      verseAudio: JSON.stringify(verseAudio.audioFiles),
-    });
+    const allVerses = [];
+    let versePage = 1;
+
+    while (allVerses.length < expectedVerseCount) {
+      const versePageResponse = await client.verses.findByChapter(
+        chapterIdStr,
+        {
+          words: true,
+          reciter: reciterId,
+          page: versePage,
+          perPage: 50,
+          wordFields: {
+            textUthmani: true,
+          },
+          fields: { textUthmani: true },
+        },
+      );
+
+      if (!versePageResponse.length) {
+        break;
+      }
+
+      allVerses.push(...versePageResponse);
+      versePage += 1;
+    }
+
+    const firstVerseAudioPage =
+      await client.audio.findVerseRecitationsByChapter(
+        chapterIdStr,
+        reciterIdStr,
+        {
+          fields: { segments: true },
+        },
+      );
+
+    const allVerseAudioFiles = [...firstVerseAudioPage.audioFiles];
+    let nextPage = firstVerseAudioPage.pagination.nextPage;
+
+    while (nextPage) {
+      const nextPageParam: Record<string, number> = { page: nextPage };
+
+      const nextVerseAudioPage =
+        await client.audio.findVerseRecitationsByChapter(
+          chapterIdStr,
+          reciterIdStr,
+          {
+            fields: { segments: true },
+            ...nextPageParam,
+          },
+        );
+
+      allVerseAudioFiles.push(...nextVerseAudioPage.audioFiles);
+      nextPage = nextVerseAudioPage.pagination.nextPage;
+    }
+
+    const versesSorted = allVerses.sort(
+      (a, b) => a.verseNumber - b.verseNumber,
+    );
+    const verseAudioSorted = allVerseAudioFiles.sort((a, b) =>
+      a.verseKey.localeCompare(b.verseKey, undefined, { numeric: true }),
+    );
 
     return NextResponse.json(
       {
         chapterId: chapterIdStr,
         reciterId: reciterIdStr,
-        verse,
+        verse: versesSorted,
         audio: chapterAudio,
-        verseAudio: verseAudio.audioFiles,
+        verseAudio: verseAudioSorted,
       },
       { status: 200 },
     );
