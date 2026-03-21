@@ -12,6 +12,7 @@ import { getCloudflareVideoURL } from '@/utils/get-media-url';
 
 const LearningScreenTabMeta = ({ updateContentMetaData }) => {
   const [showConfirmDeleteVideo, setShowConfirmDeleteVideo] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const { deleteContent, deleteVideo, languageSelectedState } = useFetchData();
 
   const { selectedContentState, wordsForSelectedTopic } = useLearningScreen();
@@ -142,7 +143,8 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
           />
         </div>
 
-        {/* <div>
+        <div>
+        <Label className='mb-2'>Delete all content - words, videos and content itself</Label>
           <ClickAndConfirm
             showConfirm={showConfirmDelete}
             setShowConfirm={setShowConfirmDelete}
@@ -150,7 +152,7 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
             isLoadingState={isLoading}
           />
         </div>
-        should be conditional if you want words too */}
+
       </div>
     </TabsContent>
   );

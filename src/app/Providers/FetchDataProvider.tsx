@@ -123,6 +123,7 @@ interface DeleteContentCallTypes {
 interface DeleteContentResponseCallTypes {
   id: ContentStateTypes['id'];
   deletedWordsIds?: WordTypes['id'][];
+  sentenceIds?: ContentTranscriptTypes['id'][];
 }
 
 interface DeleteWordResponseTypes {
@@ -656,6 +657,16 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     wordIds,
   }: DeleteContentCallTypes) => {
     try {
+      const additionalContext = (() => {
+        if (!wordIds?.length) return undefined;
+        const slices = wordIds.flatMap((id) => {
+          const wordData = wordsState.find((word) => word.id === id);
+          if (!wordData || wordData.contexts.length <= 1) return [];
+          return wordData.contexts.slice(1);
+        });
+        return slices.length > 0 ? slices : undefined;
+      })();
+
       const deletedContentResponse = (await apiRequestWrapper({
         url: '/api/deleteContent',
         body: {
@@ -663,6 +674,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
           title,
           language: languageSelectedState,
           wordIds,
+          additionalContext,
         },
       })) as DeleteContentResponseCallTypes;
 
@@ -680,6 +692,13 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
             type: 'removeWords',
             ids: deletedContentWordsId,
           });
+
+          if (deletedContentResponse?.sentenceIds?.length) {
+            dispatchSentences({
+              type: 'removeSentences',
+              sentenceIds: deletedContentResponse.sentenceIds,
+            });
+          }
         }
         setToastMessageState(`Content deleted!`);
       }
