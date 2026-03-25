@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import LearningScreenLoopBtn from './LearningScreen/LearningScreenLoopBtn';
 import { Button } from '@/components/ui/button';
 import { Loader2, SaveIcon } from 'lucide-react';
+import LearningScreenThreeSecondLoopEl from './LearningScreen/LearningScreenThreeSecondLoopEl';
 
 const VideoPlayer = ({
   url,
@@ -85,44 +86,18 @@ const VideoPlayer = ({
       >
         Your browser does not support the video tag.
       </video>
-      {threeSecondLoopState && <LearningScreenLoopUI />}{' '}
-      <div
-        className={clsx(
-          threeSecondLoopState ? 'flex w-full justify-between gap-2' : '',
-        )}
-      >
-        {overlappingTextMemoized ? (
-          <p
-            ref={masterTextRef}
-            data-testid='video-player-snippet-text'
-            className={clsx(
-              'text-center font-bold text-xl backdrop-blur-xs backdrop-brightness-90 p-1 m-1 rounded-lg text-gray-700',
-              threeSecondLoopState ? 'm-auto' : '',
-            )}
-          >
-            {overlappingTextMemoized?.targetLang}
-          </p>
-        ) : null}
-        {threeSecondLoopState && <LearningScreenLoopBtn />}
-        {handleSaveSnippet && threeSecondLoopState && (
-          <Button
-            data-testid='save-snippet-button'
-            size='icon'
-            variant='outline'
-            className={clsx(
-              'rounded-full h-9 w-9 my-auto',
-              isLoadingSaveSnippetState ? 'animate-pulse bg-amber-600' : '',
-              highlightedTextFocusLoopState ? 'animate-in' : '',
-            )}
-            onClick={handleSaveSnippetFlow}
-            disabled={
-              !highlightedTextFocusLoopState || isLoadingSaveSnippetState
-            }
-          >
-            {isLoadingSaveSnippetState ? <Loader2 /> : <SaveIcon />}
-          </Button>
-        )}
-      </div>
+      <div>
+
+      <LearningScreenThreeSecondLoopEl 
+        threeSecondLoopState={threeSecondLoopState}
+        overlappingTextMemoized={overlappingTextMemoized}
+        masterTextRef={masterTextRef}
+        showSaveSnippetButton={Boolean(handleSaveSnippet)}
+        isLoadingSaveSnippetState={isLoadingSaveSnippetState}
+        highlightedTextFocusLoopState={highlightedTextFocusLoopState}
+        onSaveSnippetClick={handleSaveSnippetFlow}
+      />
+        </div>
     </div>
   );
 };
