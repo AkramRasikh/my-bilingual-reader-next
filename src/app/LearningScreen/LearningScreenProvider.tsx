@@ -568,6 +568,7 @@ export const LearningScreenProvider = ({
     : null;
 
   const masterPlayComprehensiveTargetLangForOverlay = useMemo(() => {
+    if (!showMasterPlayComprehensiveTargetLangForOverlayState) return [];
     if (!masterPlayComprehensive) return [];
 
     const i = masterPlayComprehensive.index;
@@ -607,7 +608,11 @@ export const LearningScreenProvider = ({
     }
 
     return out;
-  }, [formattedTranscriptMemoized, masterPlayComprehensive]);
+  }, [
+    formattedTranscriptMemoized,
+    masterPlayComprehensive,
+    showMasterPlayComprehensiveTargetLangForOverlayState,
+  ]);
 
   useManageLoopInit({
     ref,
