@@ -222,7 +222,7 @@ export const LearningScreenProvider = ({
   const [
     showMasterPlayComprehensiveTargetLangForOverlayState,
     setShowMasterPlayComprehensiveTargetLangForOverlayState,
-  ] = useState(true);
+  ] = useState(false);
   const initialSentenceCount = useRef<number | null>(null);
 
   const [scrollToElState, setScrollToElState] = useState('');
