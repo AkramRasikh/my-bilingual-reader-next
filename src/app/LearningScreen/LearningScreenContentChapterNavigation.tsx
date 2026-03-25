@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import useLearningScreen from './useLearningScreen';
 import LearningScreenUnifiedAnalytics from './LearningScreenUnifiedAnalytics';
+import LearningScreenActionBarVideoControls from './LearningScreenActionBarVideoControls';
 
 const LearningScreenContentChapterNavigation = () => {
   const [sentenceRepsPerMinState, setSentenceRepsPerMinState] = useState<
@@ -20,9 +21,13 @@ const LearningScreenContentChapterNavigation = () => {
   }, [sentenceRepsState, elapsed]);
 
   return (
-    <LearningScreenUnifiedAnalytics
-      sentenceRepsPerMinState={sentenceRepsPerMinState}
-    />
+    <div className='flex flex-col items-center gap-2'>
+      <LearningScreenUnifiedAnalytics
+        sentenceRepsPerMinState={sentenceRepsPerMinState}
+      />
+
+      <LearningScreenActionBarVideoControls />
+    </div>
   );
 };
 

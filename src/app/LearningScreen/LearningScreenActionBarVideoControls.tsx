@@ -15,7 +15,8 @@ const LearningScreenActionBarVideoControls = () => {
   } = useLearningScreen();
 
   return (
-    <div className='flex pb-2 justify-center gap-4'>
+    <div className='flex flex-col items-center pb-2 gap-3'>
+      <CountUpTimer elapsed={elapsed} setElapsed={setElapsed} />
       <div className='flex gap-2 my-auto'>
         <Label data-testid='english-label'>🇬🇧</Label>
         <Switch
@@ -24,9 +25,8 @@ const LearningScreenActionBarVideoControls = () => {
           data-testid='english-switch'
         />
       </div>
-      <div className='w-px h-5 my-auto bg-gray-300' />
       <div className='flex gap-2 my-auto'>
-        <Label data-testid='track-current-label'>Track</Label>
+        <Label data-testid='track-current-label'>🔎</Label>
         <Switch
           checked={trackCurrentState}
           onCheckedChange={setTrackCurrentState}
@@ -34,8 +34,6 @@ const LearningScreenActionBarVideoControls = () => {
           data-testid='track-current-switch'
         />
       </div>
-      <div className='w-px h-5 my-auto bg-gray-300' />
-      <CountUpTimer elapsed={elapsed} setElapsed={setElapsed} />
     </div>
   );
 };

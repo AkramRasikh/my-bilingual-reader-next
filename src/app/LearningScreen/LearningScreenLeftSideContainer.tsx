@@ -5,7 +5,6 @@ import VideoPlayer from '../VideoPlayer';
 import TranscriptItemSecondary from '../../components/custom/TranscriptItem/TranscriptItemSecondary';
 import useLearningScreen from './useLearningScreen';
 import LearningScreenActionBar from './LearningScreenActionBar';
-import LearningScreenActionBarVideoControls from './LearningScreenActionBarVideoControls';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import AudioPlayer from '@/components/AudioPlayer';
 import clsx from 'clsx';
@@ -60,7 +59,6 @@ const LearningScreenLeftSideContainer = () => {
 
   return (
     <div className='flex-1 w-xl mx-auto'>
-      <LearningScreenActionBarVideoControls />
       {!errorVideoState ? (
         <VideoPlayer
           ref={ref}
