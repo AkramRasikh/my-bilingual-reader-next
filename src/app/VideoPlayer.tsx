@@ -1,10 +1,5 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import LearningScreenLoopUI from './LearningScreen/LearningScreenLoopUI';
-import clsx from 'clsx';
-import LearningScreenLoopBtn from './LearningScreen/LearningScreenLoopBtn';
-import { Button } from '@/components/ui/button';
-import { Loader2, SaveIcon } from 'lucide-react';
 import LearningScreenThreeSecondLoopEl from './LearningScreen/LearningScreenThreeSecondLoopEl';
 
 const VideoPlayer = ({
