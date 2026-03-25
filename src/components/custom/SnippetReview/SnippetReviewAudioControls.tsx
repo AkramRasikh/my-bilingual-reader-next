@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import clsx from 'clsx';
 import { PauseIcon, PlayIcon, RabbitIcon } from 'lucide-react';
 import React from 'react';
-import SnippetReviewChineseBreakdownWidgets from './SnippetReviewChineseBreakdownWidgets';
+import SnippetReviewChineseBreakdownWidgets from './SnippetReviewBreakdownWidgets';
 
 interface SnippetReviewChineseAudioControlsProps {
   thisIsPlaying: boolean;

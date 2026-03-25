@@ -1,5 +1,8 @@
-import { pinyin } from 'pinyin-pro';
 import React from 'react';
+import { LanguageEnum } from '@/app/languages';
+import { pinyin } from 'pinyin-pro';
+import arabicTransliterate from 'arabic-transliterate';
+import FormattedSentenceSnippetProgressWidget from './SnippetReviewProgressWidget';
 
 interface correspondingRomanized {
   text: string;
@@ -12,6 +15,9 @@ interface SnippetReviewPinyinHelperProps {
   matchStartKey: number;
   matchEndKey: number;
   pinyinStart: number;
+  languageSelectedState: LanguageEnum;
+  isReadyForQuickReview?: boolean;
+  currentTime?: number;
 }
 
 const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
@@ -20,16 +26,24 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
   matchStartKey,
   matchEndKey,
   pinyinStart,
+  languageSelectedState,
+  isReadyForQuickReview,
+  currentTime,
 }) => {
+  const isArabic = languageSelectedState === LanguageEnum.Arabic;
   return (
-    // <div className='my-2 text-md px-1 rounded w-full'>
     <div>
       {slicedSnippetSegment.map((item, index) => {
         const prev = slicedSnippetSegment[index - 1];
         const addSpace = index > 0 && item?.startIndex !== prev?.startIndex;
+        const hasHighlightedBackground =
+          index >= matchStartKey && index <= matchEndKey;
+        const played =
+          hasHighlightedBackground && currentTime >= item?.secondForIndex;
         return (
           <span
             key={index}
+            className='relative'
             style={{
               color: getColorByIndex(item?.startIndex),
               opacity:
@@ -42,8 +56,13 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
                   : 'bold',
             }}
           >
+            {isArabic && isReadyForQuickReview && (
+              <FormattedSentenceSnippetProgressWidget played={played} />
+            )}
             {addSpace && ' '}
-            {pinyin(item.text, { toneType: 'symbol' })}
+            {isArabic
+              ? arabicTransliterate(item.text, 'arabic2latin', 'Arabic')
+              : pinyin(item.text, { toneType: 'symbol' })}
           </span>
         );
       })}

@@ -9,7 +9,7 @@ import {
   mockSelectedContentChinese,
   mockArabicSnippet,
   mockFrenchSnippet,
-} from './SnippetReviewChinese.mocks';
+} from './SnippetReview.mocks';
 import { testSquashedOverlappingSnippetDataJapanese } from '@/app/LearningScreen/experimental/SnippetReview.mocks';
 import { WordTypes } from '@/app/types/word-types';
 
