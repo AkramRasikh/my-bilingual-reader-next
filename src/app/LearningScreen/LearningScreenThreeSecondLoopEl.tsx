@@ -7,7 +7,6 @@ import LearningScreenLoopUI from './LearningScreenLoopUI';
 import type { OverlappingTextMemoized } from '@/app/types/video-player-types';
 
 interface LearningScreenThreeSecondLoopElProps {
-  threeSecondLoopState: number | null;
   overlappingTextMemoized: OverlappingTextMemoized | null;
   masterTextRef: RefObject<HTMLParagraphElement | null>;
   showSaveSnippetButton: boolean;
@@ -17,7 +16,6 @@ interface LearningScreenThreeSecondLoopElProps {
 }
 
 const LearningScreenThreeSecondLoopEl = ({
-  threeSecondLoopState,
   overlappingTextMemoized,
   masterTextRef,
   showSaveSnippetButton,
@@ -25,28 +23,25 @@ const LearningScreenThreeSecondLoopEl = ({
   highlightedTextFocusLoopState,
   onSaveSnippetClick,
 }: LearningScreenThreeSecondLoopElProps) => {
-  const isLooping = Boolean(threeSecondLoopState);
 
   return (
     <>
-      {isLooping && <LearningScreenLoopUI />}
-      <div className={clsx(isLooping ? 'flex w-full justify-between gap-2' : '')}>
+      <LearningScreenLoopUI />
+      <div className='flex w-full justify-between gap-2'>
         {overlappingTextMemoized ? (
           <p
             ref={masterTextRef}
             data-testid='video-player-snippet-text'
-            className={clsx(
-              'text-center font-bold text-lg backdrop-blur-xs backdrop-brightness-90 p-1 m-1 rounded-lg text-white',
-              isLooping ? 'm-auto' : '',
-            )}
+            className={
+              'text-center font-bold text-lg backdrop-brightness-90 p-1 m-1 rounded-lg text-white m-auto'}
           >
             {overlappingTextMemoized?.targetLang}
           </p>
         ) : null}
 
-        {isLooping && <LearningScreenLoopBtn />}
+        <LearningScreenLoopBtn />
 
-        {showSaveSnippetButton && isLooping && (
+        {showSaveSnippetButton  && (
           <Button
             data-testid='save-snippet-button'
             size='icon'

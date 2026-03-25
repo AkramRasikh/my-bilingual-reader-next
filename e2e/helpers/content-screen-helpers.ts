@@ -360,7 +360,7 @@ export const highlightJapaneseText = async (page: Page) => {
   const selectionSuccess = await page.evaluate(() => {
     const targetText = '目で見ること';
     const paragraphs = Array.from(
-      document.querySelectorAll('p.text-center.font-bold.text-xl'),
+      document.querySelectorAll('[data-testid="video-player-snippet-text"]'),
     );
 
     for (const p of paragraphs) {

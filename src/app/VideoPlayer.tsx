@@ -74,8 +74,10 @@ const VideoPlayer = ({
     }
   };
 
+  const isLooping = Boolean(threeSecondLoopState);
+
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col relative'>
       <video
         ref={ref}
         src={videoUrl}
@@ -86,18 +88,21 @@ const VideoPlayer = ({
       >
         Your browser does not support the video tag.
       </video>
-      <div>
 
-      <LearningScreenThreeSecondLoopEl 
-        threeSecondLoopState={threeSecondLoopState}
-        overlappingTextMemoized={overlappingTextMemoized}
-        masterTextRef={masterTextRef}
-        showSaveSnippetButton={Boolean(handleSaveSnippet)}
-        isLoadingSaveSnippetState={isLoadingSaveSnippetState}
-        highlightedTextFocusLoopState={highlightedTextFocusLoopState}
-        onSaveSnippetClick={handleSaveSnippetFlow}
-      />
+      {isLooping && (
+        <div className='absolute top-0 left-0 text-white px-4 py-2 rounded-lg w-full'>
+          <div className='text-center'>
+            <LearningScreenThreeSecondLoopEl
+              overlappingTextMemoized={overlappingTextMemoized}
+              masterTextRef={masterTextRef}
+              showSaveSnippetButton={Boolean(handleSaveSnippet)}
+              isLoadingSaveSnippetState={isLoadingSaveSnippetState}
+              highlightedTextFocusLoopState={highlightedTextFocusLoopState}
+              onSaveSnippetClick={handleSaveSnippetFlow}
+            />
+          </div>
         </div>
+      )}
     </div>
   );
 };
