@@ -7,7 +7,7 @@ import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/Trans
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningScreenTabTranscriptNestedWordsReview';
 import ReviewTypeToggles from './components/ReviewTypeToggles';
-import SnippetReviewChinese from '@/components/custom/SnippetReview';
+import SnippetReview from '@/components/custom/SnippetReview';
 import { Snippet } from '../types/content-types';
 
 interface HandleReviewSnippetsComprehensiveReviewProps {
@@ -234,7 +234,7 @@ const LearningScreenComprehensiveReview = () => {
         <div className='flex flex-col gap-2 mb-2'>
           {postSnippetsMemoized.map((item) => {
             return (
-              <SnippetReviewChinese
+              <SnippetReview
                 key={item.id}
                 ref={ref}
                 snippetData={item}
