@@ -12,6 +12,8 @@ const LearningScreenActionBarVideoControls = () => {
     trackCurrentState,
     setTrackCurrentState,
     isInReviewMode,
+    showMasterPlayComprehensiveTargetLangForOverlayState,
+    setShowMasterPlayComprehensiveTargetLangForOverlayState,
   } = useLearningScreen();
 
   return (
@@ -32,6 +34,14 @@ const LearningScreenActionBarVideoControls = () => {
           onCheckedChange={setTrackCurrentState}
           disabled={isInReviewMode}
           data-testid='track-current-switch'
+        />
+      </div>
+      <div className='flex gap-2 my-auto'>
+        <Label data-testid='overlay-label'>🈂️</Label>
+        <Switch
+          checked={showMasterPlayComprehensiveTargetLangForOverlayState}
+          onCheckedChange={setShowMasterPlayComprehensiveTargetLangForOverlayState}
+          data-testid='overlay-switch'
         />
       </div>
     </div>

@@ -61,4 +61,5 @@ export interface Snippet {
   isContracted?: boolean;
   isPreSnippet?: boolean;
   suggestedFocusText?: string;
+  vocab?: Vocab[];
 }

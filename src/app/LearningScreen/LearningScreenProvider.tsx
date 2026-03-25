@@ -36,6 +36,7 @@ import {
   FormattedTranscriptTypes,
   SentenceMapItemTypes,
   Snippet,
+  Vocab,
 } from '../types/content-types';
 import { getUniqueSegmentOfArray } from './utils/get-unique-segment-of-array';
 import { getLoopTranscriptSegment as getLoopTranscriptSegmentFromTimes } from './utils/get-loop-transcript-segment';
@@ -51,6 +52,15 @@ type OverlappingTextTypes = {
   targetLang: string;
   baseLang: string;
   suggestedFocusText: string;
+  focusedText?: string;
+  vocab?: Vocab[];
+};
+
+export type OverlaySentenceForPlayer = {
+  id: string;
+  targetLang: string;
+  index: number;
+  position: 'prev' | 'current' | 'next';
 };
 
 interface HandleReviewFuncParams {
@@ -81,6 +91,11 @@ export interface LearningScreenContextTypes {
   formattedTranscriptState: FormattedTranscriptTypes[];
   secondsState: string[];
   masterPlayComprehensive: SentenceMapItemTypes | null;
+  masterPlayComprehensiveTargetLangForOverlay: OverlaySentenceForPlayer[];
+  showMasterPlayComprehensiveTargetLangForOverlayState: boolean;
+  setShowMasterPlayComprehensiveTargetLangForOverlayState: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
   isVideoPlaying: boolean;
   setIsVideoPlaying: React.Dispatch<React.SetStateAction<boolean>>;
   isInReviewMode: boolean;
@@ -204,6 +219,10 @@ export const LearningScreenProvider = ({
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
   const [trackCurrentState, setTrackCurrentState] = useState(true);
+  const [
+    showMasterPlayComprehensiveTargetLangForOverlayState,
+    setShowMasterPlayComprehensiveTargetLangForOverlayState,
+  ] = useState(true);
   const initialSentenceCount = useRef<number | null>(null);
 
   const [scrollToElState, setScrollToElState] = useState('');
@@ -467,9 +486,10 @@ export const LearningScreenProvider = ({
         snippetId: snippetData.id,
       });
     } else {
-      const { vocab: _unusedVocab, ...snippetWithoutVocab } = snippetData;
+      const snippetWithoutVocab = { ...snippetData } as Record<string, unknown>;
+      delete snippetWithoutVocab.vocab;
       await handleSaveSnippetFetchProvider({
-        snippetData: snippetWithoutVocab,
+        snippetData: snippetWithoutVocab as unknown as Snippet,
         contentIndex,
         contentId,
         isUpdate: true,
@@ -546,6 +566,48 @@ export const LearningScreenProvider = ({
   const masterPlayComprehensive = sentenceMapMemoized
     ? sentenceMapMemoized[masterPlay]
     : null;
+
+  const masterPlayComprehensiveTargetLangForOverlay = useMemo(() => {
+    if (!masterPlayComprehensive) return [];
+
+    const i = masterPlayComprehensive.index;
+    const prev =
+      typeof i === 'number' ? formattedTranscriptMemoized[i - 1] : undefined;
+    const curr = masterPlayComprehensive;
+    const next =
+      typeof i === 'number' ? formattedTranscriptMemoized[i + 1] : undefined;
+
+    const out: OverlaySentenceForPlayer[] = [];
+
+    if (prev?.targetLang?.trim()) {
+      out.push({
+        id: prev.id,
+        targetLang: prev.targetLang,
+        index: i - 1,
+        position: 'prev',
+      });
+    }
+
+    if (curr?.targetLang?.trim()) {
+      out.push({
+        id: curr.id,
+        targetLang: curr.targetLang,
+        index: i,
+        position: 'current',
+      });
+    }
+
+    if (next?.targetLang?.trim()) {
+      out.push({
+        id: next.id,
+        targetLang: next.targetLang,
+        index: i + 1,
+        position: 'next',
+      });
+    }
+
+    return out;
+  }, [formattedTranscriptMemoized, masterPlayComprehensive]);
 
   useManageLoopInit({
     ref,
@@ -1009,6 +1071,9 @@ export const LearningScreenProvider = ({
         overlappedSentencesViableForReviewMemoized,
         handleAddOverlappedSnippetsToReview,
         getSentenceFromContextId,
+        masterPlayComprehensiveTargetLangForOverlay,
+        showMasterPlayComprehensiveTargetLangForOverlayState,
+        setShowMasterPlayComprehensiveTargetLangForOverlayState,
       }}
     >
       {children}

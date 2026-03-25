@@ -33,7 +33,7 @@ const LearningScreenThreeSecondLoopEl = ({
             ref={masterTextRef}
             data-testid='video-player-snippet-text'
             className={
-              'text-center font-bold text-lg backdrop-brightness-90 p-1 m-1 rounded-lg text-white m-auto'}
+              'text-center font-bold text-sm backdrop-brightness-90 p-1 m-1 rounded-lg text-white m-auto'}
           >
             {overlappingTextMemoized?.targetLang}
           </p>

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { getAudioURL, getCloudflareVideoURL } from '../../utils/get-media-url';
 import KeyListener from './LearningScreenKeyListener';
-import VideoPlayer from '../VideoPlayer';
+import LearningScreenVideoPlayer from './LearningScreenVideoPlayer';
 import TranscriptItemSecondary from '../../components/custom/TranscriptItem/TranscriptItemSecondary';
 import useLearningScreen from './useLearningScreen';
 import LearningScreenActionBar from './LearningScreenActionBar';
@@ -28,8 +28,6 @@ const LearningScreenLeftSideContainer = () => {
     wordsForSelectedTopic,
     learnFormattedTranscript,
     firstTime,
-    handleSaveSnippet,
-    overlappingTextMemoized,
     snippetsWithDueStatusMemoized,
     isInReviewMode,
     isBreakingDownSentenceArrState,
@@ -60,16 +58,7 @@ const LearningScreenLeftSideContainer = () => {
   return (
     <div className='flex-1 w-xl mx-auto'>
       {!errorVideoState ? (
-        <VideoPlayer
-          ref={ref}
-          url={videoUrl}
-          handleTimeUpdate={handleTimeUpdate}
-          onLoadedMetadata={handleLoadedMetadata}
-          setIsVideoPlaying={setIsVideoPlaying}
-          threeSecondLoopState={threeSecondLoopState}
-          handleSaveSnippet={handleSaveSnippet}
-          overlappingTextMemoized={overlappingTextMemoized}
-        />
+        <LearningScreenVideoPlayer url={videoUrl} />
       ) : (
         <div>
           <AudioPlayer
