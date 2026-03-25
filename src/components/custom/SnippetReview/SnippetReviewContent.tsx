@@ -5,6 +5,36 @@ import HoverWordCard from '@/components/custom/HoverWordCard';
 import getColorByIndex from '@/utils/get-color-by-index';
 import clsx from 'clsx';
 import FormattedSentenceSnippetBreakdownWidget from './SnippetReviewContentBreakdownWidget';
+import { WordTypes } from '@/app/types/word-types';
+import { LanguageEnum } from '@/app/languages';
+
+type TargetLangFormattedChunkLike = {
+  text: string;
+  savedWords: string[];
+  startIndex?: number;
+  secondForIndex?: number;
+  surfaceForm?: string;
+  meaning?: string;
+};
+
+type FormattedSentenceSnippetProps = {
+  ref?: React.Ref<HTMLElement>;
+  targetLangformatted: TargetLangFormattedChunkLike[];
+  wordPopUpState: WordTypes[];
+  setWordPopUpState: React.Dispatch<React.SetStateAction<WordTypes[]>>;
+  handleDeleteWordDataProvider: (arg: { wordId: WordTypes['id'] }) => void | Promise<unknown>;
+  wordsFromSentence: WordTypes[];
+  languageSelectedState: LanguageEnum;
+  matchStartKey?: number;
+  matchEndKey?: number;
+  handleSaveFunc: (
+    isGoogle: boolean,
+    surfaceFormBreakdown: unknown,
+    meaning: unknown,
+  ) => Promise<void>;
+  currentTime?: number;
+  isReadyForQuickReview?: boolean;
+};
 
 const FormattedSentenceSnippet = ({
   ref,
@@ -14,14 +44,15 @@ const FormattedSentenceSnippet = ({
   handleDeleteWordDataProvider,
   wordsFromSentence,
   languageSelectedState,
-  matchStartKey,
-  matchEndKey,
+  matchStartKey = -1,
+  matchEndKey = -1,
   handleSaveFunc,
-  currentTime,
-  isReadyForQuickReview,
-}) => {
+  currentTime = 0,
+  isReadyForQuickReview = false,
+}: FormattedSentenceSnippetProps) => {
   const isArabic = languageSelectedState === arabic;
   const isChinese = languageSelectedState === chinese;
+
 
   return (
     <span
@@ -40,7 +71,8 @@ const FormattedSentenceSnippet = ({
         const hasStartIndex = item?.startIndex;
         const surfaceFormBreakdown = item?.surfaceForm;
         const played =
-          hasHighlightedBackground && currentTime >= item?.secondForIndex;
+          hasHighlightedBackground &&
+          currentTime >= (item?.secondForIndex ?? Number.POSITIVE_INFINITY);
 
         if (isUnderlined) {
           return (
@@ -64,7 +96,6 @@ const FormattedSentenceSnippet = ({
                 handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                 wordsFromSentence={wordsFromSentence}
                 hasHighlightedBackground={hasHighlightedBackground}
-                originalText={item?.originalText}
                 savedWords={item?.savedWords}
                 disableHighlightBackground
               />

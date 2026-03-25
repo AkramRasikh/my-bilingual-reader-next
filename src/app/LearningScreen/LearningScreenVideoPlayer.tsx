@@ -4,6 +4,8 @@ import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import LearningScreenThreeSecondLoopEl from './LearningScreenThreeSecondLoopEl';
 import useLearningScreen from './useLearningScreen';
+import SnippetReview from '@/components/custom/SnippetReview';
+import { useFetchData } from '../Providers/FetchDataProvider';
 
 type LearningScreenVideoPlayerProps = {
   url: string;
@@ -15,12 +17,27 @@ const LearningScreenVideoPlayer = ({ url }: LearningScreenVideoPlayerProps) => {
     handleTimeUpdate,
     handleLoadedMetadata,
     setIsVideoPlaying,
+    isVideoPlaying,
+    currentTime,
     threeSecondLoopState,
     handleSaveSnippet,
     overlappingTextMemoized,
     masterPlayComprehensiveTargetLangForOverlay,
     showMasterPlayComprehensiveTargetLangForOverlayState,
+    isSavedLoopPlayingState,
+    snippetsWithDueStatusMemoized,
+    selectedContentTitleState,
+    sentenceMapMemoized,
+    getSentenceDataOfOverlappingWordsDuringSave,
+    isBreakingDownSentenceArrState,
   } = useLearningScreen();
+
+  const {
+    languageSelectedState,
+    wordsState,
+    handleSaveWord,
+    handleDeleteWordDataProvider,
+  } = useFetchData();
 
   const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
     useState(false);
@@ -64,6 +81,35 @@ const LearningScreenVideoPlayer = ({ url }: LearningScreenVideoPlayerProps) => {
     };
   }, [setIsVideoPlaying, videoRef]);
 
+  const firstDueSnippet =
+    snippetsWithDueStatusMemoized && snippetsWithDueStatusMemoized.length > 0
+      ? snippetsWithDueStatusMemoized[0]
+      : null;
+  const isPlayingFirstDueSnippet =
+    Boolean(threeSecondLoopState) &&
+    Boolean(firstDueSnippet) &&
+    firstDueSnippet!.time === threeSecondLoopState &&
+    isSavedLoopPlayingState === firstDueSnippet!.id;
+  useEffect(() => {
+    if (!threeSecondLoopState) return;
+    if (!isSavedLoopPlayingState) return;
+    if (!snippetsWithDueStatusMemoized || snippetsWithDueStatusMemoized.length === 0)
+      return;
+
+    const firstDueSnippet = snippetsWithDueStatusMemoized[0];
+    const isThisThePlayingDueSnippet =
+      firstDueSnippet.time === threeSecondLoopState &&
+      isSavedLoopPlayingState === firstDueSnippet.id;
+
+    if (isThisThePlayingDueSnippet) {
+      console.log('## playing first due snippet', {
+        snippetId: firstDueSnippet.id,
+        time: firstDueSnippet.time,
+        isSavedLoopPlayingState,
+      });
+    }
+  }, [isSavedLoopPlayingState, snippetsWithDueStatusMemoized, threeSecondLoopState]);
+
   const handleSaveSnippetFlow = async () => {
     if (!handleSaveSnippet || !overlappingTextMemoized) return;
 
@@ -94,7 +140,35 @@ const LearningScreenVideoPlayer = ({ url }: LearningScreenVideoPlayerProps) => {
         Your browser does not support the video tag.
       </video>
 
-      {isLooping ? (
+      {isPlayingFirstDueSnippet && firstDueSnippet ? (
+        <div className='absolute top-0 left-0 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] px-4 py-2 rounded-lg w-full'>
+          <SnippetReview
+            snippetData={firstDueSnippet}
+            dummy
+            handleLoopHere={() => {}}
+            isVideoPlaying={isVideoPlaying}
+            threeSecondLoopState={threeSecondLoopState}
+            handleUpdateSnippetComprehensiveReview={async () => {}}
+            isReadyForQuickReview={true}
+            handleBreakdownSentence={async () => {}}
+            isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+            currentTime={currentTime}
+            getSentenceDataOfOverlappingWordsDuringSave={(time, highlightedText) => {
+              const out = getSentenceDataOfOverlappingWordsDuringSave(
+                time,
+                highlightedText,
+              );
+              return typeof out === 'string' ? out : null;
+            }}
+            selectedContentTitleState={selectedContentTitleState}
+            sentenceMapMemoized={sentenceMapMemoized}
+            languageSelectedState={languageSelectedState}
+            wordsState={wordsState}
+            handleSaveWord={handleSaveWord}
+            handleDeleteWordDataProvider={handleDeleteWordDataProvider}
+          />
+        </div>
+      ) : isLooping ? (
         <div className='absolute top-0 left-0 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] px-4 py-2 rounded-lg w-full'>
           <div className='text-center'>
             <LearningScreenThreeSecondLoopEl

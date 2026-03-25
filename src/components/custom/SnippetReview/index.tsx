@@ -22,6 +22,7 @@ import {
 } from '@/app/Providers/FetchDataProvider';
 import SnippetReviewBreakdownDefinitions from './SnippetReviewBreakdownDefinitions';
 import { useSnippetReviewDataMemoized } from './useSnippetReviewDataMemoized';
+import clsx from 'clsx';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -53,6 +54,7 @@ interface SnippetReviewProps {
   handleDeleteWordDataProvider: (
     params: HandleDeleteWordDataProviderCallTypes,
   ) => void;
+  dummy?: boolean;
 }
 
 const SnippetReview = ({
@@ -72,6 +74,7 @@ const SnippetReview = ({
   wordsState,
   handleSaveWord,
   handleDeleteWordDataProvider,
+  dummy = false,
 }: SnippetReviewProps) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
   const [endIndexKeyState, setEndIndexKeyState] = useState(0);
@@ -92,6 +95,8 @@ const SnippetReview = ({
   const endTime = snippetData.time + contractionAmount;
   const isChinese = languageSelectedState === LanguageEnum.Chinese;
   const isArabic = languageSelectedState === LanguageEnum.Arabic;
+
+  
   const onMoveLeft = () => {
     const stopUserSpillingOverStartPoint = !(matchStartKey <= 0);
     if (!stopUserSpillingOverStartPoint) return;
@@ -332,18 +337,20 @@ const SnippetReview = ({
           <LoadingSpinner />
         </div>
       )}
-      <div className='rounded border py-2 px-1'>
-        <div className='flex gap-3'>
+      <div className={clsx('rounded', !dummy && 'border py-2 px-1')}>
+        <div className={clsx('flex gap-3', dummy && 'flex-col')}>
           <div className='flex-1'>
             <div className='flex mb-2 gap-1'>
-              <SnippetReviewChineseAudioControls
-                thisIsPlaying={thisIsPlaying}
-                handlePlaySnippet={handlePlaySnippet}
-                isPreSnippet={snippetData?.isPreSnippet}
-                sentencesToBreakdown={sentencesToBreakdown}
-                isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
-                handleBreakdownSentence={handleBreakdownSentence}
-              />
+              {!dummy ? (
+                <SnippetReviewChineseAudioControls
+                  thisIsPlaying={thisIsPlaying}
+                  handlePlaySnippet={handlePlaySnippet}
+                  isPreSnippet={snippetData?.isPreSnippet}
+                  sentencesToBreakdown={sentencesToBreakdown}
+                  isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+                  handleBreakdownSentence={handleBreakdownSentence}
+                />
+              ) : null}
               <div className='w-full text-center'>
                 <div className='flex text-align-justify'>
                   <FormattedSentenceSnippet
@@ -395,7 +402,7 @@ const SnippetReview = ({
               </div>
             </div>
           </div>
-          {isPreSnippet && (
+          {!dummy && isPreSnippet && (
             <div>
               <SnippetReviewBoundaryToggles
                 isLoading={isLoadingSaveSnippetState}
@@ -410,12 +417,14 @@ const SnippetReview = ({
             </div>
           )}
         </div>
-        <ReviewSRSToggles
-          isSnippet
-          contentItem={snippetData}
-          handleReviewFunc={handleReviewSnippetsFinal}
-          isReadyForQuickReview={isReadyForQuickReview}
-        />
+        {!dummy ? (
+          <ReviewSRSToggles
+            isSnippet
+            contentItem={snippetData}
+            handleReviewFunc={handleReviewSnippetsFinal}
+            isReadyForQuickReview={isReadyForQuickReview}
+          />
+        ) : null}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import clsx from 'clsx';
 import useLearningScreen from './useLearningScreen';
 import { isWithinInterval } from '@/utils/is-within-interval';
@@ -9,6 +9,8 @@ import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningS
 import ReviewTypeToggles from './components/ReviewTypeToggles';
 import SnippetReview from '@/components/custom/SnippetReview';
 import { Snippet } from '../types/content-types';
+import useComprehensiveReviewModeData from './hooks/useComprehensiveReviewModeData';
+import getBiggestOverlap from '@/components/custom/TranscriptItem/get-biggest-overlap';
 
 interface HandleReviewSnippetsComprehensiveReviewProps {
   snippetData: Snippet;
@@ -36,10 +38,10 @@ const LearningScreenComprehensiveReview = () => {
     scrollToElState,
     wordsForSelectedTopic,
     formattedTranscriptState,
+    handleLoopReviewMode,
     setThreeSecondLoopState,
     setContractThreeSecondLoopState,
-    handlePlayFromHere,
-    savedSnippetsMemoized,
+    contentSnippets,
     enableWordReviewState,
     setEnableWordReviewState,
     enableTranscriptReviewState,
@@ -58,6 +60,12 @@ const LearningScreenComprehensiveReview = () => {
     currentTime,
     getSentenceDataOfOverlappingWordsDuringSave,
     sentenceMapMemoized,
+    firstTimeState,
+    setFirstTimeState,
+    handlePlayFromHere,
+    handleDeleteSnippet,
+    overlappingTextMemoized,
+    handleSaveSnippet,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -66,113 +74,40 @@ const LearningScreenComprehensiveReview = () => {
     handleDeleteWordDataProvider,
   } = useFetchData();
 
-  const [firstTimeState, setFirstTimeState] = useState(null);
-
-  const postWordsMemoized = useMemo(() => {
-    if (!enableWordReviewState) {
-      return [];
-    } else if (firstTimeState !== null) {
-      return contentMetaWordMemoized.filter((item) =>
-        isWithinInterval(item, firstTimeState, reviewIntervalState),
-      );
-    }
-    return [];
-  }, [
-    enableWordReviewState,
-    firstTimeState,
-    reviewIntervalState,
-    contentMetaWordMemoized,
-  ]);
-
-  const postSnippetsMemoized = useMemo(() => {
-    if (!enableSnippetReviewState) {
-      return [];
-    } else if (firstTimeState !== null) {
-      return (
-        snippetsWithDueStatusMemoized.filter((item) =>
-          isWithinInterval(item, firstTimeState, reviewIntervalState),
-        ) || []
-      );
-    }
-    return [];
-  }, [
-    enableSnippetReviewState,
-    firstTimeState,
-    reviewIntervalState,
-    snippetsWithDueStatusMemoized,
-  ]);
-
-  const slicedTranscriptArray = useMemo(() => {
-    const indexFirstTime = formattedTranscriptState.findIndex(
-      (item) => item.time >= firstTimeState,
-    );
-    const timeWithInterval = firstTimeState + reviewIntervalState;
-
-    let indexLastTime = formattedTranscriptState.findIndex(
-      (item) => item.time >= timeWithInterval,
-    );
-    if (indexLastTime === -1) {
-      indexLastTime = formattedTranscriptState.length;
-    }
-
-    return formattedTranscriptState.slice(indexFirstTime, indexLastTime);
-  }, [formattedTranscriptState, firstTimeState, reviewIntervalState]);
-
-  const transcriptDueNumber = useMemo(() => {
-    return slicedTranscriptArray.filter((item) => item.isDue);
-  }, [slicedTranscriptArray]);
-
-  const postSentencesMemoized = useMemo(() => {
-    if (!enableTranscriptReviewState) {
-      return [];
-    } else if (firstTimeState !== null) {
-      return transcriptDueNumber;
-    }
-    return [];
-  }, [
-    enableTranscriptReviewState,
-    firstTimeState,
-    reviewIntervalState,
-    formattedTranscriptState,
-    transcriptDueNumber,
-  ]);
-
-  useEffect(() => {
-    if (
-      postSentencesMemoized.length === 0 &&
-      postWordsMemoized.length === 0 &&
-      postSnippetsMemoized.length === 0
-    ) {
-      setFirstTimeState(firstTime);
-    } else if (firstTime !== null && firstTime < firstTimeState) {
-      setFirstTimeState(firstTime);
-    }
-  }, [
-    postSentencesMemoized,
+  const {
     postWordsMemoized,
     postSnippetsMemoized,
+    slicedTranscriptArray,
+    transcriptDueNumber: _unusedTranscriptDueNumber,
+    postSentencesMemoized,
+  } = useComprehensiveReviewModeData({
+    enableWordReviewState,
+    enableSnippetReviewState,
+    enableTranscriptReviewState,
     firstTime,
     firstTimeState,
-  ]);
+    setFirstTimeState,
+    reviewIntervalState,
+    contentMetaWordMemoized,
+    snippetsWithDueStatusMemoized,
+    formattedTranscriptState,
+  });
+
+  const biggestOverlappedSnippet = useMemo(() => {
+    if (overlappingSnippetDataState.length === 0) {
+      return null;
+    }
+    if (overlappingSnippetDataState.length > 1) {
+      return getBiggestOverlap(overlappingSnippetDataState).id;
+    }
+    return overlappingSnippetDataState[0].id;
+  }, [overlappingSnippetDataState]);
 
   const firstElIdInReview = [
     ...postSnippetsMemoized,
     ...postWordsMemoized,
     ...postSentencesMemoized,
   ]?.[0]?.id;
-
-  const handleLoopHere = ({
-    time,
-    isContracted,
-  }: {
-    time: number;
-    isContracted: boolean;
-  }) => {
-    const playFromTime = time - (isContracted ? 0.75 : 1.5);
-    setThreeSecondLoopState(time);
-    setContractThreeSecondLoopState(isContracted);
-    handlePlayFromHere(playFromTime);
-  };
 
   const handleReviewSnippetsComprehensiveReview = async ({
     snippetData,
@@ -236,20 +171,32 @@ const LearningScreenComprehensiveReview = () => {
             return (
               <SnippetReview
                 key={item.id}
-                ref={ref}
                 snippetData={item}
-                handleLoopHere={handleLoopHere}
+                handleLoopHere={(params) =>
+                  handleLoopReviewMode({ ...params, snippetId: item.id })
+                }
                 isVideoPlaying={isVideoPlaying}
                 threeSecondLoopState={threeSecondLoopState}
                 handleUpdateSnippetComprehensiveReview={
                   handleReviewSnippetsComprehensiveReview
                 }
                 isReadyForQuickReview={firstElIdInReview === item.id}
-                handleBreakdownSentence={handleBreakdownSentence}
+                handleBreakdownSentence={({ sentenceId }) =>
+                  handleBreakdownSentence({
+                    sentenceId,
+                    targetLang: sentenceMapMemoized[sentenceId]?.targetLang || '',
+                  })
+                }
                 isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
                 currentTime={currentTime}
                 getSentenceDataOfOverlappingWordsDuringSave={
-                  getSentenceDataOfOverlappingWordsDuringSave
+                  (time, highlightedText) => {
+                    const out = getSentenceDataOfOverlappingWordsDuringSave(
+                      time,
+                      highlightedText,
+                    );
+                    return typeof out === 'string' ? out : null;
+                  }
                 }
                 selectedContentTitleState={selectedContentTitleState}
                 sentenceMapMemoized={sentenceMapMemoized}
@@ -275,7 +222,7 @@ const LearningScreenComprehensiveReview = () => {
           'gap-1',
           isInReviewMode ? 'inline-flex flex-wrap' : 'flex flex-col',
         )}
-        ref={transcriptRef}
+        ref={transcriptRef as unknown as React.RefObject<HTMLUListElement>}
       >
         {slicedTranscriptArray?.map((contentItem, index) => {
           return (
@@ -288,8 +235,13 @@ const LearningScreenComprehensiveReview = () => {
               masterPlay={masterPlay}
               isGenericItemsLoadingArrayState={isGenericItemsLoadingArrayState}
               snippetLoadingState={snippetLoadingState}
-              handleSaveWord={handleSaveWord}
-              handleDeleteWordDataProvider={handleDeleteWordDataProvider}
+              handleSaveWord={async (params) => {
+                handleSaveWord(params as never);
+              }}
+              handleDeleteWordDataProvider={async (wordData) => {
+                handleDeleteWordDataProvider({ wordId: wordData.id });
+                return true;
+              }}
               wordsState={wordsState}
               isInReviewMode={isInReviewMode}
               onlyShowEngState={onlyShowEngState}
@@ -304,10 +256,25 @@ const LearningScreenComprehensiveReview = () => {
               scrollToElState={scrollToElState}
               wordsForSelectedTopic={wordsForSelectedTopic}
               languageSelectedState={languageSelectedState}
-              savedSnippetsMemoized={savedSnippetsMemoized}
+              savedSnippetsMemoized={contentSnippets}
+              handleDeleteSnippet={async (snippetId) => {
+                const snippetData = contentSnippets.find((s) => s.id === snippetId);
+                if (!snippetData) return;
+                await handleDeleteSnippet(snippetData);
+              }}
               isComprehensiveMode={true}
               setThreeSecondLoopState={setThreeSecondLoopState}
               setContractThreeSecondLoopState={setContractThreeSecondLoopState}
+              handlePlayFromHere={handlePlayFromHere}
+              biggestOverlappedSnippet={biggestOverlappedSnippet}
+              overlappingTextMemoized={overlappingTextMemoized}
+              handleSaveSnippet={
+                handleSaveSnippet as unknown as (args: {
+                  targetLang: string;
+                  baseLang: string;
+                  suggestedFocusText: string;
+                }) => Promise<void>
+              }
               originalContext={selectedContentTitleState}
               isReadyForQuickReview={firstElIdInReview === contentItem.id}
             >
