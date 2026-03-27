@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import LearningScreenThreeSecondLoopEl from './LearningScreenThreeSecondLoopEl';
 import useLearningScreen from './useLearningScreen';
-import SnippetReview from '@/components/custom/SnippetReview';
+import SnippetOverlay from '@/components/custom/SnippetReview/SnippetOverlay';
 import { useFetchData } from '../Providers/FetchDataProvider';
 
 type LearningScreenVideoPlayerProps = {
@@ -144,7 +144,7 @@ const LearningScreenVideoPlayer = ({ url }: LearningScreenVideoPlayerProps) => {
         <div
           className='absolute top-0 left-0 text-white px-4 pt-1 rounded-lg w-full'
         >
-          <SnippetReview
+          <SnippetOverlay
             snippetData={firstDueSnippet}
             dummy
             handleLoopHere={() => {}}
