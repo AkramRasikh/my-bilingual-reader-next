@@ -11,6 +11,8 @@ type LearningScreenVideoPlayerProps = {
   url: string;
 };
 
+const SNIPPET_OVERLAY_RESERVED_TOP_SPACE_PX = 40;
+
 const LearningScreenVideoPlayer = ({ url }: LearningScreenVideoPlayerProps) => {
   const {
     ref,
@@ -128,80 +130,86 @@ const LearningScreenVideoPlayer = ({ url }: LearningScreenVideoPlayerProps) => {
   const isLooping = Boolean(threeSecondLoopState);
 
   return (
-    <div className='flex flex-col relative'>
-      <video
-        ref={videoRef}
-        src={url}
-        controls
-        className='w-full rounded-lg shadow-lg m-auto'
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
+    <div className='flex flex-col'>
+      <div
+        className='relative'
+        style={{ marginTop: SNIPPET_OVERLAY_RESERVED_TOP_SPACE_PX }}
       >
-        Your browser does not support the video tag.
-      </video>
-
-      {isPlayingFirstDueSnippet && firstDueSnippet ? (
-        <div
-          className='absolute top-0 left-0 text-white px-4 pt-1 rounded-lg w-full'
+        <video
+          ref={videoRef}
+          src={url}
+          controls
+          className='w-full rounded-lg shadow-lg m-auto'
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
         >
-          <SnippetOverlay
-            snippetData={firstDueSnippet}
-            dummy
-            handleLoopHere={() => {}}
-            isVideoPlaying={isVideoPlaying}
-            threeSecondLoopState={threeSecondLoopState}
-            handleUpdateSnippetComprehensiveReview={async () => {}}
-            isReadyForQuickReview={true}
-            handleBreakdownSentence={async () => {}}
-            isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
-            currentTime={currentTime}
-            getSentenceDataOfOverlappingWordsDuringSave={(time, highlightedText) => {
-              const out = getSentenceDataOfOverlappingWordsDuringSave(
-                time,
-                highlightedText,
-              );
-              return typeof out === 'string' ? out : null;
-            }}
-            selectedContentTitleState={selectedContentTitleState}
-            sentenceMapMemoized={sentenceMapMemoized}
-            languageSelectedState={languageSelectedState}
-            wordsState={wordsState}
-            handleSaveWord={handleSaveWord}
-            handleDeleteWordDataProvider={handleDeleteWordDataProvider}
-          />
-        </div>
-      ) : isLooping ? (
-        <div className='absolute top-0 left-0 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] px-4 py-2 rounded-lg w-full'>
-          <div className='text-center'>
-            <LearningScreenThreeSecondLoopEl
-              overlappingTextMemoized={overlappingTextMemoized}
-              masterTextRef={masterTextRef}
-              showSaveSnippetButton={Boolean(handleSaveSnippet)}
-              isLoadingSaveSnippetState={isLoadingSaveSnippetState}
-              highlightedTextFocusLoopState={highlightedTextFocusLoopState}
-              onSaveSnippetClick={handleSaveSnippetFlow}
+          Your browser does not support the video tag.
+        </video>
+
+        {isPlayingFirstDueSnippet && firstDueSnippet ? (
+          <div
+            className='absolute top-0 left-0 text-white px-4 pt-1 rounded-lg w-full'
+          >
+            <SnippetOverlay
+              snippetData={firstDueSnippet}
+              dummy
+              maxTopSpacingPx={SNIPPET_OVERLAY_RESERVED_TOP_SPACE_PX}
+              handleLoopHere={() => {}}
+              isVideoPlaying={isVideoPlaying}
+              threeSecondLoopState={threeSecondLoopState}
+              handleUpdateSnippetComprehensiveReview={async () => {}}
+              isReadyForQuickReview={true}
+              handleBreakdownSentence={async () => {}}
+              isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+              currentTime={currentTime}
+              getSentenceDataOfOverlappingWordsDuringSave={(time, highlightedText) => {
+                const out = getSentenceDataOfOverlappingWordsDuringSave(
+                  time,
+                  highlightedText,
+                );
+                return typeof out === 'string' ? out : null;
+              }}
+              selectedContentTitleState={selectedContentTitleState}
+              sentenceMapMemoized={sentenceMapMemoized}
+              languageSelectedState={languageSelectedState}
+              wordsState={wordsState}
+              handleSaveWord={handleSaveWord}
+              handleDeleteWordDataProvider={handleDeleteWordDataProvider}
             />
           </div>
-        </div>
-      ) : showMasterPlayComprehensiveTargetLangForOverlayState &&
-        masterPlayComprehensiveTargetLangForOverlay.length > 0 ? (
-        <div className='absolute top-0 left-0 text-white px-4 py-2 rounded-lg w-full'>
-          {masterPlayComprehensiveTargetLangForOverlay.map((s) => {
-            const isCurrent = s.position === 'current';
-            return (
-              <p
-                key={`${s.position}-${s.id}`}
-                className={clsx(
-                  'text-center transition-all duration-200 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]',
-                  !isCurrent ? 'text-gray-400 text-xs' : 'text-white text-sm',
-                )}
-              >
-                {s.targetLang}
-              </p>
-            );
-          })}
-        </div>
-      ) : null}
+        ) : isLooping ? (
+          <div className='absolute top-0 left-0 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] px-4 py-2 rounded-lg w-full'>
+            <div className='text-center'>
+              <LearningScreenThreeSecondLoopEl
+                overlappingTextMemoized={overlappingTextMemoized}
+                masterTextRef={masterTextRef}
+                showSaveSnippetButton={Boolean(handleSaveSnippet)}
+                isLoadingSaveSnippetState={isLoadingSaveSnippetState}
+                highlightedTextFocusLoopState={highlightedTextFocusLoopState}
+                onSaveSnippetClick={handleSaveSnippetFlow}
+              />
+            </div>
+          </div>
+        ) : showMasterPlayComprehensiveTargetLangForOverlayState &&
+          masterPlayComprehensiveTargetLangForOverlay.length > 0 ? (
+          <div className='absolute top-0 left-0 text-white px-4 py-2 rounded-lg w-full'>
+            {masterPlayComprehensiveTargetLangForOverlay.map((s) => {
+              const isCurrent = s.position === 'current';
+              return (
+                <p
+                  key={`${s.position}-${s.id}`}
+                  className={clsx(
+                    'text-center transition-all duration-200 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]',
+                    !isCurrent ? 'text-gray-400 text-xs' : 'text-white text-sm',
+                  )}
+                >
+                  {s.targetLang}
+                </p>
+              );
+            })}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 };
