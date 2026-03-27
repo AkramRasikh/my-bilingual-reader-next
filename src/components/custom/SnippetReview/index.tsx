@@ -96,7 +96,6 @@ const SnippetReview = ({
   const isChinese = languageSelectedState === LanguageEnum.Chinese;
   const isArabic = languageSelectedState === LanguageEnum.Arabic;
 
-  
   const onMoveLeft = () => {
     const stopUserSpillingOverStartPoint = !(matchStartKey <= 0);
     if (!stopUserSpillingOverStartPoint) return;
@@ -327,6 +326,8 @@ const SnippetReview = ({
     startIndexKeyState !== 0 ||
     lengthAdjustmentState !== 0;
 
+  const showTransliteration = isChinese || isArabic;
+
   return (
     <div
       className='relative'
@@ -347,12 +348,25 @@ const SnippetReview = ({
                   handlePlaySnippet={handlePlaySnippet}
                   isPreSnippet={snippetData?.isPreSnippet}
                   sentencesToBreakdown={sentencesToBreakdown}
-                  isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+                  isBreakingDownSentenceArrState={
+                    isBreakingDownSentenceArrState
+                  }
                   handleBreakdownSentence={handleBreakdownSentence}
                 />
               ) : null}
               <div className='w-full text-center'>
-                <div className='flex text-align-justify'>
+                <div
+                  className='flex text-align-justify'
+                  style={
+                    dummy
+                      ? {
+                          background: '#fffbeb',
+                          width: 'fit-content',
+                          margin: '0 auto',
+                        }
+                      : {}
+                  }
+                >
                   <FormattedSentenceSnippet
                     ref={ulRef}
                     targetLangformatted={targetLangWithVocabStartIndex}
@@ -368,19 +382,18 @@ const SnippetReview = ({
                     isReadyForQuickReview={isReadyForQuickReview}
                   />
                 </div>
-                {isChinese ||
-                  (isArabic && (
-                    <SnippetReviewPinyinHelper
-                      slicedSnippetSegment={slicedSnippetSegment}
-                      getColorByIndex={getColorByIndex}
-                      matchStartKey={matchStartKey}
-                      matchEndKey={matchEndKey}
-                      pinyinStart={pinyinStart}
-                      languageSelectedState={languageSelectedState}
-                      isReadyForQuickReview={isReadyForQuickReview}
-                      currentTime={currentTime}
-                    />
-                  ))}
+                {showTransliteration && (
+                  <SnippetReviewPinyinHelper
+                    slicedSnippetSegment={slicedSnippetSegment}
+                    getColorByIndex={getColorByIndex}
+                    matchStartKey={matchStartKey}
+                    matchEndKey={matchEndKey}
+                    pinyinStart={pinyinStart}
+                    languageSelectedState={languageSelectedState}
+                    isReadyForQuickReview={isReadyForQuickReview}
+                    currentTime={currentTime}
+                  />
+                )}
 
                 <SnippetReviewBreakdownDefinitions
                   slicedSnippetSegment={slicedSnippetSegment}

@@ -40,6 +40,10 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
           index >= matchStartKey && index <= matchEndKey;
         const played =
           hasHighlightedBackground && currentTime >= item?.secondForIndex;
+        const transliterationText = isArabic
+          ? arabicTransliterate(item.text, 'arabic2latin', 'Arabic')
+          : pinyin(item.text, { toneType: 'symbol' });
+
         return (
           <span
             key={index}
@@ -60,9 +64,7 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
               <FormattedSentenceSnippetProgressWidget played={played} />
             )}
             {addSpace && ' '}
-            {isArabic
-              ? arabicTransliterate(item.text, 'arabic2latin', 'Arabic')
-              : pinyin(item.text, { toneType: 'symbol' })}
+            {transliterationText}
           </span>
         );
       })}
