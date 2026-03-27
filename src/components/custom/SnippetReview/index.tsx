@@ -141,18 +141,11 @@ const SnippetReview = ({
                   handleBreakdownSentence={handleBreakdownSentence}
                 />
               ) : null}
-              <div className='w-full text-center'>
+              <div
+                className='w-full text-center'
+              >
                 <div
                   className='flex text-align-justify'
-                  style={
-                    dummy
-                      ? {
-                          background: '#fffbeb',
-                          width: 'fit-content',
-                          margin: '0 auto',
-                        }
-                      : {}
-                  }
                 >
                   <FormattedSentenceSnippet
                     ref={selectionContainerRef}
@@ -167,6 +160,7 @@ const SnippetReview = ({
                     handleSaveFunc={handleSaveFunc}
                     currentTime={currentTime}
                     isReadyForQuickReview={isReadyForQuickReview}
+                    dummy={dummy}
                   />
                 </div>
                 {showTransliteration && (
@@ -179,6 +173,7 @@ const SnippetReview = ({
                     languageSelectedState={languageSelectedState}
                     isReadyForQuickReview={isReadyForQuickReview}
                     currentTime={currentTime}
+                    dummy={dummy}
                   />
                 )}
 

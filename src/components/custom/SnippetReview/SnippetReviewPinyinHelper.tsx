@@ -3,6 +3,7 @@ import { LanguageEnum } from '@/app/languages';
 import { pinyin } from 'pinyin-pro';
 import arabicTransliterate from 'arabic-transliterate';
 import FormattedSentenceSnippetProgressWidget from './SnippetReviewProgressWidget';
+import clsx from 'clsx';
 
 interface correspondingRomanized {
   text: string;
@@ -18,6 +19,7 @@ interface SnippetReviewPinyinHelperProps {
   languageSelectedState: LanguageEnum;
   isReadyForQuickReview?: boolean;
   currentTime?: number;
+  dummy?: boolean;
 }
 
 const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
@@ -29,6 +31,7 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
   languageSelectedState,
   isReadyForQuickReview,
   currentTime,
+  dummy,
 }) => {
   const isArabic = languageSelectedState === LanguageEnum.Arabic;
   return (
@@ -47,7 +50,7 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
         return (
           <span
             key={index}
-            className='relative'
+            className={clsx('relative', dummy ? 'text-xs' : '')}
             style={{
               color: getColorByIndex(item?.startIndex),
               opacity:

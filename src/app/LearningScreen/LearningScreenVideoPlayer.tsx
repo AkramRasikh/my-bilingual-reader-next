@@ -142,7 +142,7 @@ const LearningScreenVideoPlayer = ({ url }: LearningScreenVideoPlayerProps) => {
 
       {isPlayingFirstDueSnippet && firstDueSnippet ? (
         <div
-          className="absolute top-0 left-0 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] px-4 pt-1 rounded-lg w-full"
+          className='absolute top-0 left-0 text-white px-4 pt-1 rounded-lg w-full'
         >
           <SnippetReview
             snippetData={firstDueSnippet}

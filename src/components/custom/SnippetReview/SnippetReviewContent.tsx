@@ -34,6 +34,7 @@ type FormattedSentenceSnippetProps = {
   ) => Promise<void>;
   currentTime?: number;
   isReadyForQuickReview?: boolean;
+  dummy?: boolean;
 };
 
 const FormattedSentenceSnippet = ({
@@ -49,6 +50,7 @@ const FormattedSentenceSnippet = ({
   handleSaveFunc,
   currentTime = 0,
   isReadyForQuickReview = false,
+  dummy = false,
 }: FormattedSentenceSnippetProps) => {
   const isArabic = languageSelectedState === arabic;
   const isChinese = languageSelectedState === chinese;
@@ -79,7 +81,7 @@ const FormattedSentenceSnippet = ({
             <span
               key={indexNested}
               className={clsx(
-                hasHighlightedBackground ? 'bg-gray-200' : 'opacity-35',
+                hasHighlightedBackground ? 'bg-gray-200' : dummy ? 'bg-gray-700' : 'opacity-35',
                 'relative',
               )}
               style={{
@@ -132,7 +134,7 @@ const FormattedSentenceSnippet = ({
               color: getColorByIndex(hasStartIndex),
             }}
             className={clsx(
-              hasHighlightedBackground ? 'bg-gray-200' : 'opacity-35',
+              hasHighlightedBackground ? 'bg-gray-200' : dummy ? 'bg-gray-700' : 'opacity-35',
               'relative',
             )}
           >
