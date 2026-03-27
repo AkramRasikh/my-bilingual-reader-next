@@ -1,16 +1,13 @@
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
 import SnippetReviewChineseAudioControls from './SnippetReviewAudioControls';
-import { useEffect, useMemo, useRef, useState } from 'react';
 import FormattedSentenceSnippet from '@/components/custom/SnippetReview/SnippetReviewContent';
 import HighlightedText from '@/components/custom/HighlightedText';
-import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
 import {
   ContentTranscriptTypes,
   SentenceMapItemTypes,
   Snippet,
 } from '@/app/types/content-types';
-import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/useSnippetLoopEvents';
 import getColorByIndex from '@/utils/get-color-by-index';
 import SnippetReviewPinyinHelper from './SnippetReviewPinyinHelper';
 import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
@@ -21,13 +18,8 @@ import {
   HandleSaveWordCallTypes,
 } from '@/app/Providers/FetchDataProvider';
 import SnippetReviewBreakdownDefinitions from './SnippetReviewBreakdownDefinitions';
-import { useSnippetReviewDataMemoized } from './useSnippetReviewDataMemoized';
 import clsx from 'clsx';
-
-interface HandleReviewSnippetsFinalArg {
-  isRemoveReview?: boolean;
-  snippetData: Snippet & Pick<ContentTranscriptTypes, 'vocab'>;
-}
+import { useSnippetReviewController } from './useSnippetReviewController';
 
 interface SnippetReviewProps {
   snippetData: Snippet & Pick<ContentTranscriptTypes, 'vocab'>;
@@ -76,257 +68,52 @@ const SnippetReview = ({
   handleDeleteWordDataProvider,
   dummy = false,
 }: SnippetReviewProps) => {
-  const [startIndexKeyState, setStartIndexKeyState] = useState(0);
-  const [endIndexKeyState, setEndIndexKeyState] = useState(0);
-  const [lengthAdjustmentState, setLengthAdjustmentState] = useState(0);
-  const [wordPopUpState, setWordPopUpState] = useState([]);
-  const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
-    useState(false);
-  const [highlightedTextState, setHighlightedTextState] = useState('');
-  const [isLoadingWordState, setIsLoadingWordState] = useState(false);
-  const thisIsPlaying =
-    isVideoPlaying && threeSecondLoopState === snippetData.time;
-  const isPreSnippet = snippetData?.isPreSnippet;
-  const ulRef = useRef<NodeJS.Timeout | null>(null);
-  const vocab = snippetData?.vocab;
-
-  const contractionAmount = snippetData?.isContracted ? 0.75 : 1.5;
-  const startTime = snippetData.time - contractionAmount;
-  const endTime = snippetData.time + contractionAmount;
-  const isChinese = languageSelectedState === LanguageEnum.Chinese;
-  const isArabic = languageSelectedState === LanguageEnum.Arabic;
-
-  const onMoveLeft = () => {
-    const stopUserSpillingOverStartPoint = !(matchStartKey <= 0);
-    if (!stopUserSpillingOverStartPoint) return;
-    setStartIndexKeyState(startIndexKeyState - 1);
-    setEndIndexKeyState(endIndexKeyState - 1);
-  };
-
-  const onMoveRight = () => {
-    const stopUserSpillingOverEndPoint = !(
-      matchEndKey >=
-      snippetData.targetLang.length - 1
-    );
-    if (!stopUserSpillingOverEndPoint) return;
-    setStartIndexKeyState(startIndexKeyState + 1);
-    setEndIndexKeyState(endIndexKeyState + 1);
-  };
-
-  const onExpandLength = () => {
-    const stopUserSpillingOverEndPoint = !(
-      matchEndKey >=
-      snippetData.targetLang.length - 1
-    );
-    if (!stopUserSpillingOverEndPoint) return;
-    setLengthAdjustmentState(lengthAdjustmentState + 1);
-  };
-
-  const onContractLength = () => {
-    if (matchEndKey - matchStartKey < 1) return;
-    setLengthAdjustmentState(lengthAdjustmentState - 1);
-  };
-
-  const onReset = () => {
-    setStartIndexKeyState(0);
-    setEndIndexKeyState(0);
-    setLengthAdjustmentState(0);
-  };
-
-  const handlePlaySnippet = () => {
-    handleLoopHere({
-      time: snippetData.time,
-      isContracted: snippetData.isContracted,
-    });
-  };
-
-  const handleSaveFunc = async (isGoogle, thisWord, thisWordMeaning) => {
-    try {
-      setIsLoadingWordState(true);
-      const belongingSentenceId = getSentenceDataOfOverlappingWordsDuringSave(
-        snippetData.time,
-        highlightedTextState,
-      );
-      if (belongingSentenceId) {
-        await handleSaveWord({
-          highlightedWord: highlightedTextState || thisWord,
-          highlightedWordSentenceId: belongingSentenceId,
-          contextSentence: snippetData.targetLang, // maybe these two should match?
-          meaning: thisWordMeaning,
-          isGoogle,
-          originalContext: selectedContentTitleState,
-          time: sentenceMapMemoized[belongingSentenceId]?.time,
-        });
-      } else {
-        console.log('## no belonding sentence found');
-      }
-    } finally {
-      setHighlightedTextState('');
-      setWordPopUpState([]);
-      setIsLoadingWordState(false);
-    }
-  };
-
-  const { textMatch, matchStartKey, matchEndKey } = useMemo(() => {
-    return highlightSnippetTextApprox(
-      snippetData.targetLang,
-      snippetData?.focusedText || snippetData?.suggestedFocusText || '',
-      isLoadingSaveSnippetState,
-      startIndexKeyState,
-      lengthAdjustmentState,
-    );
-  }, [
-    snippetData,
-    isLoadingSaveSnippetState,
-    startIndexKeyState,
-    lengthAdjustmentState,
-  ]);
-
-  const hasSnippetText = Boolean(textMatch);
-
-  const handleSaveSnippetFlow = async () => {
-    if (!textMatch) {
-      return;
-    }
-    try {
-      setIsLoadingSaveSnippetState(true);
-      await handleUpdateSnippetComprehensiveReview({
-        snippetData: {
-          ...snippetData,
-          isPreSnippet: false,
-          focusedText: textMatch,
-        },
-      });
-      setStartIndexKeyState(0);
-      setEndIndexKeyState(0);
-      setLengthAdjustmentState(0);
-    } finally {
-      setIsLoadingSaveSnippetState(false);
-    }
-  };
-
-  const onUpdateSnippet = async () => {
-    await handleSaveSnippetFlow();
-  };
-  useEffect(() => {
-    const handleMouseUp = () => {
-      const selection = window.getSelection();
-      const selectedText = selection?.toString().trim();
-
-      const anchorNode = selection?.anchorNode;
-      if (!anchorNode || !ulRef.current?.contains(anchorNode)) return;
-
-      // setSentenceHighlightingState(contentItem.id);
-      setHighlightedTextState(selectedText || '');
-    };
-
-    document.addEventListener('mouseup', handleMouseUp);
-
-    return () => {
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, []);
-
-  useSnippetLoopEvents({
-    enabled: isReadyForQuickReview,
-    hasSnippetText,
-    matchEndKey,
-    matchStartKey,
-    targetLangLength: snippetData.targetLang.length,
-    onAdjustLength: (delta) => setLengthAdjustmentState((prev) => prev + delta),
-    onShiftStart: (delta) => setStartIndexKeyState((prev) => prev + delta),
-    onSaveSnippet: async () => {
-      console.log('## 🎮 snippet-loop-save');
-      await onUpdateSnippet();
-    },
-  });
-
-  useEffect(() => {
-    if (!isReadyForQuickReview) return;
-
-    const handleGamepadPress = () => {
-      const gamepads = navigator.getGamepads();
-      // Find the first connected gamepad
-      const gamepad = Array.from(gamepads).find((gp) => gp !== null);
-
-      if (!gamepad) {
-        return;
-      }
-
-      // Only trigger if B button (1) is pressed AND L button (6) is NOT pressed
-      // This prevents L+B combo from also triggering the play action
-      if (gamepad.buttons[1]?.pressed && !gamepad.buttons[8]?.pressed) {
-        handlePlaySnippet();
-      }
-    };
-
-    const intervalId = setInterval(handleGamepadPress, 100);
-
-    return () => clearInterval(intervalId);
-  }, [
-    isReadyForQuickReview,
-    thisIsPlaying,
-    snippetData.time,
-    snippetData.isContracted,
-  ]);
-
-  // Function to get the second representation for a given index in the matchKey range
-  const getSecondForIndex = (index) => {
-    if (
-      typeof index !== 'number' ||
-      typeof matchStartKey !== 'number' ||
-      typeof matchEndKey !== 'number' ||
-      typeof startTime !== 'number' ||
-      typeof endTime !== 'number'
-    ) {
-      return null;
-    }
-    if (index < matchStartKey || index > matchEndKey) return null;
-    const totalKeys = matchEndKey - matchStartKey;
-    const totalTime = endTime - startTime;
-    if (totalKeys === 0) return startTime;
-    // Spread time evenly across keys
-    const t = (index - matchStartKey) / totalKeys;
-    return startTime + t * totalTime;
-  };
-
   const {
-    wordsFromSentence,
-    wordsInSuggestedText,
+    selectionContainerRef,
+    thisIsPlaying,
+    isPreSnippet,
+    vocab,
+    showTransliteration,
+    pinyinStart,
+    slicedSnippetSegment,
     targetLangWithVocabStartIndex,
     sentencesToBreakdown,
-  } = useSnippetReviewDataMemoized({
-    snippetData,
-    wordsState,
+    wordsFromSentence,
     matchStartKey,
     matchEndKey,
+    indexHasChanged,
+    wordPopUpState,
+    setWordPopUpState,
+    highlightedTextState,
+    isLoadingWordState,
+    isLoadingSaveSnippetState,
+    handlePlaySnippet,
+    handleSaveFunc,
+    onMoveLeft,
+    onMoveRight,
+    onExpandLength,
+    onContractLength,
+    onReset,
+    onUpdateSnippet,
+    handleReviewSnippetsFinal,
+  } = useSnippetReviewController({
+    snippetData,
+    handleLoopHere,
+    isVideoPlaying,
+    threeSecondLoopState,
+    handleUpdateSnippetComprehensiveReview,
     isReadyForQuickReview,
-    getSecondForIndex,
+    handleBreakdownSentence,
+    isBreakingDownSentenceArrState,
+    currentTime,
+    getSentenceDataOfOverlappingWordsDuringSave,
+    selectedContentTitleState,
+    sentenceMapMemoized,
+    languageSelectedState,
+    wordsState,
+    handleSaveWord,
+    handleDeleteWordDataProvider,
   });
-
-  const pinyinStart = Math.max(0, matchStartKey - 5);
-
-  const slicedSnippetSegment = targetLangWithVocabStartIndex.slice(
-    pinyinStart,
-    Math.min(targetLangWithVocabStartIndex.length, matchEndKey + 6),
-  );
-
-  const handleReviewSnippetsFinal = async (
-    arg: HandleReviewSnippetsFinalArg,
-  ): Promise<void> => {
-    const isRemoveReview = arg?.isRemoveReview;
-    await handleUpdateSnippetComprehensiveReview({
-      snippetData: arg.snippetData,
-      isRemoveReview: isRemoveReview && !(wordsInSuggestedText?.length > 0),
-    });
-  };
-
-  const indexHasChanged =
-    endIndexKeyState !== 0 ||
-    startIndexKeyState !== 0 ||
-    lengthAdjustmentState !== 0;
-
-  const showTransliteration = isChinese || isArabic;
 
   return (
     <div
@@ -368,7 +155,7 @@ const SnippetReview = ({
                   }
                 >
                   <FormattedSentenceSnippet
-                    ref={ulRef}
+                    ref={selectionContainerRef}
                     targetLangformatted={targetLangWithVocabStartIndex}
                     wordPopUpState={wordPopUpState}
                     setWordPopUpState={setWordPopUpState}
@@ -433,6 +220,7 @@ const SnippetReview = ({
         {!dummy ? (
           <ReviewSRSToggles
             isSnippet
+            isVocab={false}
             contentItem={snippetData}
             handleReviewFunc={handleReviewSnippetsFinal}
             isReadyForQuickReview={isReadyForQuickReview}
