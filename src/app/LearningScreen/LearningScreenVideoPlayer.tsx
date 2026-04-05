@@ -20,6 +20,7 @@ const LearningScreenVideoPlayer = ({ url }: LearningScreenVideoPlayerProps) => {
     overlappingTextMemoized,
     masterPlayComprehensiveTargetLangForOverlay,
     showMasterPlayComprehensiveTargetLangForOverlayState,
+    isSavedLoopPlayingState,
   } = useLearningScreen();
 
   const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
@@ -94,7 +95,7 @@ const LearningScreenVideoPlayer = ({ url }: LearningScreenVideoPlayerProps) => {
         Your browser does not support the video tag.
       </video>
 
-      {isLooping ? (
+      {isLooping && !isSavedLoopPlayingState ? (
         <div className='absolute top-0 left-0 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] px-4 py-2 rounded-lg w-full'>
           <div className='text-center'>
             <LearningScreenThreeSecondLoopEl
