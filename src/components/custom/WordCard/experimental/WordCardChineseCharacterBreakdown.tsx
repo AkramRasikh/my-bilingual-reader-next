@@ -159,12 +159,15 @@ const WordCardChineseCharacterBreakdown = ({
               {row?.english && (
                 <span
                   className='text-sm text-gray-700 text-ellipsis'
+                  title={row.english}
                   style={{
                     overflow: 'hidden',
                     maxWidth: '18ch',
                   }}
                 >
-                  {row.english.substring(0, 30)}
+                  {row.english.length > 30
+                    ? `${row.english.substring(0, 30)}…`
+                    : row.english}
                 </span>
               )}
               {!row && charDataState && !loading && (
