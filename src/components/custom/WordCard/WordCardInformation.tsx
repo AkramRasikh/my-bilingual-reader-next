@@ -1,10 +1,14 @@
-import { useState } from 'react';
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
 
 import AnimationWrapper from '../AnimationWrapper';
+import WordCardChineseCharacterBreakdown from './experimental/WordCardChineseCharacterBreakdown';
+import type { ChineseCharLookupMap } from './experimental/WordCardChineseCharacterBreakdown';
 import WordCardJapaneseKanjiBreakdown from './experimental/WordCardJapaneseKanjiBreakdown';
 import { extractKanji } from './experimental/utils/kanji-detector';
 import WordCardEditState from './WordCardEditState';
-import { japanese } from '@/app/languages';
+import { chinese, japanese } from '@/app/languages';
 
 const WordCardInformation = ({
   baseForm,
@@ -26,9 +30,14 @@ const WordCardInformation = ({
     mnemonic,
   });
 
+  // Kanji API payload shape varies; kept loose for WordCardJapaneseKanjiBreakdown
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [kanjiDataState, setKanjiDataState] = useState<any>(null);
+  const [chineseCharDataState, setChineseCharDataState] =
+    useState<ChineseCharLookupMap | null>(null);
 
   const isJapanese = languageSelectedState === japanese;
+  const isChinese = languageSelectedState === chinese;
 
   const wordDataArr = [
     {
@@ -67,6 +76,19 @@ const WordCardInformation = ({
   const hasKanji = extractKanji(baseForm);
   const uniqueSetOfKanj = [...new Set(hasKanji)];
 
+  const chineseCharsInOrder = useMemo(
+    () => extractKanji(wordData.baseForm),
+    [wordData.baseForm],
+  );
+  const uniqueChineseChars = useMemo(
+    () => [...new Set(chineseCharsInOrder)],
+    [chineseCharsInOrder],
+  );
+
+  useEffect(() => {
+    setChineseCharDataState(null);
+  }, [wordData.baseForm]);
+
   const handleUpdateWordData = async (field: string, newValue: string) => {
     const wordResBool = await updateWordData({
       wordId,
@@ -103,6 +125,15 @@ const WordCardInformation = ({
             uniqueSetOfKanj={uniqueSetOfKanj}
             kanjiDataState={kanjiDataState}
             setKanjiDataState={setKanjiDataState}
+            baseForm={wordData.baseForm}
+          />
+        )}
+        {isChinese && uniqueChineseChars.length > 0 && (
+          <WordCardChineseCharacterBreakdown
+            charsInOrder={chineseCharsInOrder}
+            uniqueChars={uniqueChineseChars}
+            charDataState={chineseCharDataState}
+            setCharDataState={setChineseCharDataState}
             baseForm={wordData.baseForm}
           />
         )}
