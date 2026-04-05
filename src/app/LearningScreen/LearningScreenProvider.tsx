@@ -85,6 +85,15 @@ export interface LearningScreenContextTypes {
   handlePlayFromHere: (time: number) => void;
   handleTimeUpdate: () => void;
   handleLoadedMetadata: () => void;
+  handleLoopReviewMode: (params: {
+    time: number;
+    isContracted?: boolean;
+    snippetId?: string;
+  }) => void;
+  isSavedLoopPlayingState: string | null;
+  setIsSavedLoopPlayingState: React.Dispatch<React.SetStateAction<string | null>>;
+  firstTimeState: number | null;
+  setFirstTimeState: React.Dispatch<React.SetStateAction<number | null>>;
   mediaDuration: number | null;
   ref: React.RefObject<HTMLVideoElement | HTMLAudioElement | null>;
   currentTime: number;
@@ -245,6 +254,12 @@ export const LearningScreenProvider = ({
   const [progress, setProgress] = useState(0);
   const [contractThreeSecondLoopState, setContractThreeSecondLoopState] =
     useState(false);
+  const [isSavedLoopPlayingState, setIsSavedLoopPlayingState] = useState<
+    string | null
+  >(null);
+  const lastSavedLoopTimeRef = useRef<number | null>(null);
+  const lastSavedLoopContractedRef = useRef(false);
+  const lastSavedLoopSnippetIdRef = useRef<string | null>(null);
 
   const [elapsed, setElapsed] = useState(0);
   const [errorVideoState, setErrorVideoState] = useState(false);
@@ -255,6 +270,7 @@ export const LearningScreenProvider = ({
     useState(true);
   const [reviewIntervalState, setReviewIntervalState] = useState(60);
   const [mediaDuration, setMediaDuration] = useState<number | null>(null);
+  const [firstTimeState, setFirstTimeState] = useState<number | null>(null);
 
   const {
     wordsState,
@@ -665,6 +681,43 @@ export const LearningScreenProvider = ({
     formattedTranscriptMemoized,
   });
 
+  const handleLoopReviewMode = ({
+    time,
+    isContracted,
+    snippetId,
+  }: {
+    time: number;
+    isContracted?: boolean;
+    snippetId?: string;
+  }) => {
+    const playFromTime = time - (isContracted ? 0.75 : 1.5);
+    setThreeSecondLoopState(time);
+    const contracted = Boolean(isContracted);
+    setContractThreeSecondLoopState(contracted);
+    lastSavedLoopTimeRef.current = time;
+    lastSavedLoopContractedRef.current = contracted;
+    lastSavedLoopSnippetIdRef.current = snippetId || null;
+    setIsSavedLoopPlayingState(snippetId || null);
+    handlePlayFromHere(playFromTime);
+  };
+
+  useEffect(() => {
+    if (!isSavedLoopPlayingState) return;
+
+    const isSameAsSaved =
+      threeSecondLoopState === lastSavedLoopTimeRef.current &&
+      contractThreeSecondLoopState === lastSavedLoopContractedRef.current;
+
+    if (!isSameAsSaved) {
+      lastSavedLoopSnippetIdRef.current = null;
+      setIsSavedLoopPlayingState(null);
+    }
+  }, [
+    isSavedLoopPlayingState,
+    threeSecondLoopState,
+    contractThreeSecondLoopState,
+  ]);
+
   const handleToggleReviewMode = () => {
     setIsInReviewMode((prev) => !prev);
   };
@@ -986,6 +1039,11 @@ export const LearningScreenProvider = ({
         handlePlayFromHere,
         handleTimeUpdate,
         handleLoadedMetadata,
+        handleLoopReviewMode,
+        isSavedLoopPlayingState,
+        setIsSavedLoopPlayingState,
+        firstTimeState,
+        setFirstTimeState,
         mediaDuration,
         ref,
         currentTime,
