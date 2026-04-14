@@ -4,7 +4,7 @@ import SnippetReviewChineseAudioControls from './SnippetReviewAudioControls';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import FormattedSentenceSnippet from '@/components/custom/SnippetReview/SnippetReviewContent';
 import HighlightedText from '@/components/custom/HighlightedText';
-import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
+import { findApproxIndexForSnippet, highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
 import {
   ContentTranscriptTypes,
   SentenceMapItemTypes,
@@ -14,7 +14,7 @@ import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptI
 import getColorByIndex from '@/utils/get-color-by-index';
 import SnippetReviewPinyinHelper from './SnippetReviewPinyinHelper';
 import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
-import { LanguageEnum } from '@/app/languages';
+import { isTrimmedLang, LanguageEnum } from '@/app/languages';
 import { WordTypes } from '@/app/types/word-types';
 import {
   HandleDeleteWordDataProviderCallTypes,
@@ -92,9 +92,28 @@ const SnippetReview = ({
   const endTime = snippetData.time + contractionAmount;
   const isChinese = languageSelectedState === LanguageEnum.Chinese;
   const isArabic = languageSelectedState === LanguageEnum.Arabic;
+  const snippetText = snippetData?.focusedText || snippetData?.suggestedFocusText || ''
+  const suggestedFocusStartIndex = findApproxIndexForSnippet(snippetData.targetLang, snippetText)
+  
   const onMoveLeft = () => {
     const stopUserSpillingOverStartPoint = !(matchStartKey <= 0);
     if (!stopUserSpillingOverStartPoint) return;
+    if (!isTrimmedLang(languageSelectedState)) {
+      let cursor = matchStartKey - 1;
+
+      while (cursor >= 0 && /\s/.test(snippetData.targetLang[cursor])) {
+        cursor -= 1;
+      }
+      while (cursor >= 0 && !/\s/.test(snippetData.targetLang[cursor])) {
+        cursor -= 1;
+      }
+
+      const previousWordStart = Math.max(0, cursor + 1);
+      const nextStartIndexState = previousWordStart - suggestedFocusStartIndex;
+      setStartIndexKeyState(nextStartIndexState);
+      setEndIndexKeyState(nextStartIndexState);
+      return;
+    }
     setStartIndexKeyState(startIndexKeyState - 1);
     setEndIndexKeyState(endIndexKeyState - 1);
   };
@@ -105,6 +124,28 @@ const SnippetReview = ({
       snippetData.targetLang.length - 1
     );
     if (!stopUserSpillingOverEndPoint) return;
+    if (!isTrimmedLang(languageSelectedState)) {
+      let cursor = matchStartKey + 1;
+
+      while (
+        cursor < snippetData.targetLang.length &&
+        !/\s/.test(snippetData.targetLang[cursor])
+      ) {
+        cursor += 1;
+      }
+      while (
+        cursor < snippetData.targetLang.length &&
+        /\s/.test(snippetData.targetLang[cursor])
+      ) {
+        cursor += 1;
+      }
+
+      const nextWordStart = Math.min(cursor, snippetData.targetLang.length - 1);
+      const nextStartIndexState = nextWordStart - suggestedFocusStartIndex;
+      setStartIndexKeyState(nextStartIndexState);
+      setEndIndexKeyState(nextStartIndexState);
+      return;
+    }
     setStartIndexKeyState(startIndexKeyState + 1);
     setEndIndexKeyState(endIndexKeyState + 1);
   };
@@ -115,11 +156,53 @@ const SnippetReview = ({
       snippetData.targetLang.length - 1
     );
     if (!stopUserSpillingOverEndPoint) return;
+    if (!isTrimmedLang(languageSelectedState)) {
+      let cursor = matchEndKey;
+
+      // Skip spaces before the next word.
+      while (
+        cursor < snippetData.targetLang.length &&
+        /\s/.test(snippetData.targetLang[cursor])
+      ) {
+        cursor += 1;
+      }
+      // Walk right through the next word.
+      while (
+        cursor < snippetData.targetLang.length &&
+        !/\s/.test(snippetData.targetLang[cursor])
+      ) {
+        cursor += 1;
+      }
+
+      const delta = cursor - matchEndKey;
+      setLengthAdjustmentState(lengthAdjustmentState + delta);
+      return;
+    }
     setLengthAdjustmentState(lengthAdjustmentState + 1);
   };
 
   const onContractLength = () => {
     if (matchEndKey - matchStartKey < 1) return;
+    if (!isTrimmedLang(languageSelectedState)) {
+      let cursor = matchEndKey - 1;
+
+      // Skip spaces at the current end.
+      while (cursor >= matchStartKey && /\s/.test(snippetData.targetLang[cursor])) {
+        cursor -= 1;
+      }
+      // Walk left through the previous word.
+      while (
+        cursor >= matchStartKey &&
+        !/\s/.test(snippetData.targetLang[cursor])
+      ) {
+        cursor -= 1;
+      }
+
+      const previousWordStart = Math.max(matchStartKey + 1, cursor + 1);
+      const delta = previousWordStart - matchEndKey;
+      setLengthAdjustmentState(lengthAdjustmentState + delta);
+      return;
+    }
     setLengthAdjustmentState(lengthAdjustmentState - 1);
   };
 
@@ -170,12 +253,14 @@ const SnippetReview = ({
       isLoadingSaveSnippetState,
       startIndexKeyState,
       lengthAdjustmentState,
+      suggestedFocusStartIndex
     );
   }, [
     snippetData,
     isLoadingSaveSnippetState,
     startIndexKeyState,
     lengthAdjustmentState,
+    suggestedFocusStartIndex
   ]);
 
   const hasSnippetText = Boolean(textMatch);

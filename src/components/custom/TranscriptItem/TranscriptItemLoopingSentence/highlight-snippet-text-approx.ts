@@ -1,4 +1,4 @@
-function findApproxIndexForSnippet(text: string, query: string) {
+export function findApproxIndexForSnippet(text: string, query: string) {
   // If exact match exists, return it
   const exact = text.indexOf(query);
   if (exact !== -1) return exact;
