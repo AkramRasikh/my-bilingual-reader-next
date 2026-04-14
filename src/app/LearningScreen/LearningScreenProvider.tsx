@@ -91,7 +91,9 @@ export interface LearningScreenContextTypes {
     snippetId?: string;
   }) => void;
   isSavedLoopPlayingState: string | null;
-  setIsSavedLoopPlayingState: React.Dispatch<React.SetStateAction<string | null>>;
+  setIsSavedLoopPlayingState: React.Dispatch<
+    React.SetStateAction<string | null>
+  >;
   firstTimeState: number | null;
   setFirstTimeState: React.Dispatch<React.SetStateAction<number | null>>;
   mediaDuration: number | null;
@@ -438,7 +440,11 @@ export const LearningScreenProvider = ({
 
     const reviewData = nextScheduledOptions['1'].card;
 
-    const { vocab: _unusedVocab, ...finalSnippetWithoutVocab } = snippetArgs;
+    const {
+      vocab: _unusedVocab,
+      suggestedFocusStartIndex: _suggestedFocusStartIndex,
+      ...finalSnippetWithoutVocab
+    } = snippetArgs;
     await handleSaveSnippetFetchProvider({
       snippetData: {
         id: uuidv4(),

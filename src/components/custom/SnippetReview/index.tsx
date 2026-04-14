@@ -4,7 +4,10 @@ import SnippetReviewChineseAudioControls from './SnippetReviewAudioControls';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import FormattedSentenceSnippet from '@/components/custom/SnippetReview/SnippetReviewContent';
 import HighlightedText from '@/components/custom/HighlightedText';
-import { findApproxIndexForSnippet, highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
+import {
+  findApproxIndexForSnippet,
+  highlightSnippetTextApprox,
+} from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
 import {
   ContentTranscriptTypes,
   SentenceMapItemTypes,
@@ -92,9 +95,13 @@ const SnippetReview = ({
   const endTime = snippetData.time + contractionAmount;
   const isChinese = languageSelectedState === LanguageEnum.Chinese;
   const isArabic = languageSelectedState === LanguageEnum.Arabic;
-  const snippetText = snippetData?.focusedText || snippetData?.suggestedFocusText || ''
-  const suggestedFocusStartIndex = findApproxIndexForSnippet(snippetData.targetLang, snippetText)
-  
+  const snippetText =
+    snippetData?.focusedText || snippetData?.suggestedFocusText || '';
+  const suggestedFocusStartIndex = findApproxIndexForSnippet(
+    snippetData.targetLang,
+    snippetText,
+  );
+
   const onMoveLeft = () => {
     const stopUserSpillingOverStartPoint = !(matchStartKey <= 0);
     if (!stopUserSpillingOverStartPoint) return;
@@ -187,7 +194,10 @@ const SnippetReview = ({
       let cursor = matchEndKey - 1;
 
       // Skip spaces at the current end.
-      while (cursor >= matchStartKey && /\s/.test(snippetData.targetLang[cursor])) {
+      while (
+        cursor >= matchStartKey &&
+        /\s/.test(snippetData.targetLang[cursor])
+      ) {
         cursor -= 1;
       }
       // Walk left through the previous word.
@@ -253,14 +263,14 @@ const SnippetReview = ({
       isLoadingSaveSnippetState,
       startIndexKeyState,
       lengthAdjustmentState,
-      suggestedFocusStartIndex
+      suggestedFocusStartIndex,
     );
   }, [
     snippetData,
     isLoadingSaveSnippetState,
     startIndexKeyState,
     lengthAdjustmentState,
-    suggestedFocusStartIndex
+    suggestedFocusStartIndex,
   ]);
 
   const hasSnippetText = Boolean(textMatch);
@@ -314,8 +324,9 @@ const SnippetReview = ({
     matchEndKey,
     matchStartKey,
     targetLangLength: snippetData.targetLang.length,
-    onAdjustLength: (delta) => delta > 0 ? onExpandLength() : onContractLength(),
-    onShiftStart: (delta) => delta > 0 ? onMoveRight() : onMoveLeft(),
+    onAdjustLength: (delta) =>
+      delta > 0 ? onExpandLength() : onContractLength(),
+    onShiftStart: (delta) => (delta > 0 ? onMoveRight() : onMoveLeft()),
     onSaveSnippet: async () => {
       console.log('## 🎮 snippet-loop-save');
       await onUpdateSnippet();
