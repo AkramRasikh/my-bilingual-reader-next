@@ -14,6 +14,7 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
         percentageOverlap: 40, // 40% of the sentence
         targetLang: 'The quick brown fox jumps',
         startPoint: 20, // Start at 20% into the sentence
+        vocab: [],
       },
     ];
 
@@ -22,7 +23,7 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
     // startIndex = floor(25 * 0.20) = floor(5) = 5
     // endIndex = floor(25 * 0.40) + 5 = floor(10) + 5 = 15
     // text.substring(5, 15) = "uick brown"
-    expect(result).toBe('uick brown');
+    expect(result.suggestedFocusText).toBe('uick brown');
   });
 
   it('should extract overlapping text from two sentences that overlap halfway', () => {
@@ -39,6 +40,7 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
         percentageOverlap: 50, // Takes the remaining 50% from startPoint to end
         targetLang: 'Hello world',
         startPoint: 50, // Starts halfway through the sentence
+        vocab: [],
       },
       {
         id: '2',
@@ -47,6 +49,7 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
         percentageOverlap: 50, // Takes first 50% of this sentence
         targetLang: 'Goodbye friend',
         startPoint: 0, // Starts at beginning
+        vocab: [],
       },
     ];
 
@@ -56,7 +59,7 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
     // text.substring(5, 10) = " worl"
     // Second: startIndex = floor(14 * 0) = 0, endIndex = floor(14 * 0.50) + 0 = 7
     // text.substring(0, 7) = "Goodbye"
-    expect(result).toBe(' worlGoodbye');
+    expect(result.suggestedFocusText).toBe(' worlGoodbye');
   });
 
   it('should extract from three sentences with varying overlap amounts', () => {
@@ -75,6 +78,7 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
         percentageOverlap: 20, // Takes the remaining 20% from startPoint to end
         targetLang: 'First sentence here',
         startPoint: 80, // Starts 80% into the sentence
+        vocab: [],
       },
       {
         id: '2',
@@ -83,6 +87,7 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
         percentageOverlap: 100, // Takes entire sentence
         targetLang: 'Second one now',
         startPoint: 0,
+        vocab: [],
       },
       {
         id: '3',
@@ -91,6 +96,7 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
         percentageOverlap: 30, // Takes first 30% of sentence
         targetLang: 'Third and final text',
         startPoint: 0,
+        vocab: [],
       },
     ];
 
@@ -102,7 +108,7 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
     // text.substring(0, 14) = "Second one now"
     // Third: startIndex = floor(20 * 0) = 0, endIndex = floor(20 * 0.30) + 0 = 6
     // text.substring(0, 6) = "Third "
-    expect(result).toBe('herSecond one nowThird ');
+    expect(result.suggestedFocusText).toBe('herSecond one nowThird ');
   });
 
   it('should concatenate Japanese sentences without spaces when addSentenceSpace is false', () => {
@@ -115,6 +121,7 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
         percentageOverlap: 100,
         targetLang: 'これは最初の文です',
         startPoint: 0,
+        vocab: [],
       },
       {
         id: '2',
@@ -123,13 +130,14 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
         percentageOverlap: 100,
         targetLang: 'これは二番目の文です',
         startPoint: 0,
+        vocab: [],
       },
     ];
 
     const result = sliceTranscriptViaPercentageOverlap(items, false);
 
     // Should concatenate directly without spaces
-    expect(result).toBe('これは最初の文ですこれは二番目の文です');
+    expect(result.suggestedFocusText).toBe('これは最初の文ですこれは二番目の文です');
   });
 
   it('should add spaces between French sentences when addSentenceSpace is true', () => {
@@ -142,6 +150,7 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
         percentageOverlap: 50,
         targetLang: 'Bonjour le monde',
         startPoint: 50,
+        vocab: [],
       },
       {
         id: '2',
@@ -150,6 +159,7 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
         percentageOverlap: 100,
         targetLang: 'Comment allez-vous',
         startPoint: 0,
+        vocab: [],
       },
       {
         id: '3',
@@ -158,6 +168,7 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
         percentageOverlap: 40,
         targetLang: 'Merci beaucoup',
         startPoint: 0,
+        vocab: [],
       },
     ];
 
@@ -170,6 +181,34 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
     // Third: startIndex = 0, endIndex = floor(15 * 0.40) = 6
     // text.substring(0, 6) = "Merci "
     // Each should have a space appended
-    expect(result).toBe('le monde Comment allez-vous Merci ');
+    expect(result.suggestedFocusText).toBe('le monde Comment allez-vous Merci ');
+  });
+
+  it('should keep boundary word across non-final overlap entries', () => {
+    const items: OverlappingSnippetData[] = [
+      {
+        id: '1',
+        start: 0,
+        end: 2,
+        percentageOverlap: 22.95,
+        targetLang:
+          'ah mais je je suis pas je suis pas vraiment féministe en fait je suis un féministe un',
+        startPoint: 77.05,
+        vocab: [],
+      },
+      {
+        id: '2',
+        start: 2,
+        end: 4,
+        percentageOverlap: 14.55,
+        targetLang:
+          "peu mytho on fait semblant d'être indigné par la situation mais on fait rien pour",
+        startPoint: 0,
+        vocab: [],
+      },
+    ];
+
+    const result = sliceTranscriptViaPercentageOverlap(items, true, false);
+    expect(result.suggestedFocusText).toContain('un peu');
   });
 });

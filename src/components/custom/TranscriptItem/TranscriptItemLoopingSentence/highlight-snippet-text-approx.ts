@@ -42,8 +42,8 @@ export const highlightSnippetTextApprox = (
   const textEndIndex = textStartIndex + initText.length + lengthAdjustmentState
 
   const before = fullText.slice(0, textStartIndex)
-  const textMatch = fullText.slice(textStartIndex, textEndIndex -1)
-  const after = fullText.slice(textEndIndex -1)
+  const textMatch = fullText.slice(textStartIndex, textEndIndex )
+  const after = fullText.slice(textEndIndex)
 
   const opacityClass = isLoadingSaveSnippetState ? 'opacity-50' : '';
   return {

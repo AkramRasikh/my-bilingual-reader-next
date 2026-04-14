@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { Loader2, SaveIcon } from 'lucide-react';
 import { highlightSnippetTextApprox } from './highlight-snippet-text-approx';
 import useSnippetLoopEvents from './useSnippetLoopEvents';
+import { isTrimmedLang, LanguageEnum } from '@/app/languages';
 
 const TranscriptItemLoopingSentence = ({
   overlappingTextMemoized,
@@ -23,7 +24,7 @@ const TranscriptItemLoopingSentence = ({
   const suggestedFocusText = overlappingTextMemoized.suggestedFocusText;
   const suggestedFocusStartIndex = overlappingTextMemoized.suggestedFocusStartIndex;
 
-  const { handleSaveSnippet } = useTranscriptItem();
+  const { handleSaveSnippet, languageSelectedState } = useTranscriptItem();
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -106,6 +107,23 @@ const TranscriptItemLoopingSentence = ({
         e.key.toLowerCase() === '<' &&
         matchEndKey > matchStartKey + 1
       ) {
+        if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
+          let cursor = matchEndKey - 1;
+
+          // Skip spaces at the current end.
+          while (cursor >= matchStartKey && /\s/.test(targetLang[cursor])) {
+            cursor -= 1;
+          }
+          // Walk left through the previous word.
+          while (cursor >= matchStartKey && !/\s/.test(targetLang[cursor])) {
+            cursor -= 1;
+          }
+
+          const previousWordStart = Math.max(matchStartKey + 1, cursor + 1);
+          const delta = previousWordStart - matchEndKey;
+          setLengthAdjustmentState(lengthAdjustmentState + delta);
+          return;
+        }
         setLengthAdjustmentState(lengthAdjustmentState - 1);
         return;
       }
@@ -114,16 +132,64 @@ const TranscriptItemLoopingSentence = ({
         e.key.toLowerCase() === '>' &&
         matchEndKey < targetLang.length
       ) {
+        if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
+          let cursor = matchEndKey;
+
+          // Skip spaces before the next word.
+          while (cursor < targetLang.length && /\s/.test(targetLang[cursor])) {
+            cursor += 1;
+          }
+          // Walk right through the next word.
+          while (cursor < targetLang.length && !/\s/.test(targetLang[cursor])) {
+            cursor += 1;
+          }
+
+          const delta = cursor - matchEndKey;
+          setLengthAdjustmentState(lengthAdjustmentState + delta);
+          return;
+        }
         setLengthAdjustmentState(lengthAdjustmentState + 1);
         return;
       }
       const stopUserSpillingOverStartPoint = !(matchStartKey <= 0);
       if (e.key.toLowerCase() === ',' && stopUserSpillingOverStartPoint) {
+        if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
+          let cursor = matchStartKey - 1;
+
+          // Skip spaces immediately before the cursor.
+          while (cursor >= 0 && /\s/.test(targetLang[cursor])) {
+            cursor -= 1;
+          }
+          // Move left through previous word.
+          while (cursor >= 0 && !/\s/.test(targetLang[cursor])) {
+            cursor -= 1;
+          }
+
+          const previousWordStart = Math.max(0, cursor + 1);
+          setStartIndexKeyState(previousWordStart - suggestedFocusStartIndex);
+          return;
+        }
         setStartIndexKeyState(startIndexKeyState - 1);
         return;
       }
       const stopUserSpillingOverEndPoint = !(matchEndKey >= targetLang.length);
       if (e.key.toLowerCase() === '.' && stopUserSpillingOverEndPoint) {
+        if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
+          let cursor = matchStartKey + 1;
+
+          // Skip current word characters.
+          while (cursor < targetLang.length && !/\s/.test(targetLang[cursor])) {
+            cursor += 1;
+          }
+          // Skip spaces before next word.
+          while (cursor < targetLang.length && /\s/.test(targetLang[cursor])) {
+            cursor += 1;
+          }
+
+          const nextWordStart = Math.min(cursor, hasSnippetText.length - 1);
+          setStartIndexKeyState(nextWordStart - suggestedFocusStartIndex);
+          return;
+        }
         setStartIndexKeyState(startIndexKeyState + 1);
         return;
       }
@@ -145,6 +211,9 @@ const TranscriptItemLoopingSentence = ({
     matchEndKey,
     matchStartKey,
     targetLang,
+    languageSelectedState,
+    suggestedFocusStartIndex,
+    handleSaveSnippetFlow,
   ]);
 
   useSnippetLoopEvents({
