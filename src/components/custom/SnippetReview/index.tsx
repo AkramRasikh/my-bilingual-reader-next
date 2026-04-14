@@ -314,8 +314,8 @@ const SnippetReview = ({
     matchEndKey,
     matchStartKey,
     targetLangLength: snippetData.targetLang.length,
-    onAdjustLength: (delta) => setLengthAdjustmentState((prev) => prev + delta),
-    onShiftStart: (delta) => setStartIndexKeyState((prev) => prev + delta),
+    onAdjustLength: (delta) => delta > 0 ? onExpandLength() : onContractLength(),
+    onShiftStart: (delta) => delta > 0 ? onMoveRight() : onMoveLeft(),
     onSaveSnippet: async () => {
       console.log('## 🎮 snippet-loop-save');
       await onUpdateSnippet();

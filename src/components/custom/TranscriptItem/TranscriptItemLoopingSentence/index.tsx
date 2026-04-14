@@ -98,99 +98,109 @@ const TranscriptItemLoopingSentence = ({
     }
   };
 
+  const onContractLength = () => {
+    if (!(matchEndKey > matchStartKey + 1)) return;
+
+    if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
+      let cursor = matchEndKey - 1;
+
+      while (cursor >= matchStartKey && /\s/.test(targetLang[cursor])) {
+        cursor -= 1;
+      }
+      while (cursor >= matchStartKey && !/\s/.test(targetLang[cursor])) {
+        cursor -= 1;
+      }
+
+      const previousWordStart = Math.max(matchStartKey + 1, cursor + 1);
+      const delta = previousWordStart - matchEndKey;
+      setLengthAdjustmentState(lengthAdjustmentState + delta);
+      return;
+    }
+
+    setLengthAdjustmentState(lengthAdjustmentState - 1);
+  };
+
+  const onExpandLength = () => {
+    if (!(matchEndKey < targetLang.length)) return;
+
+    if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
+      let cursor = matchEndKey;
+
+      while (cursor < targetLang.length && /\s/.test(targetLang[cursor])) {
+        cursor += 1;
+      }
+      while (cursor < targetLang.length && !/\s/.test(targetLang[cursor])) {
+        cursor += 1;
+      }
+
+      const delta = cursor - matchEndKey;
+      setLengthAdjustmentState(lengthAdjustmentState + delta);
+      return;
+    }
+
+    setLengthAdjustmentState(lengthAdjustmentState + 1);
+  };
+
+  const onMoveLeft = () => {
+    if (matchStartKey <= 0) return;
+
+    if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
+      let cursor = matchStartKey - 1;
+
+      while (cursor >= 0 && /\s/.test(targetLang[cursor])) {
+        cursor -= 1;
+      }
+      while (cursor >= 0 && !/\s/.test(targetLang[cursor])) {
+        cursor -= 1;
+      }
+
+      const previousWordStart = Math.max(0, cursor + 1);
+      setStartIndexKeyState(previousWordStart - suggestedFocusStartIndex);
+      return;
+    }
+
+    setStartIndexKeyState(startIndexKeyState - 1);
+  };
+
+  const onMoveRight = () => {
+    if (matchEndKey >= targetLang.length) return;
+
+    if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
+      let cursor = matchStartKey + 1;
+
+      while (cursor < targetLang.length && !/\s/.test(targetLang[cursor])) {
+        cursor += 1;
+      }
+      while (cursor < targetLang.length && /\s/.test(targetLang[cursor])) {
+        cursor += 1;
+      }
+
+      const nextWordStart = Math.min(cursor, targetLang.length - 1);
+      setStartIndexKeyState(nextWordStart - suggestedFocusStartIndex);
+      return;
+    }
+
+    setStartIndexKeyState(startIndexKeyState + 1);
+  };
+
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
       const shiftKey = e.shiftKey;
 
-      if (
-        shiftKey &&
-        e.key.toLowerCase() === '<' &&
-        matchEndKey > matchStartKey + 1
-      ) {
-        if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
-          let cursor = matchEndKey - 1;
-
-          // Skip spaces at the current end.
-          while (cursor >= matchStartKey && /\s/.test(targetLang[cursor])) {
-            cursor -= 1;
-          }
-          // Walk left through the previous word.
-          while (cursor >= matchStartKey && !/\s/.test(targetLang[cursor])) {
-            cursor -= 1;
-          }
-
-          const previousWordStart = Math.max(matchStartKey + 1, cursor + 1);
-          const delta = previousWordStart - matchEndKey;
-          setLengthAdjustmentState(lengthAdjustmentState + delta);
-          return;
-        }
-        setLengthAdjustmentState(lengthAdjustmentState - 1);
+      if (shiftKey && e.key.toLowerCase() === '<') {
+        onContractLength();
         return;
       }
-      if (
-        shiftKey &&
-        e.key.toLowerCase() === '>' &&
-        matchEndKey < targetLang.length
-      ) {
-        if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
-          let cursor = matchEndKey;
-
-          // Skip spaces before the next word.
-          while (cursor < targetLang.length && /\s/.test(targetLang[cursor])) {
-            cursor += 1;
-          }
-          // Walk right through the next word.
-          while (cursor < targetLang.length && !/\s/.test(targetLang[cursor])) {
-            cursor += 1;
-          }
-
-          const delta = cursor - matchEndKey;
-          setLengthAdjustmentState(lengthAdjustmentState + delta);
-          return;
-        }
-        setLengthAdjustmentState(lengthAdjustmentState + 1);
+      if (shiftKey && e.key.toLowerCase() === '>') {
+        onExpandLength();
         return;
       }
-      const stopUserSpillingOverStartPoint = !(matchStartKey <= 0);
-      if (e.key.toLowerCase() === ',' && stopUserSpillingOverStartPoint) {
-        if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
-          let cursor = matchStartKey - 1;
-
-          // Skip spaces immediately before the cursor.
-          while (cursor >= 0 && /\s/.test(targetLang[cursor])) {
-            cursor -= 1;
-          }
-          // Move left through previous word.
-          while (cursor >= 0 && !/\s/.test(targetLang[cursor])) {
-            cursor -= 1;
-          }
-
-          const previousWordStart = Math.max(0, cursor + 1);
-          setStartIndexKeyState(previousWordStart - suggestedFocusStartIndex);
-          return;
-        }
-        setStartIndexKeyState(startIndexKeyState - 1);
+      if (e.key.toLowerCase() === ',') {
+        onMoveLeft();
         return;
       }
-      const stopUserSpillingOverEndPoint = !(matchEndKey >= targetLang.length);
-      if (e.key.toLowerCase() === '.' && stopUserSpillingOverEndPoint) {
-        if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
-          let cursor = matchStartKey + 1;
-
-          // Skip current word characters.
-          while (cursor < targetLang.length && !/\s/.test(targetLang[cursor])) {
-            cursor += 1;
-          }
-          // Skip spaces before next word.
-          while (cursor < targetLang.length && /\s/.test(targetLang[cursor])) {
-            cursor += 1;
-          }
-
-          const nextWordStart = Math.min(cursor, hasSnippetText.length - 1);
-          setStartIndexKeyState(nextWordStart - suggestedFocusStartIndex);
-          return;
-        }
-        setStartIndexKeyState(startIndexKeyState + 1);
+      if (e.key.toLowerCase() === '.') {
+        onMoveRight();
         return;
       }
 
@@ -205,15 +215,12 @@ const TranscriptItemLoopingSentence = ({
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [
-    startIndexKeyState,
-    lengthAdjustmentState,
     hasSnippetText,
-    matchEndKey,
-    matchStartKey,
-    targetLang,
-    languageSelectedState,
-    suggestedFocusStartIndex,
     handleSaveSnippetFlow,
+    onContractLength,
+    onExpandLength,
+    onMoveLeft,
+    onMoveRight,
   ]);
 
   useSnippetLoopEvents({
@@ -221,8 +228,20 @@ const TranscriptItemLoopingSentence = ({
     matchEndKey,
     matchStartKey,
     targetLangLength: targetLang.length,
-    onAdjustLength: (delta) => setLengthAdjustmentState((prev) => prev + delta),
-    onShiftStart: (delta) => setStartIndexKeyState((prev) => prev + delta),
+    onAdjustLength: (delta) => {
+      if (delta < 0) {
+        onContractLength();
+        return;
+      }
+      onExpandLength();
+    },
+    onShiftStart: (delta) => {
+      if (delta < 0) {
+        onMoveLeft();
+        return;
+      }
+      onMoveRight();
+    },
     onSaveSnippet: async () => {
       console.log('## 🎮 snippet-loop-save');
       await handleSaveSnippetFlow();
