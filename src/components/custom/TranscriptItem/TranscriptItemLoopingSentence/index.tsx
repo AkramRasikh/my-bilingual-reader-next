@@ -21,6 +21,7 @@ const TranscriptItemLoopingSentence = ({
   const targetLang = overlappingTextMemoized.targetLang;
   const baseLang = overlappingTextMemoized.baseLang;
   const suggestedFocusText = overlappingTextMemoized.suggestedFocusText;
+  const suggestedFocusStartIndex = overlappingTextMemoized.suggestedFocusStartIndex;
 
   const { handleSaveSnippet } = useTranscriptItem();
 
@@ -65,6 +66,7 @@ const TranscriptItemLoopingSentence = ({
       isLoadingSaveSnippetState,
       startIndexKeyState,
       lengthAdjustmentState,
+      suggestedFocusStartIndex
     );
   }, [
     targetLang,
@@ -72,6 +74,7 @@ const TranscriptItemLoopingSentence = ({
     isLoadingSaveSnippetState,
     startIndexKeyState,
     lengthAdjustmentState,
+    suggestedFocusStartIndex
   ]);
 
   const hasSnippetText =

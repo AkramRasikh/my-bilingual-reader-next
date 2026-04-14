@@ -46,13 +46,17 @@ export const getOverlappingText = (
     baseLang = entries.map((item) => item.baseLang).join('');
   }
 
+  const { suggestedFocusText, suggestedFocusStartIndex } = sliceTranscriptViaPercentageOverlap(
+    overlappingSnippetDataMemoised,
+    !isTrimmed,
+    isTrimmed,
+  );
+  
   return {
     targetLang,
     baseLang,
-    suggestedFocusText: sliceTranscriptViaPercentageOverlap(
-      overlappingSnippetDataMemoised,
-      !isTrimmed,
-    ),
+    suggestedFocusText,
+    suggestedFocusStartIndex
   };
 };
 

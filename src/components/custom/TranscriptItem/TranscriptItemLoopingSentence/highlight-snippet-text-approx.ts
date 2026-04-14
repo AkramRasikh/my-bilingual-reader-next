@@ -30,29 +30,20 @@ function findApproxIndexForSnippet(text: string, query: string) {
 
 export const highlightSnippetTextApprox = (
   fullText: string,
-  slicedText: string,
+  initText: string,
   isLoadingSaveSnippetState: boolean,
   startIndexKeyState: number,
   lengthAdjustmentState: number,
+  suggestedFocusStartIndex: number
 ) => {
-  const index = findApproxIndexForSnippet(fullText, slicedText);
-  if (index === -1) return fullText; // no suitable match
+  if (suggestedFocusStartIndex === -1) return fullText; // no suitable match
 
-  let textStartIndex = index + startIndexKeyState;
-  let textEndIndex = textStartIndex + slicedText.length + lengthAdjustmentState;
+  const textStartIndex = suggestedFocusStartIndex + startIndexKeyState; //✅
+  const textEndIndex = textStartIndex + initText.length + lengthAdjustmentState
 
-  // Ensure textStartIndex is within bounds
-  textStartIndex = Math.max(0, Math.min(textStartIndex, fullText.length));
-
-  // Ensure textEndIndex is within bounds and not before textStartIndex
-  textEndIndex = Math.max(
-    textStartIndex,
-    Math.min(textEndIndex, fullText.length),
-  );
-
-  const before = fullText.slice(0, textStartIndex);
-  const textMatch = fullText.slice(textStartIndex, textEndIndex);
-  const after = fullText.slice(textEndIndex);
+  const before = fullText.slice(0, textStartIndex)
+  const textMatch = fullText.slice(textStartIndex, textEndIndex -1)
+  const after = fullText.slice(textEndIndex -1)
 
   const opacityClass = isLoadingSaveSnippetState ? 'opacity-50' : '';
   return {
