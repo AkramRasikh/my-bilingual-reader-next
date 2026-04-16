@@ -1,13 +1,13 @@
 import clsx from 'clsx';
 import { Loader2, SaveIcon } from 'lucide-react';
-import { RefObject, useMemo, useState } from 'react';
+import { RefObject } from 'react';
 import { Button } from '@/components/ui/button';
 import LearningScreenLoopBtn from './LearningScreenLoopBtn';
 import LearningScreenLoopUI from './LearningScreenLoopUI';
 import type { OverlappingTextMemoized } from '@/app/types/video-player-types';
-import { highlightSnippetTextApprox } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/highlight-snippet-text-approx';
-import { isTrimmedLang, LanguageEnum } from '../languages';
+import { LanguageEnum } from '../languages';
 import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/useSnippetLoopEvents';
+import { useSnippetHandleActionsHook } from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/useSnippetHandleActions';
 
 interface LearningScreenThreeSecondLoopElProps {
   overlappingTextMemoized: OverlappingTextMemoized | null;
@@ -28,116 +28,27 @@ const LearningScreenThreeSecondLoopEl = ({
   onSaveSnippetClick,
   languageSelectedState,
 }: LearningScreenThreeSecondLoopElProps) => {
-  const [startIndexKeyState, setStartIndexKeyState] = useState(0);
-  const [lengthAdjustmentState, setLengthAdjustmentState] = useState(0);
-
   const targetLang = overlappingTextMemoized?.targetLang;
   const suggestedFocusStartIndex =
     overlappingTextMemoized?.suggestedFocusStartIndex;
 
-  const { textMatch, matchStartKey, matchEndKey, before, after } =
-    useMemo(() => {
-      return highlightSnippetTextApprox(
-        targetLang,
-        overlappingTextMemoized?.suggestedFocusText || '',
-        isLoadingSaveSnippetState,
-        startIndexKeyState,
-        lengthAdjustmentState,
-        suggestedFocusStartIndex,
-      );
-    }, [
-      overlappingTextMemoized,
-      isLoadingSaveSnippetState,
-      startIndexKeyState,
-      lengthAdjustmentState,
-      suggestedFocusStartIndex,
-      targetLang,
-    ]);
-
-  const onContractLength = () => {
-    if (!(matchEndKey > matchStartKey + 1)) return;
-
-    if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
-      let cursor = matchEndKey - 1;
-
-      while (cursor >= matchStartKey && /\s/.test(targetLang[cursor])) {
-        cursor -= 1;
-      }
-      while (cursor >= matchStartKey && !/\s/.test(targetLang[cursor])) {
-        cursor -= 1;
-      }
-
-      const previousWordStart = Math.max(matchStartKey + 1, cursor + 1);
-      const delta = previousWordStart - matchEndKey;
-      setLengthAdjustmentState(lengthAdjustmentState + delta);
-      return;
-    }
-
-    setLengthAdjustmentState(lengthAdjustmentState - 1);
-  };
-
-  const onExpandLength = () => {
-    if (!(matchEndKey < targetLang.length)) return;
-
-    if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
-      let cursor = matchEndKey;
-
-      while (cursor < targetLang.length && /\s/.test(targetLang[cursor])) {
-        cursor += 1;
-      }
-      while (cursor < targetLang.length && !/\s/.test(targetLang[cursor])) {
-        cursor += 1;
-      }
-
-      const delta = cursor - matchEndKey;
-      setLengthAdjustmentState(lengthAdjustmentState + delta);
-      return;
-    }
-
-    setLengthAdjustmentState(lengthAdjustmentState + 1);
-  };
-
-  const onMoveLeft = () => {
-    if (matchStartKey <= 0) return;
-
-    if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
-      let cursor = matchStartKey - 1;
-
-      while (cursor >= 0 && /\s/.test(targetLang[cursor])) {
-        cursor -= 1;
-      }
-      while (cursor >= 0 && !/\s/.test(targetLang[cursor])) {
-        cursor -= 1;
-      }
-
-      const previousWordStart = Math.max(0, cursor + 1);
-      setStartIndexKeyState(previousWordStart - suggestedFocusStartIndex);
-      return;
-    }
-
-    setStartIndexKeyState(startIndexKeyState - 1);
-  };
-
-  const onMoveRight = () => {
-    if (matchEndKey >= targetLang.length) return;
-
-    if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
-      let cursor = matchStartKey + 1;
-
-      while (cursor < targetLang.length && !/\s/.test(targetLang[cursor])) {
-        cursor += 1;
-      }
-      while (cursor < targetLang.length && /\s/.test(targetLang[cursor])) {
-        cursor += 1;
-      }
-
-      const nextWordStart = Math.min(cursor, targetLang.length - 1);
-      setStartIndexKeyState(nextWordStart - suggestedFocusStartIndex);
-      return;
-    }
-
-    setStartIndexKeyState(startIndexKeyState + 1);
-  };
+  const {
+    onContractLength,
+    onExpandLength,
+    onMoveLeft,
+    onMoveRight,
+    textMatch,
+    matchStartKey,
+    matchEndKey,
+    before,
+    after,
+  } = useSnippetHandleActionsHook({
+    targetLang,
+    focusText: overlappingTextMemoized?.suggestedFocusText,
+    isLoadingSaveSnippetState,
+    suggestedTextStartIndex: suggestedFocusStartIndex,
+    languageSelectedState,
+  });
 
   useSnippetLoopEvents({
     enabled: true,
