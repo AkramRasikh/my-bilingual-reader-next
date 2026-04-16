@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import FormattedSentence from '../FormattedSentence';
 import useLearningScreen from '../../../app/LearningScreen/useLearningScreen';
 import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import clsx from 'clsx';
 import TranscriptItemSecondaryLoadingIndicators from './TranscriptItemSecondaryLoadingIndicators';
+import HighlightedText from '../HighlightedText';
 
 const TranscriptItemSecondary = ({
   contentItem,
@@ -14,10 +15,14 @@ const TranscriptItemSecondary = ({
 }) => {
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const [isLoadingState, setIsLoadingState] = useState(false);
+  const [highlightedTextState, setHighlightedTextState] = useState('');
 
   const { wordsState, handleDeleteWordDataProvider } = useFetchData();
   const { wordsForSelectedTopic, selectedContentTitleState } =
     useLearningScreen();
+
+  const transcriptItemContainerRef = useRef(null);
+  const outsideClickContainerRef = useRef(null);
 
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -25,6 +30,64 @@ const TranscriptItemSecondary = ({
   const wordsFromSentence = contentItem?.wordsFromSentence;
   const baseLang = contentItem?.baseLang;
   const targetLangformatted = contentItem.targetLangformatted;
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        highlightedTextState &&
+        outsideClickContainerRef.current &&
+        !outsideClickContainerRef.current.contains(event.target)
+      ) {
+        setHighlightedTextState(''); // or whatever action you need
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [outsideClickContainerRef, highlightedTextState]);
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      const selection = window.getSelection();
+      const selectedText = selection?.toString().trim();
+
+      const anchorNode = selection?.anchorNode;
+      if (
+        !anchorNode ||
+        !transcriptItemContainerRef.current?.contains(anchorNode)
+      )
+        return;
+
+      setHighlightedTextState(selectedText || '');
+    };
+
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
+  const handleSaveHighlightedWordFunc = async (isGoogle: boolean) => {
+    if (!highlightedTextState) {
+      return null;
+    }
+    try {
+      setIsLoadingState(true);
+      await handleSaveWord({
+        highlightedWord: highlightedTextState,
+        highlightedWordSentenceId: contentItem.id,
+        contextSentence: contentItem.targetLang,
+        isGoogle,
+        originalContext: selectedContentTitleState,
+        time: contentItem?.time,
+      });
+    } finally {
+      setHighlightedTextState('');
+      setWordPopUpState([]);
+      setIsLoadingState(false);
+    }
+  };
 
   const handleSaveFunc = async (isGoogle, thisWord, thisWordMeaning) => {
     if (!thisWord) {
@@ -73,6 +136,7 @@ const TranscriptItemSecondary = ({
 
   return (
     <div
+      ref={outsideClickContainerRef}
       className={clsx(
         'flex flex-row gap-2 rounded-2xl border-2 p-2 mt-2',
         isDue
@@ -90,6 +154,7 @@ const TranscriptItemSecondary = ({
       />
       <div data-testid='transcript-item-secondary' className='relative mr-7'>
         <FormattedSentence
+          ref={transcriptItemContainerRef}
           targetLangformatted={targetLangformatted}
           handleMouseLeave={handleMouseLeave}
           handleMouseEnter={handleMouseEnter}
@@ -112,6 +177,13 @@ const TranscriptItemSecondary = ({
               languageSelectedState={languageSelectedState}
             />
           </>
+        )}
+        {highlightedTextState && (
+          <HighlightedText
+            isLoadingState={isLoadingState}
+            handleSaveFunc={handleSaveHighlightedWordFunc}
+            highlightedTextState={highlightedTextState}
+          />
         )}
       </div>
     </div>
