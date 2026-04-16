@@ -4,12 +4,17 @@ import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import LearningScreenThreeSecondLoopEl from './LearningScreenThreeSecondLoopEl';
 import useLearningScreen from './useLearningScreen';
+import { LanguageEnum } from '../languages';
 
 type LearningScreenVideoPlayerProps = {
   url: string;
+  languageSelectedState: LanguageEnum;
 };
 
-const LearningScreenVideoPlayer = ({ url }: LearningScreenVideoPlayerProps) => {
+const LearningScreenVideoPlayer = ({
+  url,
+  languageSelectedState,
+}: LearningScreenVideoPlayerProps) => {
   const {
     ref,
     handleTimeUpdate,
@@ -105,6 +110,7 @@ const LearningScreenVideoPlayer = ({ url }: LearningScreenVideoPlayerProps) => {
               isLoadingSaveSnippetState={isLoadingSaveSnippetState}
               highlightedTextFocusLoopState={highlightedTextFocusLoopState}
               onSaveSnippetClick={handleSaveSnippetFlow}
+              languageSelectedState={languageSelectedState}
             />
           </div>
         </div>
@@ -132,4 +138,3 @@ const LearningScreenVideoPlayer = ({ url }: LearningScreenVideoPlayerProps) => {
 };
 
 export default LearningScreenVideoPlayer;
-

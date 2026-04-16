@@ -58,7 +58,10 @@ const LearningScreenLeftSideContainer = () => {
   return (
     <div className='flex-1 w-xl mx-auto'>
       {!errorVideoState ? (
-        <LearningScreenVideoPlayer url={videoUrl} />
+        <LearningScreenVideoPlayer
+          url={videoUrl}
+          languageSelectedState={languageSelectedState}
+        />
       ) : (
         <div>
           <AudioPlayer

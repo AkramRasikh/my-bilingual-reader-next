@@ -34,16 +34,16 @@ export const highlightSnippetTextApprox = (
   isLoadingSaveSnippetState: boolean,
   startIndexKeyState: number,
   lengthAdjustmentState: number,
-  suggestedFocusStartIndex: number
+  suggestedFocusStartIndex: number,
 ) => {
   if (suggestedFocusStartIndex === -1) return fullText; // no suitable match
 
   const textStartIndex = suggestedFocusStartIndex + startIndexKeyState; //✅
-  const textEndIndex = textStartIndex + initText.length + lengthAdjustmentState
+  const textEndIndex = textStartIndex + initText.length + lengthAdjustmentState;
 
-  const before = fullText.slice(0, textStartIndex)
-  const textMatch = fullText.slice(textStartIndex, textEndIndex )
-  const after = fullText.slice(textEndIndex)
+  const before = fullText.slice(0, textStartIndex);
+  const textMatch = fullText.slice(textStartIndex, textEndIndex);
+  const after = fullText.slice(textEndIndex);
 
   const opacityClass = isLoadingSaveSnippetState ? 'opacity-50' : '';
   return {
@@ -51,5 +51,7 @@ export const highlightSnippetTextApprox = (
     textMatch,
     matchStartKey: textStartIndex,
     matchEndKey: textEndIndex,
+    before,
+    after,
   };
 };
