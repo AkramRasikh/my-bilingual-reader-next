@@ -400,6 +400,7 @@ const SnippetReview = ({
     if (!isReadyForQuickReview) return;
 
     const handleSaveGamePad = async () => {
+      if (matchStartWordState === null) return;
       const matchingWordData = togglableWordDataArrMemo?.[matchStartWordState];
       if (!matchingWordData) {
         return null;
@@ -435,7 +436,7 @@ const SnippetReview = ({
         handlePlaySnippet();
       }
       // R2
-      if (gamepad.buttons[7]?.pressed) {
+      if (gamepad.buttons[7]?.pressed && matchStartWordState !== null) {
         setMatchStartWordState(
           Math.min(
             togglableWordDataArrMemo.length - 1,
@@ -445,7 +446,7 @@ const SnippetReview = ({
       }
 
       // R1
-      if (gamepad.buttons[9]?.pressed) {
+      if (gamepad.buttons[9]?.pressed && matchStartWordState !== null) {
         setMatchStartWordState(Math.max(0, matchStartWordState - 1));
       }
 
