@@ -1,5 +1,13 @@
 export async function POST(req: Request) {
-  const body = await req.json();
+  const body = (await req.json()) as {
+    id: string;
+    indexKey: string;
+    targetLang: string;
+    language: string;
+    prevSentence?: string;
+    nextSentence?: string;
+    contentDescription?: string;
+  };
 
   const url = process.env.NEXT_PUBLIC_BREAKDOWN_SENTENCE_URL as string;
 

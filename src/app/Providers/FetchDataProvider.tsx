@@ -43,6 +43,9 @@ interface BreakDownSentenceCallTypes {
   sentenceId: ContentTranscriptTypes['id'];
   targetLang: ContentTranscriptTypes['targetLang'];
   contentIndex: ContentStateTypes['contentIndex'];
+  prevSentence?: string;
+  nextSentence?: string;
+  contentDescription?: string;
 }
 interface SentenceReviewBulkCallTypes {
   reviewData: ReviewDataTypes;
@@ -353,7 +356,11 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     sentenceId,
     targetLang,
     contentIndex,
+    prevSentence,
+    nextSentence,
+    contentDescription,
   }: BreakDownSentenceCallTypes) => {
+    //
     try {
       const sentenceBreakdownRes = (await apiRequestWrapper({
         url: '/api/breakdownSentence',
@@ -361,6 +368,9 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
           id: sentenceId,
           indexKey,
           targetLang,
+          prevSentence,
+          nextSentence,
+          contentDescription,
           language: languageSelectedState,
         },
       })) as Partial<ContentTranscriptTypes>;

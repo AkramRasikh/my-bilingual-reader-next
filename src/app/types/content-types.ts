@@ -9,6 +9,7 @@ export interface ContentTypes {
   title: string;
   url: string;
   origin?: string;
+  description?: string;
   nextReview?: Date;
   reviewHistory?: Date[];
   snippets?: Snippet[];

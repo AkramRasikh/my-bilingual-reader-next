@@ -286,6 +286,11 @@ export const LearningScreenProvider = ({
   } = useFetchData();
 
   const selectedContentTitleState = selectedContentStateMemoized.title;
+  const selectedContentDescriptionState = selectedContentStateMemoized?.description;
+  const fallbackYoutubeDescription =
+    selectedContentStateMemoized.origin === 'youtube'
+      ? `This is a youtube video from ${selectedContentStateMemoized.url}`
+      : undefined;
   const content = selectedContentStateMemoized.content;
   const contentIndex = selectedContentStateMemoized.contentIndex;
   const contentId = selectedContentStateMemoized.id;
@@ -735,6 +740,12 @@ export const LearningScreenProvider = ({
       return null;
     }
 
+
+    const prevSentence =
+      formattedTranscriptMemoized[masterPlayComprehensive.index - 1]?.targetLang;
+    const nextSentence =
+      formattedTranscriptMemoized[masterPlayComprehensive.index + 1]?.targetLang;
+
     try {
       setIsBreakingDownSentenceArrState((prev) => [
         ...prev,
@@ -745,6 +756,9 @@ export const LearningScreenProvider = ({
         sentenceId: masterPlayComprehensive.id,
         targetLang: masterPlayComprehensive.targetLang,
         contentIndex,
+        prevSentence,
+        nextSentence,
+        contentDescription: selectedContentDescriptionState || fallbackYoutubeDescription,
       });
     } finally {
       setIsBreakingDownSentenceArrState((prev) =>
@@ -888,20 +902,34 @@ export const LearningScreenProvider = ({
         prev.filter((item) => item !== masterPlayComprehensive.id),
       );
     }
-  };
+  };  
 
   const handleBreakdownSentence = async ({
     sentenceId,
   }: {
     sentenceId: string;
   }) => {
-    const targetLangSentence = sentenceMapMemoized[sentenceId].targetLang;
+    const sentenceData = sentenceMapMemoized[sentenceId];
+    if (!sentenceData) {
+      return;
+    }
+
+    const targetLangSentence = sentenceData.targetLang;
+    const prevSentence =
+      formattedTranscriptMemoized[sentenceData.index - 1]?.targetLang;
+    const nextSentence =
+      formattedTranscriptMemoized[sentenceData.index + 1]?.targetLang;
+
     try {
       setIsBreakingDownSentenceArrState((prev) => [...prev, sentenceId]);
       await breakdownSentence({
         indexKey: selectedContentStateMemoized.id,
         sentenceId,
         targetLang: targetLangSentence,
+        prevSentence,
+        nextSentence,
+        contentDescription:
+          selectedContentDescriptionState || fallbackYoutubeDescription,
         contentIndex,
       });
     } finally {
