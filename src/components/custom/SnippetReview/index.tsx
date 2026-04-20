@@ -84,6 +84,12 @@ const SnippetReview = ({
     useState(false);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [isLoadingWordState, setIsLoadingWordState] = useState(false);
+  const [matchStartWordState, setMatchStartWordState] = useState<null | number>(
+    null,
+  );
+  const [wordIsLoadingGamePadState, setWordIsLoadingGamePadState] = useState<
+    null | number
+  >(null);
   const thisIsPlaying =
     isVideoPlaying && threeSecondLoopState === snippetData.time;
   const isPreSnippet = snippetData?.isPreSnippet;
@@ -333,35 +339,6 @@ const SnippetReview = ({
     },
   });
 
-  useEffect(() => {
-    if (!isReadyForQuickReview) return;
-
-    const handleGamepadPress = () => {
-      const gamepads = navigator.getGamepads();
-      // Find the first connected gamepad
-      const gamepad = Array.from(gamepads).find((gp) => gp !== null);
-
-      if (!gamepad) {
-        return;
-      }
-
-      // Only trigger if B button (1) is pressed AND L button (6) is NOT pressed
-      // This prevents L+B combo from also triggering the play action
-      if (gamepad.buttons[1]?.pressed && !gamepad.buttons[8]?.pressed) {
-        handlePlaySnippet();
-      }
-    };
-
-    const intervalId = setInterval(handleGamepadPress, 100);
-
-    return () => clearInterval(intervalId);
-  }, [
-    isReadyForQuickReview,
-    thisIsPlaying,
-    snippetData.time,
-    snippetData.isContracted,
-  ]);
-
   // Function to get the second representation for a given index in the matchKey range
   const getSecondForIndex = (index) => {
     if (
@@ -395,6 +372,110 @@ const SnippetReview = ({
     isReadyForQuickReview,
     getSecondForIndex,
   });
+
+  const togglableWordDataArrMemo = useMemo(() => {
+    const togglableWordDataArr = [];
+    const togglableWordDataStartIndexes = [];
+    if (isReadyForQuickReview) {
+      targetLangWithVocabStartIndex.forEach((item) => {
+        if (
+          item?.meaning &&
+          item.meaning !== 'n/a' &&
+          !togglableWordDataStartIndexes.includes(item.startIndex)
+        ) {
+          togglableWordDataStartIndexes.push(item.startIndex);
+          const endIndex = item.index + item.surfaceForm.length - 1;
+          togglableWordDataArr.push({
+            ...item,
+            endIndex,
+          });
+        }
+      });
+    }
+
+    return togglableWordDataArr;
+  }, [targetLangWithVocabStartIndex]);
+
+  useEffect(() => {
+    if (!isReadyForQuickReview) return;
+
+    const handleSaveGamePad = async () => {
+      console.log('## handleSaveGamePad 1');
+      const matchingWordData = togglableWordDataArrMemo?.[matchStartWordState];
+      if (!matchingWordData) {
+        return null;
+      }
+
+      const surfaceForm = matchingWordData.surfaceForm;
+      const meaning = matchingWordData.meaning;
+
+      console.log('## handleSaveGamePad 2', { surfaceForm, meaning });
+
+      if (wordIsLoadingGamePadState === matchingWordData.index) {
+        console.log('## blocked save');
+        return;
+      }
+      try {
+        setWordIsLoadingGamePadState(matchingWordData.index);
+        await handleSaveFunc(false, surfaceForm, meaning);
+      } catch {
+      } finally {
+        setWordIsLoadingGamePadState(null);
+      }
+    };
+    const handleGamepadPress = () => {
+      const gamepads = navigator.getGamepads();
+      // Find the first connected gamepad
+      const gamepad = Array.from(gamepads).find((gp) => gp !== null);
+
+      if (!gamepad) {
+        return;
+      }
+
+      // Only trigger if B button (1) is pressed AND L button (6) is NOT pressed
+      // This prevents L+B combo from also triggering the play action
+      if (gamepad.buttons[1]?.pressed && !gamepad.buttons[8]?.pressed) {
+        handlePlaySnippet();
+      }
+      // R2
+      if (gamepad.buttons[7]?.pressed) {
+        setMatchStartWordState(
+          Math.min(
+            togglableWordDataArrMemo.length - 1,
+            matchStartWordState + 1,
+          ),
+        );
+      }
+
+      // R1
+      if (gamepad.buttons[9]?.pressed) {
+        setMatchStartWordState(Math.max(0, matchStartWordState - 1));
+      }
+
+      // L2 + '-' 6 + 10
+      if (gamepad.buttons[6]?.pressed && gamepad.buttons[10]?.pressed) {
+        handleSaveGamePad();
+        return;
+      }
+    };
+
+    const intervalId = setInterval(handleGamepadPress, 100);
+
+    return () => clearInterval(intervalId);
+  }, [
+    togglableWordDataArrMemo.length,
+    matchStartWordState,
+    isReadyForQuickReview,
+    thisIsPlaying,
+    snippetData.time,
+    snippetData.isContracted,
+  ]);
+
+  useEffect(() => {
+    if (matchStartWordState === null && togglableWordDataArrMemo.length > 0) {
+      setMatchStartWordState(0);
+    }
+  }, [togglableWordDataArrMemo.length, matchStartWordState]);
 
   const pinyinStart = Math.max(0, matchStartKey - 5);
 
@@ -455,6 +536,10 @@ const SnippetReview = ({
                     handleSaveFunc={handleSaveFunc}
                     currentTime={currentTime}
                     isReadyForQuickReview={isReadyForQuickReview}
+                    matchStartWordState={matchStartWordState}
+                    setMatchStartWordState={setMatchStartWordState}
+                    togglableWordDataArrMemo={togglableWordDataArrMemo}
+                    wordIsLoadingGamePadState={wordIsLoadingGamePadState}
                   />
                 </div>
                 {isChinese ||

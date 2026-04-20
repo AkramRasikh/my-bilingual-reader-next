@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import FormattedSentenceSnippetProgressWidget from './SnippetReviewProgressWidget';
 import { arabic, chinese } from '@/app/languages';
 import HoverWordCard from '@/components/custom/HoverWordCard';
@@ -19,9 +19,17 @@ const FormattedSentenceSnippet = ({
   handleSaveFunc,
   currentTime,
   isReadyForQuickReview,
+  matchStartWordState,
+  togglableWordDataArrMemo,
+  wordIsLoadingGamePadState,
 }) => {
   const isArabic = languageSelectedState === arabic;
   const isChinese = languageSelectedState === chinese;
+
+  const matchingWordData = togglableWordDataArrMemo?.[matchStartWordState];
+  const matchingStartIndex = matchingWordData?.index;
+  const matchingEndIndex =
+    togglableWordDataArrMemo?.[matchStartWordState]?.endIndex;
 
   return (
     <span
@@ -73,8 +81,31 @@ const FormattedSentenceSnippet = ({
         }
 
         if (!(item?.meaning === 'n/a' && surfaceFormBreakdown)) {
+          // console.log('## is broken down but not saved', text);
+          const low = Math.min(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
+          const high = Math.max(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
+          const animateText =
+            matchingStartIndex !== undefined &&
+            matchingEndIndex !== undefined &&
+            indexNested >= low &&
+            indexNested <= high;
+          const animateTextIsLoading =
+            animateText &&
+            wordIsLoadingGamePadState >= low &&
+            wordIsLoadingGamePadState <= high;
+
           return (
-            <span key={indexNested} className={'relative'}>
+            <span
+              key={indexNested}
+              className={clsx(
+                'relative',
+                animateTextIsLoading
+                  ? 'text-xl font-bold animate-ping opacity-50 italic'
+                  : animateText
+                    ? 'text-xl font-bold animate-pulse'
+                    : '',
+              )}
+            >
               {isReadyForQuickReview && (
                 <FormattedSentenceSnippetProgressWidget played={played} />
               )}
