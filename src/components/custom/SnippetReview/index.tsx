@@ -400,7 +400,6 @@ const SnippetReview = ({
     if (!isReadyForQuickReview) return;
 
     const handleSaveGamePad = async () => {
-      console.log('## handleSaveGamePad 1');
       const matchingWordData = togglableWordDataArrMemo?.[matchStartWordState];
       if (!matchingWordData) {
         return null;
@@ -409,10 +408,8 @@ const SnippetReview = ({
       const surfaceForm = matchingWordData.surfaceForm;
       const meaning = matchingWordData.meaning;
 
-      console.log('## handleSaveGamePad 2', { surfaceForm, meaning });
-
       if (wordIsLoadingGamePadState === matchingWordData.index) {
-        console.log('## blocked save');
+// blocked save due to loading state  
         return;
       }
       try {
