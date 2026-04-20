@@ -61,7 +61,7 @@ interface SentenceReviewBulkAPIResponseCallTypes {
 
 interface UpdateContentMetaDataCallTypes {
   fieldToUpdate: Partial<
-    Pick<ContentStateTypes, 'nextReview' | 'reviewHistory' | 'snippets'>
+    Pick<ContentStateTypes, 'nextReview' | 'reviewHistory' | 'snippets' | 'description'>
   >;
   contentId: ContentStateTypes['id'];
   contentIndex: ContentStateTypes['contentIndex'];

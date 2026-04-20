@@ -1,39 +1,62 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import LoadingSpinner from '../../../components/custom/LoadingSpinner';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { TabsContent } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import useLearningScreen from '../useLearningScreen';
 import ClickAndConfirm from '@/components/custom/ClickAndConfirm';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { getCloudflareVideoURL } from '@/utils/get-media-url';
 
-const LearningScreenTabMeta = ({ updateContentMetaData }) => {
+const LearningScreenTabMeta = () => {
   const [showConfirmDeleteVideo, setShowConfirmDeleteVideo] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const { deleteContent, deleteVideo, languageSelectedState } = useFetchData();
+  const { updateContentMetaData, deleteContent, deleteVideo, languageSelectedState } = useFetchData();
 
   const { selectedContentState, wordsForSelectedTopic } = useLearningScreen();
 
   const url = selectedContentState?.url;
   const reviewHistory = selectedContentState?.reviewHistory;
+  const description = selectedContentState?.description;
+  const origin = selectedContentState?.origin;
   const title = selectedContentState?.title;
   const contentIndex = selectedContentState?.contentIndex;
   const contentId = selectedContentState.id;
 
-  const hasBeenReviewed = reviewHistory?.length > 0;
+  const hasBeenReviewed = Boolean(reviewHistory?.length);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [descriptionInputState, setDescriptionInputState] = useState('');
+  const [savedDescriptionState, setSavedDescriptionState] = useState('');
+  const [isDescriptionLoading, setIsDescriptionLoading] = useState(false);
+
+  const fallbackDescription = useMemo(() => {
+    if (origin === 'youtube' && url) {
+      return `This is a youtube video from ${url}`;
+    }
+    return '';
+  }, [origin, url]);
+
+  useEffect(() => {
+    const startDescription = description || fallbackDescription;
+    setDescriptionInputState(startDescription);
+    setSavedDescriptionState(startDescription);
+  }, [description, fallbackDescription, contentId]);
+
+  const hasUnsavedDescriptionChanges =
+    descriptionInputState.trim() !== savedDescriptionState.trim();
 
   const today = new Date();
 
   const updateExistingReviewHistory = () => {
-    return [...reviewHistory, new Date()];
+    return [...(reviewHistory || []), new Date()];
   };
 
-  const setFutureReviewDate = (today) => {
+  const setFutureReviewDate = (today: Date) => {
     const futureDateWithDays = new Date(today.setDate(today.getDate() + 3));
 
     return futureDateWithDays;
@@ -48,7 +71,7 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
           contentId,
           fieldToUpdate: {
             reviewHistory: [],
-            nextReview: null,
+            nextReview: undefined,
           },
         });
       } else {
@@ -80,7 +103,7 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
         title,
         wordIds: wordsForSelectedTopic?.map((item) => item.id),
       });
-    } catch (error) {
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -102,6 +125,29 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
       console.error('Error deleting video:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleUpdateDescription = async () => {
+    if (!hasUnsavedDescriptionChanges) {
+      return;
+    }
+
+    try {
+      setIsDescriptionLoading(true);
+      const nextDescription = descriptionInputState.trim();
+      await updateContentMetaData({
+        contentIndex,
+        contentId,
+        fieldToUpdate: {
+          description: nextDescription,
+        },
+      });
+      setSavedDescriptionState(nextDescription);
+    } catch (error) {
+      console.log('## handleUpdateDescription error', error);
+    } finally {
+      setIsDescriptionLoading(false);
     }
   };
 
@@ -131,6 +177,31 @@ const LearningScreenTabMeta = ({ updateContentMetaData }) => {
           >
             {url}
           </a>
+        </div>
+
+        <div className='w-full'>
+          <Label className='mb-2 block'>Description</Label>
+          <Textarea
+            value={descriptionInputState}
+            onChange={(e) => setDescriptionInputState(e.target.value)}
+            placeholder={fallbackDescription || 'Add a description'}
+            disabled={isDescriptionLoading}
+            className='min-h-24'
+          />
+          <div className='mt-2 flex items-center justify-between'>
+            <span className='text-xs text-muted-foreground'>
+              {hasUnsavedDescriptionChanges
+                ? 'Unsaved changes'
+                : 'No changes'}
+            </span>
+            <Button
+              onClick={handleUpdateDescription}
+              disabled={!hasUnsavedDescriptionChanges || isDescriptionLoading}
+              size='sm'
+            >
+              {isDescriptionLoading ? 'Saving...' : 'Save description'}
+            </Button>
+          </div>
         </div>
 
         <div>

@@ -32,7 +32,10 @@ export type ContentAction =
     }
   | {
       fields: Partial<
-        Pick<ContentStateTypes, 'nextReview' | 'reviewHistory' | 'snippets'>
+        Pick<
+          ContentStateTypes,
+          'nextReview' | 'reviewHistory' | 'snippets' | 'description'
+        >
       >;
       contentIndex: ContentStateTypes['contentIndex'];
       type: 'updateMetaData';

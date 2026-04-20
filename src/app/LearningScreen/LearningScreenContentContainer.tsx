@@ -4,10 +4,8 @@ import LearningScreenTabSelection from './TabContent/LearningScreenTabSelection'
 import useLearningScreen from './useLearningScreen';
 import LearningScreenTabTranscript from './TabContent/LearningScreenTabTranscript';
 import LearningScreenTabWords from './TabContent/LearningScreenTabWords';
-import { useFetchData } from '../Providers/FetchDataProvider';
 
 const LearningScreenContentContainer = () => {
-  const { updateContentMetaData } = useFetchData();
   const { selectedContentState } = useLearningScreen();
 
   const topicName = selectedContentState?.title;
@@ -18,7 +16,7 @@ const LearningScreenContentContainer = () => {
         <LearningScreenTabSelection topicName={topicName} />
         <LearningScreenTabTranscript />
         <LearningScreenTabWords />
-        <LearningScreenTabMeta updateContentMetaData={updateContentMetaData} />
+        <LearningScreenTabMeta />
       </Tabs>
     </div>
   );
