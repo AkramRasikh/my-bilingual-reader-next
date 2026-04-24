@@ -3,26 +3,37 @@ import FormattedSentence from '../FormattedSentence';
 import useLearningScreen from '../../../app/LearningScreen/useLearningScreen';
 import SentenceBreakdown from '@/components/custom/SentenceBreakdown';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
+import { FormattedTranscriptTypes } from '@/app/types/content-types';
+import { WordTypes } from '@/app/types/word-types';
+import { HandleSaveWordCallTypes } from '@/app/Providers/FetchDataProvider';
 import clsx from 'clsx';
 import TranscriptItemSecondaryLoadingIndicators from './TranscriptItemSecondaryLoadingIndicators';
 import HighlightedText from '../HighlightedText';
 
+interface TranscriptItemSecondaryProps {
+  contentItem: FormattedTranscriptTypes;
+  handleSaveWord: (params: HandleSaveWordCallTypes) => Promise<unknown>;
+  handleDeleteWordDataProvider: (params: { wordId: string }) => Promise<unknown>;
+  isBreakdownSentenceLoadingState: boolean;
+  languageSelectedState: string;
+}
+
 const TranscriptItemSecondary = ({
   contentItem,
   handleSaveWord,
+  handleDeleteWordDataProvider,
   isBreakdownSentenceLoadingState,
   languageSelectedState,
-}) => {
-  const [wordPopUpState, setWordPopUpState] = useState([]);
+}: TranscriptItemSecondaryProps) => {
+  const [wordPopUpState, setWordPopUpState] = useState<WordTypes[]>([]);
   const [isLoadingState, setIsLoadingState] = useState(false);
   const [highlightedTextState, setHighlightedTextState] = useState('');
 
-  const { wordsState, handleDeleteWordDataProvider } = useFetchData();
-  const { wordsForSelectedTopic, selectedContentTitleState } =
-    useLearningScreen();
+  const { wordsState } = useFetchData();
+  const { selectedContentTitleState } = useLearningScreen();
 
-  const transcriptItemContainerRef = useRef(null);
-  const outsideClickContainerRef = useRef(null);
+  const transcriptItemContainerRef = useRef<HTMLElement | null>(null);
+  const outsideClickContainerRef = useRef<HTMLDivElement | null>(null);
 
   const hoverTimerMasterRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -36,7 +47,7 @@ const TranscriptItemSecondary = ({
       if (
         highlightedTextState &&
         outsideClickContainerRef.current &&
-        !outsideClickContainerRef.current.contains(event.target)
+        !outsideClickContainerRef.current.contains(event.target as Node)
       ) {
         setHighlightedTextState(''); // or whatever action you need
       }
@@ -89,7 +100,11 @@ const TranscriptItemSecondary = ({
     }
   };
 
-  const handleSaveFunc = async (isGoogle, thisWord, thisWordMeaning) => {
+  const handleSaveFunc = async (
+    isGoogle: boolean,
+    thisWord: string,
+    thisWordMeaning?: string,
+  ) => {
     if (!thisWord) {
       return;
     }
@@ -110,7 +125,7 @@ const TranscriptItemSecondary = ({
     }
   };
 
-  const handleMouseEnter = (text) => {
+  const handleMouseEnter = (text: string) => {
     hoverTimerMasterRef.current = setTimeout(() => {
       const wordsAmongstHighlightedText = wordsState?.filter((item) => {
         if (item.baseForm === text || item.surfaceForm === text) {
@@ -158,11 +173,13 @@ const TranscriptItemSecondary = ({
           targetLangformatted={targetLangformatted}
           handleMouseLeave={handleMouseLeave}
           handleMouseEnter={handleMouseEnter}
-          wordsForSelectedTopic={wordsForSelectedTopic}
           handleDeleteWordDataProvider={handleDeleteWordDataProvider}
           wordPopUpState={wordPopUpState}
           setWordPopUpState={setWordPopUpState}
           wordsFromSentence={wordsFromSentence}
+          languageSelectedState={languageSelectedState}
+          matchStartKey={undefined}
+          matchEndKey={undefined}
         />
         <p className='mb-2'>{baseLang}</p>
         {hasSentenceBreakdown && (
@@ -171,10 +188,10 @@ const TranscriptItemSecondary = ({
             <SentenceBreakdown
               vocab={contentItem.vocab}
               meaning={contentItem.meaning}
-              sentenceStructure={contentItem.sentenceStructure}
               handleSaveFunc={handleSaveFunc}
               thisSentencesSavedWords={wordsFromSentence}
               languageSelectedState={languageSelectedState}
+              handleBreakdownSentence={async () => {}}
             />
           </>
         )}

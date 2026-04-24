@@ -3,7 +3,6 @@ import FormattedSentence from '@/components/custom/FormattedSentence';
 import useTranscriptItem from './useTranscriptItem';
 import SentenceBreakdown from '../SentenceBreakdown';
 import { arabic } from '@/app/languages';
-import { useFetchData } from '@/app/Providers/FetchDataProvider';
 
 const TranscriptItemContent = () => {
   const {
@@ -16,11 +15,10 @@ const TranscriptItemContent = () => {
     handleMouseLeave,
     masterPlay,
     handleSaveFunc,
+    handleDeleteFunc,
     onlyShowEngState,
     languageSelectedState,
   } = useTranscriptItem();
-
-  const { handleDeleteWordDataProvider } = useFetchData(); // must be moved!!
 
   const baseLang = contentItem.baseLang;
   const transliteration = contentItem?.transliteration;
@@ -59,7 +57,7 @@ const TranscriptItemContent = () => {
               handleMouseEnter={handleMouseEnter}
               wordPopUpState={wordPopUpState}
               setWordPopUpState={setWordPopUpState}
-              handleDeleteWordDataProvider={handleDeleteWordDataProvider}
+              handleDeleteWordDataProvider={handleDeleteFunc}
               wordsFromSentence={wordsFromSentence}
               languageSelectedState={languageSelectedState}
             />

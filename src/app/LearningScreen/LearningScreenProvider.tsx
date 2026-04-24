@@ -16,6 +16,11 @@ import {
 } from './hooks/useSavedSnippetsMemoized';
 import { useOverlappedSentencesViableForReviewMemo } from './hooks/useOverlappedSentencesViableForReviewMemo';
 import { useFetchData } from '../Providers/FetchDataProvider';
+import {
+  HandleDeleteWordDataProviderCallTypes,
+  HandleSaveWordCallTypes,
+  UpdateWordDataProviderCallTypes,
+} from '../Providers/FetchDataProvider';
 import { WordTypes } from '../types/word-types';
 import { isTrimmedLang } from '../languages';
 import useManageThreeSecondLoopMemo from './hooks/useManageThreeSecondLoopMemo';
@@ -165,10 +170,12 @@ export interface LearningScreenContextTypes {
   wordsForSelectedTopic: WordTypes[];
   selectedContentState: ContentTypes & { contentIndex: number };
   sentenceRepsState: number;
+  wordRepsState: number;
   elapsed: number;
   setElapsed: React.Dispatch<React.SetStateAction<number>>;
   playFromThisContext: (contextId: FormattedTranscriptTypes['id']) => void;
   setSentenceRepsState: React.Dispatch<React.SetStateAction<number>>;
+  setWordRepsState: React.Dispatch<React.SetStateAction<number>>;
   sentencesNeedReview: number;
   sentencesPendingOrDue: number;
   contentMetaWordMemoized: WordTypes[];
@@ -211,6 +218,13 @@ export interface LearningScreenContextTypes {
   reviewIntervalState: number;
   setReviewIntervalState: React.Dispatch<React.SetStateAction<number>>;
   snippetsWithDueStatusMemoized: Snippet[];
+  handleSaveWord: (params: HandleSaveWordCallTypes) => Promise<unknown>;
+  handleDeleteWordDataProvider: (
+    params: HandleDeleteWordDataProviderCallTypes,
+  ) => Promise<boolean | void>;
+  updateWordDataProvider: (
+    params: UpdateWordDataProviderCallTypes,
+  ) => Promise<unknown>;
 }
 
 export const LearningScreenContext =
@@ -238,9 +252,11 @@ export const LearningScreenProvider = ({
 
   const [scrollToElState, setScrollToElState] = useState('');
   const [sentenceRepsState, setSentenceRepsState] = useState(0);
+  const [wordRepsState, setWordRepsState] = useState(0);
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState<
     number | null
   >(null);
+
   const [isGenericItemsLoadingArrayState, setIsGenericItemsLoadingArrayState] =
     useState<SentenceMapItemTypes['id'][]>([]);
   const [snippetLoadingState, setSnippetLoadingState] = useState<string[]>([]);
@@ -280,13 +296,52 @@ export const LearningScreenProvider = ({
     sentenceReviewBulk,
     updateSentenceData,
     languageSelectedState,
+    handleSaveWord: handleSaveWordFetchData,
+    handleDeleteWordDataProvider: handleDeleteWordDataProviderFetchData,
+    updateWordDataProvider: updateWordDataProviderFetchData,
     handleSaveSnippetFetchProvider,
     handleDeleteSnippetFetchProvider,
     sentenceDataKeyMapped,
   } = useFetchData();
 
+  const handleSaveWord = async (params: HandleSaveWordCallTypes) => {
+    console.log('## params handleSaveWord', params);
+
+    const response = (await handleSaveWordFetchData(params)) as unknown;
+    console.log('## response handleSaveWord 1', response);
+    if (Boolean(response)) {
+      console.log('## response handleSaveWord 2', response);
+      setWordRepsState((prev) => prev + 1);
+    }
+    return response;
+  };
+
+  const handleDeleteWordDataProvider = async (
+    params: HandleDeleteWordDataProviderCallTypes,
+  ) => {
+    const response = (await handleDeleteWordDataProviderFetchData(
+      params,
+    )) as unknown;
+    if (Boolean(response)) {
+      setWordRepsState((prev) => prev + 1);
+    }
+    return response as boolean | void;
+  };
+
+  const updateWordDataProvider = async (
+    params: UpdateWordDataProviderCallTypes,
+  ) => {
+    const response = (await updateWordDataProviderFetchData(params)) as unknown;
+    const isWordData = (params as { isWordData?: boolean }).isWordData;
+    if (Boolean(response) && !isWordData) {
+      setWordRepsState((prev) => prev + 1);
+    }
+    return response;
+  };
+
   const selectedContentTitleState = selectedContentStateMemoized.title;
-  const selectedContentDescriptionState = selectedContentStateMemoized?.description;
+  const selectedContentDescriptionState =
+    selectedContentStateMemoized?.description;
   const fallbackYoutubeDescription =
     selectedContentStateMemoized.origin === 'youtube'
       ? `This is a youtube video from ${selectedContentStateMemoized.url}`
@@ -740,11 +795,12 @@ export const LearningScreenProvider = ({
       return null;
     }
 
-
     const prevSentence =
-      formattedTranscriptMemoized[masterPlayComprehensive.index - 1]?.targetLang;
+      formattedTranscriptMemoized[masterPlayComprehensive.index - 1]
+        ?.targetLang;
     const nextSentence =
-      formattedTranscriptMemoized[masterPlayComprehensive.index + 1]?.targetLang;
+      formattedTranscriptMemoized[masterPlayComprehensive.index + 1]
+        ?.targetLang;
 
     try {
       setIsBreakingDownSentenceArrState((prev) => [
@@ -758,7 +814,8 @@ export const LearningScreenProvider = ({
         contentIndex,
         prevSentence,
         nextSentence,
-        contentDescription: selectedContentDescriptionState || fallbackYoutubeDescription,
+        contentDescription:
+          selectedContentDescriptionState || fallbackYoutubeDescription,
       });
     } finally {
       setIsBreakingDownSentenceArrState((prev) =>
@@ -902,7 +959,7 @@ export const LearningScreenProvider = ({
         prev.filter((item) => item !== masterPlayComprehensive.id),
       );
     }
-  };  
+  };
 
   const handleBreakdownSentence = async ({
     sentenceId,
@@ -1132,10 +1189,12 @@ export const LearningScreenProvider = ({
         wordsForSelectedTopic: wordsForSelectedTopicMemoized,
         selectedContentState: selectedContentStateMemoized,
         sentenceRepsState,
+        wordRepsState,
         elapsed,
         setElapsed,
         playFromThisContext,
         setSentenceRepsState,
+        setWordRepsState,
         sentencesNeedReview,
         sentencesPendingOrDue,
         contentMetaWordMemoized,
@@ -1162,6 +1221,9 @@ export const LearningScreenProvider = ({
         reviewIntervalState,
         setReviewIntervalState,
         snippetsWithDueStatusMemoized,
+        handleSaveWord,
+        handleDeleteWordDataProvider,
+        updateWordDataProvider,
         handleSaveSnippet,
         handleDeleteSnippet,
         handleQuickSaveSnippet,

@@ -13,6 +13,7 @@ import {
 import { FormattedTranscriptTypes, Snippet } from '@/app/types/content-types';
 import { WordTypes } from '@/app/types/word-types';
 import { OverlappingSnippetData } from '@/app/types/shared-types';
+import { HandleDeleteWordDataProviderCallTypes } from '@/app/Providers/FetchDataProvider';
 
 interface HandleReviewFuncParams {
   sentenceId: string;
@@ -50,7 +51,9 @@ export interface TranscriptItemContextType {
     thisWord: string,
     thisWordMeaning?: string,
   ) => Promise<void>;
-  handleDeleteFunc: (wordData: WordTypes) => Promise<boolean | undefined>;
+  handleDeleteFunc: (
+    params: HandleDeleteWordDataProviderCallTypes,
+  ) => Promise<boolean | void>;
   handleOnMouseEnterSentence: () => null | undefined;
   isInReviewMode: boolean;
   onlyShowEngState: boolean;
@@ -104,8 +107,10 @@ interface TranscriptItemProviderProps {
     isGoogle: boolean;
     originalContext: string;
     time?: number;
-  }) => Promise<void>;
-  handleDeleteWordDataProvider: (wordData: WordTypes) => Promise<boolean>;
+  }) => Promise<unknown>;
+  handleDeleteWordDataProvider: (
+    params: HandleDeleteWordDataProviderCallTypes,
+  ) => Promise<boolean | void>;
   wordsState: WordTypes[];
   isInReviewMode: boolean;
   onlyShowEngState: boolean;
@@ -177,7 +182,7 @@ export const TranscriptItemProvider = ({
   isReadyForQuickReview,
   children,
 }: TranscriptItemProviderProps) => {
-  const transcriptItemContainerRef = useRef(null);
+  const transcriptItemContainerRef = useRef<HTMLElement | null>(null);
   const [highlightedTextState, setHighlightedTextState] = useState('');
   const [showSentenceBreakdownState, setShowSentenceBreakdownState] =
     useState(false);
@@ -192,7 +197,7 @@ export const TranscriptItemProvider = ({
     showThisSentenceBreakdownPreviewState,
     setShowThisSentenceBreakdownPreviewState,
   ] = useState(false);
-  const [wordPopUpState, setWordPopUpState] = useState([]);
+  const [wordPopUpState, setWordPopUpState] = useState<WordTypes[]>([]);
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
 
   const hasSentenceBreakdown = contentItem?.sentenceStructure;
@@ -279,7 +284,7 @@ export const TranscriptItemProvider = ({
       if (
         highlightedTextState &&
         transcriptItemContainerRef.current &&
-        !transcriptItemContainerRef.current.contains(event.target)
+        !transcriptItemContainerRef.current.contains(event.target as Node)
       ) {
         setHighlightedTextState(''); // or whatever action you need
       }
@@ -389,8 +394,10 @@ export const TranscriptItemProvider = ({
     }
   };
 
-  const handleDeleteFunc = async (wordData: WordTypes) => {
-    const resBool = await handleDeleteWordDataProvider(wordData);
+  const handleDeleteFunc = async (
+    params: HandleDeleteWordDataProviderCallTypes,
+  ) => {
+    const resBool = await handleDeleteWordDataProvider(params);
     if (resBool) {
       setWordPopUpState([]);
     }
@@ -452,6 +459,7 @@ export const TranscriptItemProvider = ({
         handleReviewTranscriptItem,
         handleBreakdownSentence,
         isBreakdownSentenceLoadingState: breakdownMasterState,
+        setIsBreakdownSentenceLoadingState,
         handleBreakdownSentenceTranscriptItem,
         overrideMiniReviewState,
         setOverrideMiniReviewState,

@@ -31,8 +31,10 @@ const LearningScreenLeftSideContainer = () => {
     snippetsWithDueStatusMemoized,
     isInReviewMode,
     isBreakingDownSentenceArrState,
+    handleSaveWord,
+    handleDeleteWordDataProvider,
   } = useLearningScreen();
-  const { languageSelectedState, handleSaveWord } = useFetchData();
+  const { languageSelectedState } = useFetchData();
 
   const generalTopic = selectedContentState?.title;
   const videoUrl = getCloudflareVideoURL(generalTopic, languageSelectedState);
@@ -103,6 +105,7 @@ const LearningScreenLeftSideContainer = () => {
         <TranscriptItemSecondary
           contentItem={masterPlayComprehensive}
           handleSaveWord={handleSaveWord}
+          handleDeleteWordDataProvider={handleDeleteWordDataProvider}
           isBreakdownSentenceLoadingState={isBreakingDownSentenceArrState.includes(
             masterPlayComprehensive.id,
           )}

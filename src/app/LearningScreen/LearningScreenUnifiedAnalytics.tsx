@@ -6,7 +6,15 @@ import { isDueCheck } from '@/utils/is-due-check';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import clsx from 'clsx';
 
-const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
+interface LearningScreenUnifiedAnalyticsProps {
+  sentenceRepsPerMinState: string | null;
+  wordRepsPerMinState: string | null;
+}
+
+const LearningScreenUnifiedAnalytics = ({
+  sentenceRepsPerMinState,
+  wordRepsPerMinState,
+}: LearningScreenUnifiedAnalyticsProps) => {
   const [isLoadingBulkState, setIsLoadingBulkState] = useState(false);
   const {
     sentencesNeedReview,
@@ -17,10 +25,13 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
     contentSnippets,
     overlappedSentencesViableForReviewMemoized,
     handleAddOverlappedSnippetsToReview,
+    wordRepsState,
+    setWordRepsState,
   } = useLearningScreen();
 
   const handleClearReps = () => {
     setSentenceRepsState(0);
+    setWordRepsState(0);
   };
 
   const handleBulkAddToReviews = async () => {
@@ -117,6 +128,16 @@ const LearningScreenUnifiedAnalytics = ({ sentenceRepsPerMinState }) => {
       {sentenceRepsPerMinState && (
         <p className='text-xs font-medium m-auto w-fit'>
           Reps/Min: {sentenceRepsPerMinState}
+        </p>
+      )}
+      <div className='flex gap-2 text-xs font-medium  w-fit m-auto'>
+        <span className='my-2' data-testid='analytics-reps-count-words'>
+          Word Reps: {wordRepsState}
+        </span>
+      </div>
+      {wordRepsPerMinState && (
+        <p className='text-xs font-medium m-auto w-fit'>
+          Words/Min: {wordRepsPerMinState}
         </p>
       )}
     </div>

@@ -64,13 +64,10 @@ const LearningScreenComprehensiveReview = () => {
     handleDeleteSnippet,
     overlappingTextMemoized,
     handleSaveSnippet,
-  } = useLearningScreen();
-  const {
-    languageSelectedState,
-    wordsState,
     handleSaveWord,
     handleDeleteWordDataProvider,
-  } = useFetchData();
+  } = useLearningScreen();
+  const { languageSelectedState, wordsState } = useFetchData();
 
   const {
     postWordsMemoized,
@@ -234,13 +231,8 @@ const LearningScreenComprehensiveReview = () => {
               masterPlay={masterPlay}
               isGenericItemsLoadingArrayState={isGenericItemsLoadingArrayState}
               snippetLoadingState={snippetLoadingState}
-              handleSaveWord={async (params) => {
-                handleSaveWord(params as never);
-              }}
-              handleDeleteWordDataProvider={async (wordData) => {
-                handleDeleteWordDataProvider({ wordId: wordData.id });
-                return true;
-              }}
+              handleSaveWord={handleSaveWord}
+              handleDeleteWordDataProvider={handleDeleteWordDataProvider}
               wordsState={wordsState}
               isInReviewMode={isInReviewMode}
               onlyShowEngState={onlyShowEngState}

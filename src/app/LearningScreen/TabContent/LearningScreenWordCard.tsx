@@ -16,10 +16,10 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
     contentSnippets,
     handlePlayFromHere,
     getSentenceFromContextId,
+    updateWordDataProvider,
   } = useLearningScreen();
   const {
     languageSelectedState,
-    updateWordDataProvider,
     addImageDataProvider,
     adhocSentenceCustomWord,
   } = useFetchData();
@@ -69,7 +69,6 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
       }
       const wordResBool = await updateWordDataProvider(arg);
       return wordResBool;
-    } catch (error) {
     } finally {
       if (!isWordData) {
         setCollapseState(false);

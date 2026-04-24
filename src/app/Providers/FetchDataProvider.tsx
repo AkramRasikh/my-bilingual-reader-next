@@ -61,7 +61,10 @@ interface SentenceReviewBulkAPIResponseCallTypes {
 
 interface UpdateContentMetaDataCallTypes {
   fieldToUpdate: Partial<
-    Pick<ContentStateTypes, 'nextReview' | 'reviewHistory' | 'snippets' | 'description'>
+    Pick<
+      ContentStateTypes,
+      'nextReview' | 'reviewHistory' | 'snippets' | 'description'
+    >
   >;
   contentId: ContentStateTypes['id'];
   contentIndex: ContentStateTypes['contentIndex'];
@@ -97,7 +100,7 @@ interface HandleDeleteSnippetCallTypes {
 export interface HandleDeleteWordDataProviderCallTypes {
   wordId: WordTypes['id'];
 }
-interface UpdateWordDataProviderCallTypes {
+export interface UpdateWordDataProviderCallTypes {
   wordId: WordTypes['id'];
   fieldToUpdate: Partial<WordTypes>;
   isRemoveReview?: boolean; /// why would this be needed?

@@ -49,13 +49,10 @@ const LearningScreenTabTranscript = () => {
     setReviewIntervalState,
     selectedContentTitleState,
     snippetLoadingState,
-  } = useLearningScreen();
-  const {
-    languageSelectedState,
-    wordsState,
     handleSaveWord,
     handleDeleteWordDataProvider,
-  } = useFetchData();
+  } = useLearningScreen();
+  const { languageSelectedState, wordsState } = useFetchData();
 
   const contentClasses = 'p-1 max-h-150 overflow-y-auto';
 
@@ -118,7 +115,9 @@ const LearningScreenTabTranscript = () => {
                   overlappingSnippetDataState={overlappingSnippetDataState}
                   contentItem={contentItem}
                   masterPlay={masterPlay}
-                  isGenericItemsLoadingArrayState={isGenericItemsLoadingArrayState}
+                  isGenericItemsLoadingArrayState={
+                    isGenericItemsLoadingArrayState
+                  }
                   handleSaveWord={handleSaveWord}
                   handleDeleteWordDataProvider={handleDeleteWordDataProvider}
                   wordsState={wordsState}
