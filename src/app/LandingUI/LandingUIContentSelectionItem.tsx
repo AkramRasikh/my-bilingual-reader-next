@@ -51,8 +51,10 @@ const LandingUIContentSelectionItem = ({
   title,
   youtubeId,
   dueSentences,
+  totalSentencesWithReview,
   contentHasBeenReviews,
   dueWords,
+  totalWordsWithReview,
   dueSnippets,
 }: LandingUIComprehensiveType) => {
   const router = useRouter();
@@ -89,8 +91,12 @@ const LandingUIContentSelectionItem = ({
       />
 
       <div className='text-xs text-muted-foreground px-1 pb-1 flex items-center justify-between gap-2'>
-        <p data-testid={`due-sentences-${title}`}>Sentences: {dueSentences}</p>
-        <p data-testid={`due-words-${title}`}>Words: {dueWords}</p>
+        <p data-testid={`due-sentences-${title}`}>
+          Sentences: {dueSentences}/{totalSentencesWithReview}
+        </p>
+        <p data-testid={`due-words-${title}`}>
+          Words: {dueWords}/{totalWordsWithReview}
+        </p>
         <p data-testid={`due-snippets-${title}`}>Snippets: {dueSnippets}</p>
       </div>
     </div>

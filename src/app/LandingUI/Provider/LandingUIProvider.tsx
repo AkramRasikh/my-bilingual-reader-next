@@ -10,8 +10,10 @@ export interface LandingUIComprehensiveType {
   title: ContentStateTypes['title'];
   youtubeId: string;
   dueSentences: number;
+  totalSentencesWithReview: number;
   dueSnippets: number;
   dueWords: number;
+  totalWordsWithReview: number;
   contentHasBeenReviews: boolean;
 }
 
@@ -28,7 +30,7 @@ type LandingUIProviderProps = {
 };
 
 export const LandingUIProvider = ({ children }: LandingUIProviderProps) => {
-  const { contentState, wordsForReviewMemoized } = useFetchData();
+  const { contentState, wordsForReviewMemoized, wordsState } = useFetchData();
 
   const generalTopicDisplayNameMemoized = useMemo(() => {
     const contentMetaData: LandingUIComprehensiveType[] = [];
@@ -51,6 +53,14 @@ export const LandingUIProvider = ({ children }: LandingUIProviderProps) => {
       const dueWords = wordsForReviewMemoized.filter((wordObj) =>
         mappedSentenceIds.includes(wordObj?.contexts?.[0]),
       ).length;
+      const totalWordsWithReview = wordsState.filter(
+        (wordObj) =>
+          mappedSentenceIds.includes(wordObj?.contexts?.[0]) &&
+          Boolean(wordObj.reviewData),
+      ).length;
+      const totalSentencesWithReview = thisContentTranscripts.filter(
+        (transcriptItem) => Boolean(transcriptItem.reviewData),
+      ).length;
 
       contentMetaData.push({
         youtubeId,
@@ -58,11 +68,13 @@ export const LandingUIProvider = ({ children }: LandingUIProviderProps) => {
         dueSentences: thisContentTranscripts.filter((transcriptItem) =>
           isDueCheck(transcriptItem, timeNow),
         ).length,
+        totalSentencesWithReview,
         dueSnippets:
           thisContentSnippets?.filter((snippetItem) =>
             isDueCheck(snippetItem, timeNow),
           ).length || 0,
         dueWords,
+        totalWordsWithReview,
         contentHasBeenReviews: Boolean(
           contentItem.reviewHistory && contentItem.reviewHistory.length > 0,
         ),
@@ -70,7 +82,7 @@ export const LandingUIProvider = ({ children }: LandingUIProviderProps) => {
     });
 
     return contentMetaData.sort((a, b) => b.dueSentences - a.dueSentences);
-  }, [contentState]);
+  }, [contentState, wordsForReviewMemoized, wordsState]);
 
   return (
     <LandingUIContext.Provider
