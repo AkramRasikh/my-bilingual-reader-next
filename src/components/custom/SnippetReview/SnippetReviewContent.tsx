@@ -93,16 +93,6 @@ const FormattedSentenceSnippet = ({
             animateText &&
             wordIsLoadingGamePadState >= low &&
             wordIsLoadingGamePadState <= high;
-          if (animateText) {
-            console.log('## animation:', {
-              low,
-              high,
-              indexNested,
-              text,
-              isLow: indexNested === low,
-              isHigh: indexNested === high,
-            });
-          }
           const isLow = indexNested === low;
           const isHigh = indexNested === high;
 
