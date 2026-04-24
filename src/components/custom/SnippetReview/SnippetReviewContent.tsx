@@ -104,6 +104,11 @@ const FormattedSentenceSnippet = ({
                   : animateText
                     ? 'text-xl font-bold animate-pulse'
                     : '',
+                indexNested === low
+                  ? 'ml-1'
+                  : indexNested === high
+                    ? 'mr-1'
+                    : '',
               )}
             >
               {isReadyForQuickReview && (
