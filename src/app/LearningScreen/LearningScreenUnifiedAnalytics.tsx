@@ -66,6 +66,40 @@ const LearningScreenUnifiedAnalytics = ({
     ];
   }, [contentSnippets]);
 
+  const totalRepsPerMinState = useMemo(() => {
+    const repsPerMinuteValues = [
+      sentenceRepsPerMinState,
+      wordRepsPerMinState,
+      snippetRepsPerMinState,
+    ]
+      .map((value) => (value ? Number(value) : null))
+      .filter((value): value is number => value !== null && !Number.isNaN(value));
+
+    if (repsPerMinuteValues.length === 0) {
+      return null;
+    }
+
+    const total = repsPerMinuteValues.reduce((sum, value) => sum + value, 0);
+    return total.toFixed(1);
+  }, [sentenceRepsPerMinState, snippetRepsPerMinState, wordRepsPerMinState]);
+
+  const repsPerMinSplit = useMemo(() => {
+    const sentence = sentenceRepsPerMinState ? Number(sentenceRepsPerMinState) : 0;
+    const word = wordRepsPerMinState ? Number(wordRepsPerMinState) : 0;
+    const snippet = snippetRepsPerMinState ? Number(snippetRepsPerMinState) : 0;
+    const total = sentence + word + snippet;
+
+    if (total <= 0) {
+      return null;
+    }
+
+    return {
+      sentencePct: (sentence / total) * 100,
+      wordPct: (word / total) * 100,
+      snippetPct: (snippet / total) * 100,
+    };
+  }, [sentenceRepsPerMinState, snippetRepsPerMinState, wordRepsPerMinState]);
+
   return (
     <div>
       <p
@@ -157,6 +191,27 @@ const LearningScreenUnifiedAnalytics = ({
           )}
         </div>
       </div>
+      {totalRepsPerMinState && (
+        <p className='text-xs font-medium m-auto w-fit text-muted-foreground'>
+          Total/Min: {totalRepsPerMinState}
+        </p>
+      )}
+      {repsPerMinSplit && (
+        <div className='w-40 h-2 rounded-full overflow-hidden flex m-auto mt-1'>
+          <span
+            className='bg-green-500 h-full'
+            style={{ width: `${repsPerMinSplit.sentencePct}%` }}
+          />
+          <span
+            className='bg-amber-500 h-full'
+            style={{ width: `${repsPerMinSplit.wordPct}%` }}
+          />
+          <span
+            className='bg-red-500 h-full'
+            style={{ width: `${repsPerMinSplit.snippetPct}%` }}
+          />
+        </div>
+      )}
     </div>
   );
 };
