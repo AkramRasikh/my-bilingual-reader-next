@@ -151,6 +151,7 @@ export interface FetchDataContextTypes {
   sentencesState: SentenceTypes[];
   wordsState: WordTypes[];
   hasFetchedDataState: boolean;
+  hasFetchInitErrorState: boolean;
   dispatchSentences: React.Dispatch<SentenceActions>;
   dispatchContent: React.Dispatch<ContentAction>;
   dispatchWords: React.Dispatch<WordActions>;
@@ -212,6 +213,7 @@ export const FetchDataContext = createContext<FetchDataContextTypes>({
   sentencesDueForReviewMemoized: [],
   toastMessageState: '',
   hasFetchedDataState: false,
+  hasFetchInitErrorState: false,
   pureWordsMemoized: [],
   wordsToReviewOnMountState: 0,
   sentenceDataKeyMapped: {},
@@ -225,6 +227,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     useState<LanguageEnum>(LanguageEnum.None);
 
   const [hasFetchedDataState, setHasFetchedDataState] = useState(false);
+  const [hasFetchInitErrorState, setHasFetchInitErrorState] = useState(false);
   const [sentencesState, dispatchSentences] = useReducer(sentencesReducer, []);
   const [contentState, dispatchContent] = useReducer(contentReducer, []);
   const [wordsState, dispatchWords] = useReducer(wordsReducer, []);
@@ -242,6 +245,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     hasFetchedDataState,
     languageSelectedState,
     setHasFetchedDataState,
+    setHasFetchInitErrorState,
     dispatchWords,
     dispatchContent,
     dispatchSentences,
@@ -824,6 +828,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         contentState,
         wordsState,
         hasFetchedDataState,
+        hasFetchInitErrorState,
         pureWordsMemoized,
         wordsForReviewMemoized,
         sentencesDueForReviewMemoized,

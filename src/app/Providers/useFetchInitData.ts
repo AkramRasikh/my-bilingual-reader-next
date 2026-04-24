@@ -7,6 +7,12 @@ export const content = 'content';
 export const words = 'words';
 export const sentences = 'sentences';
 
+interface OnLoadDataResponse {
+  wordsData: FetchDataContextTypes['wordsState'];
+  contentData: FetchDataContextTypes['contentState'];
+  sentencesData: FetchDataContextTypes['sentencesState'];
+}
+
 const getLocalStorageData = (language: string) => {
   if (isE2EMode()) {
     return { wordsState: null, sentencesState: null, contentState: null };
@@ -29,6 +35,7 @@ interface UseFetchInitDataTypes {
   hasFetchedDataState: FetchDataContextTypes['hasFetchedDataState'];
   languageSelectedState: FetchDataContextTypes['languageSelectedState'];
   setHasFetchedDataState: Dispatch<SetStateAction<boolean>>;
+  setHasFetchInitErrorState: Dispatch<SetStateAction<boolean>>;
   dispatchWords: FetchDataContextTypes['dispatchWords'];
   dispatchContent: FetchDataContextTypes['dispatchContent'];
   dispatchSentences: FetchDataContextTypes['dispatchSentences'];
@@ -39,6 +46,7 @@ const useFetchInitData = ({
   hasFetchedDataState,
   languageSelectedState,
   setHasFetchedDataState,
+  setHasFetchInitErrorState,
   dispatchWords,
   dispatchContent,
   dispatchSentences,
@@ -46,6 +54,7 @@ const useFetchInitData = ({
 }: UseFetchInitDataTypes) => {
   useEffect(() => {
     if (!hasFetchedDataState && languageSelectedState) {
+      setHasFetchInitErrorState(false);
       const { wordsState, sentencesState, contentState } = getLocalStorageData(
         languageSelectedState,
       );
@@ -77,26 +86,40 @@ const useFetchInitData = ({
           },
         })
           .then((data) => {
+            const typedData = data as OnLoadDataResponse;
             dispatchWords({
               type: 'initWords',
-              words: data?.wordsData,
-              content: data.contentData,
+              words: typedData.wordsData,
+              content: typedData.contentData,
             });
             dispatchContent({
               type: 'initContent',
-              content: data.contentData,
+              content: typedData.contentData,
             });
             dispatchSentences({
               type: 'initSentences',
-              sentences: data?.sentencesData,
+              sentences: typedData.sentencesData,
             });
             setHasFetchedDataState(true);
+            setHasFetchInitErrorState(false);
             setToastMessageState('Loaded data from DB ✅');
           })
-          .catch(console.error);
+          .catch((error) => {
+            console.error(error);
+            setHasFetchInitErrorState(true);
+          });
       }
     }
-  }, [hasFetchedDataState, languageSelectedState]);
+  }, [
+    dispatchContent,
+    dispatchSentences,
+    dispatchWords,
+    hasFetchedDataState,
+    languageSelectedState,
+    setHasFetchInitErrorState,
+    setHasFetchedDataState,
+    setToastMessageState,
+  ]);
 };
 
 export default useFetchInitData;

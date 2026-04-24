@@ -8,6 +8,7 @@ import { useSearchParams } from 'next/navigation';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import LearningScreen from '../LearningScreen';
 import PageContainer from '@/components/custom/PageContainer';
+import PageContainerErrorBanner from '@/components/custom/PageContainerErrorBanner';
 
 export const ContentScreenContainer = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
@@ -17,8 +18,20 @@ export const ContentScreenContainer = () => {
     setToastMessageState,
     contentState,
     hasFetchedDataState,
+    hasFetchInitErrorState,
     languageSelectedState,
   } = useFetchData();
+
+  if (hasFetchInitErrorState) {
+    return (
+      <PageContainer
+        toastMessageState={toastMessageState}
+        setToastMessageState={setToastMessageState}
+      >
+        <PageContainerErrorBanner />
+      </PageContainer>
+    );
+  }
 
   if (!hasFetchedDataState || !contentState?.length || !languageSelectedState) {
     return <LoadingSpinner big />;
@@ -40,8 +53,14 @@ const ContentScreen = () => {
   const searchParams = useSearchParams();
   const titleParam = searchParams.get('topic');
 
-  const { contentState, hasFetchedDataState, languageSelectedState } =
-    useFetchData();
+  const {
+    contentState,
+    hasFetchedDataState,
+    hasFetchInitErrorState,
+    languageSelectedState,
+    toastMessageState,
+    setToastMessageState,
+  } = useFetchData();
 
   const selectedContentStateMemoized = useMemo(() => {
     const thisContent = contentState.find((item) => item.title === titleParam);
@@ -50,6 +69,17 @@ const ContentScreen = () => {
     }
     return null;
   }, [contentState, titleParam]);
+
+  if (hasFetchInitErrorState) {
+    return (
+      <PageContainer
+        toastMessageState={toastMessageState}
+        setToastMessageState={setToastMessageState}
+      >
+        <PageContainerErrorBanner />
+      </PageContainer>
+    );
+  }
 
   if (
     !hasFetchedDataState ||
