@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from 'react';
 import LearningScreenThreeSecondLoopEl from './LearningScreenThreeSecondLoopEl';
 import useLearningScreen from './useLearningScreen';
 import { LanguageEnum } from '../languages';
+import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 type LearningScreenVideoPlayerProps = {
   url: string;
@@ -26,6 +28,8 @@ const LearningScreenVideoPlayer = ({
     masterPlayComprehensiveTargetLangForOverlay,
     showMasterPlayComprehensiveTargetLangForOverlayState,
     isSavedLoopPlayingState,
+    isVideoPlaying,
+    setThreeSecondLoopState,
   } = useLearningScreen();
 
   const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
@@ -86,6 +90,7 @@ const LearningScreenVideoPlayer = ({
   };
 
   const isLooping = Boolean(threeSecondLoopState);
+  const isLoopingSaved = isLooping && isSavedLoopPlayingState;
 
   return (
     <div className='flex flex-col relative'>
@@ -131,6 +136,22 @@ const LearningScreenVideoPlayer = ({
               </p>
             );
           })}
+        </div>
+      ) : isLoopingSaved ? (
+        <div className='absolute top-0 left-0 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] px-4 py-2 rounded-lg w-full'>
+          <Button
+            size='icon'
+            variant='ghost'
+            className='rounded-full h-8 w-8 my-auto bg-transparent'
+            onClick={() => setThreeSecondLoopState(null)}
+          >
+            <Loader2
+              className={clsx(
+                isVideoPlaying ? 'animate-spin' : '',
+                'text-amber-600',
+              )}
+            />
+          </Button>
         </div>
       ) : null}
     </div>
