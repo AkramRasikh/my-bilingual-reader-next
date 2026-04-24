@@ -167,7 +167,7 @@ const TranscriptItemSecondary = ({
         isLoadingState={isLoadingState}
         contentItemId={contentItem.id}
       />
-      <div data-testid='transcript-item-secondary' className='relative mr-7'>
+      <div data-testid='transcript-item-secondary' className='relative mr-7 w-full'>
         <FormattedSentence
           ref={transcriptItemContainerRef}
           targetLangformatted={targetLangformatted}
