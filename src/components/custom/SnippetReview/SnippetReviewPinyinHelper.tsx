@@ -3,6 +3,7 @@ import { LanguageEnum } from '@/app/languages';
 import { pinyin } from 'pinyin-pro';
 import arabicTransliterate from 'arabic-transliterate';
 import FormattedSentenceSnippetProgressWidget from './SnippetReviewProgressWidget';
+import clsx from 'clsx';
 
 interface correspondingRomanized {
   text: string;
@@ -29,7 +30,14 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
   languageSelectedState,
   isReadyForQuickReview,
   currentTime,
+  togglableWordDataArrMemo,
+  matchStartWordState,
 }) => {
+  const matchingWordData = togglableWordDataArrMemo?.[matchStartWordState];
+  const matchingStartIndex = matchingWordData?.index;
+  const matchingEndIndex =
+    togglableWordDataArrMemo?.[matchStartWordState]?.endIndex;
+
   const isArabic = languageSelectedState === LanguageEnum.Arabic;
   return (
     <div>
@@ -40,10 +48,22 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
           index >= matchStartKey && index <= matchEndKey;
         const played =
           hasHighlightedBackground && currentTime >= item?.secondForIndex;
+
+        const low = Math.min(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
+        const high = Math.max(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
+        const animateText =
+          matchingStartIndex !== undefined &&
+          matchingEndIndex !== undefined &&
+          index >= low &&
+          index <= high;
+
         return (
           <span
             key={index}
-            className='relative'
+            className={clsx(
+              'relative',
+              animateText ? 'font-bold animate-pulse border-b' : '',
+            )}
             style={{
               color: getColorByIndex(item?.startIndex),
               opacity:
@@ -54,6 +74,7 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
                 index < Math.max(0, matchStartKey - 5) || index > matchEndKey
                   ? 'italic'
                   : 'bold',
+              borderColor: animateText ? getColorByIndex(item?.startIndex) : '',
             }}
           >
             {isArabic && isReadyForQuickReview && (

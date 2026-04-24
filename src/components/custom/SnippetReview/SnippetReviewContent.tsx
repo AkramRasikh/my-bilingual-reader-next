@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import FormattedSentenceSnippetProgressWidget from './SnippetReviewProgressWidget';
 import { arabic, chinese } from '@/app/languages';
 import HoverWordCard from '@/components/custom/HoverWordCard';
@@ -105,9 +105,9 @@ const FormattedSentenceSnippet = ({
                     ? 'text-xl font-bold animate-pulse'
                     : '',
                 indexNested === low
-                  ? 'ml-1'
+                  ? 'ml-0.5'
                   : indexNested === high
-                    ? 'mr-1'
+                    ? 'mr-0.5'
                     : '',
               )}
             >

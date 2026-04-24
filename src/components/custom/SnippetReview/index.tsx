@@ -486,6 +486,7 @@ const SnippetReview = ({
     pinyinStart,
     Math.min(targetLangWithVocabStartIndex.length, matchEndKey + 6),
   );
+  const showTransliteration = isChinese || isArabic;
 
   const handleReviewSnippetsFinal = async (
     arg: HandleReviewSnippetsFinalArg,
@@ -545,19 +546,20 @@ const SnippetReview = ({
                     wordIsLoadingGamePadState={wordIsLoadingGamePadState}
                   />
                 </div>
-                {isChinese ||
-                  (isArabic && (
-                    <SnippetReviewPinyinHelper
-                      slicedSnippetSegment={slicedSnippetSegment}
-                      getColorByIndex={getColorByIndex}
-                      matchStartKey={matchStartKey}
-                      matchEndKey={matchEndKey}
-                      pinyinStart={pinyinStart}
-                      languageSelectedState={languageSelectedState}
-                      isReadyForQuickReview={isReadyForQuickReview}
-                      currentTime={currentTime}
-                    />
-                  ))}
+                {showTransliteration && (
+                  <SnippetReviewPinyinHelper
+                    slicedSnippetSegment={slicedSnippetSegment}
+                    getColorByIndex={getColorByIndex}
+                    matchStartKey={matchStartKey}
+                    matchEndKey={matchEndKey}
+                    pinyinStart={pinyinStart}
+                    languageSelectedState={languageSelectedState}
+                    isReadyForQuickReview={isReadyForQuickReview}
+                    currentTime={currentTime}
+                    togglableWordDataArrMemo={togglableWordDataArrMemo}
+                    matchStartWordState={matchStartWordState}
+                  />
+                )}
 
                 <SnippetReviewBreakdownDefinitions
                   slicedSnippetSegment={slicedSnippetSegment}
@@ -566,6 +568,8 @@ const SnippetReview = ({
                   matchEndKey={matchEndKey}
                   pinyinStart={pinyinStart}
                   vocab={vocab}
+                  togglableWordDataArrMemo={togglableWordDataArrMemo}
+                  matchStartWordState={matchStartWordState}
                 />
                 {highlightedTextState && (
                   <HighlightedText

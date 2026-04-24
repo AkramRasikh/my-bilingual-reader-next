@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import React from 'react';
 
 interface SnippetReviewBreakdownDefinitionsProps {
@@ -18,7 +19,15 @@ const SnippetReviewBreakdownDefinitions: React.FC<
   matchStartKey,
   matchEndKey,
   pinyinStart,
+  togglableWordDataArrMemo,
+  matchStartWordState,
 }) => {
+  const matchingWordData = togglableWordDataArrMemo?.[matchStartWordState];
+
+  const matchingStartIndex = matchingWordData?.index;
+  const matchingEndIndex =
+    togglableWordDataArrMemo?.[matchStartWordState]?.endIndex;
+
   return (
     <div>
       {slicedSnippetSegment.map((item, index) => {
@@ -32,11 +41,19 @@ const SnippetReviewBreakdownDefinitions: React.FC<
         ) {
           return null;
         }
+        const low = Math.min(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
+        const high = Math.max(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
+        const animateText =
+          matchingStartIndex !== undefined &&
+          matchingEndIndex !== undefined &&
+          index >= low &&
+          index <= high;
         if (
           typeof correspondingMeaning === 'string' &&
           correspondingMeaning.length > 20
         ) {
-          correspondingMeaning = correspondingMeaning.slice(0, 20) + '…';
+          correspondingMeaning =
+            correspondingMeaning.slice(0, animateText ? 40 : 20) + '…';
         }
         return (
           <span
@@ -52,7 +69,13 @@ const SnippetReviewBreakdownDefinitions: React.FC<
                   ? 'italic'
                   : 'bold',
               fontSize: '10px',
+              borderColor: animateText ? getColorByIndex(item?.startIndex) : '',
             }}
+            className={clsx(
+              animateText
+                ? 'text-xl font-bold animate-pulse border-1 rounded'
+                : '',
+            )}
           >
             {addSpace && ' '}
             {correspondingMeaning}
