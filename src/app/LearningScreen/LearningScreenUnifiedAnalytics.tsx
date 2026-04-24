@@ -9,11 +9,13 @@ import clsx from 'clsx';
 interface LearningScreenUnifiedAnalyticsProps {
   sentenceRepsPerMinState: string | null;
   wordRepsPerMinState: string | null;
+  snippetRepsPerMinState: string | null;
 }
 
 const LearningScreenUnifiedAnalytics = ({
   sentenceRepsPerMinState,
   wordRepsPerMinState,
+  snippetRepsPerMinState,
 }: LearningScreenUnifiedAnalyticsProps) => {
   const [isLoadingBulkState, setIsLoadingBulkState] = useState(false);
   const {
@@ -114,40 +116,47 @@ const LearningScreenUnifiedAnalytics = ({
           </Button>
         </span>
       </div>
-      <div className='flex gap-2 text-xs font-medium  w-fit m-auto'>
-        <span className='m-auto' data-testid='analytics-reps-count'>
-          Reps: {sentenceRepsState}
-        </span>
-        {sentenceRepsState ? (
-          <Button
-            className='w-5 h-5'
-            variant='destructive'
-            onClick={handleClearReps}
-          >
-            <HistoryIcon />
-          </Button>
-        ) : null}
+      <div className='flex flex-col gap-2 items-center'>
+        <div className='flex gap-2 text-xs font-medium w-fit m-auto items-center'>
+          <span className='m-auto' data-testid='analytics-reps-count'>
+            📝 Reps: {sentenceRepsState}
+          </span>
+          {sentenceRepsPerMinState && (
+            <span className='m-auto text-muted-foreground'>
+              ({sentenceRepsPerMinState}/min)
+            </span>
+          )}
+          {sentenceRepsState ? (
+            <Button
+              className='w-5 h-5'
+              variant='destructive'
+              onClick={handleClearReps}
+            >
+              <HistoryIcon />
+            </Button>
+          ) : null}
+        </div>
+        <div className='flex gap-2 text-xs font-medium w-fit m-auto items-center'>
+          <span data-testid='analytics-reps-count-words'>
+            🔤 reps: {wordRepsState}
+          </span>
+          {wordRepsPerMinState && (
+            <span className='text-muted-foreground'>
+              ({wordRepsPerMinState}/min)
+            </span>
+          )}
+        </div>
+        <div className='flex gap-2 text-xs font-medium w-fit m-auto items-center'>
+          <span data-testid='analytics-reps-count-snippets'>
+            ✂️ reps: {snippetRepsState}
+          </span>
+          {snippetRepsPerMinState && (
+            <span className='text-muted-foreground'>
+              ({snippetRepsPerMinState}/min)
+            </span>
+          )}
+        </div>
       </div>
-      {sentenceRepsPerMinState && (
-        <p className='text-xs font-medium m-auto w-fit'>
-          Reps/Min: {sentenceRepsPerMinState}
-        </p>
-      )}
-      <div className='flex gap-2 text-xs font-medium  w-fit m-auto'>
-        <span className='my-2' data-testid='analytics-reps-count-words'>
-          Word Reps: {wordRepsState}
-        </span>
-      </div>
-      <div className='flex gap-2 text-xs font-medium  w-fit m-auto'>
-        <span className='my-0.5' data-testid='analytics-reps-count-snippets'>
-          Snippet Reps: {snippetRepsState}
-        </span>
-      </div>
-      {wordRepsPerMinState && (
-        <p className='text-xs font-medium m-auto w-fit'>
-          Words/Min: {wordRepsPerMinState}
-        </p>
-      )}
     </div>
   );
 };
