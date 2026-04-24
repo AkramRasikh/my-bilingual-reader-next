@@ -4,9 +4,6 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import {
   Check,
-  ScissorsIcon,
-  ScrollTextIcon,
-  WholeWordIcon,
 } from 'lucide-react';
 import { ContentStateTypes } from '../reducers/content-reducer';
 import { LandingUIComprehensiveType } from './Provider/LandingUIProvider';
@@ -16,11 +13,11 @@ const LandingUIContentSelectionItemImage = ({
 }: {
   youtubeId: LandingUIComprehensiveType['youtubeId'];
 }) => (
-  <div className='relative h-30 w-9/10 m-auto'>
+  <div className='relative h-30 w-8/10 m-auto'>
     <Image
-      src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
+      src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
       alt={youtubeId || 'youtubeId'}
-      className='m-auto pb-1 rounded object-contain'
+      className='m-auto pb-1 rounded-lg'
       fill
     />
   </div>
@@ -60,7 +57,6 @@ const LandingUIContentSelectionItem = ({
 }: LandingUIComprehensiveType) => {
   const router = useRouter();
 
-  //
   const handleSelectInitialTopic = (topicName: ContentStateTypes['title']) => {
     router.push(`/content?topic=${topicName}`);
   };
@@ -82,7 +78,7 @@ const LandingUIContentSelectionItem = ({
           className='text-ellipsis'
           style={{
             overflow: 'hidden',
-            maxWidth: '15ch',
+            maxWidth: '20ch',
           }}
         >
           {title}
@@ -92,33 +88,11 @@ const LandingUIContentSelectionItem = ({
         contentHasBeenReviews={contentHasBeenReviews}
       />
 
-      {dueSnippets > 0 && (
-        <div
-          className='absolute flex flex-row gap-0.5 m-auto bg-amber-200 rounded-xl p-1 top-1 left-0 z-10'
-          data-testid={`due-snippets-${title}`}
-        >
-          <ScissorsIcon className='h-3 w-3 m-auto' />
-          <span className='text-xs font-light'>{dueSnippets}</span>
-        </div>
-      )}
-      {dueSentences > 0 && (
-        <div
-          className='absolute flex flex-row gap-0.5 m-auto bg-amber-200 rounded-xl p-1 -bottom-3 left-0 z-10'
-          data-testid={`due-sentences-${title}`}
-        >
-          <ScrollTextIcon className='h-3 w-3 m-auto' />
-          <span className='text-xs font-light'>{dueSentences}</span>
-        </div>
-      )}
-      {dueWords > 0 && (
-        <div
-          className='absolute flex flex-row gap-0.5 m-auto bg-amber-100 rounded-xl p-1 -bottom-3 right-0 z-10'
-          data-testid={`due-words-${title}`}
-        >
-          <WholeWordIcon className='h-3 w-3 m-auto' />
-          <span className='text-xs font-light'>{dueWords}</span>
-        </div>
-      )}
+      <div className='text-xs text-muted-foreground px-1 pb-1 flex items-center justify-between gap-2'>
+        <p data-testid={`due-sentences-${title}`}>Sentences: {dueSentences}</p>
+        <p data-testid={`due-words-${title}`}>Words: {dueWords}</p>
+        <p data-testid={`due-snippets-${title}`}>Snippets: {dueSnippets}</p>
+      </div>
     </div>
   );
 };
