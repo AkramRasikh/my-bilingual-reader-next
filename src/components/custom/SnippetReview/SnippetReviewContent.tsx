@@ -93,6 +93,18 @@ const FormattedSentenceSnippet = ({
             animateText &&
             wordIsLoadingGamePadState >= low &&
             wordIsLoadingGamePadState <= high;
+          if (animateText) {
+            console.log('## animation:', {
+              low,
+              high,
+              indexNested,
+              text,
+              isLow: indexNested === low,
+              isHigh: indexNested === high,
+            });
+          }
+          const isLow = indexNested === low;
+          const isHigh = indexNested === high;
 
           return (
             <span
@@ -104,11 +116,8 @@ const FormattedSentenceSnippet = ({
                   : animateText
                     ? 'text-xl font-bold animate-pulse'
                     : '',
-                indexNested === low
-                  ? 'ml-0.5'
-                  : indexNested === high
-                    ? 'mr-0.5'
-                    : '',
+                isLow && isArabic ? 'mr-0.5' : isLow ? 'ml-0.5' : '',
+                isHigh && isArabic ? 'ml-0.5' : isHigh ? 'mr-0.5' : '',
               )}
             >
               {isReadyForQuickReview && (
