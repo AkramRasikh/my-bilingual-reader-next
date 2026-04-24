@@ -176,6 +176,8 @@ export interface LearningScreenContextTypes {
   playFromThisContext: (contextId: FormattedTranscriptTypes['id']) => void;
   setSentenceRepsState: React.Dispatch<React.SetStateAction<number>>;
   setWordRepsState: React.Dispatch<React.SetStateAction<number>>;
+  setSnippetRepsState: React.Dispatch<React.SetStateAction<number>>;
+  snippetRepsState: number;
   sentencesNeedReview: number;
   sentencesPendingOrDue: number;
   contentMetaWordMemoized: WordTypes[];
@@ -201,6 +203,7 @@ export interface LearningScreenContextTypes {
   handleUpdateSnippet: (params: {
     snippetData: Snippet;
     isRemoveReview?: boolean;
+    isSnippetReview?: boolean;
   }) => Promise<void>;
   getSentenceDataOfOverlappingWordsDuringSave: (
     thisSnippetsTime: number,
@@ -253,6 +256,7 @@ export const LearningScreenProvider = ({
   const [scrollToElState, setScrollToElState] = useState('');
   const [sentenceRepsState, setSentenceRepsState] = useState(0);
   const [wordRepsState, setWordRepsState] = useState(0);
+  const [snippetRepsState, setSnippetRepsState] = useState(0);
   const [studyFromHereTimeState, setStudyFromHereTimeState] = useState<
     number | null
   >(null);
@@ -479,6 +483,7 @@ export const LearningScreenProvider = ({
   };
 
   const handleSaveSnippet = async (snippetArgs: OverlappingTextTypes) => {
+    console.log('## snippetArgs handleSaveSnippet', snippetArgs);
     const contentSnippets = selectedContentStateMemoized?.snippets || [];
     if (!threeSecondLoopState) {
       return null;
@@ -503,6 +508,7 @@ export const LearningScreenProvider = ({
     const {
       vocab: _unusedVocab,
       suggestedFocusStartIndex: _suggestedFocusStartIndex,
+      isSnippetReview: _isSnippetReview,
       ...finalSnippetWithoutVocab
     } = snippetArgs;
     await handleSaveSnippetFetchProvider({
@@ -516,6 +522,9 @@ export const LearningScreenProvider = ({
       contentId,
       contentIndex,
     });
+    if (_isSnippetReview) {
+      setSnippetRepsState((prev) => prev + 1);
+    }
     setThreeSecondLoopState(null);
     setContractThreeSecondLoopState(false);
   };
@@ -557,9 +566,11 @@ export const LearningScreenProvider = ({
   const handleUpdateSnippet = async ({
     snippetData,
     isRemoveReview,
+    isSnippetReview,
   }: {
     snippetData: Snippet;
     isRemoveReview?: boolean;
+    isSnippetReview?: boolean;
   }) => {
     if (isRemoveReview) {
       await handleDeleteSnippetFetchProvider({
@@ -567,6 +578,9 @@ export const LearningScreenProvider = ({
         contentId,
         snippetId: snippetData.id,
       });
+      if (isSnippetReview) {
+        setSnippetRepsState((prev) => prev + 1);
+      }
     } else {
       const snippetWithoutVocab = { ...snippetData } as Record<string, unknown>;
       delete snippetWithoutVocab.vocab;
@@ -576,6 +590,9 @@ export const LearningScreenProvider = ({
         contentId,
         isUpdate: true,
       });
+      if (isSnippetReview) {
+        setSnippetRepsState((prev) => prev + 1);
+      }
     }
   };
 
@@ -1233,6 +1250,8 @@ export const LearningScreenProvider = ({
         masterPlayComprehensiveTargetLangForOverlay,
         showMasterPlayComprehensiveTargetLangForOverlayState,
         setShowMasterPlayComprehensiveTargetLangForOverlayState,
+        setSnippetRepsState,
+        snippetRepsState,
       }}
     >
       {children}

@@ -29,6 +29,7 @@ import { useSnippetReviewDataMemoized } from './useSnippetReviewDataMemoized';
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
   snippetData: Snippet & Pick<ContentTranscriptTypes, 'vocab'>;
+  isSnippetReview?: boolean;
 }
 
 interface SnippetReviewProps {
@@ -39,6 +40,7 @@ interface SnippetReviewProps {
   handleUpdateSnippetComprehensiveReview: (arg: {
     snippetData: Snippet;
     isRemoveReview?: boolean;
+    isSnippetReview?: boolean;
   }) => Promise<void>;
   isReadyForQuickReview: boolean;
   handleBreakdownSentence: (arg: { sentenceId: string }) => Promise<void>;
@@ -495,6 +497,7 @@ const SnippetReview = ({
     await handleUpdateSnippetComprehensiveReview({
       snippetData: arg.snippetData,
       isRemoveReview: isRemoveReview && !(wordsInSuggestedText?.length > 0),
+      isSnippetReview: true,
     });
   };
 

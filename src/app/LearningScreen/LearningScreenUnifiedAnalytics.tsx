@@ -27,11 +27,14 @@ const LearningScreenUnifiedAnalytics = ({
     handleAddOverlappedSnippetsToReview,
     wordRepsState,
     setWordRepsState,
+    snippetRepsState,
+    setSnippetRepsState,
   } = useLearningScreen();
 
   const handleClearReps = () => {
     setSentenceRepsState(0);
     setWordRepsState(0);
+    setSnippetRepsState(0);
   };
 
   const handleBulkAddToReviews = async () => {
@@ -133,6 +136,11 @@ const LearningScreenUnifiedAnalytics = ({
       <div className='flex gap-2 text-xs font-medium  w-fit m-auto'>
         <span className='my-2' data-testid='analytics-reps-count-words'>
           Word Reps: {wordRepsState}
+        </span>
+      </div>
+      <div className='flex gap-2 text-xs font-medium  w-fit m-auto'>
+        <span className='my-0.5' data-testid='analytics-reps-count-snippets'>
+          Snippet Reps: {snippetRepsState}
         </span>
       </div>
       {wordRepsPerMinState && (

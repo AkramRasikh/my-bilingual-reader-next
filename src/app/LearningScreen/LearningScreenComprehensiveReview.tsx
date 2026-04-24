@@ -14,6 +14,7 @@ import getBiggestOverlap from '@/components/custom/TranscriptItem/get-biggest-ov
 interface HandleReviewSnippetsComprehensiveReviewProps {
   snippetData: Snippet;
   isRemoveReview?: boolean;
+  isSnippetReview?: boolean;
 }
 
 const LearningScreenComprehensiveReview = () => {
@@ -107,10 +108,12 @@ const LearningScreenComprehensiveReview = () => {
   const handleReviewSnippetsComprehensiveReview = async ({
     snippetData,
     isRemoveReview,
+    isSnippetReview,
   }: HandleReviewSnippetsComprehensiveReviewProps) => {
     await handleUpdateSnippet({
       snippetData,
       isRemoveReview,
+      isSnippetReview,
     });
     setThreeSecondLoopState(null);
     setContractThreeSecondLoopState(false);
@@ -179,7 +182,8 @@ const LearningScreenComprehensiveReview = () => {
                 handleBreakdownSentence={({ sentenceId }) =>
                   handleBreakdownSentence({
                     sentenceId,
-                    targetLang: sentenceMapMemoized[sentenceId]?.targetLang || '',
+                    targetLang:
+                      sentenceMapMemoized[sentenceId]?.targetLang || '',
                   })
                 }
                 isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
@@ -249,7 +253,9 @@ const LearningScreenComprehensiveReview = () => {
               languageSelectedState={languageSelectedState}
               savedSnippetsMemoized={contentSnippets}
               handleDeleteSnippet={async (snippetId) => {
-                const snippetData = contentSnippets.find((s) => s.id === snippetId);
+                const snippetData = contentSnippets.find(
+                  (s) => s.id === snippetId,
+                );
                 if (!snippetData) return;
                 await handleDeleteSnippet(snippetData);
               }}
