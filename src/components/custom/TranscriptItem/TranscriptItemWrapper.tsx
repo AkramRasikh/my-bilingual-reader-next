@@ -21,6 +21,7 @@ const TranscriptItemWrapper = ({ children }: TranscriptItemWrapperProps) => {
     transcriptItemContainerRef,
     collapseState,
     isComprehensiveMode,
+    thisSnippetOverlapMemoized,
   } = useTranscriptItem();
 
   const hasBeenReviewed = contentItem?.reviewData?.due;
@@ -31,7 +32,8 @@ const TranscriptItemWrapper = ({ children }: TranscriptItemWrapperProps) => {
     isInReviewMode &&
     !isDue &&
     !helperReviewSentence &&
-    !overrideMiniReviewState;
+    !overrideMiniReviewState &&
+    !thisSnippetOverlapMemoized;
 
   if (showMiniReviewWidget) {
     return <TranscriptItemInReviewMiniActionBar />;

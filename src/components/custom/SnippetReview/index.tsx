@@ -334,7 +334,7 @@ const SnippetReview = ({
       delta > 0 ? onExpandLength() : onContractLength(),
     onShiftStart: (delta) => (delta > 0 ? onMoveRight() : onMoveLeft()),
     onSaveSnippet: async () => {
-      console.log('## 🎮 snippet-loop-save');
+      // console.log('## 🎮 snippet-loop-save SnippetReview');
       await onUpdateSnippet();
     },
   });
@@ -410,7 +410,7 @@ const SnippetReview = ({
       const meaning = matchingWordData.meaning;
 
       if (wordIsLoadingGamePadState === matchingWordData.index) {
-// blocked save due to loading state  
+        // blocked save due to loading state
         return;
       }
       try {
@@ -451,7 +451,11 @@ const SnippetReview = ({
       }
 
       // L2 + '-' 6 + 10
-      if (gamepad.buttons[6]?.pressed && gamepad.buttons[10]?.pressed) {
+      if (
+        wordIsLoadingGamePadState === null &&
+        gamepad.buttons[6]?.pressed &&
+        gamepad.buttons[10]?.pressed
+      ) {
         handleSaveGamePad();
         return;
       }
@@ -461,6 +465,7 @@ const SnippetReview = ({
 
     return () => clearInterval(intervalId);
   }, [
+    wordIsLoadingGamePadState,
     togglableWordDataArrMemo.length,
     matchStartWordState,
     isReadyForQuickReview,

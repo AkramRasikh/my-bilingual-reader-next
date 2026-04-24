@@ -60,12 +60,10 @@ const LearningScreenThreeSecondLoopEl = ({
       delta > 0 ? onExpandLength() : onContractLength(),
     onShiftStart: (delta) => (delta > 0 ? onMoveRight() : onMoveLeft()),
     // onSaveSnippet: async () => {
-    //   console.log('## 🎮 snippet-loop-save');
+    // console.log('## 🎮 snippet-loop-save LearningScreenThreeSecondLoopEl');
     //   // await onUpdateSnippet();
     // },
   });
-
-  console.log('## textMatch', textMatch);
 
   return (
     <>

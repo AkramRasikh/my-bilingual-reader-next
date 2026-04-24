@@ -244,7 +244,7 @@ const TranscriptItemLoopingSentence = ({
       onMoveRight();
     },
     onSaveSnippet: async () => {
-      console.log('## 🎮 snippet-loop-save');
+      // console.log('## 🎮 snippet-loop-save TranscriptItem');
       await handleSaveSnippetFlow();
     },
   });
