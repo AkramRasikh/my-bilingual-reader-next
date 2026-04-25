@@ -2,19 +2,22 @@
 
 import { createContext, ReactNode, useContext, useMemo } from 'react';
 import { arabic, chinese, french, japanese } from '@/app/languages';
-import { ContentStateTypes } from '@/app/reducers/content-reducer';
+import {
+  getLandingComprehensiveDataByLanguage,
+  LandingComprehensiveType,
+} from '@/app/LandingUI/Provider/getLandingComprehensiveData';
 
 export interface LandingNewProviderTypes {
   isLandingNewReady: boolean;
-  languageContentTitles: {
+  languageContentMeta: {
     language: string;
-    titles: string[];
+    contentMeta: LandingComprehensiveType[];
   }[];
 }
 
 export const LandingNewContext = createContext<LandingNewProviderTypes>({
   isLandingNewReady: true,
-  languageContentTitles: [],
+  languageContentMeta: [],
 });
 
 type LandingNewProviderProps = {
@@ -22,33 +25,24 @@ type LandingNewProviderProps = {
 };
 
 export const LandingNewProvider = ({ children }: LandingNewProviderProps) => {
-  const languageContentTitles = useMemo(() => {
+  const languageContentMeta = useMemo(() => {
     const supportedLanguages = [japanese, arabic, chinese, french];
 
     return supportedLanguages
       .map((language) => {
-        const localStorageContentState = localStorage.getItem(
-          `${language}-contentState`,
-        );
-        const parsedContentState = localStorageContentState
-          ? (JSON.parse(localStorageContentState) as ContentStateTypes[])
-          : [];
-
         return {
           language,
-          titles: parsedContentState
-            .map((contentItem) => contentItem.title)
-            .filter(Boolean),
+          contentMeta: getLandingComprehensiveDataByLanguage(language),
         };
       })
-      .filter((item) => item.titles.length > 0);
+      .filter((item) => item.contentMeta.length > 0);
   }, []);
 
   return (
     <LandingNewContext.Provider
       value={{
         isLandingNewReady: true,
-        languageContentTitles,
+        languageContentMeta,
       }}
     >
       {children}

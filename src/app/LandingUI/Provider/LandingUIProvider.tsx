@@ -1,21 +1,12 @@
 'use client';
 import { createContext, ReactNode, useContext, useMemo } from 'react';
-import { isDueCheck } from '@/utils/is-due-check';
 import { useFetchData } from '../../Providers/FetchDataProvider';
-import { ContentStateTypes } from '../../reducers/content-reducer';
+import {
+  getLandingComprehensiveData,
+  LandingComprehensiveType,
+} from './getLandingComprehensiveData';
 
-import { ContentTranscriptTypes } from '../../types/content-types';
-
-export interface LandingUIComprehensiveType {
-  title: ContentStateTypes['title'];
-  youtubeId: string;
-  dueSentences: number;
-  totalSentencesWithReview: number;
-  dueSnippets: number;
-  dueWords: number;
-  totalWordsWithReview: number;
-  contentHasBeenReviews: boolean;
-}
+export type LandingUIComprehensiveType = LandingComprehensiveType;
 
 export interface LandingUIProviderTypes {
   generalTopicDisplayNameMemoized: LandingUIComprehensiveType[];
@@ -30,59 +21,11 @@ type LandingUIProviderProps = {
 };
 
 export const LandingUIProvider = ({ children }: LandingUIProviderProps) => {
-  const { contentState, wordsForReviewMemoized, wordsState } = useFetchData();
+  const { contentState, wordsState } = useFetchData();
 
   const generalTopicDisplayNameMemoized = useMemo(() => {
-    const contentMetaData: LandingUIComprehensiveType[] = [];
-    const squashedSentenceIdsViaContentMemoized = {} as Record<
-      ContentStateTypes['id'],
-      ContentTranscriptTypes['id'][]
-    >;
-    contentState.forEach((contentItem) => {
-      const timeNow = new Date();
-      const title = contentItem.title;
-      const thisContentTranscripts = contentItem.content;
-      const thisContentSnippets = contentItem?.snippets;
-      const youtubeId = contentItem.url.split('=')[1];
-
-      const mappedSentenceIds = thisContentTranscripts.map(
-        (transcriptItem) => transcriptItem.id,
-      );
-      squashedSentenceIdsViaContentMemoized[title] = mappedSentenceIds;
-
-      const dueWords = wordsForReviewMemoized.filter((wordObj) =>
-        mappedSentenceIds.includes(wordObj?.contexts?.[0]),
-      ).length;
-      const totalWordsWithReview = wordsState.filter(
-        (wordObj) =>
-          mappedSentenceIds.includes(wordObj?.contexts?.[0]) &&
-          Boolean(wordObj.reviewData),
-      ).length;
-      const totalSentencesWithReview = thisContentTranscripts.filter(
-        (transcriptItem) => Boolean(transcriptItem.reviewData),
-      ).length;
-
-      contentMetaData.push({
-        youtubeId,
-        title,
-        dueSentences: thisContentTranscripts.filter((transcriptItem) =>
-          isDueCheck(transcriptItem, timeNow),
-        ).length,
-        totalSentencesWithReview,
-        dueSnippets:
-          thisContentSnippets?.filter((snippetItem) =>
-            isDueCheck(snippetItem, timeNow),
-          ).length || 0,
-        dueWords,
-        totalWordsWithReview,
-        contentHasBeenReviews: Boolean(
-          contentItem.reviewHistory && contentItem.reviewHistory.length > 0,
-        ),
-      });
-    });
-
-    return contentMetaData.sort((a, b) => b.dueSentences - a.dueSentences);
-  }, [contentState, wordsForReviewMemoized, wordsState]);
+    return getLandingComprehensiveData({ contentState, wordsState });
+  }, [contentState, wordsState]);
 
   return (
     <LandingUIContext.Provider
