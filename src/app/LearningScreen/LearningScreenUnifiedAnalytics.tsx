@@ -172,7 +172,7 @@ const LearningScreenUnifiedAnalytics = ({
         </div>
         <div className='flex gap-2 text-xs font-medium w-fit m-auto items-center'>
           <span data-testid='analytics-reps-count-words'>
-            🔤 reps: {wordRepsState}
+            🔤 Reps: {wordRepsState}
           </span>
           {wordRepsPerMinState && (
             <span className='text-muted-foreground'>
@@ -182,7 +182,7 @@ const LearningScreenUnifiedAnalytics = ({
         </div>
         <div className='flex gap-2 text-xs font-medium w-fit m-auto items-center'>
           <span data-testid='analytics-reps-count-snippets'>
-            ✂️ reps: {snippetRepsState}
+            ✂️ Reps: {snippetRepsState}
           </span>
           {snippetRepsPerMinState && (
             <span className='text-muted-foreground'>

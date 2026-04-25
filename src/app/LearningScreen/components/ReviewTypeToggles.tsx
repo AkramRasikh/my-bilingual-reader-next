@@ -54,7 +54,7 @@ const ReviewTypeToggles = ({
   const checkboxesDisabled = !isInReviewMode;
 
   return (
-    <div className='flex justify-around items-center my-1'>
+    <div className='flex justify-around items-center py-1 border-b-1 mx-2'>
       <div className='p-1 flex justify-center gap-4'>
         <div className='flex gap-2 my-auto'>
           <Label data-testid='review-label'>Review</Label>

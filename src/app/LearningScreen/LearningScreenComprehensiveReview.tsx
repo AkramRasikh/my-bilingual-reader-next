@@ -5,7 +5,6 @@ import TranscriptItem from '@/components/custom/TranscriptItem';
 import { TranscriptItemProvider } from '@/components/custom/TranscriptItem/TranscriptItemProvider';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningScreenTabTranscriptNestedWordsReview';
-import ReviewTypeToggles from './components/ReviewTypeToggles';
 import SnippetReview from '@/components/custom/SnippetReview';
 import { Snippet } from '../types/content-types';
 import useComprehensiveReviewModeData from './hooks/useComprehensiveReviewModeData';
@@ -43,17 +42,12 @@ const LearningScreenComprehensiveReview = () => {
     setContractThreeSecondLoopState,
     contentSnippets,
     enableWordReviewState,
-    setEnableWordReviewState,
     enableTranscriptReviewState,
-    setEnableTranscriptReviewState,
     enableSnippetReviewState,
-    setEnableSnippetReviewState,
     reviewIntervalState,
-    setReviewIntervalState,
     firstTime,
     contentMetaWordMemoized,
     snippetsWithDueStatusMemoized,
-    setIsInReviewMode,
     selectedContentTitleState,
     handleUpdateSnippet,
     currentTime,
@@ -126,21 +120,6 @@ const LearningScreenComprehensiveReview = () => {
   ) {
     return (
       <div>
-        <ReviewTypeToggles
-          enableWordReviewState={enableWordReviewState}
-          setEnableWordReviewState={setEnableWordReviewState}
-          enableTranscriptReviewState={enableTranscriptReviewState}
-          setEnableTranscriptReviewState={setEnableTranscriptReviewState}
-          enableSnippetReviewState={enableSnippetReviewState}
-          setEnableSnippetReviewState={setEnableSnippetReviewState}
-          wordsCount={postWordsMemoized?.length || 0}
-          sentencesCount={postSentencesMemoized.length || 0}
-          snippetsCount={postSnippetsMemoized?.length}
-          reviewIntervalState={reviewIntervalState}
-          setReviewIntervalState={setReviewIntervalState}
-          isInReviewMode={isInReviewMode}
-          setIsInReviewMode={setIsInReviewMode}
-        />
         <h2 className='text-center'>Done!</h2>
       </div>
     );
@@ -148,21 +127,6 @@ const LearningScreenComprehensiveReview = () => {
 
   return (
     <>
-      <ReviewTypeToggles
-        enableWordReviewState={enableWordReviewState}
-        setEnableWordReviewState={setEnableWordReviewState}
-        enableTranscriptReviewState={enableTranscriptReviewState}
-        setEnableTranscriptReviewState={setEnableTranscriptReviewState}
-        enableSnippetReviewState={enableSnippetReviewState}
-        setEnableSnippetReviewState={setEnableSnippetReviewState}
-        wordsCount={postWordsMemoized?.length || 0}
-        sentencesCount={postSentencesMemoized.length || 0}
-        snippetsCount={postSnippetsMemoized?.length}
-        reviewIntervalState={reviewIntervalState}
-        setReviewIntervalState={setReviewIntervalState}
-        isInReviewMode={isInReviewMode}
-        setIsInReviewMode={setIsInReviewMode}
-      />
       {postSnippetsMemoized?.length > 0 ? (
         <div className='flex flex-col gap-2 mb-2'>
           {postSnippetsMemoized.map((item) => {
