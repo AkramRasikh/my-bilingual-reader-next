@@ -14,7 +14,7 @@ const PageContainer = ({
   }, [toastMessageState]);
 
   return (
-    <div className='p-4 bg-amber-50 h-lvh'>
+    <div className='p-4 bg-amber-50 min-h-lvh'>
       <Toaster
         position='top-center'
         duration={1000}
