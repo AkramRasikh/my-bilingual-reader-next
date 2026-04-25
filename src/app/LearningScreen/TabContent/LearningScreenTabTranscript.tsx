@@ -61,8 +61,6 @@ const LearningScreenTabTranscript = () => {
   } = useLearningScreen();
   const { languageSelectedState, wordsState } = useFetchData();
 
-  const contentClasses = 'p-1 max-h-150';
-
   const biggestOverlappedSnippet = useMemo(() => {
     if (overlappingSnippetDataState.length === 0) {
       return null;
