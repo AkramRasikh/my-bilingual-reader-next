@@ -89,7 +89,10 @@ const LandingNewBreadCrumb = () => {
   ];
 
   return (
-    <div className='flex justify-between'>
+    <div className='relative flex justify-between items-center min-h-14'>
+      <h1 className='absolute inset-x-0 top-1/2 -translate-y-1/2 text-center font-semibold pointer-events-none text-2xl'>
+        🎮 YDK 🎮
+      </h1>
       <BreadCrumbHeaderBase
         heading=''
         onClick={() => {}}
