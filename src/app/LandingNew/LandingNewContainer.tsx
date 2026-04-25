@@ -4,6 +4,7 @@ import PageContainer from '@/components/custom/PageContainer';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import LandingNew from '.';
 import { LandingNewProvider } from './Provider/LandingNewProvider';
+import LandingNewBreadCrumb from './LandingNewBreadCrumb';
 
 const LandingNewContainer = () => {
   const { toastMessageState, setToastMessageState } = useFetchData();
@@ -14,6 +15,7 @@ const LandingNewContainer = () => {
       setToastMessageState={setToastMessageState}
     >
       <LandingNewProvider>
+        <LandingNewBreadCrumb />
         <LandingNew />
       </LandingNewProvider>
     </PageContainer>

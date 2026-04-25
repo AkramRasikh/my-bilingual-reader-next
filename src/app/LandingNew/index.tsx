@@ -2,6 +2,7 @@
 
 import LandingUIContentSelectionItem from '../LandingUI/LandingUIContentSelectionItem';
 import { useLandingNew } from './Provider/LandingNewProvider';
+import { LanguageEnum } from '../languages';
 
 const languageFlags: Record<string, string> = {
   chinese: '🇨🇳',
@@ -14,18 +15,22 @@ const LandingNew = () => {
   const { languageContentMeta } = useLandingNew();
 
   return (
-    <div className='p-4'>
+    <div className='pb-4'>
       <div className='mt-4 space-y-4'>
         {languageContentMeta.length ? (
-          languageContentMeta.map(({ language, contentMeta }) => (
-            <section key={language}>
-              <h2 className='text-2xl' title={language}>
-                {languageFlags[language] || '🏳️'}
-              </h2>
+          languageContentMeta.map(({ language, contentMeta }, index) => (
+            <section
+              key={language}
+              className={index === 0 ? '' : 'border-t pt-4'}
+            >
               <ul className='mt-2 flex flex-wrap gap-4'>
                 {contentMeta.map((metaItem) => (
                   <li key={metaItem.title}>
-                    <LandingUIContentSelectionItem {...metaItem} />
+                    <LandingUIContentSelectionItem
+                      {...metaItem}
+                      language={language as LanguageEnum}
+                      flagEmoji={languageFlags[language] || '🏳️'}
+                    />
                   </li>
                 ))}
               </ul>

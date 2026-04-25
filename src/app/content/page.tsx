@@ -1,5 +1,5 @@
 'use client';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
 import MockFlag from '../../components/custom/MockFlag';
 import LearningScreenBreadCrumbHeader from '../LearningScreen/LearningScreenBreadCrumbHeader';
@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import LearningScreen from '../LearningScreen';
 import PageContainer from '@/components/custom/PageContainer';
 import PageContainerErrorBanner from '@/components/custom/PageContainerErrorBanner';
+import { LanguageEnum } from '../languages';
 
 export const ContentScreenContainer = () => {
   const isMockEnv = process.env.NEXT_PUBLIC_IS_MOCK;
@@ -52,7 +53,7 @@ export const ContentScreenContainer = () => {
 const ContentScreen = () => {
   const searchParams = useSearchParams();
   const titleParam = searchParams.get('topic');
-
+  const languageParam = searchParams.get('language') as LanguageEnum | null;
   const {
     contentState,
     hasFetchedDataState,
@@ -60,7 +61,17 @@ const ContentScreen = () => {
     languageSelectedState,
     toastMessageState,
     setToastMessageState,
+    setLanguageSelectedState,
   } = useFetchData();
+
+  useEffect(() => {
+    if (!languageParam || languageParam === languageSelectedState) {
+      return;
+    }
+
+    localStorage.setItem('selectedLanguage', languageParam);
+    setLanguageSelectedState(languageParam);
+  }, [languageParam, languageSelectedState, setLanguageSelectedState]);
 
   const selectedContentStateMemoized = useMemo(() => {
     const thisContent = contentState.find((item) => item.title === titleParam);

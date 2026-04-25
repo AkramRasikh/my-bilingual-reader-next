@@ -7,6 +7,12 @@ import {
 } from 'lucide-react';
 import { ContentStateTypes } from '../reducers/content-reducer';
 import { LandingUIComprehensiveType } from './Provider/LandingUIProvider';
+import { LanguageEnum } from '../languages';
+
+interface LandingUIContentSelectionItemProps extends LandingUIComprehensiveType {
+  flagEmoji?: string;
+  language?: LanguageEnum;
+}
 
 const LandingUIContentSelectionItemImage = ({
   youtubeId,
@@ -56,15 +62,30 @@ const LandingUIContentSelectionItem = ({
   dueWords,
   totalWordsWithReview,
   dueSnippets,
-}: LandingUIComprehensiveType) => {
+  flagEmoji,
+  language,
+}: LandingUIContentSelectionItemProps) => {
   const router = useRouter();
 
   const handleSelectInitialTopic = (topicName: ContentStateTypes['title']) => {
-    router.push(`/content?topic=${topicName}`);
+    const searchParams = new URLSearchParams({
+      topic: topicName,
+    });
+
+    if (language) {
+      searchParams.set('language', language);
+    }
+
+    router.push(`/content?${searchParams.toString()}`);
   };
 
   return (
     <div className='rounded-2xl border flex flex-col gap-1 p-2 relative'>
+      {language && flagEmoji && (
+        <span className='absolute top-2 left-3 text-xs' title='language-flag'>
+          {flagEmoji}
+        </span>
+      )}
       <LandingUIContentSelectionItemImage youtubeId={youtubeId} />
       <Button
         variant={'link'}
