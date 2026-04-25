@@ -29,7 +29,6 @@ const LandingUIBreadCrumb = () => {
 
   const numberOfSentences = sentencesDueForReviewMemoized.length;
 
-  const firstHeader = 'Home';
   useEffect(() => {
     setIsLocalStorageClearedState(false);
   }, [languageSelectedState]);
@@ -69,7 +68,6 @@ const LandingUIBreadCrumb = () => {
   return (
     <div className='flex justify-between'>
       <BreadCrumbHeaderBase
-        heading={firstHeader}
         onClick={() => {}}
         navigationButtons={() =>
           buttonsArr.map((item, index) => {
