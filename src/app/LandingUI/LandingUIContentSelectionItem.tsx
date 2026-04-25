@@ -80,9 +80,9 @@ const LandingUIContentSelectionItem = ({
   };
 
   return (
-    <div className='rounded-2xl border flex flex-col gap-1 p-2 relative'>
+    <div className='flex flex-col gap-1 p-2 relative'>
       {language && flagEmoji && (
-        <span className='absolute top-2 left-3 text-xs' title='language-flag'>
+        <span className='absolute top-0.5 left-2.5 text-lg' title='language-flag'>
           {flagEmoji}
         </span>
       )}
