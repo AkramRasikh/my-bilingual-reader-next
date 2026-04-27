@@ -13,8 +13,7 @@ const YoutubeUploadIframe = () => {
           width='560'
           height='315'
           src={`https://www.youtube.com/embed/${youtubeId}`}
-          frameborder='0'
-          allowfullscreen
+          allowFullScreen
           className='rounded-2xl'
         />
       </AnimationWrapper>
