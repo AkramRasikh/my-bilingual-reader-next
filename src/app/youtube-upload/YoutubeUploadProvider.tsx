@@ -111,10 +111,10 @@ export function YoutubeUploadProvider({ children }) {
           }`,
         );
 
-        if (res?.newContentData) {
+        if (data?.newContentData) {
           dispatchContent({
             type: 'addContent',
-            newContentData: res.newContentData,
+            newContentData: data.newContentData,
           });
           setToastMessageState('New content added!');
         }
