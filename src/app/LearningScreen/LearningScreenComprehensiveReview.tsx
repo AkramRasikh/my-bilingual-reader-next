@@ -7,7 +7,6 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import LearningScreenTabTranscriptNestedWordsReview from './TabContent/LearningScreenTabTranscriptNestedWordsReview';
 import SnippetReview from '@/components/custom/SnippetReview';
 import { Snippet } from '../types/content-types';
-import useComprehensiveReviewModeData from './hooks/useComprehensiveReviewModeData';
 import getBiggestOverlap from '@/components/custom/TranscriptItem/get-biggest-overlap';
 
 interface HandleReviewSnippetsComprehensiveReviewProps {
@@ -36,25 +35,20 @@ const LearningScreenComprehensiveReview = () => {
     transcriptRef,
     scrollToElState,
     wordsForSelectedTopic,
-    formattedTranscriptState,
     handleLoopReviewMode,
     setThreeSecondLoopState,
     setContractThreeSecondLoopState,
     contentSnippets,
-    enableWordReviewState,
-    enableTranscriptReviewState,
-    enableSnippetReviewState,
-    reviewIntervalState,
-    firstTime,
-    contentMetaWordMemoized,
-    snippetsWithDueStatusMemoized,
+    postWordsMemoized,
+    postSnippetsMemoized,
+    slicedTranscriptArray,
+    postSentencesMemoized,
+    firstElIdInReview,
     selectedContentTitleState,
     handleUpdateSnippet,
     currentTime,
     getSentenceDataOfOverlappingWordsDuringSave,
     sentenceMapMemoized,
-    firstTimeState,
-    setFirstTimeState,
     handlePlayFromHere,
     handleDeleteSnippet,
     overlappingTextMemoized,
@@ -63,25 +57,6 @@ const LearningScreenComprehensiveReview = () => {
     handleDeleteWordDataProvider,
   } = useLearningScreen();
   const { languageSelectedState, wordsState } = useFetchData();
-
-  const {
-    postWordsMemoized,
-    postSnippetsMemoized,
-    slicedTranscriptArray,
-    transcriptDueNumber: _unusedTranscriptDueNumber,
-    postSentencesMemoized,
-  } = useComprehensiveReviewModeData({
-    enableWordReviewState,
-    enableSnippetReviewState,
-    enableTranscriptReviewState,
-    firstTime,
-    firstTimeState,
-    setFirstTimeState,
-    reviewIntervalState,
-    contentMetaWordMemoized,
-    snippetsWithDueStatusMemoized,
-    formattedTranscriptState,
-  });
 
   const biggestOverlappedSnippet = useMemo(() => {
     if (overlappingSnippetDataState.length === 0) {
@@ -92,12 +67,6 @@ const LearningScreenComprehensiveReview = () => {
     }
     return overlappingSnippetDataState[0].id;
   }, [overlappingSnippetDataState]);
-
-  const firstElIdInReview = [
-    ...postSnippetsMemoized,
-    ...postWordsMemoized,
-    ...postSentencesMemoized,
-  ]?.[0]?.id;
 
   const handleReviewSnippetsComprehensiveReview = async ({
     snippetData,

@@ -30,12 +30,17 @@ const LearningScreenVideoPlayer = ({
     isSavedLoopPlayingState,
     isVideoPlaying,
     setThreeSecondLoopState,
+    firstElIdInReview,
+    firstWordDefinitionInReview,
+    firstWordInReviewDisplay,
   } = useLearningScreen();
 
   const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
     useState(false);
   const [highlightedTextFocusLoopState, setHighlightedTextFocusLoopState] =
     useState('');
+  const [showWordDetailsState, setShowWordDetailsState] = useState(false);
+  const quickReviewToggleFiredRef = useRef(false);
 
   const masterTextRef = useRef<HTMLParagraphElement | null>(null);
   const videoRef = ref as React.RefObject<HTMLVideoElement | null>;
@@ -91,6 +96,46 @@ const LearningScreenVideoPlayer = ({
 
   const isLooping = Boolean(threeSecondLoopState);
   const isLoopingSaved = isLooping && isSavedLoopPlayingState;
+  const compactWordDetailsText = [
+    firstWordInReviewDisplay?.surfaceForm,
+    firstWordInReviewDisplay?.phonetic,
+    firstWordInReviewDisplay?.transliteration,
+  ]
+    .filter((item) => Boolean(item && item.trim()))
+    .join(' - ');
+
+  useEffect(() => {
+    setShowWordDetailsState(false);
+  }, [firstElIdInReview]);
+
+  useEffect(() => {
+    if (!firstWordInReviewDisplay) return;
+
+    const handleGamepadPress = () => {
+      const gamepads = navigator.getGamepads();
+      const gamepad = Array.from(gamepads).find((gp) => gp !== null);
+
+      if (!gamepad) {
+        return;
+      }
+
+      const aPressed = gamepad.buttons[0]?.pressed;
+      const rPressed = gamepad.buttons[7]?.pressed;
+
+      if (aPressed && rPressed && !quickReviewToggleFiredRef.current) {
+        setShowWordDetailsState((prev) => !prev);
+        quickReviewToggleFiredRef.current = true;
+        return;
+      }
+
+      if (!aPressed || !rPressed) {
+        quickReviewToggleFiredRef.current = false;
+      }
+    };
+
+    const intervalId = setInterval(handleGamepadPress, 100);
+    return () => clearInterval(intervalId);
+  }, [firstWordInReviewDisplay]);
 
   return (
     <div className='flex flex-col relative'>
@@ -152,6 +197,15 @@ const LearningScreenVideoPlayer = ({
               )}
             />
           </Button>
+        </div>
+      ) : null}
+      {firstElIdInReview && firstWordDefinitionInReview ? (
+        <div className='absolute bottom-14 left-1/2 -translate-x-1/2 w-fit max-w-[66.666%] px-4 py-1.5 rounded-md bg-black/80 border border-white/20'>
+          <p className='text-xs font-bold text-white text-center break-words drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]'>
+            {showWordDetailsState && compactWordDetailsText
+              ? compactWordDetailsText
+              : firstWordDefinitionInReview}
+          </p>
         </div>
       ) : null}
     </div>

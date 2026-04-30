@@ -31,6 +31,7 @@ import { useWordMetaMemoized } from './hooks/useWordMetaMemoized';
 import { useTopicWordsForReviewMemoized } from './hooks/useTopicWordsForReviewMemoized';
 import { useSnippetDueMemoized } from './hooks/useSnippetDueMemoized';
 import { useLoopedTranscriptMemoized } from './hooks/useLoopedTranscriptMemoized';
+import useComprehensiveReviewModeData from './hooks/useComprehensiveReviewModeData';
 import {
   getOverlappingText,
   useOverlappingTextMemoized,
@@ -58,6 +59,8 @@ type OverlappingTextTypes = {
   baseLang: string;
   suggestedFocusText: string;
   focusedText?: string;
+  suggestedFocusStartIndex?: number;
+  isSnippetReview?: boolean;
   vocab?: Vocab[];
 };
 
@@ -84,6 +87,10 @@ interface TopicWordsForReviewMemoizedProps extends WordTypes {
 }
 
 export type ContextIdType = WordTypes['contexts'][number];
+type FirstWordInReviewDisplay = Pick<
+  WordTypes,
+  'definition' | 'surfaceForm' | 'phonetic' | 'transliteration'
+>;
 
 export interface LearningScreenContextTypes {
   getSentenceFromContextId: (contextId: ContextIdType) => string;
@@ -220,6 +227,13 @@ export interface LearningScreenContextTypes {
   setEnableSnippetReviewState: React.Dispatch<React.SetStateAction<boolean>>;
   reviewIntervalState: number;
   setReviewIntervalState: React.Dispatch<React.SetStateAction<number>>;
+  postWordsMemoized: WordTypes[];
+  postSnippetsMemoized: Snippet[];
+  postSentencesMemoized: FormattedTranscriptTypes[];
+  slicedTranscriptArray: FormattedTranscriptTypes[];
+  firstElIdInReview: string | undefined;
+  firstWordDefinitionInReview: string | null;
+  firstWordInReviewDisplay: FirstWordInReviewDisplay | null;
   snippetsWithDueStatusMemoized: Snippet[];
   handleSaveWord: (params: HandleSaveWordCallTypes) => Promise<unknown>;
   handleDeleteWordDataProvider: (
@@ -1060,6 +1074,54 @@ export const LearningScreenProvider = ({
     firstSentenceDueTime,
   ]);
 
+  const {
+    postWordsMemoized,
+    postSnippetsMemoized,
+    slicedTranscriptArray,
+    postSentencesMemoized,
+  } = useComprehensiveReviewModeData({
+    enableWordReviewState,
+    enableSnippetReviewState,
+    enableTranscriptReviewState,
+    firstTime,
+    firstTimeState,
+    setFirstTimeState,
+    reviewIntervalState,
+    contentMetaWordMemoized,
+    snippetsWithDueStatusMemoized,
+    formattedTranscriptState: formattedTranscriptMemoized,
+  });
+
+  const firstElIdInReview = [
+    ...postSnippetsMemoized,
+    ...postWordsMemoized,
+    ...postSentencesMemoized,
+  ]?.[0]?.id;
+
+  const firstWordDefinitionInReview = useMemo(() => {
+    if (!firstElIdInReview) {
+      return null;
+    }
+    const firstWord = postWordsMemoized.find((word) => word.id === firstElIdInReview);
+    return firstWord?.definition || null;
+  }, [firstElIdInReview, postWordsMemoized]);
+
+  const firstWordInReviewDisplay = useMemo(() => {
+    if (!firstElIdInReview) {
+      return null;
+    }
+    const firstWord = postWordsMemoized.find((word) => word.id === firstElIdInReview);
+    if (!firstWord) {
+      return null;
+    }
+    return {
+      definition: firstWord.definition,
+      surfaceForm: firstWord.surfaceForm,
+      phonetic: firstWord.phonetic,
+      transliteration: firstWord.transliteration,
+    };
+  }, [firstElIdInReview, postWordsMemoized]);
+
   const overlappingTextMemoized = useOverlappingTextMemoized({
     threeSecondLoopState,
     overlappingSnippetDataMemoised,
@@ -1237,6 +1299,13 @@ export const LearningScreenProvider = ({
         setEnableSnippetReviewState,
         reviewIntervalState,
         setReviewIntervalState,
+        postWordsMemoized,
+        postSnippetsMemoized,
+        postSentencesMemoized,
+        slicedTranscriptArray,
+        firstElIdInReview,
+        firstWordDefinitionInReview,
+        firstWordInReviewDisplay,
         snippetsWithDueStatusMemoized,
         handleSaveWord,
         handleDeleteWordDataProvider,
