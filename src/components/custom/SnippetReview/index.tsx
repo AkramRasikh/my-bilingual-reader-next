@@ -461,6 +461,11 @@ const SnippetReview = ({
         handleSaveGamePad();
         return;
       }
+      // second analog - big controller
+      if (wordIsLoadingGamePadState === null && gamepad.buttons[14]?.pressed) {
+        handleSaveGamePad();
+        return;
+      }
     };
 
     const intervalId = setInterval(handleGamepadPress, 100);
@@ -511,6 +516,11 @@ const SnippetReview = ({
       className='relative'
       data-testid={`snippet-review-item-${snippetData.id}`}
     >
+      {wordIsLoadingGamePadState && (
+        <div className='absolute right-1/12 bottom-2/12'>
+          <LoadingSpinner />
+        </div>
+      )}
       {isLoadingSaveSnippetState && (
         <div className='absolute right-1/2 top-3/10'>
           <LoadingSpinner />

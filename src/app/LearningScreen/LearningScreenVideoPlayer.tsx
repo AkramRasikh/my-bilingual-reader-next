@@ -146,6 +146,7 @@ const LearningScreenVideoPlayer = ({
         className='w-full rounded-lg shadow-lg m-auto'
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
+        playsInline
       >
         Your browser does not support the video tag.
       </video>
