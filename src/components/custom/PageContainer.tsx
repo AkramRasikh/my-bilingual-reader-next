@@ -19,7 +19,16 @@ const PageContainer = ({
         position='top-center'
         duration={1000}
         toastOptions={{
-          className: 'text-center w-fit flex items-center justify-center',
+          className: 'text-center break-words',
+          style: {
+            width: 'fit-content',
+            minWidth: '0',
+            maxWidth: 'calc(100vw - 2rem)',
+            marginInline: 'auto',
+          },
+          classNames: {
+            toast: '!w-fit !min-w-0 !max-w-[calc(100vw-2rem)] mx-auto',
+          },
         }}
       />
       {children}
