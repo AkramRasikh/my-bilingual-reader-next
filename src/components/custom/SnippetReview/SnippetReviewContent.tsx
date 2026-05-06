@@ -5,6 +5,7 @@ import HoverWordCard from '@/components/custom/HoverWordCard';
 import getColorByIndex from '@/utils/get-color-by-index';
 import clsx from 'clsx';
 import FormattedSentenceSnippetBreakdownWidget from './SnippetReviewContentBreakdownWidget';
+import LoadingSpinner from '../LoadingSpinner';
 
 const FormattedSentenceSnippet = ({
   ref,
@@ -90,26 +91,44 @@ const FormattedSentenceSnippet = ({
             indexNested >= low &&
             indexNested <= high;
           const animateTextIsLoading =
+            wordIsLoadingGamePadState != null &&
             animateText &&
             wordIsLoadingGamePadState >= low &&
             wordIsLoadingGamePadState <= high;
+          const middleIndex = Math.floor((low + high) / 2);
+          const showLoadingSpinner =
+            animateTextIsLoading && indexNested === middleIndex;
           const isLow = indexNested === low;
           const isHigh = indexNested === high;
+          
 
           return (
             <span
               key={indexNested}
+              style={{
+                textDecorationColor: animateText
+                  ? getColorByIndex(hasStartIndex)
+                  : undefined,
+              }}
               className={clsx(
                 'relative',
+                animateText
+                  ? 'italic overline decoration-dashed decoration-2'
+                  : '',
                 animateTextIsLoading
-                  ? 'text-xl font-bold animate-ping opacity-50 italic'
-                  : animateText
-                    ? 'text-xl font-bold animate-pulse'
-                    : '',
+                  ? 'italic overline decoration-dashed decoration-2 animate-pulse opacity-50'
+                  : '',
                 isLow && isArabic ? 'mr-0.5' : isLow ? 'ml-0.5' : '',
                 isHigh && isArabic ? 'ml-0.5' : isHigh ? 'mr-0.5' : '',
               )}
             >
+              {showLoadingSpinner && (
+                <div className='absolute inset-0 flex items-center justify-center pointer-events-none'>
+                  <div className='scale-75'>
+                    <LoadingSpinner />
+                  </div>
+                </div>
+              )}
               {isReadyForQuickReview && (
                 <FormattedSentenceSnippetProgressWidget played={played} />
               )}
