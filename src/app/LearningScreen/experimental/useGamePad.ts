@@ -14,6 +14,10 @@ const BUTTONS = {
   X_BTN: 3,
   B_BTN: 1,
   A_BTN: 0,
+  DPAD_UP_BTN: 12,
+  DPAD_DOWN_BTN: 13,
+  DPAD_LEFT_BTN: 14,
+  DPAD_RIGHT_BTN: 15,
 } as const;
 
 const getDpadState = (axes: readonly number[]) => {
@@ -59,6 +63,36 @@ const dispatchSnippetLoopEvent = (
   window.dispatchEvent(new CustomEvent(name, { detail }));
 };
 
+const decodeHatAxis9Direction = (axis9Value: number, maxAbsAxis9: number) => {
+  if (!maxAbsAxis9) {
+    return { up: false, down: false, left: false, right: false };
+  }
+
+  const normalized = axis9Value / maxAbsAxis9;
+  const positions = [-1, -0.714, -0.428, -0.143, 0.143, 0.428, 0.714, 1];
+  const closestIdx = positions.reduce(
+    (bestIdx, target, idx) =>
+      Math.abs(normalized - target) < Math.abs(normalized - positions[bestIdx])
+        ? idx
+        : bestIdx,
+    0,
+  );
+
+  // Typical hat switch ordering used by many gamepads.
+  const map = [
+    { up: true, down: false, left: false, right: false }, // up
+    { up: true, down: false, left: false, right: true }, // up-right
+    { up: false, down: false, left: false, right: true }, // right
+    { up: false, down: true, left: false, right: true }, // down-right
+    { up: false, down: true, left: false, right: false }, // down
+    { up: false, down: true, left: true, right: false }, // down-left
+    { up: false, down: false, left: true, right: false }, // left
+    { up: true, down: false, left: true, right: false }, // up-left
+  ];
+
+  return map[closestIdx];
+};
+
 export function useGamepad(
   dispatch: (action: InputAction) => void,
   threeSecondLoopState: number | null,
@@ -80,6 +114,15 @@ export function useGamepad(
   const laComboFiredRef = useRef(false);
   const minusButtonHeldRef = useRef(false);
   const plusButtonHeldRef = useRef(false);
+  const hatAxis9NeutralRef = useRef<number | null>(null);
+  const hatAxis9ActiveRef = useRef(false);
+  const hatAxis9MaxAbsRef = useRef(1);
+  const hatAxis9DirectionPressedRef = useRef({
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+  });
 
   useEffect(() => {
     if (!navigator.getGamepads) {
@@ -162,6 +205,78 @@ export function useGamepad(
         const dpadDown = dpad.down;
         const dpadRight = dpad.right;
         const dpadLeft = dpad.left;
+        const axis9Value = gp.axes[9] ?? 0;
+        if (hatAxis9NeutralRef.current === null) {
+          hatAxis9NeutralRef.current = axis9Value;
+        }
+        const axis9Delta = Math.abs(axis9Value - hatAxis9NeutralRef.current);
+        const axis9LooksActive = axis9Delta > 0.25;
+        if (axis9LooksActive) {
+          hatAxis9MaxAbsRef.current = Math.max(
+            hatAxis9MaxAbsRef.current,
+            Math.abs(axis9Value),
+          );
+        }
+        const dpadFromHatAxis9 = axis9LooksActive
+          ? decodeHatAxis9Direction(axis9Value, hatAxis9MaxAbsRef.current)
+          : { up: false, down: false, left: false, right: false };
+        if (axis9LooksActive && !hatAxis9ActiveRef.current) {
+          hatAxis9ActiveRef.current = true;
+          console.log('## 🎮 D-pad hat (axis 9) pressed');
+          //    {
+          //   value: axis9Value,
+          //   neutral: hatAxis9NeutralRef.current,
+          //   delta: axis9Delta,
+          //   maxAbsSeen: hatAxis9MaxAbsRef.current,
+          // });
+        }
+        if (!axis9LooksActive && hatAxis9ActiveRef.current) {
+          hatAxis9ActiveRef.current = false;
+          console.log('## 🎮 D-pad hat (axis 9) released');
+          //   {
+          //   value: axis9Value,
+          //   neutral: hatAxis9NeutralRef.current,
+          //   delta: axis9Delta,
+          //   maxAbsSeen: hatAxis9MaxAbsRef.current,
+          // });
+        }
+
+        if (dpadFromHatAxis9.up && !hatAxis9DirectionPressedRef.current.up) {
+          console.log('## 🎮 D-pad hat UP pressed');
+          hatAxis9DirectionPressedRef.current.up = true;
+        }
+        if (!dpadFromHatAxis9.up && hatAxis9DirectionPressedRef.current.up) {
+          console.log('## 🎮 D-pad hat UP released');
+          hatAxis9DirectionPressedRef.current.up = false;
+        }
+        if (dpadFromHatAxis9.down && !hatAxis9DirectionPressedRef.current.down) {
+          console.log('## 🎮 D-pad hat DOWN pressed');
+          hatAxis9DirectionPressedRef.current.down = true;
+        }
+        if (!dpadFromHatAxis9.down && hatAxis9DirectionPressedRef.current.down) {
+          console.log('## 🎮 D-pad hat DOWN released');
+          hatAxis9DirectionPressedRef.current.down = false;
+        }
+        if (dpadFromHatAxis9.left && !hatAxis9DirectionPressedRef.current.left) {
+          console.log('## 🎮 D-pad hat LEFT pressed');
+          hatAxis9DirectionPressedRef.current.left = true;
+        }
+        if (!dpadFromHatAxis9.left && hatAxis9DirectionPressedRef.current.left) {
+          console.log('## 🎮 D-pad hat LEFT released');
+          hatAxis9DirectionPressedRef.current.left = false;
+        }
+        if (dpadFromHatAxis9.right && !hatAxis9DirectionPressedRef.current.right) {
+          console.log('## 🎮 D-pad hat RIGHT pressed');
+          hatAxis9DirectionPressedRef.current.right = true;
+        }
+        if (
+          !dpadFromHatAxis9.right &&
+          hatAxis9DirectionPressedRef.current.right
+        ) {
+          console.log('## 🎮 D-pad hat RIGHT released');
+          hatAxis9DirectionPressedRef.current.right = false;
+        }
+
 
         // Debug down detection
         if (loopCountRef.current % 60 === 0) {
@@ -228,7 +343,6 @@ export function useGamepad(
         }
 
         if (dpadRight && !axesPressedRef.current['dpad-right']) {
-          const whichAxis = dpad.axis.right;
           // console.log(`## 🎮 D-pad Right pressed (axis ${whichAxis})`);
           axesPressedRef.current['dpad-right'] = true;
 
