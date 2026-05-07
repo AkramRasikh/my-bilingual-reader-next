@@ -50,6 +50,18 @@ const FormattedSentenceSnippet = ({
         const surfaceFormBreakdown = item?.surfaceForm;
         const played =
           hasHighlightedBackground && currentTime >= item?.secondForIndex;
+        const low = Math.min(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
+        const high = Math.max(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
+        const animateText =
+          matchingStartIndex !== undefined &&
+          matchingEndIndex !== undefined &&
+          indexNested >= low &&
+          indexNested <= high;
+        const animateTextIsLoading =
+          wordIsLoadingGamePadState != null &&
+          animateText &&
+          wordIsLoadingGamePadState >= low &&
+          wordIsLoadingGamePadState <= high;
 
         if (isUnderlined) {
           return (
@@ -58,9 +70,18 @@ const FormattedSentenceSnippet = ({
               className={clsx(
                 hasHighlightedBackground ? 'bg-gray-200' : 'opacity-35',
                 'relative',
+                animateText
+                  ? 'italic overline decoration-dashed decoration-2'
+                  : '',
+                animateTextIsLoading
+                  ? 'italic overline decoration-dashed decoration-2 animate-pulse opacity-50'
+                  : '',
               )}
               style={{
                 color: getColorByIndex(hasStartIndex),
+                textDecorationColor: animateText
+                  ? getColorByIndex(hasStartIndex)
+                  : undefined,
               }}
             >
               {isReadyForQuickReview && (
@@ -83,24 +104,12 @@ const FormattedSentenceSnippet = ({
 
         if (!(item?.meaning === 'n/a' && surfaceFormBreakdown)) {
           // console.log('## is broken down but not saved', text);
-          const low = Math.min(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
-          const high = Math.max(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
-          const animateText =
-            matchingStartIndex !== undefined &&
-            matchingEndIndex !== undefined &&
-            indexNested >= low &&
-            indexNested <= high;
-          const animateTextIsLoading =
-            wordIsLoadingGamePadState != null &&
-            animateText &&
-            wordIsLoadingGamePadState >= low &&
-            wordIsLoadingGamePadState <= high;
           const middleIndex = Math.floor((low + high) / 2);
           const showLoadingSpinner =
             animateTextIsLoading && indexNested === middleIndex;
           const isLow = indexNested === low;
           const isHigh = indexNested === high;
-          
+
 
           return (
             <span
