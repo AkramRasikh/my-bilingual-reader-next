@@ -423,6 +423,17 @@ const SnippetReview = ({
         setWordIsLoadingGamePadState(null);
       }
     };
+    const handleMoveWordBackward = () => {
+      if (matchStartWordState === null) return;
+      setMatchStartWordState(Math.max(0, matchStartWordState - 1));
+    };
+    const handleMoveWordForward = () => {
+      if (matchStartWordState === null) return;
+      setMatchStartWordState(
+        Math.min(togglableWordDataArrMemo.length - 1, matchStartWordState + 1),
+      );
+    };
+
     const handleGamepadPress = () => {
       const gamepads = navigator.getGamepads();
       // Find the first connected gamepad
@@ -439,17 +450,13 @@ const SnippetReview = ({
       }
       // R2
       if (gamepad.buttons[7]?.pressed && matchStartWordState !== null) {
-        setMatchStartWordState(
-          Math.min(
-            togglableWordDataArrMemo.length - 1,
-            matchStartWordState + 1,
-          ),
-        );
+        handleMoveWordForward();
       }
 
       // R1
-      if (gamepad.buttons[9]?.pressed && matchStartWordState !== null) {
-        setMatchStartWordState(Math.max(0, matchStartWordState - 1));
+      if (
+        gamepad.buttons[9]?.pressed && matchStartWordState !== null) {
+        handleMoveWordBackward();
       }
 
       // L2 + '-' 6 + 10
@@ -468,9 +475,18 @@ const SnippetReview = ({
       }
     };
 
+    window.addEventListener('dpad-hat-left-pressed', handleMoveWordBackward);
+    window.addEventListener('dpad-hat-right-pressed', handleMoveWordForward);
     const intervalId = setInterval(handleGamepadPress, 100);
 
-    return () => clearInterval(intervalId);
+    return () => {
+      window.removeEventListener('dpad-hat-left-pressed', handleMoveWordBackward);
+      window.removeEventListener(
+        'dpad-hat-right-pressed',
+        handleMoveWordForward,
+      );
+      clearInterval(intervalId);
+    };
   }, [
     wordIsLoadingGamePadState,
     togglableWordDataArrMemo.length,

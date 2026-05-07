@@ -259,14 +259,17 @@ export function useGamepad(
         }
         if (dpadFromHatAxis9.left && !hatAxis9DirectionPressedRef.current.left) {
           console.log('## 🎮 D-pad hat LEFT pressed');
+          window.dispatchEvent(new CustomEvent('dpad-hat-left-pressed'));
           hatAxis9DirectionPressedRef.current.left = true;
         }
         if (!dpadFromHatAxis9.left && hatAxis9DirectionPressedRef.current.left) {
           console.log('## 🎮 D-pad hat LEFT released');
+          window.dispatchEvent(new CustomEvent('dpad-hat-left-released'));
           hatAxis9DirectionPressedRef.current.left = false;
         }
         if (dpadFromHatAxis9.right && !hatAxis9DirectionPressedRef.current.right) {
           console.log('## 🎮 D-pad hat RIGHT pressed');
+          window.dispatchEvent(new CustomEvent('dpad-hat-right-pressed'));
           hatAxis9DirectionPressedRef.current.right = true;
         }
         if (
@@ -274,6 +277,7 @@ export function useGamepad(
           hatAxis9DirectionPressedRef.current.right
         ) {
           console.log('## 🎮 D-pad hat RIGHT released');
+          window.dispatchEvent(new CustomEvent('dpad-hat-right-released'));
           hatAxis9DirectionPressedRef.current.right = false;
         }
 
