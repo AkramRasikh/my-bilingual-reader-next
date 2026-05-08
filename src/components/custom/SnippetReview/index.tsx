@@ -241,12 +241,6 @@ const SnippetReview = ({
   const handleSaveFunc = async (isGoogle, thisWord, thisWordMeaning) => {
     try {
       setIsLoadingWordState(true);
-      console.log('## canIncrement SnippetReview', {
-        concatenatedSurfaceForm: selectedWordDataMemo.concatenatedSurfaceForm,
-        slicedWordData: selectedWordDataMemo.slicedWordData,
-        matchStartWordState,
-        matchWordsHighlghtedState,
-      });
       const belongingSentenceId = getSentenceDataOfOverlappingWordsDuringSave(
         snippetData.time,
         highlightedTextState,
