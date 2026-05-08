@@ -323,12 +323,8 @@ export const LearningScreenProvider = ({
   } = useFetchData();
 
   const handleSaveWord = async (params: HandleSaveWordCallTypes) => {
-    console.log('## params handleSaveWord', params);
-
     const response = (await handleSaveWordFetchData(params)) as unknown;
-    console.log('## response handleSaveWord 1', response);
     if (Boolean(response)) {
-      console.log('## response handleSaveWord 2', response);
       setWordRepsState((prev) => prev + 1);
     }
     return response;
@@ -426,8 +422,8 @@ export const LearningScreenProvider = ({
       contentSnippets?.length === 0
         ? false
         : contentSnippets.some(
-            (item) => item?.time.toFixed(1) === currentTime.toFixed(1),
-          );
+          (item) => item?.time.toFixed(1) === currentTime.toFixed(1),
+        );
 
     if (hasThisSnippet) {
       return null;
@@ -927,8 +923,8 @@ export const LearningScreenProvider = ({
       fieldToUpdate: isRemoveReview
         ? { removeReview: true }
         : {
-            reviewData: nextDue || nextScheduledOptions['1'].card,
-          },
+          reviewData: nextDue || nextScheduledOptions['1'].card,
+        },
       contentIndex: contentIndex,
       isRemoveReview,
       indexKey: selectedContentStateMemoized.id,

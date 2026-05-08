@@ -186,24 +186,24 @@ export interface FetchDataContextTypes {
 }
 
 export const FetchDataContext = createContext<FetchDataContextTypes>({
-  handleSaveWord: () => {},
-  updateWordDataProvider: () => {},
-  updateSentenceData: () => {},
-  deleteContent: () => {},
+  handleSaveWord: () => { },
+  updateWordDataProvider: () => { },
+  updateSentenceData: () => { },
+  deleteContent: () => { },
   deleteVideo: async () => false,
-  setLanguageSelectedState: () => {},
-  dispatchSentences: () => {},
-  dispatchContent: () => {},
-  dispatchWords: () => {},
-  breakdownSentence: () => {},
-  sentenceReviewBulk: () => {},
-  updateContentMetaData: () => {},
-  setToastMessageState: () => {},
-  handleDeleteWordDataProvider: () => {},
-  addImageDataProvider: () => {},
-  adhocSentenceCustomWord: async () => {},
-  handleSaveSnippetFetchProvider: async () => {},
-  handleDeleteSnippetFetchProvider: async () => {},
+  setLanguageSelectedState: () => { },
+  dispatchSentences: () => { },
+  dispatchContent: () => { },
+  dispatchWords: () => { },
+  breakdownSentence: () => { },
+  sentenceReviewBulk: () => { },
+  updateContentMetaData: () => { },
+  setToastMessageState: () => { },
+  handleDeleteWordDataProvider: () => { },
+  addImageDataProvider: () => { },
+  adhocSentenceCustomWord: async () => { },
+  handleSaveSnippetFetchProvider: async () => { },
+  handleDeleteSnippetFetchProvider: async () => { },
   wordsToReviewGivenOriginalContextId: {},
   languageSelectedState: LanguageEnum.None,
   contentState: [],
@@ -734,6 +734,15 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     originalContext,
     time,
   }: HandleSaveWordCallTypes) => {
+    const normalizedHighlightedWord = highlightedWord?.trim().toLowerCase();
+    const wordAlreadyExists = wordsState.some(
+      (word) => word?.surfaceForm?.trim().toLowerCase() === normalizedHighlightedWord,
+    );
+    if (wordAlreadyExists) {
+      setToastMessageState('Word already exists');
+      throw new Error('WORD_ALREADY_EXISTS');
+    }
+
     try {
       const cardDataRelativeToNow = getEmptyCard();
       const nextScheduledOptions = getNextScheduledOptions({
