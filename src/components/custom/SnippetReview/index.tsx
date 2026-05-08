@@ -89,6 +89,7 @@ const SnippetReview = ({
   const [matchStartWordState, setMatchStartWordState] = useState<null | number>(
     null,
   );
+  const [matchWordsHighlghtedState, setMatchWordsHighlghtedState] = useState<number>(0);
   const [wordIsLoadingGamePadState, setWordIsLoadingGamePadState] = useState<
     null | number
   >(null);
@@ -240,6 +241,12 @@ const SnippetReview = ({
   const handleSaveFunc = async (isGoogle, thisWord, thisWordMeaning) => {
     try {
       setIsLoadingWordState(true);
+      console.log('## canIncrement SnippetReview', {
+        concatenatedSurfaceForm: selectedWordDataMemo.concatenatedSurfaceForm,
+        slicedWordData: selectedWordDataMemo.slicedWordData,
+        matchStartWordState,
+        matchWordsHighlghtedState,
+      });
       const belongingSentenceId = getSentenceDataOfOverlappingWordsDuringSave(
         snippetData.time,
         highlightedTextState,
@@ -398,6 +405,46 @@ const SnippetReview = ({
     return togglableWordDataArr;
   }, [targetLangWithVocabStartIndex]);
 
+  const selectedWordDataMemo = useMemo(() => {
+    if (
+      matchStartWordState === null ||
+      !Array.isArray(togglableWordDataArrMemo) ||
+      togglableWordDataArrMemo.length === 0
+    ) {
+      return {
+        slicedWordData: [],
+        concatenatedSurfaceForm: '',
+      };
+    }
+
+    const rawEndWordIndex = matchStartWordState + (matchWordsHighlghtedState ?? 0);
+    const startWordIndex = Math.max(
+      0,
+      Math.min(matchStartWordState, togglableWordDataArrMemo.length - 1),
+    );
+    const endWordIndex = Math.max(
+      0,
+      Math.min(rawEndWordIndex, togglableWordDataArrMemo.length - 1),
+    );
+    const from = Math.min(startWordIndex, endWordIndex);
+    const to = Math.max(startWordIndex, endWordIndex);
+
+    const slicedWordData = togglableWordDataArrMemo.slice(from, to + 1);
+    const concatenatedSurfaceForm = slicedWordData
+      .map((word) => word?.surfaceForm ?? '')
+      .join(isTrimmedLang(languageSelectedState) ? '' : ' ');
+
+    return {
+      slicedWordData,
+      concatenatedSurfaceForm,
+    };
+  }, [
+    languageSelectedState,
+    matchStartWordState,
+    matchWordsHighlghtedState,
+    togglableWordDataArrMemo,
+  ]);
+
   useEffect(() => {
     if (!isReadyForQuickReview) return;
 
@@ -415,9 +462,21 @@ const SnippetReview = ({
         // blocked save due to loading state
         return;
       }
+      const isMultiWordSelection = matchWordsHighlghtedState > 0;
       try {
         setWordIsLoadingGamePadState(matchingWordData.index);
-        await handleSaveFunc(false, surfaceForm, meaning);
+        console.log('## handleSaveGamePad args', {
+          isGoogle: isMultiWordSelection,
+          highlightedWord: isMultiWordSelection
+            ? selectedWordDataMemo.concatenatedSurfaceForm
+            : surfaceForm,
+          meaning: isMultiWordSelection ? undefined : meaning,
+        });
+        await handleSaveFunc(
+          isMultiWordSelection,
+          isMultiWordSelection ? selectedWordDataMemo.concatenatedSurfaceForm : surfaceForm,
+          isMultiWordSelection ? undefined : meaning,
+        );
       } catch {
       } finally {
         setWordIsLoadingGamePadState(null);
@@ -432,6 +491,36 @@ const SnippetReview = ({
       setMatchStartWordState(
         Math.min(togglableWordDataArrMemo.length - 1, matchStartWordState + 1),
       );
+    };
+    const handleDpadHatRightPressed = () => {
+      const gamepads = navigator.getGamepads();
+      const gamepad = Array.from(gamepads).find((gp) => gp !== null);
+
+      if (matchStartWordState !== null && gamepad?.buttons[8]?.pressed) {
+
+        const canIncrement = matchStartWordState + 1 <= togglableWordDataArrMemo.length - 1;
+
+        if (canIncrement) {
+          setMatchWordsHighlghtedState(matchWordsHighlghtedState + 1);
+        }
+
+      } else {
+        handleMoveWordForward();
+      }
+    };
+    const handleDpadHatLeftPressed = () => {
+      const gamepads = navigator.getGamepads();
+      const gamepad = Array.from(gamepads).find((gp) => gp !== null);
+
+      if (matchStartWordState !== null && gamepad?.buttons[8]?.pressed) {
+        const canDecrement = matchWordsHighlghtedState !== 0;
+
+        if (canDecrement) {
+          setMatchWordsHighlghtedState(matchWordsHighlghtedState - 1);
+        }
+      } else {
+        handleMoveWordBackward();
+      }
     };
 
     const handleGamepadPress = () => {
@@ -475,19 +564,23 @@ const SnippetReview = ({
       }
     };
 
-    window.addEventListener('dpad-hat-left-pressed', handleMoveWordBackward);
-    window.addEventListener('dpad-hat-right-pressed', handleMoveWordForward);
+    window.addEventListener('dpad-hat-left-pressed', handleDpadHatLeftPressed);
+    window.addEventListener('dpad-hat-right-pressed', handleDpadHatRightPressed);
     const intervalId = setInterval(handleGamepadPress, 100);
 
     return () => {
-      window.removeEventListener('dpad-hat-left-pressed', handleMoveWordBackward);
+      window.removeEventListener(
+        'dpad-hat-left-pressed',
+        handleDpadHatLeftPressed,
+      );
       window.removeEventListener(
         'dpad-hat-right-pressed',
-        handleMoveWordForward,
+        handleDpadHatRightPressed,
       );
       clearInterval(intervalId);
     };
   }, [
+    matchWordsHighlghtedState,
     wordIsLoadingGamePadState,
     togglableWordDataArrMemo.length,
     matchStartWordState,
@@ -502,6 +595,10 @@ const SnippetReview = ({
       setMatchStartWordState(0);
     }
   }, [togglableWordDataArrMemo.length, matchStartWordState]);
+
+  useEffect(() => {
+    setMatchWordsHighlghtedState(0);
+  }, [matchStartWordState]);
 
   const pinyinStart = Math.max(0, matchStartKey - 5);
 
@@ -568,6 +665,7 @@ const SnippetReview = ({
                     setMatchStartWordState={setMatchStartWordState}
                     togglableWordDataArrMemo={togglableWordDataArrMemo}
                     wordIsLoadingGamePadState={wordIsLoadingGamePadState}
+                    matchWordsHighlghtedState={matchWordsHighlghtedState}
                   />
                 </div>
                 {showTransliteration && (

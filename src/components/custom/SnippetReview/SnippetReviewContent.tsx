@@ -23,6 +23,7 @@ const FormattedSentenceSnippet = ({
   matchStartWordState,
   togglableWordDataArrMemo,
   wordIsLoadingGamePadState,
+  matchWordsHighlghtedState
 }) => {
   const isArabic = languageSelectedState === arabic;
   const isChinese = languageSelectedState === chinese;
@@ -30,7 +31,7 @@ const FormattedSentenceSnippet = ({
   const matchingWordData = togglableWordDataArrMemo?.[matchStartWordState];
   const matchingStartIndex = matchingWordData?.index;
   const matchingEndIndex =
-    togglableWordDataArrMemo?.[matchStartWordState]?.endIndex;
+    togglableWordDataArrMemo?.[matchStartWordState + matchWordsHighlghtedState]?.endIndex;
 
   return (
     <span
