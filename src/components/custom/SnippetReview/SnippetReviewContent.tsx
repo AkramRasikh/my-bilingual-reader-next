@@ -37,6 +37,7 @@ const FormattedSentenceSnippet = ({
     <span
       ref={ref}
       className={clsx(
+        'inline-block max-w-full break-words',
         matchStartKey || matchEndKey ? 'm-0' : 'mt-auto mb-auto',
         isChinese ? 'text-center m-auto' : '',
       )}

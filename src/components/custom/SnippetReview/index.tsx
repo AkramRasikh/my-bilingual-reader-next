@@ -646,9 +646,9 @@ const SnippetReview = ({
         </div>
       )}
       <div className='rounded border py-2 px-1'>
-        <div className='flex gap-3'>
-          <div className='flex-1'>
-            <div className='flex mb-2 gap-1'>
+        <div className='flex min-w-0 gap-3'>
+          <div className='min-w-0 flex-1'>
+            <div className='flex min-w-0 mb-2 gap-1'>
               <SnippetReviewChineseAudioControls
                 thisIsPlaying={thisIsPlaying}
                 handlePlaySnippet={handlePlaySnippet}
@@ -657,8 +657,8 @@ const SnippetReview = ({
                 isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
                 handleBreakdownSentence={handleBreakdownSentence}
               />
-              <div className='w-full text-center'>
-                <div className='flex text-align-justify'>
+              <div className='min-w-0 flex-1 text-center'>
+                <div className='min-w-0 max-w-full'>
                   <FormattedSentenceSnippet
                     ref={ulRef}
                     targetLangformatted={targetLangWithVocabStartIndex}

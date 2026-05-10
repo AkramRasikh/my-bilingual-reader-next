@@ -218,7 +218,7 @@ const LearningScreenTabMeta = () => {
         </div>
 
         <div>
-        <Label className='mb-2'>Delete all content - words, videos and content itself</Label>
+          <Label className='mb-2'>Delete all content - words, videos and content itself</Label>
           <ClickAndConfirm
             showConfirm={showConfirmDelete}
             setShowConfirm={setShowConfirmDelete}
