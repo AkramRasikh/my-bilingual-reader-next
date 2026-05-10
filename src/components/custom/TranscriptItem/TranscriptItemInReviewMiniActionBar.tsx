@@ -36,7 +36,7 @@ const TranscriptItemInReviewMiniActionBar = () => {
 
   return (
     <div
-      className='opacity-50 flex flex-col gap-1 h-fit m-1'
+      className='opacity-50 flex flex-col gap-1 h-fit m-1 text-sm xl:text-base'
       style={{
         animation: 'fadeIn 0.5s ease-out forwards',
       }}

@@ -46,7 +46,7 @@ const TranscriptItemWrapper = ({ children }: TranscriptItemWrapperProps) => {
     <div
       ref={transcriptItemContainerRef}
       className={clsx(
-        'rounded-lg px-2 py-1 shadow h-fit border-2 gap-1.5 relative',
+        'rounded-lg px-2 py-1 shadow h-fit border-2 gap-1.5 relative text-sm xl:text-base',
         isComprehensiveMode
           ? 'transition-all duration-300 overflow-hidden'
           : '',
