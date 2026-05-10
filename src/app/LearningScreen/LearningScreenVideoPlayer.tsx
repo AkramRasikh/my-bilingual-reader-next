@@ -7,6 +7,7 @@ import useLearningScreen from './useLearningScreen';
 import { LanguageEnum } from '../languages';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap';
 
 type LearningScreenVideoPlayerProps = {
   url: string;
@@ -119,8 +120,9 @@ const LearningScreenVideoPlayer = ({
         return;
       }
 
-      const aPressed = gamepad.buttons[0]?.pressed;
-      const rPressed = gamepad.buttons[7]?.pressed;
+      const map = getButtonMap(gamepad);
+      const aPressed = gamepad.buttons[map.A_BTN]?.pressed;
+      const rPressed = gamepad.buttons[map.R1_BTN]?.pressed;
 
       if (aPressed && rPressed && !quickReviewToggleFiredRef.current) {
         setShowWordDetailsState((prev) => !prev);

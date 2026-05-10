@@ -110,7 +110,10 @@ const LearningScreenTabTranscript = () => {
         isInReviewMode={isInReviewMode}
         setIsInReviewMode={setIsInReviewMode}
       />
-      <TabsContent value='transcript' className='overflow-y-auto max-h-150'>
+      <TabsContent
+        value='transcript'
+        className='max-h-100 min-[1367px]:max-h-150 overflow-y-auto'
+      >
         {isInReviewMode ? (
           <LearningScreenComprehensiveReview />
         ) : (

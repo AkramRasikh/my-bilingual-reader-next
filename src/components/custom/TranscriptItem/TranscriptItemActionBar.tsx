@@ -9,6 +9,7 @@ import {
 import useTranscriptItem from './useTranscriptItem';
 import { Button } from '@/components/ui/button';
 import { useEffect } from 'react';
+import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap';
 
 const TranscriptItemActionBar = () => {
   const {
@@ -56,9 +57,13 @@ const TranscriptItemActionBar = () => {
         return;
       }
 
-      // Only trigger if B button (1) is pressed AND L button (6) is NOT pressed
-      // This prevents L+B combo from also triggering the play action
-      if (gamepad.buttons[1]?.pressed && !gamepad.buttons[8]?.pressed) {
+      const map = getButtonMap(gamepad);
+
+      // B without L2 — avoids overlapping combo behavior with other handlers
+      if (
+        gamepad.buttons[map.B_BTN]?.pressed &&
+        !gamepad.buttons[map.L2_BTN]?.pressed
+      ) {
         handlePlayActionBar();
       }
     };

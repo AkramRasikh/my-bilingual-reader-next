@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap';
 
 interface UseGamePadSRSShortcutProps {
   isReadyForQuickReview: boolean;
@@ -37,34 +38,29 @@ export const useGamePadSRSShortcut = ({
       const gp = Array.from(gamepads).find((gamepad) => gamepad !== null);
 
       if (gp && isReadyForQuickReview && !isLoadingSRSState) {
+        const map = getButtonMap(gp);
         gp.buttons.forEach((button, index) => {
-          // Track L2 button state (button 8)
-          if (index === 8) {
+          if (index === map.L2_BTN) {
             l2ButtonHeldRef.current = button.pressed;
           }
 
-          // Track R2 button state (button 9)
-          if (index === 9) {
+          if (index === map.R2_BTN) {
             r2ButtonHeldRef.current = button.pressed;
           }
 
-          // Track Y button state (button 2)
-          if (index === 4) {
+          if (index === map.Y_BTN) {
             yButtonHeldRef.current = button.pressed;
           }
 
-          // Track X button state (button 3)
-          if (index === 3) {
+          if (index === map.X_BTN) {
             xButtonHeldRef.current = button.pressed;
           }
 
-          // Track B button state (button 1)
-          if (index === 1) {
+          if (index === map.B_BTN) {
             bButtonHeldRef.current = button.pressed;
           }
 
-          // Track A button state (button 0)
-          if (index === 0) {
+          if (index === map.A_BTN) {
             aButtonHeldRef.current = button.pressed;
           }
 

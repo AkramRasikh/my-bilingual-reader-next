@@ -1,24 +1,7 @@
 // useGamepad.ts
 import { useEffect, useRef } from 'react';
+import { getButtonMap } from './gamepadButtonMap';
 import { InputAction } from './useInputActions';
-
-const BUTTONS = {
-  L1_BTN: 6,
-  L2_BTN: 8,
-  R1_BTN: 7,
-  R2_BTN: 9,
-  MINUS_BTN: 10,
-  PLUS_BTN: 11,
-  CHECKER_BTN: 12,
-  Y_BTN: 4,
-  X_BTN: 3,
-  B_BTN: 1,
-  A_BTN: 0,
-  DPAD_UP_BTN: 12,
-  DPAD_DOWN_BTN: 13,
-  DPAD_LEFT_BTN: 14,
-  DPAD_RIGHT_BTN: 15,
-} as const;
 
 const getDpadState = (axes: readonly number[]) => {
   // Common D-pad axes: vertical 7/9/1, horizontal 6/8/0
@@ -173,6 +156,8 @@ export function useGamepad(
       const gp = Array.from(gamepads).find((gamepad) => gamepad !== null);
 
       if (gp) {
+        const map = getButtonMap(gp);
+
         // Log gamepad detection once per connection
         if (!gamepadConnectedRef.current) {
           // console.log('🎮 Gamepad detected in loop:', gp.id);
@@ -406,37 +391,37 @@ export function useGamepad(
           }
 
           // Track L1 button state
-          if (index === BUTTONS.L1_BTN) {
+          if (index === map.L1_BTN) {
             lButtonHeldRef.current = button.pressed;
           }
 
           // Track R1 button state
-          if (index === BUTTONS.R1_BTN) {
+          if (index === map.R1_BTN) {
             rButtonHeldRef.current = button.pressed;
           }
 
           // Track X button state
-          if (index === BUTTONS.X_BTN) {
+          if (index === map.X_BTN) {
             xButtonHeldRef.current = button.pressed;
           }
 
           // Track B button state
-          if (index === BUTTONS.B_BTN) {
+          if (index === map.B_BTN) {
             bButtonHeldRef.current = button.pressed;
           }
 
           // Track A button state
-          if (index === BUTTONS.A_BTN) {
+          if (index === map.A_BTN) {
             aButtonHeldRef.current = button.pressed;
           }
 
           // Track MINUS button state
-          if (index === BUTTONS.MINUS_BTN) {
+          if (index === map.MINUS_BTN) {
             minusButtonHeldRef.current = button.pressed;
           }
 
           // Track PLUS button state
-          if (index === BUTTONS.PLUS_BTN) {
+          if (index === map.PLUS_BTN) {
             plusButtonHeldRef.current = button.pressed;
           }
 
@@ -543,7 +528,7 @@ export function useGamepad(
             pressedRef.current[index] = true;
 
             if (threeSecondLoopState) {
-              if (index === BUTTONS.Y_BTN) {
+              if (index === map.Y_BTN) {
                 if (lButtonHeldRef.current) {
                   dispatchSnippetLoopEvent('snippet-loop-adjust-length', {
                     delta: -1,
@@ -555,7 +540,7 @@ export function useGamepad(
                 }
                 return;
               }
-              if (index === BUTTONS.A_BTN) {
+              if (index === map.A_BTN) {
                 if (lButtonHeldRef.current) {
                   dispatchSnippetLoopEvent('snippet-loop-adjust-length', {
                     delta: 1,
@@ -571,20 +556,20 @@ export function useGamepad(
 
             // Map buttons to actions
             // Trigger on CHECKER button
-            if (index === BUTTONS.CHECKER_BTN) {
+            if (index === map.CHECKER_BTN) {
               // console.log(`## ✅ Button ${index} detected - triggering REWIND`);
               dispatch('REWIND');
-            } else if (index === BUTTONS.MINUS_BTN) {
+            } else if (index === map.MINUS_BTN) {
               console.log(
                 `## ✅ Button ${index} detected - triggering PAUSE_PLAY`,
               );
               dispatch('PAUSE_PLAY');
-            } else if (index === BUTTONS.PLUS_BTN) {
+            } else if (index === map.PLUS_BTN) {
               console.log(
                 `## ✅ Button ${index} detected - triggering TOGGLE_REVIEW_MODE`,
               );
               dispatch('TOGGLE_REVIEW_MODE');
-            } else if (index === BUTTONS.L1_BTN) {
+            } else if (index === map.L1_BTN) {
               console.log('## 🎮 L button pressed - ready for combo');
             } else {
               // console.log(
@@ -598,7 +583,7 @@ export function useGamepad(
             pressedRef.current[index] = false;
             debugLoggedRef.current = false; // Allow debug logging again
 
-            if (index === BUTTONS.L1_BTN) {
+            if (index === map.L1_BTN) {
               console.log('## 🎮 L button released');
             }
           }

@@ -10,6 +10,7 @@ import AnimationWrapper from '../AnimationWrapper';
 import WordCardConditionalContentWrapper from './WordCardConditionalContentWrapper';
 import WordCardHeader from './WordCardHeader';
 import WordCardWrapper from './WordCardWrapper';
+import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap';
 
 const WordCard = ({
   id,
@@ -106,9 +107,10 @@ const WordCard = ({
         return;
       }
 
-      const aPressed = gamepad.buttons[0]?.pressed;
-      const bPressed = gamepad.buttons[1]?.pressed;
-      const rPressed = gamepad.buttons[7]?.pressed;
+      const map = getButtonMap(gamepad);
+      const aPressed = gamepad.buttons[map.A_BTN]?.pressed;
+      const bPressed = gamepad.buttons[map.B_BTN]?.pressed;
+      const rPressed = gamepad.buttons[map.R1_BTN]?.pressed;
 
       if (aPressed && rPressed && !quickReviewToggleFiredRef.current) {
         setOpenContentState((prev) => !prev);
@@ -120,8 +122,7 @@ const WordCard = ({
         quickReviewToggleFiredRef.current = false;
       }
 
-      // Only trigger if B button (1) is pressed AND R button (7) is NOT pressed
-      // This prevents R+B combo from also triggering the play action
+      // B without R1 — avoids A+R1 toggle combo also firing play
       if (bPressed && !rPressed) {
         handlePlayThisContext();
       }

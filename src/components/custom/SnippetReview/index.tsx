@@ -25,6 +25,7 @@ import {
 } from '@/app/Providers/FetchDataProvider';
 import SnippetReviewBreakdownDefinitions from './SnippetReviewBreakdownDefinitions';
 import { useSnippetReviewDataMemoized } from './useSnippetReviewDataMemoized';
+import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -489,15 +490,18 @@ const SnippetReview = ({
     const handleDpadHatRightPressed = () => {
       const gamepads = navigator.getGamepads();
       const gamepad = Array.from(gamepads).find((gp) => gp !== null);
+      const map = gamepad ? getButtonMap(gamepad) : null;
 
-      if (matchStartWordState !== null && gamepad?.buttons[8]?.pressed) {
-
+      if (
+        matchStartWordState !== null &&
+        map &&
+        gamepad?.buttons[map.L2_BTN]?.pressed
+      ) {
         const canIncrement = matchStartWordState + 1 <= togglableWordDataArrMemo.length - 1;
 
         if (canIncrement) {
           setMatchWordsHighlghtedState(matchWordsHighlghtedState + 1);
         }
-
       } else {
         handleMoveWordForward();
       }
@@ -505,8 +509,13 @@ const SnippetReview = ({
     const handleDpadHatLeftPressed = () => {
       const gamepads = navigator.getGamepads();
       const gamepad = Array.from(gamepads).find((gp) => gp !== null);
+      const map = gamepad ? getButtonMap(gamepad) : null;
 
-      if (matchStartWordState !== null && gamepad?.buttons[8]?.pressed) {
+      if (
+        matchStartWordState !== null &&
+        map &&
+        gamepad?.buttons[map.L2_BTN]?.pressed
+      ) {
         const canDecrement = matchWordsHighlghtedState !== 0;
 
         if (canDecrement) {
@@ -526,33 +535,41 @@ const SnippetReview = ({
         return;
       }
 
-      // Only trigger if B button (1) is pressed AND L button (6) is NOT pressed
-      // This prevents L+B combo from also triggering the play action
-      if (gamepad.buttons[1]?.pressed && !gamepad.buttons[8]?.pressed) {
+      const map = getButtonMap(gamepad);
+
+      // B without L2 held — avoids overlapping combo behavior with other handlers
+      if (
+        gamepad.buttons[map.B_BTN]?.pressed &&
+        !gamepad.buttons[map.L2_BTN]?.pressed
+      ) {
         handlePlaySnippet();
       }
-      // R2
-      if (gamepad.buttons[7]?.pressed && matchStartWordState !== null) {
+      if (
+        gamepad.buttons[map.R1_BTN]?.pressed &&
+        matchStartWordState !== null
+      ) {
         handleMoveWordForward();
       }
 
-      // R1
       if (
-        gamepad.buttons[9]?.pressed && matchStartWordState !== null) {
+        gamepad.buttons[map.R2_BTN]?.pressed &&
+        matchStartWordState !== null
+      ) {
         handleMoveWordBackward();
       }
 
-      // L2 + '-' 6 + 10
       if (
         wordIsLoadingGamePadState === null &&
-        gamepad.buttons[6]?.pressed &&
-        gamepad.buttons[10]?.pressed
+        gamepad.buttons[map.L1_BTN]?.pressed &&
+        gamepad.buttons[map.MINUS_BTN]?.pressed
       ) {
         handleSaveGamePad();
         return;
       }
-      // second analog - big controller
-      if (wordIsLoadingGamePadState === null && gamepad.buttons[14]?.pressed) {
+      if (
+        wordIsLoadingGamePadState === null &&
+        gamepad.buttons[map.DPAD_LEFT_BTN]?.pressed
+      ) {
         handleSaveGamePad();
         return;
       }
