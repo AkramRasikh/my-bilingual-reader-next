@@ -10,6 +10,7 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import ProgressHeader from '../../components/custom/ProgressHeader';
 import { RefreshCwIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const LearningScreenBreadCrumbHeader = () => {
   const { selectedContentState, initialSentenceCount, sentencesNeedReview } =
@@ -62,6 +63,7 @@ const LearningScreenBreadCrumbHeader = () => {
     variant?: VariantProps<typeof buttonVariants>['variant'];
     text: string;
     dataTestId: string;
+    className?: string;
   }> = [
     {
       onClick: () => {},
@@ -82,6 +84,7 @@ const LearningScreenBreadCrumbHeader = () => {
       variant: 'link',
       text: 'Content',
       dataTestId: 'breadcrumb-content-button',
+      className: 'hidden xl:inline-flex',
     },
   ];
 
@@ -96,7 +99,7 @@ const LearningScreenBreadCrumbHeader = () => {
             return (
               <Button
                 key={index}
-                className='m-1.5'
+                className={cn('m-1.5', item.className)}
                 onClick={item.onClick}
                 disabled={item.disabled}
                 variant={item.variant}

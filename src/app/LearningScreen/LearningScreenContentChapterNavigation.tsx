@@ -28,7 +28,7 @@ const LearningScreenContentChapterNavigation = () => {
   );
 
   return (
-    <div className='flex flex-col items-center gap-2'>
+    <div className='hidden xl:flex flex-col items-center gap-2'>
       <LearningScreenUnifiedAnalytics
         sentenceRepsPerMinState={sentenceRepsPerMinState}
         wordRepsPerMinState={wordRepsPerMinState}
