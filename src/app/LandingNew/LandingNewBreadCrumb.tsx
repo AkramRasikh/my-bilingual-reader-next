@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { RefreshCwIcon } from 'lucide-react';
 import { VariantProps } from 'class-variance-authority';
@@ -32,13 +32,13 @@ const safeParseArray = <T,>(value: string | null): T[] => {
   }
 };
 
-const LandingNewBreadCrumb = () => {
-  const { setToastMessageState } = useFetchData();
-  const [isLocalStorageClearedState, setIsLocalStorageClearedState] =
-    useState(false);
+const computeDueTotalsFromStorage = () => {
+  if (typeof window === 'undefined') {
+    return { dueSentencesTotal: 0, dueWordsTotal: 0 };
+  }
 
   const dateNow = new Date();
-  const { dueSentencesTotal, dueWordsTotal } = supportedLanguages.reduce(
+  return supportedLanguages.reduce(
     (acc, language) => {
       const wordsState = safeParseArray<WordTypes>(
         localStorage.getItem(`${language}-wordsState`),
@@ -56,6 +56,20 @@ const LandingNewBreadCrumb = () => {
     },
     { dueSentencesTotal: 0, dueWordsTotal: 0 },
   );
+};
+
+const LandingNewBreadCrumb = () => {
+  const { setToastMessageState } = useFetchData();
+  const [isLocalStorageClearedState, setIsLocalStorageClearedState] =
+    useState(false);
+  const [{ dueSentencesTotal, dueWordsTotal }, setDueTotals] = useState({
+    dueSentencesTotal: 0,
+    dueWordsTotal: 0,
+  });
+
+  useEffect(() => {
+    setDueTotals(computeDueTotalsFromStorage());
+  }, [isLocalStorageClearedState]);
 
   const handleClearLocalStorage = () => {
     supportedLanguages.forEach((language) => {

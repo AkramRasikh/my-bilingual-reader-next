@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 import { LearningScreenProvider } from '../LearningScreen/LearningScreenProvider';
 import MockFlag from '../../components/custom/MockFlag';
 import LearningScreenBreadCrumbHeader from '../LearningScreen/LearningScreenBreadCrumbHeader';
@@ -109,4 +109,10 @@ const ContentScreen = () => {
   );
 };
 
-export default ContentScreen;
+export default function ContentPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner big />}>
+      <ContentScreen />
+    </Suspense>
+  );
+}
