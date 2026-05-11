@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, ReactNode, useContext, useMemo } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { arabic, chinese, french, japanese } from '@/app/languages';
 import {
   getLandingComprehensiveDataByLanguage,
@@ -25,17 +25,20 @@ type LandingNewProviderProps = {
 };
 
 export const LandingNewProvider = ({ children }: LandingNewProviderProps) => {
-  const languageContentMeta = useMemo(() => {
-    const supportedLanguages = [japanese, arabic, chinese, french];
+  const [languageContentMeta, setLanguageContentMeta] = useState<
+    LandingNewProviderTypes['languageContentMeta']
+  >([]);
 
-    return supportedLanguages
-      .map((language) => {
-        return {
+  useEffect(() => {
+    const supportedLanguages = [japanese, arabic, chinese, french];
+    setLanguageContentMeta(
+      supportedLanguages
+        .map((language) => ({
           language,
           contentMeta: getLandingComprehensiveDataByLanguage(language),
-        };
-      })
-      .filter((item) => item.contentMeta.length > 0);
+        }))
+        .filter((item) => item.contentMeta.length > 0),
+    );
   }, []);
 
   return (

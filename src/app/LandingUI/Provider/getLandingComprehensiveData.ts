@@ -78,6 +78,10 @@ export const getLandingComprehensiveData = ({
 export const getLandingComprehensiveDataByLanguage = (
   language: string,
 ): LandingComprehensiveType[] => {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+
   const contentState = safeParseArray<ContentStateTypes>(
     localStorage.getItem(`${language}-contentState`),
   );
