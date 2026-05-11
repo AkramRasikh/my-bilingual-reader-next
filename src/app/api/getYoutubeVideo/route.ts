@@ -11,7 +11,7 @@ import { sanitizeFilename } from './santizeFilename';
 import { downloadYoutubeVideo } from './downloadYoutubeVideo';
 import * as OpenCC from 'opencc-js';
 
-export const googleLanguagesKey = {
+const googleLanguagesKey = {
   [japanese]: 'ja',
   [chinese]: 'zh',
   [arabic]: 'ar',
