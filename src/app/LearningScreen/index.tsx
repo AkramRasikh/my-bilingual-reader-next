@@ -13,7 +13,7 @@ const LearningScreen = () => {
 
   return (
     <div className='mt-4 flex w-full min-w-0 gap-5 xl:mx-auto xl:w-fit'>
-      <div className='shrink-0'>
+      <div className='max-xl:[zoom:0.70] shrink-0'>
         <LearningScreenContentChapterNavigation />
       </div>
       <LearningScreenLeftSideContainer />
