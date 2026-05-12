@@ -279,12 +279,14 @@ const LearningScreenVideoPlayer = ({
           </div>
         ) : null}
         {firstElIdInReview && firstWordDefinitionInReview ? (
-          <div className='absolute bottom-12 left-1/2 w-fit max-w-[66.666%] -translate-x-1/2 rounded-md border border-white/20 bg-black/80 px-4 py-1.5'>
-            <p className='text-center text-xs font-bold break-words text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]'>
-              {showWordDetailsState && compactWordDetailsText
-                ? compactWordDetailsText
-                : firstWordDefinitionInReview}
-            </p>
+          <div className='pointer-events-none absolute inset-0 flex flex-col justify-end pb-4'>
+            <div className='pointer-events-auto mx-auto w-fit max-w-[66.666%] rounded-md border border-white/20 bg-black/80 px-4 py-1.5'>
+              <p className='text-center text-xs font-bold break-words text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]'>
+                {showWordDetailsState && compactWordDetailsText
+                  ? compactWordDetailsText
+                  : firstWordDefinitionInReview}
+              </p>
+            </div>
           </div>
         ) : null}
       </div>
