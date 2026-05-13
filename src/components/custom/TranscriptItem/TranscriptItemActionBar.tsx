@@ -9,7 +9,10 @@ import {
 import useTranscriptItem from './useTranscriptItem';
 import { Button } from '@/components/ui/button';
 import { useEffect } from 'react';
-import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap';
+import {
+  getButtonMap,
+  isGamepadButtonHeld,
+} from '@/app/LearningScreen/experimental/gamepadButtonMap';
 
 const TranscriptItemActionBar = () => {
   const {
@@ -62,7 +65,7 @@ const TranscriptItemActionBar = () => {
       // B without L2 — avoids overlapping combo behavior with other handlers
       if (
         gamepad.buttons[map.B_BTN]?.pressed &&
-        !gamepad.buttons[map.L2_BTN]?.pressed
+        !isGamepadButtonHeld(gamepad.buttons, map.L2_BTN)
       ) {
         handlePlayActionBar();
       }

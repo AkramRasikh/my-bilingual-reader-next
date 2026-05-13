@@ -1,4 +1,13 @@
-/** Xbox-style indices from Chrome on desktop (non-standard mapping). */
+/**
+ * Indices captured from Chrome on macOS with an 8BitDo Lite 2 in
+ * non-standard mapping. The D-pad on this pad does not surface via
+ * `gp.buttons` at all on desktop — it comes through axes (handled by
+ * `getDpadState` for axes 6/7 and the axis-9 hat decoder elsewhere). The
+ * indices 13 and 14 are actually L3 / R3 (stick clicks) on this layout, so
+ * the `DPAD_*_BTN` entries are intentionally set to `-1`: a sentinel that
+ * `isGamepadButtonHeld` short-circuits to `false`. This prevents the stick
+ * clicks at indices 13/14 from being read as D-pad down/left.
+ */
 export const BUTTONS_DESKTOP = {
   L1_BTN: 6,
   L2_BTN: 8,
@@ -6,15 +15,19 @@ export const BUTTONS_DESKTOP = {
   R2_BTN: 9,
   MINUS_BTN: 10,
   PLUS_BTN: 11,
-  CHECKER_BTN: 12,
+  /** Home button on the Lite 2 (verified). Capture does not fire. */
+  CHECKER_BTN: 2,
   Y_BTN: 4,
   X_BTN: 3,
   B_BTN: 1,
   A_BTN: 0,
-  DPAD_UP_BTN: 12,
-  DPAD_DOWN_BTN: 13,
-  DPAD_LEFT_BTN: 14,
-  DPAD_RIGHT_BTN: 15,
+  /** D-pad does not fire as buttons on desktop non-standard mapping. */
+  DPAD_UP_BTN: -1,
+  DPAD_DOWN_BTN: -1,
+  DPAD_LEFT_BTN: -1,
+  DPAD_RIGHT_BTN: -1,
+  L_STICK_CLICK_BTN: 13,
+  R_STICK_CLICK_BTN: 14,
 } as const;
 
 /**
@@ -40,9 +53,40 @@ export const BUTTONS_STANDARD = {
   DPAD_DOWN_BTN: 13,
   DPAD_LEFT_BTN: 14,
   DPAD_RIGHT_BTN: 15,
+  L_STICK_CLICK_BTN: 10,
+  R_STICK_CLICK_BTN: 11,
 } as const;
 
 export type ButtonMap = typeof BUTTONS_DESKTOP | typeof BUTTONS_STANDARD;
+
+/**
+ * Face / shoulder buttons use `pressed` only. L2/R2 triggers on iPadOS WebKit
+ * often report pull via `value` while `pressed` stays false until fully down —
+ * use this for triggers (and any button) when you need parity with desktop.
+ */
+export function isGamepadButtonHeld(
+  buttons: readonly GamepadButton[] | undefined,
+  index: number,
+  analogValueThreshold = 0.35,
+): boolean {
+  if (!buttons) return false;
+  const b = buttons[index];
+  if (!b) return false;
+  return Boolean(b.pressed) || b.value > analogValueThreshold;
+}
+
+/** W3C standard D-pad as discrete buttons 12–15 (typical on iPadOS / standard mapping). */
+export function getDpadButtonState(
+  buttons: readonly GamepadButton[],
+  map: ButtonMap,
+): { up: boolean; down: boolean; left: boolean; right: boolean } {
+  return {
+    up: isGamepadButtonHeld(buttons, map.DPAD_UP_BTN),
+    down: isGamepadButtonHeld(buttons, map.DPAD_DOWN_BTN),
+    left: isGamepadButtonHeld(buttons, map.DPAD_LEFT_BTN),
+    right: isGamepadButtonHeld(buttons, map.DPAD_RIGHT_BTN),
+  };
+}
 
 function isIOSLike(): boolean {
   if (typeof navigator === 'undefined') return false;

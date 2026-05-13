@@ -25,7 +25,10 @@ import {
 } from '@/app/Providers/FetchDataProvider';
 import SnippetReviewBreakdownDefinitions from './SnippetReviewBreakdownDefinitions';
 import { useSnippetReviewDataMemoized } from './useSnippetReviewDataMemoized';
-import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap';
+import {
+  getButtonMap,
+  isGamepadButtonHeld,
+} from '@/app/LearningScreen/experimental/gamepadButtonMap';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -495,7 +498,8 @@ const SnippetReview = ({
       if (
         matchStartWordState !== null &&
         map &&
-        gamepad?.buttons[map.L2_BTN]?.pressed
+        gamepad &&
+        isGamepadButtonHeld(gamepad.buttons, map.L2_BTN)
       ) {
         const canIncrement = matchStartWordState + 1 <= togglableWordDataArrMemo.length - 1;
 
@@ -514,7 +518,8 @@ const SnippetReview = ({
       if (
         matchStartWordState !== null &&
         map &&
-        gamepad?.buttons[map.L2_BTN]?.pressed
+        gamepad &&
+        isGamepadButtonHeld(gamepad.buttons, map.L2_BTN)
       ) {
         const canDecrement = matchWordsHighlghtedState !== 0;
 
@@ -540,7 +545,7 @@ const SnippetReview = ({
       // B without L2 held — avoids overlapping combo behavior with other handlers
       if (
         gamepad.buttons[map.B_BTN]?.pressed &&
-        !gamepad.buttons[map.L2_BTN]?.pressed
+        !isGamepadButtonHeld(gamepad.buttons, map.L2_BTN)
       ) {
         handlePlaySnippet();
       }
@@ -552,7 +557,7 @@ const SnippetReview = ({
       }
 
       if (
-        gamepad.buttons[map.R2_BTN]?.pressed &&
+        isGamepadButtonHeld(gamepad.buttons, map.R2_BTN) &&
         matchStartWordState !== null
       ) {
         handleMoveWordBackward();
@@ -560,15 +565,7 @@ const SnippetReview = ({
 
       if (
         wordIsLoadingGamePadState === null &&
-        gamepad.buttons[map.L1_BTN]?.pressed &&
-        gamepad.buttons[map.MINUS_BTN]?.pressed
-      ) {
-        handleSaveGamePad();
-        return;
-      }
-      if (
-        wordIsLoadingGamePadState === null &&
-        gamepad.buttons[map.DPAD_LEFT_BTN]?.pressed
+        isGamepadButtonHeld(gamepad.buttons, map.L_STICK_CLICK_BTN)
       ) {
         handleSaveGamePad();
         return;
