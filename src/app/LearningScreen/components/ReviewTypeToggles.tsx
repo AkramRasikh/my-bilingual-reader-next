@@ -22,18 +22,18 @@ interface ReviewTypeTogglesProps {
 
 const ReviewTypeToggles = ({
   enableWordReviewState = false,
-  setEnableWordReviewState = () => {},
+  setEnableWordReviewState = () => { },
   enableTranscriptReviewState = false,
-  setEnableTranscriptReviewState = () => {},
+  setEnableTranscriptReviewState = () => { },
   enableSnippetReviewState = false,
-  setEnableSnippetReviewState = () => {},
+  setEnableSnippetReviewState = () => { },
   wordsCount = 0,
   sentencesCount = 0,
   snippetsCount = 0,
   reviewIntervalState = 30,
-  setReviewIntervalState = () => {},
+  setReviewIntervalState = () => { },
   isInReviewMode = false,
-  setIsInReviewMode = () => {},
+  setIsInReviewMode = () => { },
 }: ReviewTypeTogglesProps) => {
   const handleDecrement = () => {
     if (reviewIntervalState > 30) {
@@ -77,7 +77,7 @@ const ReviewTypeToggles = ({
           <Label
             htmlFor='words-toggle'
             data-testid='words-toggle-label'
-            className='text-sm font-medium cursor-pointer'
+            className='text-xs font-medium cursor-pointer'
           >
             🔤 ({displayWordsCount})
           </Label>
@@ -93,7 +93,7 @@ const ReviewTypeToggles = ({
           <Label
             htmlFor='sentences-toggle'
             data-testid='sentences-toggle-label'
-            className='text-sm font-medium cursor-pointer'
+            className='text-xs font-medium cursor-pointer'
           >
             📝 ({displaySentencesCount})
           </Label>
@@ -109,7 +109,7 @@ const ReviewTypeToggles = ({
           <Label
             htmlFor='snippets-toggle'
             data-testid='snippets-toggle-label'
-            className='text-sm font-medium cursor-pointer'
+            className='text-xs font-medium cursor-pointer'
           >
             ✂️ ({displaySnippetsCount})
           </Label>
@@ -126,7 +126,7 @@ const ReviewTypeToggles = ({
             <Minus className='h-3 w-3' />
           </Button>
           <span
-            className='text-sm font-medium min-w-12 text-center'
+            className='text-xs font-medium min-w-12 text-center'
             data-testid='review-interval-count'
           >
             {reviewIntervalState}s
