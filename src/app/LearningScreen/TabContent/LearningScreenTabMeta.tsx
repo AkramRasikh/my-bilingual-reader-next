@@ -154,7 +154,7 @@ const LearningScreenTabMeta = () => {
   return (
     <TabsContent
       value='meta'
-      className={'p-1 max-h-100 min-[1367px]:max-h-150 overflow-y-auto'}
+      className={'p-1 max-h-130 min-[1367px]:max-h-150 overflow-y-auto'}
     >
       <div className='flex flex-col items-start gap-2 my-2'>
         {isLoading && (

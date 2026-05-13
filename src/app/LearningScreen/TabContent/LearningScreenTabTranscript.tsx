@@ -122,7 +122,7 @@ const LearningScreenTabTranscript = () => {
       <TabsContent value='transcript' className='min-h-0'>
         <div
           ref={transcriptScrollContainerRef}
-          className='max-h-100 min-[1367px]:max-h-150 overflow-y-auto'
+          className='max-h-130 min-[1367px]:max-h-150 overflow-y-auto'
         >
           {isInReviewMode ? (
             <LearningScreenComprehensiveReview />

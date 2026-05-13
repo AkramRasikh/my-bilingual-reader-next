@@ -8,7 +8,7 @@ const LearningScreenTabWords = () => {
   return (
     <TabsContent
       value='words'
-      className={'p-1 max-h-100 min-[1367px]:max-h-150 overflow-y-auto'}
+      className={'p-1 max-h-130 min-[1367px]:max-h-150 overflow-y-auto'}
     >
       <div className='text-center m-auto p-1.5'>
         <ul className='flex flex-wrap gap-2.5 justify-center'>
