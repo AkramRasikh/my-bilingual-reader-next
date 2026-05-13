@@ -28,6 +28,13 @@ export const BUTTONS_DESKTOP = {
   DPAD_RIGHT_BTN: -1,
   L_STICK_CLICK_BTN: 13,
   R_STICK_CLICK_BTN: 14,
+  /**
+   * Right-stick axes on the Lite 2 in non-standard mapping (verified).
+   * Trigger pulls steal axes 3 and 4 on this layout, so the right-stick Y
+   * lands on `axes[5]` rather than the W3C-standard `axes[3]`.
+   */
+  R_STICK_X_AXIS: 2,
+  R_STICK_Y_AXIS: 5,
 } as const;
 
 /**
@@ -55,6 +62,9 @@ export const BUTTONS_STANDARD = {
   DPAD_RIGHT_BTN: 15,
   L_STICK_CLICK_BTN: 10,
   R_STICK_CLICK_BTN: 11,
+  /** W3C standard right-stick axes. */
+  R_STICK_X_AXIS: 2,
+  R_STICK_Y_AXIS: 3,
 } as const;
 
 export type ButtonMap = typeof BUTTONS_DESKTOP | typeof BUTTONS_STANDARD;

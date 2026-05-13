@@ -110,6 +110,12 @@ export function useGamepad(
     left: false,
     right: false,
   });
+  const rStickPressedRef = useRef({
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+  });
 
   useEffect(() => {
     if (!navigator.getGamepads) {
@@ -119,7 +125,8 @@ export function useGamepad(
 
     let rafId: number;
 
-    const handleGamepadConnected = (e: GamepadEvent) => {
+    const handleGamepadConnected = () => {
+      // To re-enable, add `(e: GamepadEvent)` and log:
       // console.log(
       //   '🎮 Gamepad connected:',
       //   e.gamepad.id,
@@ -291,6 +298,46 @@ export function useGamepad(
           hatAxis9DirectionPressedRef.current.right = false;
         }
 
+        // --- Right stick (capture only, no actions wired yet) ---
+        const R_STICK_DEAD_ZONE = 0.5;
+        const rsX = gp.axes[map.R_STICK_X_AXIS] ?? 0;
+        const rsY = gp.axes[map.R_STICK_Y_AXIS] ?? 0;
+        const rsUp = rsY < -R_STICK_DEAD_ZONE;
+        const rsDown = rsY > R_STICK_DEAD_ZONE;
+        const rsLeft = rsX < -R_STICK_DEAD_ZONE;
+        const rsRight = rsX > R_STICK_DEAD_ZONE;
+        if (rsUp && !rStickPressedRef.current.up) {
+          console.log('## 🎮 R-stick UP pressed');
+          rStickPressedRef.current.up = true;
+        }
+        if (!rsUp && rStickPressedRef.current.up) {
+          console.log('## 🎮 R-stick UP released');
+          rStickPressedRef.current.up = false;
+        }
+        if (rsDown && !rStickPressedRef.current.down) {
+          console.log('## 🎮 R-stick DOWN pressed');
+          rStickPressedRef.current.down = true;
+        }
+        if (!rsDown && rStickPressedRef.current.down) {
+          console.log('## 🎮 R-stick DOWN released');
+          rStickPressedRef.current.down = false;
+        }
+        if (rsLeft && !rStickPressedRef.current.left) {
+          console.log('## 🎮 R-stick LEFT pressed');
+          rStickPressedRef.current.left = true;
+        }
+        if (!rsLeft && rStickPressedRef.current.left) {
+          console.log('## 🎮 R-stick LEFT released');
+          rStickPressedRef.current.left = false;
+        }
+        if (rsRight && !rStickPressedRef.current.right) {
+          console.log('## 🎮 R-stick RIGHT pressed');
+          rStickPressedRef.current.right = true;
+        }
+        if (!rsRight && rStickPressedRef.current.right) {
+          console.log('## 🎮 R-stick RIGHT released');
+          rStickPressedRef.current.right = false;
+        }
 
         // Debug down detection
         if (loopCountRef.current % 60 === 0) {
