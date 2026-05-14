@@ -1,5 +1,5 @@
 // useGamepad.ts
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type MutableRefObject } from 'react';
 import { getButtonMap } from './gamepadButtonMap';
 import {
   type Cardinal,
@@ -36,6 +36,24 @@ const rStickEdgeLog = (
     console.log(`## 🎮 R-stick ${label} released`);
   }
 };
+
+function logAllButtonPressReleaseEdges(
+  buttons: readonly GamepadButton[],
+  prevPressed: readonly boolean[],
+  debugLoggedRef: MutableRefObject<boolean>,
+) {
+  for (let index = 0; index < buttons.length; index++) {
+    const pressed = buttons[index]?.pressed ?? false;
+    const wasPressed = prevPressed[index] ?? false;
+    if (rising(pressed, wasPressed)) {
+      console.log(`## 🎮 Button ${index} pressed`);
+    }
+    if (falling(pressed, wasPressed)) {
+      console.log(`## 🎮 Button ${index} released`);
+      debugLoggedRef.current = false;
+    }
+  }
+}
 
 export function useGamepad(
   dispatch: (action: InputAction) => void,
@@ -378,7 +396,6 @@ export function useGamepad(
         const mfPrev = menuFaceL1PrevRef.current;
 
         if (rising(physical.face.y, mfPrev.y)) {
-          console.log(`## 🎮 Button ${map.Y_BTN} pressed`);
           if (threeSecondLoopState) {
             if (l1Held) {
               dispatchSnippetLoopEvent('snippet-loop-adjust-length', {
@@ -393,7 +410,6 @@ export function useGamepad(
         }
 
         if (rising(physical.face.a, mfPrev.a)) {
-          console.log(`## 🎮 Button ${map.A_BTN} pressed`);
           if (threeSecondLoopState) {
             if (l1Held) {
               dispatchSnippetLoopEvent('snippet-loop-adjust-length', {
@@ -408,12 +424,10 @@ export function useGamepad(
         }
 
         if (rising(physical.menu.checker, mfPrev.checker)) {
-          console.log(`## 🎮 Button ${map.CHECKER_BTN} pressed`);
           dispatch('REWIND');
         }
 
         if (rising(physical.menu.minus, mfPrev.minus)) {
-          console.log(`## 🎮 Button ${map.MINUS_BTN} pressed`);
           console.log(
             `## ✅ Button ${map.MINUS_BTN} detected - triggering PAUSE_PLAY`,
           );
@@ -421,7 +435,6 @@ export function useGamepad(
         }
 
         if (rising(physical.menu.plus, mfPrev.plus)) {
-          console.log(`## 🎮 Button ${map.PLUS_BTN} pressed`);
           console.log(
             `## ✅ Button ${map.PLUS_BTN} detected - triggering TOGGLE_REVIEW_MODE`,
           );
@@ -429,14 +442,11 @@ export function useGamepad(
         }
 
         if (rising(physical.shoulders.l1, mfPrev.l1)) {
-          console.log(`## 🎮 Button ${map.L1_BTN} pressed`);
           console.log('## 🎮 L button pressed - ready for combo');
         }
 
         if (falling(physical.shoulders.l1, mfPrev.l1)) {
-          console.log(`## 🎮 Button ${map.L1_BTN} released`);
           console.log('## 🎮 L button released');
-          debugLoggedRef.current = false;
         }
 
         menuFaceL1PrevRef.current = {
@@ -449,36 +459,11 @@ export function useGamepad(
         };
 
         const buttonWasPressed = btnPrevRef.current;
-        const handledForRising = new Set([
-          map.Y_BTN,
-          map.A_BTN,
-          map.CHECKER_BTN,
-          map.MINUS_BTN,
-          map.PLUS_BTN,
-          map.L1_BTN,
-        ]);
-
-        gp.buttons.forEach((button, index) => {
-          if (loopCountRef.current % 60 === 0 && button.pressed) {
-            // console.log(
-            //   `## 🔍 Button ${index} is currently pressed (value: ${button.value})`,
-            // );
-          }
-
-          const pressed = button.pressed;
-          const wasPressed = buttonWasPressed[index] ?? false;
-
-          if (rising(pressed, wasPressed) && !handledForRising.has(index)) {
-            console.log(`## 🎮 Button ${index} pressed`);
-          }
-
-          if (falling(pressed, wasPressed)) {
-            if (index !== map.L1_BTN) {
-              console.log(`## 🎮 Button ${index} released`);
-            }
-            debugLoggedRef.current = false;
-          }
-        });
+        logAllButtonPressReleaseEdges(
+          gp.buttons,
+          buttonWasPressed,
+          debugLoggedRef,
+        );
 
         btnPrevRef.current = gp.buttons.map((b) => b.pressed);
       } else {
