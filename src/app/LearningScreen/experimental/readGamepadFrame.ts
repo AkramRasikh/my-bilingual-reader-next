@@ -143,7 +143,7 @@ export function readRightStickCardinals(
     right: rsX > R_STICK_DEAD_ZONE,
   };
 }
-
+// D-pad hat axis 9 decoder - directional buttons (nn joystick)
 export function stepHatAxis9(
   prev: HatAxis9DecoderState,
   gp: Gamepad,
