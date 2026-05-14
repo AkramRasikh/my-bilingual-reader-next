@@ -1,44 +1,17 @@
 // useGamepad.ts
 import { useEffect, useRef } from 'react';
+import { getButtonMap } from './gamepadButtonMap';
 import {
-  getButtonMap,
-  getDpadButtonState,
-  isGamepadButtonHeld,
-} from './gamepadButtonMap';
+  type Cardinal,
+  type HatAxis9DecoderState,
+  getDpadStateFromAxes,
+  readPhysicalButtons,
+  readRightStickCardinals,
+  rising,
+  falling,
+  stepHatAxis9,
+} from './readGamepadFrame';
 import { InputAction } from './useInputActions';
-
-const getDpadState = (axes: readonly number[]) => {
-  // Common D-pad axes: vertical 7/9/1, horizontal 6/8/0
-  const axis7 = axes[7] || 0;
-  const axis9 = axes[9] || 0;
-  const axis1 = axes[1] || 0;
-  const axis6 = axes[6] || 0;
-  const axis8 = axes[8] || 0;
-  const axis0 = axes[0] || 0;
-
-  const up = axis7 < -0.5 || axis1 < -0.5;
-  const down = axis7 > 0.5 || axis1 > 0.5;
-  const right = axis6 > 0.5 || axis8 > 0.5 || axis0 > 0.5;
-  const left = axis6 < -0.5 || axis8 < -0.5 || axis0 < -0.5;
-
-  const upAxis = axis7 < -0.5 ? 7 : axis9 < -0.5 ? 9 : 1;
-  const downAxis = axis7 > 0.5 ? 7 : axis9 > 0.5 ? 9 : 1;
-  const rightAxis = axis6 > 0.5 ? 6 : axis8 > 0.5 ? 8 : 0;
-  const leftAxis = axis6 < -0.5 ? 6 : axis8 < -0.5 ? 8 : 0;
-
-  return {
-    up,
-    down,
-    left,
-    right,
-    axis: {
-      up: upAxis,
-      down: downAxis,
-      left: leftAxis,
-      right: rightAxis,
-    },
-  };
-};
 
 const dispatchSnippetLoopEvent = (
   name:
@@ -50,34 +23,18 @@ const dispatchSnippetLoopEvent = (
   window.dispatchEvent(new CustomEvent(name, { detail }));
 };
 
-const decodeHatAxis9Direction = (axis9Value: number, maxAbsAxis9: number) => {
-  if (!maxAbsAxis9) {
-    return { up: false, down: false, left: false, right: false };
+const rStickEdgeLog = (
+  dir: keyof Cardinal,
+  rs: Cardinal,
+  prev: Cardinal,
+  label: string,
+) => {
+  if (rising(rs[dir], prev[dir])) {
+    console.log(`## 🎮 R-stick ${label} pressed`);
   }
-
-  const normalized = axis9Value / maxAbsAxis9;
-  const positions = [-1, -0.714, -0.428, -0.143, 0.143, 0.428, 0.714, 1];
-  const closestIdx = positions.reduce(
-    (bestIdx, target, idx) =>
-      Math.abs(normalized - target) < Math.abs(normalized - positions[bestIdx])
-        ? idx
-        : bestIdx,
-    0,
-  );
-
-  // Typical hat switch ordering used by many gamepads.
-  const map = [
-    { up: true, down: false, left: false, right: false }, // up
-    { up: true, down: false, left: false, right: true }, // up-right
-    { up: false, down: false, left: false, right: true }, // right
-    { up: false, down: true, left: false, right: true }, // down-right
-    { up: false, down: true, left: false, right: false }, // down
-    { up: false, down: true, left: true, right: false }, // down-left
-    { up: false, down: false, left: true, right: false }, // left
-    { up: true, down: false, left: true, right: false }, // up-left
-  ];
-
-  return map[closestIdx];
+  if (falling(rs[dir], prev[dir])) {
+    console.log(`## 🎮 R-stick ${label} released`);
+  }
 };
 
 export function useGamepad(
@@ -85,32 +42,34 @@ export function useGamepad(
   threeSecondLoopState: number | null,
   isVideoPlaying: boolean,
 ) {
-  const pressedRef = useRef<{ [key: number]: boolean }>({});
   const axesPressedRef = useRef<{ [key: string]: boolean }>({});
+  const btnPrevRef = useRef<boolean[]>([]);
+  const menuFaceL1PrevRef = useRef({
+    y: false,
+    a: false,
+    checker: false,
+    minus: false,
+    plus: false,
+    l1: false,
+  });
   const gamepadConnectedRef = useRef(false);
   const debugLoggedRef = useRef(false);
   const loopCountRef = useRef(0);
-  const lButtonHeldRef = useRef(false);
-  const rButtonHeldRef = useRef(false);
   const lrComboFiredRef = useRef(false);
-  const xButtonHeldRef = useRef(false);
   const lxComboFiredRef = useRef(false);
-  const bButtonHeldRef = useRef(false);
   const lbComboFiredRef = useRef(false);
-  const aButtonHeldRef = useRef(false);
   const laComboFiredRef = useRef(false);
-  const minusButtonHeldRef = useRef(false);
-  const plusButtonHeldRef = useRef(false);
-  const hatAxis9NeutralRef = useRef<number | null>(null);
-  const hatAxis9ActiveRef = useRef(false);
-  const hatAxis9MaxAbsRef = useRef(1);
-  const hatAxis9DirectionPressedRef = useRef({
+  const hatStateRef = useRef<HatAxis9DecoderState>({
+    neutral: null,
+    maxAbsSeen: 1,
+  });
+  const hatPrevFrameRef = useRef<Cardinal>({
     up: false,
     down: false,
     left: false,
     right: false,
   });
-  const rStickPressedRef = useRef({
+  const rStickPrevRef = useRef<Cardinal>({
     up: false,
     down: false,
     left: false,
@@ -126,16 +85,8 @@ export function useGamepad(
     let rafId: number;
 
     const handleGamepadConnected = () => {
-      // To re-enable, add `(e: GamepadEvent)` and log:
-      // console.log(
-      //   '🎮 Gamepad connected:',
-      //   e.gamepad.id,
-      //   e.gamepad.mapping,
-      //   e.gamepad.buttons.length,
-      //   e.gamepad.axes.length,
-      // );
       gamepadConnectedRef.current = true;
-      debugLoggedRef.current = false; // Reset debug flag
+      debugLoggedRef.current = false;
     };
 
     const handleGamepadDisconnected = (e: GamepadEvent) => {
@@ -146,45 +97,31 @@ export function useGamepad(
     window.addEventListener('gamepadconnected', handleGamepadConnected);
     window.addEventListener('gamepaddisconnected', handleGamepadDisconnected);
 
-    // Check for already connected gamepads
     const initialGamepads = navigator.getGamepads();
     const connectedGamepad = Array.from(initialGamepads).find(
       (gp) => gp !== null,
     );
     if (connectedGamepad) {
-      // console.log(
-      //   '🎮 Gamepad already connected:',
-      //   connectedGamepad.id,
-      //   connectedGamepad.mapping,
-      //   connectedGamepad.buttons.length,
-      //   connectedGamepad.axes.length,
-      // );
       gamepadConnectedRef.current = true;
     }
 
     const loop = () => {
       loopCountRef.current++;
 
-      // Log every 300 frames (~5 seconds at 60fps) to show the loop is running
       if (loopCountRef.current % 300 === 0) {
         // console.log('🔄 Loop running... (count:', loopCountRef.current, ')');
       }
 
       const gamepads = navigator.getGamepads();
-
-      // Find the first connected gamepad
       const gp = Array.from(gamepads).find((gamepad) => gamepad !== null);
 
       if (gp) {
         const map = getButtonMap(gp);
 
-        // Log gamepad detection once per connection
         if (!gamepadConnectedRef.current) {
-          // console.log('🎮 Gamepad detected in loop:', gp.id);
           gamepadConnectedRef.current = true;
         }
 
-        // Always log axes when they're not at rest (to help debug which axis is which)
         const activeAxes = gp.axes.some((axis) => Math.abs(axis) > 0.1);
         if (activeAxes && loopCountRef.current % 30 === 0) {
           // console.log(
@@ -193,153 +130,70 @@ export function useGamepad(
           // );
         }
 
-        // Debug: Log all pressed buttons once
         if (!debugLoggedRef.current) {
           const pressedButtons = gp.buttons
             .map((btn, idx) => (btn.pressed ? idx : -1))
             .filter((idx) => idx !== -1);
           if (pressedButtons.length > 0) {
-            // console.log('## 🎮 Buttons currently pressed:', pressedButtons);
-            // console.log('## 🎮 Axes values:', gp.axes);
             debugLoggedRef.current = true;
           }
         }
 
-        const dpadAxes = getDpadState(gp.axes);
-        const dpadBtn = getDpadButtonState(gp.buttons, map);
-        // Regular sentence-navigation path is driven by the analog stick only
-        // (axes). The D-pad buttons feed the hat path below so that iPad's
-        // D-pad mirrors Desktop's axis-9 hat behaviour (SnippetReview word
-        // selection) and does NOT also double-fire sentence navigation.
+        const physical = readPhysicalButtons(gp, map);
+        const dpadAxes = getDpadStateFromAxes(gp.axes);
+        const hatStep = stepHatAxis9(hatStateRef.current, gp, map);
+        hatStateRef.current = hatStep.next;
+
+        const { hat, dpadBtn } = hatStep;
         const dpadUp = dpadAxes.up;
         const dpadDown = dpadAxes.down;
         const dpadRight = dpadAxes.right;
         const dpadLeft = dpadAxes.left;
-        const axis9Value = gp.axes[9] ?? 0;
-        if (hatAxis9NeutralRef.current === null) {
-          hatAxis9NeutralRef.current = axis9Value;
+
+        const hatPrev = hatPrevFrameRef.current;
+
+        if (rising(hat.up, hatPrev.up)) {
+          console.log('## 🎮 D-pad hat UP pressed');
         }
-        const axis9Delta = Math.abs(axis9Value - hatAxis9NeutralRef.current);
-        // Stick clicks on the Lite 2 (non-standard mapping) also perturb
-        // axes[9]. Suppress the hat decoder while either stick click is held
-        // so L3/R3 don't snap to a phantom hat direction.
-        const stickClickHeld =
-          isGamepadButtonHeld(gp.buttons, map.L_STICK_CLICK_BTN) ||
-          isGamepadButtonHeld(gp.buttons, map.R_STICK_CLICK_BTN);
-        const axis9LooksActive = axis9Delta > 0.25 && !stickClickHeld;
-        if (axis9LooksActive) {
-          hatAxis9MaxAbsRef.current = Math.max(
-            hatAxis9MaxAbsRef.current,
-            Math.abs(axis9Value),
-          );
-        }
-        const dpadFromHatAxis9 = axis9LooksActive
-          ? decodeHatAxis9Direction(axis9Value, hatAxis9MaxAbsRef.current)
-          : { up: false, down: false, left: false, right: false };
-        const hatUp = dpadFromHatAxis9.up || dpadBtn.up;
-        const hatDown = dpadFromHatAxis9.down || dpadBtn.down;
-        const hatLeft = dpadFromHatAxis9.left || dpadBtn.left;
-        const hatRight = dpadFromHatAxis9.right || dpadBtn.right;
-        if (axis9LooksActive && !hatAxis9ActiveRef.current) {
-          hatAxis9ActiveRef.current = true;
-          // console.log('## 🎮 D-pad hat (axis 9) pressed');
-          //    {
-          //   value: axis9Value,
-          //   neutral: hatAxis9NeutralRef.current,
-          //   delta: axis9Delta,
-          //   maxAbsSeen: hatAxis9MaxAbsRef.current,
-          // });
-        }
-        if (!axis9LooksActive && hatAxis9ActiveRef.current) {
-          hatAxis9ActiveRef.current = false;
-          // console.log('## 🎮 D-pad hat (axis 9) released');
-          //   {
-          //   value: axis9Value,
-          //   neutral: hatAxis9NeutralRef.current,
-          //   delta: axis9Delta,
-          //   maxAbsSeen: hatAxis9MaxAbsRef.current,
-          // });
+        if (falling(hat.up, hatPrev.up)) {
+          // console.log('## 🎮 D-pad hat UP released');
         }
 
-        if (hatUp && !hatAxis9DirectionPressedRef.current.up) {
-          console.log('## 🎮 D-pad hat UP pressed');
-          hatAxis9DirectionPressedRef.current.up = true;
-        }
-        if (!hatUp && hatAxis9DirectionPressedRef.current.up) {
-          // console.log('## 🎮 D-pad hat UP released');
-          hatAxis9DirectionPressedRef.current.up = false;
-        }
-        if (hatDown && !hatAxis9DirectionPressedRef.current.down) {
+        if (rising(hat.down, hatPrev.down)) {
           console.log('## 🎮 D-pad hat DOWN pressed');
-          hatAxis9DirectionPressedRef.current.down = true;
         }
-        if (!hatDown && hatAxis9DirectionPressedRef.current.down) {
+        if (falling(hat.down, hatPrev.down)) {
           // console.log('## 🎮 D-pad hat DOWN released');
-          hatAxis9DirectionPressedRef.current.down = false;
         }
-        if (hatLeft && !hatAxis9DirectionPressedRef.current.left) {
+
+        if (rising(hat.left, hatPrev.left)) {
           console.log('## 🎮 D-pad hat LEFT pressed');
           window.dispatchEvent(new CustomEvent('dpad-hat-left-pressed'));
-          hatAxis9DirectionPressedRef.current.left = true;
         }
-        if (!hatLeft && hatAxis9DirectionPressedRef.current.left) {
+        if (falling(hat.left, hatPrev.left)) {
           // console.log('## 🎮 D-pad hat LEFT released');
           window.dispatchEvent(new CustomEvent('dpad-hat-left-released'));
-          hatAxis9DirectionPressedRef.current.left = false;
         }
-        if (hatRight && !hatAxis9DirectionPressedRef.current.right) {
+
+        if (rising(hat.right, hatPrev.right)) {
           console.log('## 🎮 D-pad hat RIGHT pressed');
           window.dispatchEvent(new CustomEvent('dpad-hat-right-pressed'));
-          hatAxis9DirectionPressedRef.current.right = true;
         }
-        if (!hatRight && hatAxis9DirectionPressedRef.current.right) {
+        if (falling(hat.right, hatPrev.right)) {
           // console.log('## 🎮 D-pad hat RIGHT released');
           window.dispatchEvent(new CustomEvent('dpad-hat-right-released'));
-          hatAxis9DirectionPressedRef.current.right = false;
         }
 
-        // --- Right stick (capture only, no actions wired yet) ---
-        const R_STICK_DEAD_ZONE = 0.5;
-        const rsX = gp.axes[map.R_STICK_X_AXIS] ?? 0;
-        const rsY = gp.axes[map.R_STICK_Y_AXIS] ?? 0;
-        const rsUp = rsY < -R_STICK_DEAD_ZONE;
-        const rsDown = rsY > R_STICK_DEAD_ZONE;
-        const rsLeft = rsX < -R_STICK_DEAD_ZONE;
-        const rsRight = rsX > R_STICK_DEAD_ZONE;
-        if (rsUp && !rStickPressedRef.current.up) {
-          console.log('## 🎮 R-stick UP pressed');
-          rStickPressedRef.current.up = true;
-        }
-        if (!rsUp && rStickPressedRef.current.up) {
-          console.log('## 🎮 R-stick UP released');
-          rStickPressedRef.current.up = false;
-        }
-        if (rsDown && !rStickPressedRef.current.down) {
-          console.log('## 🎮 R-stick DOWN pressed');
-          rStickPressedRef.current.down = true;
-        }
-        if (!rsDown && rStickPressedRef.current.down) {
-          console.log('## 🎮 R-stick DOWN released');
-          rStickPressedRef.current.down = false;
-        }
-        if (rsLeft && !rStickPressedRef.current.left) {
-          console.log('## 🎮 R-stick LEFT pressed');
-          rStickPressedRef.current.left = true;
-        }
-        if (!rsLeft && rStickPressedRef.current.left) {
-          console.log('## 🎮 R-stick LEFT released');
-          rStickPressedRef.current.left = false;
-        }
-        if (rsRight && !rStickPressedRef.current.right) {
-          console.log('## 🎮 R-stick RIGHT pressed');
-          rStickPressedRef.current.right = true;
-        }
-        if (!rsRight && rStickPressedRef.current.right) {
-          console.log('## 🎮 R-stick RIGHT released');
-          rStickPressedRef.current.right = false;
-        }
+        hatPrevFrameRef.current = { ...hat };
 
-        // Debug down detection
+        const rs = readRightStickCardinals(gp, map);
+        const rsPrev = rStickPrevRef.current;
+        rStickEdgeLog('up', rs, rsPrev, 'UP');
+        rStickEdgeLog('down', rs, rsPrev, 'DOWN');
+        rStickEdgeLog('left', rs, rsPrev, 'LEFT');
+        rStickEdgeLog('right', rs, rsPrev, 'RIGHT');
+        rStickPrevRef.current = { ...rs };
+
         if (loopCountRef.current % 60 === 0) {
           // console.log('## DEBUG Down check:', {
           //   dpadDown,
@@ -347,7 +201,9 @@ export function useGamepad(
           // });
         }
 
-        if (dpadUp && !axesPressedRef.current['dpad-up']) {
+        const l1 = physical.shoulders.l1;
+
+        if (rising(dpadUp, axesPressedRef.current['dpad-up'])) {
           const upSrc =
             dpadAxes.up && dpadBtn.up
               ? `axis ${dpadAxes.axis.up}+btn`
@@ -357,8 +213,7 @@ export function useGamepad(
           console.log(`## 🎮 D-pad Up pressed (${upSrc})`);
           axesPressedRef.current['dpad-up'] = true;
 
-          // Check if L button is held for combo action
-          if (lButtonHeldRef.current) {
+          if (l1) {
             console.log('## ✅ L + Up combo detected - triggering SHRINK_LOOP');
             dispatch('SHRINK_LOOP');
           } else {
@@ -367,17 +222,16 @@ export function useGamepad(
           }
         }
 
-        if (!dpadUp && axesPressedRef.current['dpad-up']) {
+        if (falling(dpadUp, axesPressedRef.current['dpad-up'])) {
           console.log('## 🎮 D-pad Up released');
           axesPressedRef.current['dpad-up'] = false;
           debugLoggedRef.current = false;
         }
 
-        if (dpadDown && !axesPressedRef.current['dpad-down']) {
+        if (rising(dpadDown, axesPressedRef.current['dpad-down'])) {
           axesPressedRef.current['dpad-down'] = true;
 
-          // Check if L button is held for combo action
-          if (lButtonHeldRef.current) {
+          if (l1) {
             console.log(
               '## ✅ L + Down combo detected - triggering LOOP_SENTENCE',
             );
@@ -390,13 +244,11 @@ export function useGamepad(
           }
         }
 
-        if (!dpadDown && axesPressedRef.current['dpad-down']) {
-          // console.log('## 🎮 D-pad Down released - resetting');
+        if (falling(dpadDown, axesPressedRef.current['dpad-down'])) {
           axesPressedRef.current['dpad-down'] = false;
           debugLoggedRef.current = false;
         }
 
-        // Force log down state
         if (
           loopCountRef.current % 60 === 0 &&
           axesPressedRef.current['dpad-down']
@@ -409,265 +261,227 @@ export function useGamepad(
           );
         }
 
-        if (dpadRight && !axesPressedRef.current['dpad-right']) {
-          // console.log(`## 🎮 D-pad Right pressed (axis ${whichAxis})`);
+        if (rising(dpadRight, axesPressedRef.current['dpad-right'])) {
           axesPressedRef.current['dpad-right'] = true;
 
-          // Check if L button is held for combo action
-          if (lButtonHeldRef.current) {
+          if (l1) {
             console.log(
               '## ✅ L + Right combo detected - triggering SLICE_LOOP',
             );
             dispatch('SLICE_LOOP');
           } else if (threeSecondLoopState) {
-            // When in 3-second loop mode, shift snippet right
             console.log(
               '## ✅ Right detected (in 3s loop) - triggering SHIFT_SNIPPET_RIGHT',
             );
             dispatch('SHIFT_SNIPPET_RIGHT');
           } else {
-            // console.log('## ✅ Right detected - triggering JUMP_NEXT');
             dispatch('JUMP_NEXT');
           }
         }
 
-        if (!dpadRight && axesPressedRef.current['dpad-right']) {
-          // console.log('## 🎮 D-pad Right released');
+        if (falling(dpadRight, axesPressedRef.current['dpad-right'])) {
           axesPressedRef.current['dpad-right'] = false;
           debugLoggedRef.current = false;
         }
 
-        if (dpadLeft && !axesPressedRef.current['dpad-left']) {
-          // console.log(`## 🎮 D-pad Left pressed (axis ${whichAxis})`);
+        if (rising(dpadLeft, axesPressedRef.current['dpad-left'])) {
           axesPressedRef.current['dpad-left'] = true;
 
           if (threeSecondLoopState) {
-            // When in 3-second loop mode, shift snippet left
             console.log(
               '## ✅ Left detected (in 3s loop) - triggering SHIFT_SNIPPET_LEFT',
             );
             dispatch('SHIFT_SNIPPET_LEFT');
           } else {
-            // console.log('## ✅ Left detected - triggering JUMP_PREV');
             dispatch('JUMP_PREV');
           }
         }
 
-        if (!dpadLeft && axesPressedRef.current['dpad-left']) {
-          // console.log('## 🎮 D-pad Left released');
+        if (falling(dpadLeft, axesPressedRef.current['dpad-left'])) {
           axesPressedRef.current['dpad-left'] = false;
           debugLoggedRef.current = false;
         }
 
-        // Check all buttons to find which one is pressed
+        const { l1: l1Held, r1: r1Held } = physical.shoulders;
+        const { x: xHeld, b: bHeld, a: aHeld } = physical.face;
+
+        if (l1Held && r1Held && !lrComboFiredRef.current) {
+          console.log(
+            '## ✅ L + R combo detected - triggering THREE_SECOND_LOOP',
+          );
+          dispatch('THREE_SECOND_LOOP');
+          lrComboFiredRef.current = true;
+        }
+        if ((!l1Held || !r1Held) && lrComboFiredRef.current) {
+          lrComboFiredRef.current = false;
+        }
+
+        if (
+          threeSecondLoopState &&
+          l1Held &&
+          xHeld &&
+          !lxComboFiredRef.current
+        ) {
+          console.log(
+            '## ✅ L + X combo detected - triggering snippet-loop-save',
+          );
+          dispatchSnippetLoopEvent('snippet-loop-save');
+          lxComboFiredRef.current = true;
+        } else if (
+          !threeSecondLoopState &&
+          l1Held &&
+          xHeld &&
+          !lxComboFiredRef.current
+        ) {
+          console.log(
+            '## ✅ L + X combo detected - triggering QUICK_SAVE_SNIPPET',
+          );
+          dispatch('QUICK_SAVE_SNIPPET');
+          lxComboFiredRef.current = true;
+        }
+        if ((!l1Held || !xHeld) && lxComboFiredRef.current) {
+          lxComboFiredRef.current = false;
+        }
+
+        if (
+          !(threeSecondLoopState && isVideoPlaying) &&
+          l1Held &&
+          bHeld &&
+          !lbComboFiredRef.current
+        ) {
+          console.log(
+            '## ✅ L + B combo detected - triggering BREAKDOWN_SENTENCE',
+          );
+          dispatch('BREAKDOWN_SENTENCE');
+          lbComboFiredRef.current = true;
+        }
+        if ((!l1Held || !bHeld) && lbComboFiredRef.current) {
+          lbComboFiredRef.current = false;
+        }
+
+        if (
+          !threeSecondLoopState &&
+          l1Held &&
+          aHeld &&
+          !laComboFiredRef.current
+        ) {
+          console.log(
+            '## ✅ L + A combo detected - triggering ADD_MASTER_TO_REVIEW',
+          );
+          dispatch('ADD_MASTER_TO_REVIEW');
+          laComboFiredRef.current = true;
+        }
+        if ((!l1Held || !aHeld) && laComboFiredRef.current) {
+          laComboFiredRef.current = false;
+        }
+
+        const mfPrev = menuFaceL1PrevRef.current;
+
+        if (rising(physical.face.y, mfPrev.y)) {
+          console.log(`## 🎮 Button ${map.Y_BTN} pressed`);
+          if (threeSecondLoopState) {
+            if (l1Held) {
+              dispatchSnippetLoopEvent('snippet-loop-adjust-length', {
+                delta: -1,
+              });
+            } else {
+              dispatchSnippetLoopEvent('snippet-loop-shift-start', {
+                delta: -1,
+              });
+            }
+          }
+        }
+
+        if (rising(physical.face.a, mfPrev.a)) {
+          console.log(`## 🎮 Button ${map.A_BTN} pressed`);
+          if (threeSecondLoopState) {
+            if (l1Held) {
+              dispatchSnippetLoopEvent('snippet-loop-adjust-length', {
+                delta: 1,
+              });
+            } else {
+              dispatchSnippetLoopEvent('snippet-loop-shift-start', {
+                delta: 1,
+              });
+            }
+          }
+        }
+
+        if (rising(physical.menu.checker, mfPrev.checker)) {
+          console.log(`## 🎮 Button ${map.CHECKER_BTN} pressed`);
+          dispatch('REWIND');
+        }
+
+        if (rising(physical.menu.minus, mfPrev.minus)) {
+          console.log(`## 🎮 Button ${map.MINUS_BTN} pressed`);
+          console.log(
+            `## ✅ Button ${map.MINUS_BTN} detected - triggering PAUSE_PLAY`,
+          );
+          dispatch('PAUSE_PLAY');
+        }
+
+        if (rising(physical.menu.plus, mfPrev.plus)) {
+          console.log(`## 🎮 Button ${map.PLUS_BTN} pressed`);
+          console.log(
+            `## ✅ Button ${map.PLUS_BTN} detected - triggering TOGGLE_REVIEW_MODE`,
+          );
+          dispatch('TOGGLE_REVIEW_MODE');
+        }
+
+        if (rising(physical.shoulders.l1, mfPrev.l1)) {
+          console.log(`## 🎮 Button ${map.L1_BTN} pressed`);
+          console.log('## 🎮 L button pressed - ready for combo');
+        }
+
+        if (falling(physical.shoulders.l1, mfPrev.l1)) {
+          console.log(`## 🎮 Button ${map.L1_BTN} released`);
+          console.log('## 🎮 L button released');
+          debugLoggedRef.current = false;
+        }
+
+        menuFaceL1PrevRef.current = {
+          y: physical.face.y,
+          a: physical.face.a,
+          checker: physical.menu.checker,
+          minus: physical.menu.minus,
+          plus: physical.menu.plus,
+          l1: physical.shoulders.l1,
+        };
+
+        const buttonWasPressed = btnPrevRef.current;
+        const handledForRising = new Set([
+          map.Y_BTN,
+          map.A_BTN,
+          map.CHECKER_BTN,
+          map.MINUS_BTN,
+          map.PLUS_BTN,
+          map.L1_BTN,
+        ]);
+
         gp.buttons.forEach((button, index) => {
-          // Log ALL button states every second to debug
           if (loopCountRef.current % 60 === 0 && button.pressed) {
             // console.log(
             //   `## 🔍 Button ${index} is currently pressed (value: ${button.value})`,
             // );
           }
 
-          // Track L1 button state
-          if (index === map.L1_BTN) {
-            lButtonHeldRef.current = button.pressed;
-          }
+          const pressed = button.pressed;
+          const wasPressed = buttonWasPressed[index] ?? false;
 
-          // Track R1 button state
-          if (index === map.R1_BTN) {
-            rButtonHeldRef.current = button.pressed;
-          }
-
-          // Track X button state
-          if (index === map.X_BTN) {
-            xButtonHeldRef.current = button.pressed;
-          }
-
-          // Track B button state
-          if (index === map.B_BTN) {
-            bButtonHeldRef.current = button.pressed;
-          }
-
-          // Track A button state
-          if (index === map.A_BTN) {
-            aButtonHeldRef.current = button.pressed;
-          }
-
-          // Track MINUS button state
-          if (index === map.MINUS_BTN) {
-            minusButtonHeldRef.current = button.pressed;
-          }
-
-          // Track PLUS button state
-          if (index === map.PLUS_BTN) {
-            plusButtonHeldRef.current = button.pressed;
-          }
-
-          // Check for L+R combo (both pressed simultaneously)
-          if (
-            lButtonHeldRef.current &&
-            rButtonHeldRef.current &&
-            !lrComboFiredRef.current
-          ) {
-            console.log(
-              '## ✅ L + R combo detected - triggering THREE_SECOND_LOOP',
-            );
-            dispatch('THREE_SECOND_LOOP');
-            lrComboFiredRef.current = true;
-          }
-
-          // Reset combo flag when either button is released
-          if (
-            (!lButtonHeldRef.current || !rButtonHeldRef.current) &&
-            lrComboFiredRef.current
-          ) {
-            lrComboFiredRef.current = false;
-          }
-
-          // Check for L+X combo (both pressed simultaneously)
-          if (
-            threeSecondLoopState &&
-            lButtonHeldRef.current &&
-            xButtonHeldRef.current &&
-            !lxComboFiredRef.current
-          ) {
-            console.log(
-              '## ✅ L + X combo detected - triggering snippet-loop-save',
-            );
-            dispatchSnippetLoopEvent('snippet-loop-save');
-            lxComboFiredRef.current = true;
-          } else if (
-            !threeSecondLoopState &&
-            lButtonHeldRef.current &&
-            xButtonHeldRef.current &&
-            !lxComboFiredRef.current
-          ) {
-            console.log(
-              '## ✅ L + X combo detected - triggering QUICK_SAVE_SNIPPET',
-            );
-            dispatch('QUICK_SAVE_SNIPPET');
-            lxComboFiredRef.current = true;
-          }
-
-          // Reset combo flag when either button is released
-          if (
-            (!lButtonHeldRef.current || !xButtonHeldRef.current) &&
-            lxComboFiredRef.current
-          ) {
-            lxComboFiredRef.current = false;
-          }
-
-          // Check for L+B combo (both pressed simultaneously)
-          if (
-            !(threeSecondLoopState && isVideoPlaying) &&
-            lButtonHeldRef.current &&
-            bButtonHeldRef.current &&
-            !lbComboFiredRef.current
-          ) {
-            console.log(
-              '## ✅ L + B combo detected - triggering BREAKDOWN_SENTENCE',
-            );
-            dispatch('BREAKDOWN_SENTENCE');
-            lbComboFiredRef.current = true;
-          }
-
-          // Reset combo flag when either button is released
-          if (
-            (!lButtonHeldRef.current || !bButtonHeldRef.current) &&
-            lbComboFiredRef.current
-          ) {
-            lbComboFiredRef.current = false;
-          }
-
-          // Check for L+A combo (both pressed simultaneously)
-          if (
-            !threeSecondLoopState &&
-            lButtonHeldRef.current &&
-            aButtonHeldRef.current &&
-            !laComboFiredRef.current
-          ) {
-            console.log(
-              '## ✅ L + A combo detected - triggering ADD_MASTER_TO_REVIEW',
-            );
-            dispatch('ADD_MASTER_TO_REVIEW');
-            laComboFiredRef.current = true;
-          }
-
-          // Reset combo flag when either button is released
-          if (
-            (!lButtonHeldRef.current || !aButtonHeldRef.current) &&
-            laComboFiredRef.current
-          ) {
-            laComboFiredRef.current = false;
-          }
-
-          if (button.pressed && !pressedRef.current[index]) {
+          if (rising(pressed, wasPressed) && !handledForRising.has(index)) {
             console.log(`## 🎮 Button ${index} pressed`);
-            pressedRef.current[index] = true;
-
-            if (threeSecondLoopState) {
-              if (index === map.Y_BTN) {
-                if (lButtonHeldRef.current) {
-                  dispatchSnippetLoopEvent('snippet-loop-adjust-length', {
-                    delta: -1,
-                  });
-                } else {
-                  dispatchSnippetLoopEvent('snippet-loop-shift-start', {
-                    delta: -1,
-                  });
-                }
-                return;
-              }
-              if (index === map.A_BTN) {
-                if (lButtonHeldRef.current) {
-                  dispatchSnippetLoopEvent('snippet-loop-adjust-length', {
-                    delta: 1,
-                  });
-                } else {
-                  dispatchSnippetLoopEvent('snippet-loop-shift-start', {
-                    delta: 1,
-                  });
-                }
-                return;
-              }
-            }
-
-            // Map buttons to actions
-            // Trigger on CHECKER button
-            if (index === map.CHECKER_BTN) {
-              // console.log(`## ✅ Button ${index} detected - triggering REWIND`);
-              dispatch('REWIND');
-            } else if (index === map.MINUS_BTN) {
-              console.log(
-                `## ✅ Button ${index} detected - triggering PAUSE_PLAY`,
-              );
-              dispatch('PAUSE_PLAY');
-            } else if (index === map.PLUS_BTN) {
-              console.log(
-                `## ✅ Button ${index} detected - triggering TOGGLE_REVIEW_MODE`,
-              );
-              dispatch('TOGGLE_REVIEW_MODE');
-            } else if (index === map.L1_BTN) {
-              console.log('## 🎮 L button pressed - ready for combo');
-            } else {
-              // console.log(
-              //   `## ❌ Button ${index} has no action assigned - check if this is D-pad Down`,
-              // );
-            }
           }
 
-          if (!button.pressed && pressedRef.current[index]) {
-            console.log(`## 🎮 Button ${index} released`);
-            pressedRef.current[index] = false;
-            debugLoggedRef.current = false; // Allow debug logging again
-
-            if (index === map.L1_BTN) {
-              console.log('## 🎮 L button released');
+          if (falling(pressed, wasPressed)) {
+            if (index !== map.L1_BTN) {
+              console.log(`## 🎮 Button ${index} released`);
             }
+            debugLoggedRef.current = false;
           }
         });
+
+        btnPrevRef.current = gp.buttons.map((b) => b.pressed);
       } else {
-        // No gamepad detected
         if (loopCountRef.current % 300 === 0 && !gamepadConnectedRef.current) {
           // console.log(
           //   '## ⚠️ No gamepad detected. Press any button on your controller to activate it.',
