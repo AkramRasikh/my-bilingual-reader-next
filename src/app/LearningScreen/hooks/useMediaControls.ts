@@ -76,6 +76,20 @@ export const useMediaControls = ({
     ref.current.currentTime = ref.current.currentTime - 3;
   };
 
+  const handleForward = () => {
+    if (!ref.current) {
+      return;
+    }
+    const el = ref.current;
+    const next = el.currentTime + 3;
+    const duration = el.duration;
+    if (Number.isFinite(duration) && duration > 0) {
+      el.currentTime = Math.min(next, duration);
+    } else {
+      el.currentTime = next;
+    }
+  };
+
   const handlePausePlay = () => {
     if (!ref.current) {
       return;
@@ -219,6 +233,7 @@ export const useMediaControls = ({
     handleFromHere,
     handlePause,
     handleRewind,
+    handleForward,
     handlePausePlay,
     handleJumpToSentenceViaKeys,
     handleJumpNext,

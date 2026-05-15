@@ -745,6 +745,7 @@ export const LearningScreenProvider = ({
     handleFromHere,
     handlePause,
     handleRewind,
+    handleForward,
     handlePausePlay,
     handleJumpToSentenceViaKeys,
     handleJumpNext,
@@ -1170,6 +1171,7 @@ export const LearningScreenProvider = ({
 
   const { dispatch } = useInputActions({
     handleRewind: handleRewindOrToggleContract,
+    handleForward,
     handlePausePlay,
     handleJumpNext,
     handleJumpPrev,

@@ -113,7 +113,7 @@ export function useGamepad(
 
         hatPrevFrameRef.current = { ...hat };
 
-        const l1 = physical.shoulders.l1;
+        const { l1, l2 } = physical.shoulders;
 
         if (rising(dpadUp, axesPressedRef.current['dpad-up'])) {
           axesPressedRef.current['dpad-up'] = true;
@@ -134,8 +134,10 @@ export function useGamepad(
 
           if (l1) {
             dispatch('LOOP_SENTENCE');
-          } else {
+          } else if (l2) {
             dispatch('JUMP_CURRENT');
+          } else {
+            dispatch('FORWARD');
           }
         }
 

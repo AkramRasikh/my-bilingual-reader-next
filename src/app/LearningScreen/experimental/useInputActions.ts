@@ -1,5 +1,6 @@
 export type InputAction =
   | 'REWIND'
+  | 'FORWARD'
   | 'PAUSE_PLAY'
   | 'JUMP_NEXT'
   | 'JUMP_PREV'
@@ -17,6 +18,7 @@ export type InputAction =
 
 interface InputHandlers {
   handleRewind: () => void;
+  handleForward: () => void;
   handlePausePlay: () => void;
   handleJumpNext: () => void;
   handleJumpPrev: () => void;
@@ -40,6 +42,9 @@ export const useInputActions = (handlers: InputHandlers) => {
     switch (action) {
       case 'REWIND':
         handlers.handleRewind();
+        break;
+      case 'FORWARD':
+        handlers.handleForward();
         break;
       case 'PAUSE_PLAY':
         handlers.handlePausePlay();
