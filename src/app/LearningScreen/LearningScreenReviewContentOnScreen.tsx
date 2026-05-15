@@ -22,7 +22,9 @@ const LearningScreenReviewContentOnScreen = () => {
     firstWordDefinitionInReview,
     firstWordInReviewDisplay,
     postSnippetsMemoized,
+    postSentencesMemoized,
     isSavedLoopPlayingState,
+    masterPlay,
   } = useLearningScreen();
 
   const [showWordDetailsState, setShowWordDetailsState] = useState(false);
@@ -42,6 +44,18 @@ const LearningScreenReviewContentOnScreen = () => {
     Boolean(firstSnippetInReview) &&
     isSavedLoopPlayingState === firstElIdInReview &&
     snippetFocusText.length > 0;
+
+  const firstSentenceInReview = useMemo(
+    () => postSentencesMemoized.find((sentence) => sentence.id === firstElIdInReview),
+    [postSentencesMemoized, firstElIdInReview],
+  );
+
+  const sentenceTargetLang = firstSentenceInReview?.targetLang?.trim() || '';
+
+  const isPlayingSentenceInReview =
+    Boolean(firstSentenceInReview) &&
+    masterPlay === firstElIdInReview &&
+    sentenceTargetLang.length > 0;
 
   const compactWordDetailsText = [
     firstWordInReviewDisplay?.surfaceForm,
@@ -92,6 +106,16 @@ const LearningScreenReviewContentOnScreen = () => {
       <ReviewOverlayPanel>
         <span data-testid='learning-screen-review-snippet-focus-text'>
           {snippetFocusText}
+        </span>
+      </ReviewOverlayPanel>
+    );
+  }
+
+  if (isPlayingSentenceInReview) {
+    return (
+      <ReviewOverlayPanel>
+        <span data-testid='learning-screen-review-sentence-target-lang'>
+          {sentenceTargetLang}
         </span>
       </ReviewOverlayPanel>
     );
