@@ -3,6 +3,7 @@
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import LearningScreenThreeSecondLoopEl from './LearningScreenThreeSecondLoopEl';
+import LearningScreenReviewContentOnScreen from './LearningScreenReviewContentOnScreen';
 import useLearningScreen from './useLearningScreen';
 import { LanguageEnum } from '../languages';
 import {
@@ -15,8 +16,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap';
-
 function formatPlaybackTime(seconds: number) {
   if (!Number.isFinite(seconds) || seconds < 0) {
     return '0:00';
@@ -54,9 +53,6 @@ const LearningScreenVideoPlayer = ({
     isSavedLoopPlayingState,
     isVideoPlaying,
     setThreeSecondLoopState,
-    firstElIdInReview,
-    firstWordDefinitionInReview,
-    firstWordInReviewDisplay,
     currentTime,
     mediaDuration,
   } = useLearningScreen();
@@ -65,9 +61,7 @@ const LearningScreenVideoPlayer = ({
     useState(false);
   const [highlightedTextFocusLoopState, setHighlightedTextFocusLoopState] =
     useState('');
-  const [showWordDetailsState, setShowWordDetailsState] = useState(false);
   const [muted, setMuted] = useState(false);
-  const quickReviewToggleFiredRef = useRef(false);
 
   const masterTextRef = useRef<HTMLParagraphElement | null>(null);
   const videoRef = ref as React.RefObject<HTMLVideoElement | null>;
@@ -169,48 +163,6 @@ const LearningScreenVideoPlayer = ({
 
   const isLooping = Boolean(threeSecondLoopState);
   const isLoopingSaved = isLooping && isSavedLoopPlayingState;
-  const compactWordDetailsText = [
-    firstWordInReviewDisplay?.surfaceForm,
-    firstWordInReviewDisplay?.phonetic,
-    firstWordInReviewDisplay?.transliteration,
-  ]
-    .filter((item) => Boolean(item && item.trim()))
-    .join(' - ');
-
-  useEffect(() => {
-    setShowWordDetailsState(false);
-  }, [firstElIdInReview]);
-
-  useEffect(() => {
-    if (!firstWordInReviewDisplay) return;
-
-    const handleGamepadPress = () => {
-      const gamepads = navigator.getGamepads();
-      const gamepad = Array.from(gamepads).find((gp) => gp !== null);
-
-      if (!gamepad) {
-        return;
-      }
-
-      const map = getButtonMap(gamepad);
-      const aPressed = gamepad.buttons[map.A_BTN]?.pressed;
-      const rPressed = gamepad.buttons[map.R1_BTN]?.pressed;
-
-      if (aPressed && rPressed && !quickReviewToggleFiredRef.current) {
-        setShowWordDetailsState((prev) => !prev);
-        quickReviewToggleFiredRef.current = true;
-        return;
-      }
-
-      if (!aPressed || !rPressed) {
-        quickReviewToggleFiredRef.current = false;
-      }
-    };
-
-    const intervalId = setInterval(handleGamepadPress, 100);
-    return () => clearInterval(intervalId);
-  }, [firstWordInReviewDisplay]);
-
   const durationForSlider = mediaDuration && mediaDuration > 0 ? mediaDuration : 1;
   const scrubberValue = Math.min(currentTime, durationForSlider);
 
@@ -243,52 +195,43 @@ const LearningScreenVideoPlayer = ({
               />
             </div>
           </div>
-        ) : showMasterPlayComprehensiveTargetLangForOverlayState &&
-          masterPlayComprehensiveTargetLangForOverlay.length > 0 ? (
-          <div className='absolute top-0 left-0 w-full rounded-t-lg px-4 py-2 text-white'>
-            {masterPlayComprehensiveTargetLangForOverlay.map((s) => {
-              const isCurrent = s.position === 'current';
-              return (
-                <p
-                  key={`${s.position}-${s.id}`}
-                  className={clsx(
-                    'text-center transition-all duration-200 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]',
-                    !isCurrent ? 'text-gray-400 text-xs' : 'text-white text-sm',
-                  )}
-                >
-                  {s.targetLang}
-                </p>
-              );
-            })}
-          </div>
-        ) : isLoopingSaved ? (
-          <div className='absolute top-0 left-0 w-full rounded-t-lg px-4 py-2 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]'>
-            <Button
-              size='icon'
-              variant='ghost'
-              className='my-auto h-8 w-8 rounded-full bg-transparent'
-              onClick={() => setThreeSecondLoopState(null)}
-            >
-              <Loader2
-                className={clsx(
-                  isVideoPlaying ? 'animate-spin' : '',
-                  'text-amber-600',
-                )}
-              />
-            </Button>
-          </div>
-        ) : null}
-        {firstElIdInReview && firstWordDefinitionInReview ? (
-          <div className='pointer-events-none absolute inset-0 flex flex-col justify-end pb-4'>
-            <div className='pointer-events-auto mx-auto w-fit max-w-[66.666%] rounded-md border border-white/20 bg-black/80 px-4 py-1.5'>
-              <p className='text-center text-xs font-bold break-words text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]'>
-                {showWordDetailsState && compactWordDetailsText
-                  ? compactWordDetailsText
-                  : firstWordDefinitionInReview}
-              </p>
+        )
+          : showMasterPlayComprehensiveTargetLangForOverlayState &&
+            masterPlayComprehensiveTargetLangForOverlay.length > 0 ? (
+            <div className='absolute top-0 left-0 w-full rounded-t-lg px-4 py-2 text-white'>
+              {masterPlayComprehensiveTargetLangForOverlay.map((s) => {
+                const isCurrent = s.position === 'current';
+                return (
+                  <p
+                    key={`${s.position}-${s.id}`}
+                    className={clsx(
+                      'text-center transition-all duration-200 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]',
+                      !isCurrent ? 'text-gray-400 text-xs' : 'text-white text-sm',
+                    )}
+                  >
+                    {s.targetLang}
+                  </p>
+                );
+              })}
             </div>
-          </div>
-        ) : null}
+          ) : isLoopingSaved ? (
+            <div className='absolute top-0 left-0 w-full rounded-t-lg px-4 py-2 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]'>
+              <Button
+                size='icon'
+                variant='ghost'
+                className='my-auto h-8 w-8 rounded-full bg-transparent'
+                onClick={() => setThreeSecondLoopState(null)}
+              >
+                <Loader2
+                  className={clsx(
+                    isVideoPlaying ? 'animate-spin' : '',
+                    'text-amber-600',
+                  )}
+                />
+              </Button>
+            </div>
+          ) : null}
+        <LearningScreenReviewContentOnScreen />
       </div>
 
       <div className='flex w-full min-w-0 items-center gap-2 border-t border-white/10 bg-zinc-950/95 px-2 py-1.5 text-white'>
