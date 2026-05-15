@@ -50,6 +50,7 @@ export function useGamepad(
     left: false,
     right: false,
   });
+  const r3PrevRef = useRef(false);
 
   useEffect(() => {
     if (!navigator.getGamepads) {
@@ -274,6 +275,12 @@ export function useGamepad(
         if (rising(physical.menu.plus, mfPrev.plus)) {
           dispatch('TOGGLE_REVIEW_MODE');
         }
+
+        const r3 = physical.sticks.r3;
+        if (rising(r3, r3PrevRef.current)) {
+          dispatch('TIMER_PRESS');
+        }
+        r3PrevRef.current = r3;
 
         menuFacePrevRef.current = {
           y: physical.face.y,

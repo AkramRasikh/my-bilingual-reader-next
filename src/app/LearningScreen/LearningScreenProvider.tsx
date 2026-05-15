@@ -49,6 +49,7 @@ import { getLoopTranscriptSegment as getLoopTranscriptSegmentFromTimes } from '.
 import { OverlappingSnippetData, ReviewDataTypes } from '../types/shared-types';
 import { useGamepad } from './experimental/useGamePad';
 import { useInputActions } from './experimental/useInputActions';
+import { useCountUpTimer } from '@/components/custom/CountUpTimer/useCountUpTimer';
 
 type LearningScreenProviderProps = React.PropsWithChildren<{
   selectedContentStateMemoized: ContentTypes & { contentIndex: number };
@@ -180,6 +181,8 @@ export interface LearningScreenContextTypes {
   wordRepsState: number;
   elapsed: number;
   setElapsed: React.Dispatch<React.SetStateAction<number>>;
+  countUpTimerIsRunning: boolean;
+  onCountUpTimerPress: () => void;
   playFromThisContext: (contextId: FormattedTranscriptTypes['id']) => void;
   setSentenceRepsState: React.Dispatch<React.SetStateAction<number>>;
   setWordRepsState: React.Dispatch<React.SetStateAction<number>>;
@@ -298,6 +301,8 @@ export const LearningScreenProvider = ({
   const lastSavedLoopSnippetIdRef = useRef<string | null>(null);
 
   const [elapsed, setElapsed] = useState(0);
+  const { isRunning: countUpTimerIsRunning, onTimerPress: onCountUpTimerPress } =
+    useCountUpTimer(elapsed, setElapsed);
   const [errorVideoState, setErrorVideoState] = useState(false);
   const [enableWordReviewState, setEnableWordReviewState] = useState(true);
   const [enableTranscriptReviewState, setEnableTranscriptReviewState] =
@@ -1186,6 +1191,7 @@ export const LearningScreenProvider = ({
     handleBreakdownSentence: handleBreakdownMasterSentence,
     handleAddMasterToReview,
     handleToggleReviewMode,
+    handleTimerPress: onCountUpTimerPress,
   });
   useGamepad(dispatch, threeSecondLoopState, isVideoPlaying);
 
@@ -1269,6 +1275,8 @@ export const LearningScreenProvider = ({
         wordRepsState,
         elapsed,
         setElapsed,
+        countUpTimerIsRunning,
+        onCountUpTimerPress,
         playFromThisContext,
         setSentenceRepsState,
         setWordRepsState,

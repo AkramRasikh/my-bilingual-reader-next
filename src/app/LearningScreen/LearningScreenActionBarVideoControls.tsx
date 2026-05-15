@@ -8,7 +8,8 @@ const LearningScreenActionBarVideoControls = () => {
     onlyShowEngState,
     setOnlyShowEngState,
     elapsed,
-    setElapsed,
+    countUpTimerIsRunning,
+    onCountUpTimerPress,
     trackCurrentState,
     setTrackCurrentState,
     isInReviewMode,
@@ -18,7 +19,11 @@ const LearningScreenActionBarVideoControls = () => {
 
   return (
     <div className='flex flex-col items-center pb-2 gap-3'>
-      <CountUpTimer elapsed={elapsed} setElapsed={setElapsed} />
+      <CountUpTimer
+        elapsed={elapsed}
+        isRunning={countUpTimerIsRunning}
+        onTimerPress={onCountUpTimerPress}
+      />
       <div className='flex gap-2 my-auto'>
         <Label data-testid='english-label'>🇬🇧</Label>
         <Switch
