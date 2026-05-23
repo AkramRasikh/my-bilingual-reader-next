@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   isMoreThanADayAhead,
@@ -39,42 +39,46 @@ const ReviewSRSToggles = ({
     timeNow,
   });
 
-  const handleNextReview = async (difficulty) => {
-    const nextReviewData = nextScheduledOptions[difficulty].card;
-    const isMoreThanADayAheadBool = isMoreThanADayAhead(
-      nextReviewData.due,
-      new Date(),
-    );
+  const handleNextReview = useCallback(
+    async (difficulty) => {
+      const nextReviewData = nextScheduledOptions[difficulty].card;
+      const isMoreThanADayAheadBool = isMoreThanADayAhead(
+        nextReviewData.due,
+        new Date(),
+      );
 
-    const formattedToBe5am = isMoreThanADayAheadBool
-      ? { ...nextReviewData, due: setToFiveAM(nextReviewData.due) }
-      : nextReviewData;
+      const formattedToBe5am = isMoreThanADayAheadBool
+        ? { ...nextReviewData, due: setToFiveAM(nextReviewData.due) }
+        : nextReviewData;
 
-    try {
-      setIsLoadingSRSState(true);
-      if (isVocab) {
-        await handleReviewFunc({
-          wordId: contentItem.id,
-          fieldToUpdate: { reviewData: formattedToBe5am },
-        });
-      } else if (isSnippet) {
-        await handleReviewFunc({
-          snippetData: {
-            ...contentItem,
-            reviewData: formattedToBe5am,
-          },
-        });
-      } else {
-        await handleReviewFunc({
-          sentenceId: contentItem.id,
-          nextDue: formattedToBe5am,
-        });
+      try {
+        setIsLoadingSRSState(true);
+        if (isVocab) {
+          await handleReviewFunc({
+            wordId: contentItem.id,
+            fieldToUpdate: { reviewData: formattedToBe5am },
+          });
+        } else if (isSnippet) {
+          await handleReviewFunc({
+            snippetData: {
+              ...contentItem,
+              reviewData: formattedToBe5am,
+            },
+          });
+        } else {
+          await handleReviewFunc({
+            sentenceId: contentItem.id,
+            nextDue: formattedToBe5am,
+          });
+        }
+      } finally {
+        setIsLoadingSRSState(false);
       }
-    } finally {
-      setIsLoadingSRSState(false);
-    }
-  };
-  const handleRemoveReview = async () => {
+    },
+    [contentItem, handleReviewFunc, isSnippet, isVocab, nextScheduledOptions],
+  );
+
+  const handleRemoveReview = useCallback(async () => {
     try {
       setIsLoadingSRSState(true);
       if (isVocab) {
@@ -101,7 +105,7 @@ const ReviewSRSToggles = ({
     } finally {
       setIsLoadingSRSState(false);
     }
-  };
+  }, [contentItem, handleReviewFunc, isSnippet, isVocab]);
 
   const reviewTogglesMap = [
     {
