@@ -204,7 +204,7 @@ export interface LearningScreenContextTypes {
   overlappingTextMemoized: OverlappingTextTypes | null;
   savedSnippetsMemoized: SavedSnippetsMemoizedProps[];
   handleDeleteSnippet: (
-    snippetData: Snippet,
+    snippetIdOrData: string | Snippet,
     wordsFromSentence?: WordTypes[],
   ) => Promise<void>;
   contentSnippets: Snippet[];
@@ -545,9 +545,22 @@ export const LearningScreenProvider = ({
   };
 
   const handleDeleteSnippet = async (
-    snippetData: Snippet,
+    snippetIdOrData: string | Snippet,
     wordsFromSentence?: WordTypes[],
   ) => {
+    const snippetId =
+      typeof snippetIdOrData === 'string'
+        ? snippetIdOrData
+        : snippetIdOrData?.id;
+    const snippetData =
+      selectedContentStateMemoized?.snippets?.find((s) => s.id === snippetId) ??
+      (typeof snippetIdOrData === 'object' ? snippetIdOrData : null);
+    const hasWordsInSentence = (wordsFromSentence?.length ?? 0) > 0;
+
+    if (!snippetId || !snippetData) {
+      return;
+    }
+
     if (
       !selectedContentStateMemoized?.snippets ||
       selectedContentStateMemoized?.snippets?.length === 0
@@ -557,7 +570,7 @@ export const LearningScreenProvider = ({
 
     setSnippetLoadingState((prev) => [...prev, snippetData.id]);
     try {
-      if (wordsFromSentence) {
+      if (hasWordsInSentence) {
         await handleSaveSnippetFetchProvider({
           snippetData: { ...snippetData, reviewData: undefined },
           contentId,

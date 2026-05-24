@@ -6,12 +6,10 @@ const TranscriptItemTimeOverlappingIndicatorMulti = ({
   handleLoopHere,
   contentItemId,
   snippetLoadingState,
+  wordsFromSentence,
 }) => {
   const handleDeleteSnippetItem = async (snippetItem) => {
-    await handleDeleteSnippet({
-      ...snippetItem,
-      id: snippetItem.snippetId,
-    });
+    await handleDeleteSnippet(snippetItem.snippetId, wordsFromSentence);
   };
 
   return (
@@ -65,7 +63,7 @@ const TranscriptItemTimeOverlappingIndicatorMulti = ({
               style={{
                 fontSize: 5,
               }}
-              onDoubleClick={async () => await handleDeleteSnippetItem(item)}
+              onClick={async () => await handleDeleteSnippetItem(item)}
             >
               ❌
             </button>

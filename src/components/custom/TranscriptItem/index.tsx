@@ -73,6 +73,7 @@ const TranscriptItem = () => {
           handleDeleteSnippet={handleDeleteSnippet}
           handleLoopHere={handleLoopHere}
           snippetLoadingState={snippetLoadingState}
+          wordsFromSentence={contentItem?.wordsFromSentence}
         />
       )}
     </TranscriptItemWrapper>

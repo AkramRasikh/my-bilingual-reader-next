@@ -185,12 +185,8 @@ const LearningScreenComprehensiveReview = () => {
               wordsForSelectedTopic={wordsForSelectedTopic}
               languageSelectedState={languageSelectedState}
               savedSnippetsMemoized={contentSnippets}
-              handleDeleteSnippet={async (snippetId) => {
-                const snippetData = contentSnippets.find(
-                  (s) => s.id === snippetId,
-                );
-                if (!snippetData) return;
-                await handleDeleteSnippet(snippetData);
+              handleDeleteSnippet={async (snippetId, wordsFromSentence) => {
+                await handleDeleteSnippet(snippetId, wordsFromSentence);
               }}
               isComprehensiveMode={true}
               setThreeSecondLoopState={setThreeSecondLoopState}

@@ -582,7 +582,7 @@ const deleteSnippet = async () => {
     'button',
     { name: '❌' },
   );
-  fireEvent.doubleClick(deleteButton);
+  fireEvent.click(deleteButton);
 
   await waitFor(() => {
     expect(screen.getByText('Snippet deleted ✂️✅!')).toBeInTheDocument();

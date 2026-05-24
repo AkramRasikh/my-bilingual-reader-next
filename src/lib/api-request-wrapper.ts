@@ -19,5 +19,10 @@ export async function apiRequestWrapper<T>({
     throw new Error(`API Error (${response.status}): ${errorText}`);
   }
 
-  return response.json();
+  const text = await response.text();
+  if (!text.trim()) {
+    return undefined as T;
+  }
+
+  return JSON.parse(text) as T;
 }

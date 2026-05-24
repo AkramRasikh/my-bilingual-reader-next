@@ -81,7 +81,10 @@ export interface TranscriptItemContextType {
   setCollapseState: Dispatch<SetStateAction<boolean>>;
   isComprehensiveMode?: boolean;
   thisHasSavedSnippetOverlap: Snippet[] | null;
-  handleDeleteSnippet: (snippetId: string) => Promise<void>;
+  handleDeleteSnippet: (
+    snippetId: string,
+    wordsFromSentence?: WordTypes[],
+  ) => Promise<void>;
   snippetLoadingState: string[];
   handleLoopHere: (params: { time: number; isContracted: boolean }) => void;
   biggestOverlappedSnippet: string | null;
@@ -130,7 +133,10 @@ interface TranscriptItemProviderProps {
   indexNum: number;
   isComprehensiveMode?: boolean;
   savedSnippetsMemoized: Snippet[];
-  handleDeleteSnippet: (snippetId: string) => Promise<void>;
+  handleDeleteSnippet: (
+    snippetId: string,
+    wordsFromSentence?: WordTypes[],
+  ) => Promise<void>;
   setThreeSecondLoopState: Dispatch<SetStateAction<number | null>>;
   setContractThreeSecondLoopState: Dispatch<SetStateAction<boolean>>;
   handlePlayFromHere: (time: number) => void;
