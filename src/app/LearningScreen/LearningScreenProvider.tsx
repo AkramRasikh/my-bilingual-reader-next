@@ -601,6 +601,13 @@ export const LearningScreenProvider = ({
     isSnippetReview?: boolean;
   }) => {
     if (isRemoveReview) {
+      if (!snippetData.id || !contentId) {
+        console.warn('## handleUpdateSnippet delete skipped', {
+          snippetId: snippetData.id,
+          contentId,
+        });
+        return;
+      }
       await handleDeleteSnippetFetchProvider({
         contentIndex,
         contentId,

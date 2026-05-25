@@ -462,6 +462,22 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     snippetId,
     contentIndex,
   }: HandleDeleteSnippetCallTypes) => {
+    if (
+      !languageSelectedState ||
+      !contentId ||
+      !snippetId ||
+      typeof contentIndex !== 'number'
+    ) {
+      console.warn('## handleDeleteSnippetFetchProvider skipped', {
+        language: languageSelectedState,
+        contentId,
+        snippetId,
+        contentIndex,
+      });
+      setToastMessageState('Cannot delete snippet — missing content or snippet id');
+      return;
+    }
+
     try {
       await apiRequestWrapper({
         url: '/api/deleteSnippet',
