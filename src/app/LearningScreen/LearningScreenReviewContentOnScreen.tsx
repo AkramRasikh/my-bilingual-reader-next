@@ -20,21 +20,21 @@ const TIME_RANGE_PHASE_STYLES: Record<
   }
 > = {
   before: {
-    borderClassName: 'border-4 border-red-500',
+    borderClassName: 'border border-red-500',
     indicatorClassName:
       'size-4 rounded-full border-4 border-red-500 bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.9)]',
     label: "Playback is before this clip's range",
     testId: 'learning-screen-review-before-time-range',
   },
   during: {
-    borderClassName: 'border-4 border-amber-500',
+    borderClassName: 'border border-amber-500',
     indicatorClassName:
       'size-4 rounded-full border-4 border-amber-500 bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.9)]',
     label: "Playback is within this clip's range",
     testId: 'learning-screen-review-during-time-range',
   },
   beyond: {
-    borderClassName: 'border-4 border-green-500',
+    borderClassName: 'border border-green-500',
     indicatorClassName:
       'size-4 rounded-full border-4 border-green-500 bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.9)]',
     label: "Playback is past this clip's range",
