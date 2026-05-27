@@ -1,6 +1,25 @@
 import JSZip from 'jszip';
-import { LanguageEnum } from '../languages';
-import { NetflixScriptEntry } from './parse-netflix-script';
+import { isTrimmedLang, LanguageEnum } from '../languages';
+
+export interface BilingualEpubEntry {
+  time: number;
+  targetLang: string;
+  baseLang: string;
+  transliteration?: string;
+}
+
+export function applyLanguageFormatting(
+  entries: BilingualEpubEntry[],
+  lang: LanguageEnum,
+): BilingualEpubEntry[] {
+  if (!isTrimmedLang(lang)) {
+    return entries;
+  }
+  return entries.map((entry) => ({
+    ...entry,
+    targetLang: entry.targetLang.replace(/\s+/g, ''),
+  }));
+}
 
 const CONTAINER_XML = `<?xml version="1.0" encoding="UTF-8"?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
@@ -67,7 +86,7 @@ export function languageEnumToEpubLang(lang: LanguageEnum): string {
 export const EPUB_PREVIEW_ENTRY_LIMIT = 50;
 
 export function buildEpubEntryBlocksHtml(
-  entries: NetflixScriptEntry[],
+  entries: BilingualEpubEntry[],
 ): string {
   return [...entries]
     .sort((a, b) => a.time - b.time)
@@ -86,7 +105,7 @@ export function buildEpubEntryBlocksHtml(
 }
 
 export function buildEpubPreviewSrcDoc(
-  entries: NetflixScriptEntry[],
+  entries: BilingualEpubEntry[],
   epubLang: string,
   { limit = EPUB_PREVIEW_ENTRY_LIMIT }: { limit?: number } = {},
 ): string {
@@ -116,7 +135,7 @@ ${blocks}
 }
 
 export function buildChapterXhtml(
-  entries: NetflixScriptEntry[],
+  entries: BilingualEpubEntry[],
   epubLang: string,
 ): string {
   const blocks = buildEpubEntryBlocksHtml(entries);
@@ -166,12 +185,12 @@ function buildContentOpf({
 </package>`;
 }
 
-export async function buildNetflixEpub({
+export async function buildBilingualEpub({
   entries,
   title,
   language,
 }: {
-  entries: NetflixScriptEntry[];
+  entries: BilingualEpubEntry[];
   title: string;
   language: LanguageEnum;
 }): Promise<Blob> {

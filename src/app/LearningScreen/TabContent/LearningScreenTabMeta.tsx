@@ -14,14 +14,12 @@ import ClickAndConfirm from '@/components/custom/ClickAndConfirm';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { getCloudflareVideoURL } from '@/utils/get-media-url';
 import {
+  applyLanguageFormatting,
+  BilingualEpubEntry,
+  buildBilingualEpub,
   buildEpubPreviewSrcDoc,
-  buildNetflixEpub,
   languageEnumToEpubLang,
 } from '@/app/netflix-script/build-netflix-epub';
-import {
-  applyLanguageFormatting,
-  NetflixScriptEntry,
-} from '@/app/netflix-script/parse-netflix-script';
 import { LanguageEnum } from '@/app/languages';
 
 const LearningScreenTabMeta = () => {
@@ -56,7 +54,7 @@ const LearningScreenTabMeta = () => {
   const epubEntryCount = formattedTranscriptState?.length ?? 0;
   const isChinese = languageSelectedState === LanguageEnum.Chinese;
 
-  const epubEntries = useMemo<NetflixScriptEntry[]>(() => {
+  const epubEntries = useMemo<BilingualEpubEntry[]>(() => {
     const baseEntries = applyLanguageFormatting(
       formattedTranscriptState.map((item) => ({
         time: item.time,
@@ -190,7 +188,7 @@ const LearningScreenTabMeta = () => {
 
     try {
       setIsExportingEpub(true);
-      const blob = await buildNetflixEpub({
+      const blob = await buildBilingualEpub({
         entries: epubEntries,
         title: safeTitle,
         language: languageSelectedState,

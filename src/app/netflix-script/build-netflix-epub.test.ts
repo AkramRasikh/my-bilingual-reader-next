@@ -1,11 +1,11 @@
 import { LanguageEnum } from '../languages';
 import {
+  BilingualEpubEntry,
   buildChapterXhtml,
   buildEpubPreviewSrcDoc,
   escapeHtml,
   languageEnumToEpubLang,
 } from './build-netflix-epub';
-import { NetflixScriptEntry } from './parse-netflix-script';
 
 describe('escapeHtml', () => {
   it('escapes special characters', () => {
@@ -23,7 +23,7 @@ describe('languageEnumToEpubLang', () => {
 });
 
 describe('buildChapterXhtml', () => {
-  const entries: NetflixScriptEntry[] = [
+  const entries: BilingualEpubEntry[] = [
     { time: 9, targetLang: '分かってるよ', baseLang: 'I got it.' },
     { time: 3, targetLang: 'ベル', baseLang: 'Bell rings.' },
   ];
