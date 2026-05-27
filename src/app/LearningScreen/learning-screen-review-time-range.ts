@@ -18,12 +18,38 @@ export function getSentenceTimeRange(
   };
 }
 
+export type ReviewTimeRangePhase = 'before' | 'during' | 'beyond';
+
+export function getCurrentTimeRangePhase(
+  currentTime: number,
+  startTime: number | null | undefined,
+  endTime: number | null | undefined,
+): ReviewTimeRangePhase | null {
+  const hasStart = startTime != null && Number.isFinite(startTime);
+  const hasEnd = endTime != null && Number.isFinite(endTime);
+
+  if (!hasStart && !hasEnd) {
+    return null;
+  }
+
+  if (hasStart && currentTime < startTime) {
+    return 'before';
+  }
+
+  if (hasEnd && currentTime > endTime) {
+    return 'beyond';
+  }
+
+  if (hasStart || hasEnd) {
+    return 'during';
+  }
+
+  return null;
+}
+
 export function isCurrentTimeBeyondRange(
   currentTime: number,
   endTime: number | null | undefined,
 ): boolean {
-  if (endTime == null || !Number.isFinite(endTime)) {
-    return false;
-  }
-  return currentTime > endTime;
+  return getCurrentTimeRangePhase(currentTime, null, endTime) === 'beyond';
 }

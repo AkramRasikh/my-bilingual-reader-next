@@ -1,5 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 import {
+  getCurrentTimeRangePhase,
   getSentenceTimeRange,
   getSnippetTimeRange,
   isCurrentTimeBeyondRange,
@@ -38,6 +39,34 @@ describe('getSentenceTimeRange', () => {
       startTime: 5,
       endTime: 42,
     });
+  });
+});
+
+describe('getCurrentTimeRangePhase', () => {
+  it('returns before when currentTime is before start', () => {
+    expect(getCurrentTimeRangePhase(8, 8.5, 11.5)).toBe('before');
+  });
+
+  it('returns during when currentTime is within the range', () => {
+    expect(getCurrentTimeRangePhase(10, 8.5, 11.5)).toBe('during');
+    expect(getCurrentTimeRangePhase(8.5, 8.5, 11.5)).toBe('during');
+    expect(getCurrentTimeRangePhase(11.5, 8.5, 11.5)).toBe('during');
+  });
+
+  it('returns beyond when currentTime is past end', () => {
+    expect(getCurrentTimeRangePhase(12, 8.5, 11.5)).toBe('beyond');
+  });
+
+  it('returns null when neither bound is finite', () => {
+    expect(getCurrentTimeRangePhase(10, null, null)).toBe(null);
+  });
+
+  it('returns during when only start is known and playback has reached it', () => {
+    expect(getCurrentTimeRangePhase(10, 8.5, null)).toBe('during');
+  });
+
+  it('returns before when only start is known and playback is earlier', () => {
+    expect(getCurrentTimeRangePhase(7, 8.5, null)).toBe('before');
   });
 });
 

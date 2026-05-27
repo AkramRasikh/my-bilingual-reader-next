@@ -4,30 +4,63 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import useLearningScreen from './useLearningScreen';
 import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap';
 import {
+  getCurrentTimeRangePhase,
   getSentenceTimeRange,
   getSnippetTimeRange,
-  isCurrentTimeBeyondRange,
+  type ReviewTimeRangePhase,
 } from './learning-screen-review-time-range';
 
-function ReviewTimeRangeIndicator({ isBeyondRange }: { isBeyondRange: boolean }) {
+const TIME_RANGE_PHASE_STYLES: Record<
+  ReviewTimeRangePhase,
+  {
+    borderClassName: string;
+    indicatorClassName: string;
+    label: string;
+    testId: string;
+  }
+> = {
+  before: {
+    borderClassName: 'border-4 border-red-500',
+    indicatorClassName:
+      'size-4 rounded-full border-4 border-red-500 bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.9)]',
+    label: "Playback is before this clip's range",
+    testId: 'learning-screen-review-before-time-range',
+  },
+  during: {
+    borderClassName: 'border-4 border-amber-500',
+    indicatorClassName:
+      'size-4 rounded-full border-4 border-amber-500 bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.9)]',
+    label: "Playback is within this clip's range",
+    testId: 'learning-screen-review-during-time-range',
+  },
+  beyond: {
+    borderClassName: 'border-4 border-green-500',
+    indicatorClassName:
+      'size-4 rounded-full border-4 border-green-500 bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.9)]',
+    label: "Playback is past this clip's range",
+    testId: 'learning-screen-review-past-time-range',
+  },
+};
+
+function ReviewTimeRangeIndicator({
+  phase,
+}: {
+  phase: ReviewTimeRangePhase | null;
+}) {
+  const indicator = phase ? TIME_RANGE_PHASE_STYLES[phase] : null;
+
   return (
     <span
-      className='flex w-3 shrink-0 items-center justify-center self-center'
-      aria-hidden={!isBeyondRange}
+      className='flex w-4 shrink-0 items-center justify-center self-center'
+      aria-hidden={!indicator}
     >
       <span
         className={
-          isBeyondRange
-            ? 'size-2 rounded-full bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.9)]'
-            : 'size-2 rounded-full bg-transparent'
+          indicator?.indicatorClassName ?? 'size-2 rounded-full bg-transparent'
         }
-        title={isBeyondRange ? "Playback is past this clip's range" : undefined}
-        aria-label={
-          isBeyondRange ? "Playback is past this clip's range" : undefined
-        }
-        data-testid={
-          isBeyondRange ? 'learning-screen-review-past-time-range' : undefined
-        }
+        title={indicator?.label}
+        aria-label={indicator?.label}
+        data-testid={indicator?.testId}
       />
     </span>
   );
@@ -35,23 +68,30 @@ function ReviewTimeRangeIndicator({ isBeyondRange }: { isBeyondRange: boolean })
 
 function ReviewOverlayPanel({
   children,
-  isBeyondTimeRange = false,
+  timeRangePhase = null,
   showTimeRangeSlot = false,
 }: {
   children: React.ReactNode;
-  isBeyondTimeRange?: boolean;
+  timeRangePhase?: ReviewTimeRangePhase | null;
   showTimeRangeSlot?: boolean;
 }) {
   const textClassName =
     'text-xs font-bold break-words text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]';
 
+  const containerBorderClassName =
+    showTimeRangeSlot && timeRangePhase
+      ? TIME_RANGE_PHASE_STYLES[timeRangePhase].borderClassName
+      : 'border border-white/20';
+
   return (
     <div className='pointer-events-none absolute inset-0 flex flex-col justify-end pb-4'>
-      <div className='pointer-events-auto mx-auto w-fit max-w-[66.666%] rounded-md border border-white/20 bg-black/80 px-4 py-1.5'>
+      <div
+        className={`pointer-events-auto mx-auto w-fit max-w-[66.666%] rounded-md bg-black/80 px-4 py-1.5 ${containerBorderClassName}`}
+      >
         {showTimeRangeSlot ? (
           <div className='flex items-center gap-2'>
             <p className={`min-w-0 flex-1 text-center ${textClassName}`}>{children}</p>
-            <ReviewTimeRangeIndicator isBeyondRange={isBeyondTimeRange} />
+            <ReviewTimeRangeIndicator phase={timeRangePhase} />
           </div>
         ) : (
           <p className={`text-center ${textClassName}`}>{children}</p>
@@ -106,20 +146,23 @@ const LearningScreenReviewContentOnScreen = () => {
     ? sentenceMapMemoized[firstElIdInReview]
     : undefined;
 
-  const snippetBeyondTimeRange = useMemo(() => {
+  const snippetTimeRangePhase = useMemo(() => {
     if (!firstSnippetInReview) {
-      return false;
+      return null;
     }
-    const { endTime } = getSnippetTimeRange(firstSnippetInReview);
-    return isCurrentTimeBeyondRange(currentTime, endTime);
+    const { startTime, endTime } = getSnippetTimeRange(firstSnippetInReview);
+    return getCurrentTimeRangePhase(currentTime, startTime, endTime);
   }, [firstSnippetInReview, currentTime]);
 
-  const sentenceBeyondTimeRange = useMemo(() => {
+  const sentenceTimeRangePhase = useMemo(() => {
     if (!sentenceMapEntry) {
-      return false;
+      return null;
     }
-    const { endTime } = getSentenceTimeRange(sentenceMapEntry, mediaDuration);
-    return isCurrentTimeBeyondRange(currentTime, endTime);
+    const { startTime, endTime } = getSentenceTimeRange(
+      sentenceMapEntry,
+      mediaDuration,
+    );
+    return getCurrentTimeRangePhase(currentTime, startTime, endTime);
   }, [sentenceMapEntry, mediaDuration, currentTime]);
 
   const compactWordDetailsText = [
@@ -169,7 +212,7 @@ const LearningScreenReviewContentOnScreen = () => {
   if (isPlayingSnippetInReview) {
     return (
       <ReviewOverlayPanel
-        isBeyondTimeRange={snippetBeyondTimeRange}
+        timeRangePhase={snippetTimeRangePhase}
         showTimeRangeSlot
       >
         <span data-testid='learning-screen-review-snippet-focus-text'>
@@ -182,7 +225,7 @@ const LearningScreenReviewContentOnScreen = () => {
   if (isFirstSentenceInReview) {
     return (
       <ReviewOverlayPanel
-        isBeyondTimeRange={sentenceBeyondTimeRange}
+        timeRangePhase={sentenceTimeRangePhase}
         showTimeRangeSlot
       >
         <span data-testid='learning-screen-review-sentence-target-lang'>
