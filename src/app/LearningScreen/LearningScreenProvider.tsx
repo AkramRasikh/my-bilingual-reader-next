@@ -22,7 +22,7 @@ import {
   UpdateWordDataProviderCallTypes,
 } from '../Providers/FetchDataProvider';
 import { WordTypes } from '../types/word-types';
-import { isTrimmedLang } from '../languages';
+import { isTrimmedLang, LanguageEnum } from '../languages';
 import useManageThreeSecondLoopMemo from './hooks/useManageThreeSecondLoopMemo';
 import { getSecondsLoopedTranscriptData } from './utils/get-seconds-looped-transcript-data';
 import { useSecondsStateMemoized } from './hooks/useSecondsStateMemoized';
@@ -245,6 +245,7 @@ export interface LearningScreenContextTypes {
   updateWordDataProvider: (
     params: UpdateWordDataProviderCallTypes,
   ) => Promise<unknown>;
+  languageSelectedState: LanguageEnum;
 }
 
 export const LearningScreenContext =
@@ -1347,6 +1348,7 @@ export const LearningScreenProvider = ({
         setShowMasterPlayComprehensiveTargetLangForOverlayState,
         setSnippetRepsState,
         snippetRepsState,
+        languageSelectedState,
       }}
     >
       {children}
