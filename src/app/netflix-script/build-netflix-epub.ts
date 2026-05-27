@@ -16,6 +16,12 @@ export const EPUB_STYLE_CSS = `.entry {
   margin: 0 0 0.15em 0;
   text-align: left;
 }
+.transliteration {
+  margin: 0 0 0.12em 0;
+  font-size: 0.72em;
+  color: #666;
+  text-align: left;
+}
 .base-lang {
   margin: 0;
   font-style: italic;
@@ -65,12 +71,17 @@ export function buildEpubEntryBlocksHtml(
 ): string {
   return [...entries]
     .sort((a, b) => a.time - b.time)
-    .map(
-      (entry) => `<div class="entry">
+    .map((entry) => {
+      const transliterationLine = entry.transliteration
+        ? `<p class="transliteration">${escapeHtml(entry.transliteration)}</p>`
+        : '';
+
+      return `<div class="entry">
     <p class="target-lang">${escapeHtml(entry.targetLang)}</p>
+    ${transliterationLine}
     <p class="base-lang">${escapeHtml(entry.baseLang)}</p>
-  </div>`,
-    )
+  </div>`;
+    })
     .join('\n');
 }
 

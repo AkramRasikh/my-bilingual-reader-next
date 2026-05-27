@@ -7,17 +7,34 @@ import { Label } from '@/components/ui/label';
 import { TabsContent } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { BookOpenIcon, EyeIcon } from 'lucide-react';
+import { pinyin } from 'pinyin-pro';
 import useLearningScreen from '../useLearningScreen';
 import ClickAndConfirm from '@/components/custom/ClickAndConfirm';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { getCloudflareVideoURL } from '@/utils/get-media-url';
+import {
+  buildEpubPreviewSrcDoc,
+  buildNetflixEpub,
+  languageEnumToEpubLang,
+} from '@/app/netflix-script/build-netflix-epub';
+import {
+  applyLanguageFormatting,
+  NetflixScriptEntry,
+} from '@/app/netflix-script/parse-netflix-script';
+import { LanguageEnum } from '@/app/languages';
 
 const LearningScreenTabMeta = () => {
   const [showConfirmDeleteVideo, setShowConfirmDeleteVideo] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const { updateContentMetaData, deleteContent, deleteVideo, languageSelectedState } = useFetchData();
+  const { updateContentMetaData, deleteContent, deleteVideo } = useFetchData();
 
-  const { selectedContentState, wordsForSelectedTopic } = useLearningScreen();
+  const {
+    selectedContentState,
+    wordsForSelectedTopic,
+    formattedTranscriptState,
+    languageSelectedState,
+  } = useLearningScreen();
 
   const url = selectedContentState?.url;
   const reviewHistory = selectedContentState?.reviewHistory;
@@ -33,6 +50,41 @@ const LearningScreenTabMeta = () => {
   const [descriptionInputState, setDescriptionInputState] = useState('');
   const [savedDescriptionState, setSavedDescriptionState] = useState('');
   const [isDescriptionLoading, setIsDescriptionLoading] = useState(false);
+  const [isExportingEpub, setIsExportingEpub] = useState(false);
+  const [showKindlePreview, setShowKindlePreview] = useState(false);
+
+  const epubEntryCount = formattedTranscriptState?.length ?? 0;
+  const isChinese = languageSelectedState === LanguageEnum.Chinese;
+
+  const epubEntries = useMemo<NetflixScriptEntry[]>(() => {
+    const baseEntries = applyLanguageFormatting(
+      formattedTranscriptState.map((item) => ({
+        time: item.time,
+        targetLang: item.targetLang,
+        baseLang: item.baseLang ?? '',
+      })),
+      languageSelectedState,
+    );
+
+    if (!isChinese) {
+      return baseEntries;
+    }
+
+    return baseEntries.map((item) => ({
+      ...item,
+      transliteration: pinyin(item.targetLang, { toneType: 'symbol' }),
+    }));
+  }, [formattedTranscriptState, isChinese, languageSelectedState]);
+
+  const previewDoc = useMemo(
+    () =>
+      buildEpubPreviewSrcDoc(
+        epubEntries.slice(0, 3),
+        languageEnumToEpubLang(languageSelectedState),
+        { limit: 0 },
+      ),
+    [epubEntries, languageSelectedState],
+  );
 
   const fallbackDescription = useMemo(() => {
     if (origin === 'youtube' && url) {
@@ -128,6 +180,35 @@ const LearningScreenTabMeta = () => {
     }
   };
 
+  const handleExportToKindle = async () => {
+    if (!epubEntryCount) {
+      return;
+    }
+
+    const safeTitle =
+      (title || 'content').replace(/[/\\?%*:|"<>]/g, '-').trim() || 'content';
+
+    try {
+      setIsExportingEpub(true);
+      const blob = await buildNetflixEpub({
+        entries: epubEntries,
+        title: safeTitle,
+        language: languageSelectedState,
+      });
+
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `${safeTitle}.epub`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to export EPUB:', error);
+    } finally {
+      setIsExportingEpub(false);
+    }
+  };
+
   const handleUpdateDescription = async () => {
     if (!hasUnsavedDescriptionChanges) {
       return;
@@ -180,6 +261,49 @@ const LearningScreenTabMeta = () => {
           >
             {url}
           </a>
+        </div>
+
+        <div>
+          <div className='flex items-center gap-2'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => setShowKindlePreview((prev) => !prev)}
+              disabled={!epubEntryCount}
+            >
+              <EyeIcon className='size-4' />
+              {showKindlePreview ? 'Hide Preview' : 'Preview Kindle Export'}
+            </Button>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={handleExportToKindle}
+              disabled={isExportingEpub || !epubEntryCount || isLoading}
+            >
+              <BookOpenIcon className='size-4' />
+              {isExportingEpub ? 'Building EPUB…' : 'Export to Kindle'}
+            </Button>
+          </div>
+        </div>
+
+        {showKindlePreview && epubEntryCount > 0 && (
+          <div className='w-full'>
+            <Label className='mb-2 block'>Kindle preview (first 3 lines)</Label>
+            <iframe
+              title='Kindle export preview'
+              srcDoc={previewDoc}
+              className='h-72 w-full rounded-md border bg-white'
+              sandbox=''
+            />
+          </div>
+        )}
+
+        <div>
+          {isChinese && (
+            <span className='text-xs text-muted-foreground'>
+              Chinese export includes pinyin transliteration below target text.
+            </span>
+          )}
         </div>
 
         <div className='w-full'>

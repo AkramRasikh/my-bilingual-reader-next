@@ -4,6 +4,7 @@ export interface NetflixScriptEntry {
   time: number;
   targetLang: string;
   baseLang: string;
+  transliteration?: string;
 }
 
 export function applyLanguageFormatting(
