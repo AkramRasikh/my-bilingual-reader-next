@@ -6,6 +6,7 @@ export interface BilingualEpubEntry {
   targetLang: string;
   baseLang: string;
   transliteration?: string;
+  meaning?: string;
 }
 
 export function applyLanguageFormatting(
@@ -45,6 +46,12 @@ export const EPUB_STYLE_CSS = `.entry {
   margin: 0;
   font-style: italic;
   color: #444;
+  text-align: right;
+}
+.meaning {
+  margin: 0.1em 0 0 0;
+  font-size: 0.72em;
+  color: #666;
   text-align: right;
 }`;
 
@@ -94,11 +101,15 @@ export function buildEpubEntryBlocksHtml(
       const transliterationLine = entry.transliteration
         ? `<p class="transliteration">${escapeHtml(entry.transliteration)}</p>`
         : '';
+      const meaningLine = entry.meaning
+        ? `<p class="meaning">${escapeHtml(entry.meaning)}</p>`
+        : '';
 
       return `<div class="entry">
     <p class="target-lang">${escapeHtml(entry.targetLang)}</p>
     ${transliterationLine}
     <p class="base-lang">${escapeHtml(entry.baseLang)}</p>
+    ${meaningLine}
   </div>`;
     })
     .join('\n');

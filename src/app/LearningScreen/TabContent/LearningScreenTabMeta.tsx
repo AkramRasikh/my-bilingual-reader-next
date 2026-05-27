@@ -56,11 +56,15 @@ const LearningScreenTabMeta = () => {
 
   const epubEntries = useMemo<BilingualEpubEntry[]>(() => {
     const baseEntries = applyLanguageFormatting(
-      formattedTranscriptState.map((item) => ({
-        time: item.time,
-        targetLang: item.targetLang,
-        baseLang: item.baseLang ?? '',
-      })),
+      formattedTranscriptState.map((item) => {
+        const meaning = item.meaning?.trim();
+        return {
+          time: item.time,
+          targetLang: item.targetLang,
+          baseLang: item.baseLang ?? '',
+          ...(meaning ? { meaning } : {}),
+        };
+      }),
       languageSelectedState,
     );
 
