@@ -313,7 +313,7 @@ const SnippetReview = ({
     await handleSaveSnippetFlow();
   };
   useEffect(() => {
-    const handleMouseUp = () => {
+    const handleSelectionEnd = () => {
       const selection = window.getSelection();
       const selectedText = selection?.toString().trim();
 
@@ -324,10 +324,12 @@ const SnippetReview = ({
       setHighlightedTextState(selectedText || '');
     };
 
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mouseup', handleSelectionEnd);
+    document.addEventListener('touchend', handleSelectionEnd);
 
     return () => {
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseup', handleSelectionEnd);
+      document.removeEventListener('touchend', handleSelectionEnd);
     };
   }, []);
 

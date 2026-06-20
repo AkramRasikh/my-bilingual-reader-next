@@ -40,11 +40,17 @@ const TranscriptItemLoopingSentence = ({
     }
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside, {
+      passive: true,
+    });
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, [masterTextRef, highlightedTextFocusLoopState]);
 
   useEffect(() => {
-    const handleMouseUp = () => {
+    const handleSelectionEnd = () => {
       const selection = window.getSelection();
       const selectedText = selection?.toString().trim();
 
@@ -54,10 +60,12 @@ const TranscriptItemLoopingSentence = ({
       setHighlightedTextFocusLoopState(selectedText || '');
     };
 
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mouseup', handleSelectionEnd);
+    document.addEventListener('touchend', handleSelectionEnd);
 
     return () => {
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseup', handleSelectionEnd);
+      document.removeEventListener('touchend', handleSelectionEnd);
     };
   }, []);
 

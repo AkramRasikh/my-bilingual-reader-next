@@ -43,7 +43,7 @@ const TranscriptItemSecondary = ({
   const targetLangformatted = contentItem.targetLangformatted;
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(event: Event) {
       if (
         highlightedTextState &&
         outsideClickContainerRef.current &&
@@ -54,11 +54,17 @@ const TranscriptItemSecondary = ({
     }
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside, {
+      passive: true,
+    });
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, [outsideClickContainerRef, highlightedTextState]);
 
   useEffect(() => {
-    const handleMouseUp = () => {
+    const handleSelectionEnd = () => {
       const selection = window.getSelection();
       const selectedText = selection?.toString().trim();
 
@@ -72,10 +78,12 @@ const TranscriptItemSecondary = ({
       setHighlightedTextState(selectedText || '');
     };
 
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mouseup', handleSelectionEnd);
+    document.addEventListener('touchend', handleSelectionEnd);
 
     return () => {
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseup', handleSelectionEnd);
+      document.removeEventListener('touchend', handleSelectionEnd);
     };
   }, []);
 

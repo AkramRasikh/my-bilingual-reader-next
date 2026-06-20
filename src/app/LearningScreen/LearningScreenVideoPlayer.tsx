@@ -67,7 +67,7 @@ const LearningScreenVideoPlayer = ({
   const videoRef = ref as React.RefObject<HTMLVideoElement | null>;
 
   useEffect(() => {
-    const handleMouseUp = () => {
+    const handleSelectionEnd = () => {
       const selection = window.getSelection();
       const selectedText = selection?.toString().trim();
 
@@ -77,10 +77,12 @@ const LearningScreenVideoPlayer = ({
       setHighlightedTextFocusLoopState(selectedText || '');
     };
 
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mouseup', handleSelectionEnd);
+    document.addEventListener('touchend', handleSelectionEnd);
 
     return () => {
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseup', handleSelectionEnd);
+      document.removeEventListener('touchend', handleSelectionEnd);
     };
   }, []);
 
