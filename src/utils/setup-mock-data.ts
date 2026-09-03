@@ -7,6 +7,10 @@ const FILE_PATH = path.resolve(
 );
 
 export async function saveJsonToFile(data: any) {
+  if (process.env.VERCEL) {
+    return;
+  }
+
   try {
     const json = JSON.stringify(data, null, 2);
     await fs.writeFile(FILE_PATH, json);
