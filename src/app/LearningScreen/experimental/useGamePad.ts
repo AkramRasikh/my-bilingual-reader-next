@@ -51,6 +51,7 @@ export function useGamepad(
     left: false,
     right: false,
   });
+  const r2PrevRef = useRef(false);
   const r3PrevRef = useRef(false);
 
   useEffect(() => {
@@ -193,6 +194,11 @@ export function useGamepad(
         const { l1: l1Held, r1: r1Held, l2: l2Held, r2: r2Held } =
           physical.shoulders;
         const { x: xHeld, b: bHeld, a: aHeld } = physical.face;
+
+        if (rising(r2Held, r2PrevRef.current)) {
+          console.log('🎮 R2 pressed');
+        }
+        r2PrevRef.current = r2Held;
 
         if (l1Held && r1Held && !lrComboFiredRef.current) {
           dispatch('THREE_SECOND_LOOP');
