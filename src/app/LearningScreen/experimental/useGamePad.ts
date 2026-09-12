@@ -26,6 +26,7 @@ export function useGamepad(
   dispatch: (action: InputAction) => void,
   threeSecondLoopState: number | null,
   isVideoPlaying: boolean,
+  isSlowAudioState: boolean,
 ) {
   const axesPressedRef = useRef<{ [key: string]: boolean }>({});
   const menuFacePrevRef = useRef({
@@ -52,6 +53,8 @@ export function useGamepad(
     right: false,
   });
   const r3PrevRef = useRef(false);
+  const xPrevRef = useRef(false);
+  const xHoldSlowerRef = useRef(false);
 
   useEffect(() => {
     if (!navigator.getGamepads) {
@@ -225,6 +228,25 @@ export function useGamepad(
         }
 
         if (
+          rising(xHeld, xPrevRef.current) &&
+          isSlowAudioState &&
+          !l1Held &&
+          !l2Held &&
+          !r2Held
+        ) {
+          dispatch('HOLD_SLOWER_AUDIO');
+          xHoldSlowerRef.current = true;
+        }
+        if (
+          xHoldSlowerRef.current &&
+          (!xHeld || !isSlowAudioState || l1Held || l2Held || r2Held)
+        ) {
+          dispatch('RELEASE_SLOWER_AUDIO');
+          xHoldSlowerRef.current = false;
+        }
+        xPrevRef.current = xHeld;
+
+        if (
           !(threeSecondLoopState && isVideoPlaying) &&
           l1Held &&
           bHeld &&
@@ -320,5 +342,5 @@ export function useGamepad(
         handleGamepadDisconnected,
       );
     };
-  }, [dispatch, threeSecondLoopState, isVideoPlaying]);
+  }, [dispatch, threeSecondLoopState, isVideoPlaying, isSlowAudioState]);
 }

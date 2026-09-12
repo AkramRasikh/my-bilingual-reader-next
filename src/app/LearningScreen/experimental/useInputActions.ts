@@ -16,7 +16,9 @@ export type InputAction =
   | 'ADD_MASTER_TO_REVIEW'
   | 'TOGGLE_REVIEW_MODE'
   | 'TIMER_PRESS'
-  | 'TOGGLE_SLOW_AUDIO';
+  | 'TOGGLE_SLOW_AUDIO'
+  | 'HOLD_SLOWER_AUDIO'
+  | 'RELEASE_SLOWER_AUDIO';
 
 interface InputHandlers {
   handleRewind: () => void;
@@ -37,6 +39,8 @@ interface InputHandlers {
   handleToggleReviewMode: () => void;
   handleTimerPress: () => void;
   handleToggleSlowAudio: () => void;
+  handleHoldSlowerAudio: () => void;
+  handleReleaseSlowerAudio: () => void;
 }
 
 export const useInputActions = (handlers: InputHandlers) => {
@@ -96,6 +100,12 @@ export const useInputActions = (handlers: InputHandlers) => {
         break;
       case 'TOGGLE_SLOW_AUDIO':
         handlers.handleToggleSlowAudio();
+        break;
+      case 'HOLD_SLOWER_AUDIO':
+        handlers.handleHoldSlowerAudio();
+        break;
+      case 'RELEASE_SLOWER_AUDIO':
+        handlers.handleReleaseSlowerAudio();
         break;
     }
   };

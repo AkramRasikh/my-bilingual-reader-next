@@ -791,6 +791,8 @@ export const LearningScreenProvider = ({
     handleShiftSnippetRight,
     isSlowAudioState,
     handleToggleSlowAudio,
+    handleHoldSlowerAudio,
+    handleReleaseSlowerAudio,
   } = useMediaControls({
     ref,
     setCurrentTime,
@@ -1218,8 +1220,10 @@ export const LearningScreenProvider = ({
     handleToggleReviewMode,
     handleTimerPress: onCountUpTimerPress,
     handleToggleSlowAudio,
+    handleHoldSlowerAudio,
+    handleReleaseSlowerAudio,
   });
-  useGamepad(dispatch, threeSecondLoopState, isVideoPlaying);
+  useGamepad(dispatch, threeSecondLoopState, isVideoPlaying, isSlowAudioState);
 
   const getSentenceFromContextId = (
     contextId: ContextIdType,

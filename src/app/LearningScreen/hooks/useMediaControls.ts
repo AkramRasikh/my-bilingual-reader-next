@@ -6,6 +6,7 @@ import {
 import { isNumber } from '@/utils/is-number';
 
 const SLOW_PLAYBACK_RATE = 0.75;
+const HOLD_SLOWER_PLAYBACK_RATE = 0.5;
 const NORMAL_PLAYBACK_RATE = 1;
 
 type MediaControlsParams = {
@@ -40,25 +41,39 @@ export const useMediaControls = ({
   formattedTranscriptMemoized,
 }: MediaControlsParams) => {
   const [isSlowAudioState, setIsSlowAudioState] = useState(false);
+  const [isHoldSlowerAudioState, setIsHoldSlowerAudioState] = useState(false);
 
-  const applyPlaybackRate = (isSlow: boolean) => {
+  const getPlaybackRate = (isSlow: boolean, isHoldSlower: boolean) => {
+    if (!isSlow) {
+      return NORMAL_PLAYBACK_RATE;
+    }
+    return isHoldSlower ? HOLD_SLOWER_PLAYBACK_RATE : SLOW_PLAYBACK_RATE;
+  };
+
+  const applyPlaybackRate = (isSlow: boolean, isHoldSlower: boolean) => {
     if (ref.current) {
-      ref.current.playbackRate = isSlow
-        ? SLOW_PLAYBACK_RATE
-        : NORMAL_PLAYBACK_RATE;
+      ref.current.playbackRate = getPlaybackRate(isSlow, isHoldSlower);
     }
   };
 
   useEffect(() => {
-    if (ref.current) {
-      ref.current.playbackRate = isSlowAudioState
-        ? SLOW_PLAYBACK_RATE
-        : NORMAL_PLAYBACK_RATE;
-    }
-  }, [isSlowAudioState, ref]);
+    applyPlaybackRate(isSlowAudioState, isHoldSlowerAudioState);
+  }, [isSlowAudioState, isHoldSlowerAudioState, ref]);
 
   const handleToggleSlowAudio = () => {
     setIsSlowAudioState((prev) => !prev);
+    setIsHoldSlowerAudioState(false);
+  };
+
+  const handleHoldSlowerAudio = () => {
+    if (!isSlowAudioState) {
+      return;
+    }
+    setIsHoldSlowerAudioState(true);
+  };
+
+  const handleReleaseSlowerAudio = () => {
+    setIsHoldSlowerAudioState(false);
   };
 
   const handleTimeUpdate = () => {
@@ -69,7 +84,7 @@ export const useMediaControls = ({
 
   const handleLoadedMetadata = () => {
     if (ref.current) {
-      applyPlaybackRate(isSlowAudioState);
+      applyPlaybackRate(isSlowAudioState, isHoldSlowerAudioState);
       if (ref.current.duration) {
         setMediaDuration(ref.current.duration);
       }
@@ -280,5 +295,7 @@ export const useMediaControls = ({
     handleShiftSnippetRight,
     isSlowAudioState,
     handleToggleSlowAudio,
+    handleHoldSlowerAudio,
+    handleReleaseSlowerAudio,
   };
 };
