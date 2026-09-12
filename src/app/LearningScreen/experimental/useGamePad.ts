@@ -51,11 +51,7 @@ export function useGamepad(
     left: false,
     right: false,
   });
-  const r2PrevRef = useRef(false);
   const r3PrevRef = useRef(false);
-  const loggedPadMapRef = useRef(false);
-  const prevButtonsHeldRef = useRef<boolean[]>([]);
-  const prevAxesActiveRef = useRef<boolean[]>([]);
 
   useEffect(() => {
     if (!navigator.getGamepads) {
@@ -65,25 +61,13 @@ export function useGamepad(
 
     let rafId: number;
 
-    const logGamepadConnection = (connected: boolean, id?: string) => {
-      if (connected) {
-        console.log('🎮 Gamepad connected:', id ?? 'unknown');
-      } else {
-        console.log('🎮 Gamepad not connected', id ?? '');
-      }
-    };
-
-    const handleGamepadConnected = (e: GamepadEvent) => {
+    const handleGamepadConnected = () => {
       gamepadConnectedRef.current = true;
-      logGamepadConnection(true, e.gamepad.id);
     };
 
     const handleGamepadDisconnected = (e: GamepadEvent) => {
+      console.log('🎮 Gamepad disconnected:', e.gamepad.id);
       gamepadConnectedRef.current = false;
-      loggedPadMapRef.current = false;
-      prevButtonsHeldRef.current = [];
-      prevAxesActiveRef.current = [];
-      logGamepadConnection(false, e.gamepad.id);
     };
 
     window.addEventListener('gamepadconnected', handleGamepadConnected);
@@ -95,9 +79,6 @@ export function useGamepad(
     );
     if (connectedGamepad) {
       gamepadConnectedRef.current = true;
-      logGamepadConnection(true, connectedGamepad.id);
-    } else {
-      logGamepadConnection(false);
     }
 
     const loop = () => {
@@ -109,46 +90,7 @@ export function useGamepad(
 
         if (!gamepadConnectedRef.current) {
           gamepadConnectedRef.current = true;
-          logGamepadConnection(true, gp.id);
         }
-
-        if (!loggedPadMapRef.current) {
-          loggedPadMapRef.current = true;
-          console.log('🎮 pad map', {
-            id: gp.id,
-            mapping: gp.mapping || '(empty)',
-            layout: gp.mapping === 'standard' ? 'standard' : 'desktop',
-            r2Index: map.R2_BTN,
-            l2Index: map.L2_BTN,
-            xIndex: map.X_BTN,
-            buttonCount: gp.buttons.length,
-            axisCount: gp.axes.length,
-          });
-        }
-
-        gp.buttons.forEach((button, index) => {
-          const held = Boolean(button.pressed) || button.value > 0.35;
-          if (rising(held, prevButtonsHeldRef.current[index] ?? false)) {
-            console.log('🎮 button pressed', {
-              index,
-              pressed: button.pressed,
-              value: Number(button.value.toFixed(2)),
-              mappedAsR2: index === map.R2_BTN,
-            });
-          }
-          prevButtonsHeldRef.current[index] = held;
-        });
-
-        gp.axes.forEach((axisValue, index) => {
-          const active = Math.abs(axisValue) > 0.35;
-          if (rising(active, prevAxesActiveRef.current[index] ?? false)) {
-            console.log('🎮 axis active', {
-              index,
-              value: Number(axisValue.toFixed(2)),
-            });
-          }
-          prevAxesActiveRef.current[index] = active;
-        });
 
         const physical = readPhysicalButtons(gp, map);
         const dpadAxes = getDpadStateFromAxes(gp.axes);
@@ -238,11 +180,6 @@ export function useGamepad(
         const { l1: l1Held, r1: r1Held, l2: l2Held, r2: r2Held } =
           physical.shoulders;
         const { x: xHeld, b: bHeld, a: aHeld } = physical.face;
-
-        if (rising(r2Held, r2PrevRef.current)) {
-          console.log('🎮 R2 pressed');
-        }
-        r2PrevRef.current = r2Held;
 
         if (l1Held && r1Held && !lrComboFiredRef.current) {
           dispatch('THREE_SECOND_LOOP');
