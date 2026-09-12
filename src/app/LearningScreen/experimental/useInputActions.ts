@@ -1,3 +1,5 @@
+import { useCallback, useRef } from 'react';
+
 export type InputAction =
   | 'REWIND'
   | 'FORWARD'
@@ -44,70 +46,74 @@ interface InputHandlers {
 }
 
 export const useInputActions = (handlers: InputHandlers) => {
-  const dispatch = (action: InputAction) => {
+  const handlersRef = useRef(handlers);
+  handlersRef.current = handlers;
+
+  const dispatch = useCallback((action: InputAction) => {
+    const currentHandlers = handlersRef.current;
     console.log('## Input action dispatched:', action);
     switch (action) {
       case 'REWIND':
-        handlers.handleRewind();
+        currentHandlers.handleRewind();
         break;
       case 'FORWARD':
-        handlers.handleForward();
+        currentHandlers.handleForward();
         break;
       case 'PAUSE_PLAY':
-        handlers.handlePausePlay();
+        currentHandlers.handlePausePlay();
         break;
       case 'JUMP_NEXT':
-        handlers.handleJumpNext();
+        currentHandlers.handleJumpNext();
         break;
       case 'JUMP_PREV':
-        handlers.handleJumpPrev();
+        currentHandlers.handleJumpPrev();
         break;
       case 'JUMP_CURRENT':
-        handlers.handleJumpCurrent();
+        currentHandlers.handleJumpCurrent();
         break;
       case 'LOOP_SENTENCE':
-        handlers.handleLoopThisSentence();
+        currentHandlers.handleLoopThisSentence();
         break;
       case 'SLICE_LOOP':
-        handlers.handleShiftLoopSentence();
+        currentHandlers.handleShiftLoopSentence();
         break;
       case 'SHRINK_LOOP':
-        handlers.handleShrinkLoop();
+        currentHandlers.handleShrinkLoop();
         break;
       case 'THREE_SECOND_LOOP':
-        handlers.handleThreeSecondLoop();
+        currentHandlers.handleThreeSecondLoop();
         break;
       case 'QUICK_SAVE_SNIPPET':
-        handlers.handleQuickSaveSnippet();
+        currentHandlers.handleQuickSaveSnippet();
         break;
       case 'SHIFT_SNIPPET_LEFT':
-        handlers.handleShiftSnippetLeft();
+        currentHandlers.handleShiftSnippetLeft();
         break;
       case 'SHIFT_SNIPPET_RIGHT':
-        handlers.handleShiftSnippetRight();
+        currentHandlers.handleShiftSnippetRight();
         break;
       case 'BREAKDOWN_SENTENCE':
-        handlers.handleBreakdownSentence();
+        currentHandlers.handleBreakdownSentence();
         break;
       case 'ADD_MASTER_TO_REVIEW':
-        handlers.handleAddMasterToReview();
+        currentHandlers.handleAddMasterToReview();
         break;
       case 'TOGGLE_REVIEW_MODE':
-        handlers.handleToggleReviewMode();
+        currentHandlers.handleToggleReviewMode();
         break;
       case 'TIMER_PRESS':
-        handlers.handleTimerPress();
+        currentHandlers.handleTimerPress();
         break;
       case 'TOGGLE_SLOW_AUDIO':
-        handlers.handleToggleSlowAudio();
+        currentHandlers.handleToggleSlowAudio();
         break;
       case 'HOLD_SLOWER_AUDIO':
-        handlers.handleHoldSlowerAudio();
+        currentHandlers.handleHoldSlowerAudio();
         break;
       case 'RELEASE_SLOWER_AUDIO':
-        handlers.handleReleaseSlowerAudio();
+        currentHandlers.handleReleaseSlowerAudio();
         break;
     }
-  };
+  }, []);
   return { dispatch };
 };

@@ -55,6 +55,15 @@ export function useGamepad(
   const r3PrevRef = useRef(false);
   const xPrevRef = useRef(false);
   const xHoldSlowerRef = useRef(false);
+  const dispatchRef = useRef(dispatch);
+  const threeSecondLoopStateRef = useRef(threeSecondLoopState);
+  const isVideoPlayingRef = useRef(isVideoPlaying);
+  const isSlowAudioStateRef = useRef(isSlowAudioState);
+
+  dispatchRef.current = dispatch;
+  threeSecondLoopStateRef.current = threeSecondLoopState;
+  isVideoPlayingRef.current = isVideoPlaying;
+  isSlowAudioStateRef.current = isSlowAudioState;
 
   useEffect(() => {
     if (!navigator.getGamepads) {
@@ -85,6 +94,10 @@ export function useGamepad(
     }
 
     const loop = () => {
+      const dispatch = dispatchRef.current;
+      const threeSecondLoopState = threeSecondLoopStateRef.current;
+      const isVideoPlaying = isVideoPlayingRef.current;
+      const isSlowAudioState = isSlowAudioStateRef.current;
       const gamepads = navigator.getGamepads();
       const gp = Array.from(gamepads).find((gamepad) => gamepad !== null);
 
@@ -342,5 +355,5 @@ export function useGamepad(
         handleGamepadDisconnected,
       );
     };
-  }, [dispatch, threeSecondLoopState, isVideoPlaying, isSlowAudioState]);
+  }, []);
 }
