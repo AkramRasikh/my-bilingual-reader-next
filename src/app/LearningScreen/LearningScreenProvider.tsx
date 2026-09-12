@@ -146,6 +146,7 @@ export interface LearningScreenContextTypes {
   trackCurrentState: boolean;
   setTrackCurrentState: React.Dispatch<React.SetStateAction<boolean>>;
   isSlowAudioState: boolean;
+  isHoldSlowerAudioState: boolean;
   handleToggleSlowAudio: () => void;
   contractThreeSecondLoopState: boolean;
   setContractThreeSecondLoopState: React.Dispatch<
@@ -790,6 +791,7 @@ export const LearningScreenProvider = ({
     handleShiftSnippetLeft,
     handleShiftSnippetRight,
     isSlowAudioState,
+    isHoldSlowerAudioState,
     handleToggleSlowAudio,
     handleHoldSlowerAudio,
     handleReleaseSlowerAudio,
@@ -1276,6 +1278,7 @@ export const LearningScreenProvider = ({
         trackCurrentState,
         setTrackCurrentState,
         isSlowAudioState,
+        isHoldSlowerAudioState,
         handleToggleSlowAudio,
         contractThreeSecondLoopState,
         setContractThreeSecondLoopState,

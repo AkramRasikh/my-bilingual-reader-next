@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import useLearningScreen from './useLearningScreen';
@@ -16,6 +17,7 @@ const LearningScreenActionBarVideoControls = () => {
     showMasterPlayComprehensiveTargetLangForOverlayState,
     setShowMasterPlayComprehensiveTargetLangForOverlayState,
     isSlowAudioState,
+    isHoldSlowerAudioState,
     handleToggleSlowAudio,
   } = useLearningScreen();
 
@@ -52,7 +54,16 @@ const LearningScreenActionBarVideoControls = () => {
         />
       </div>
       <div className='flex gap-2 my-auto'>
-        <Label data-testid='slow-audio-label'>🐢</Label>
+        <Label
+          data-testid='slow-audio-label'
+          data-even-slower={isHoldSlowerAudioState}
+          className={clsx(
+            'inline-flex h-7 w-7 items-center justify-center rounded-full',
+            isHoldSlowerAudioState ? 'bg-amber-400' : 'bg-transparent',
+          )}
+        >
+          🐢
+        </Label>
         <Switch
           checked={isSlowAudioState}
           onCheckedChange={handleToggleSlowAudio}

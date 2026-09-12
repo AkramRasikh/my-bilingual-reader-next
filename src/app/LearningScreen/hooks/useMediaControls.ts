@@ -294,6 +294,7 @@ export const useMediaControls = ({
     handleShiftSnippetLeft,
     handleShiftSnippetRight,
     isSlowAudioState,
+    isHoldSlowerAudioState,
     handleToggleSlowAudio,
     handleHoldSlowerAudio,
     handleReleaseSlowerAudio,

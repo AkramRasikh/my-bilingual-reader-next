@@ -123,7 +123,9 @@ const checkingMediaActionButtons = () => {
   expect(screen.getByTestId('countup-timer-button')).toBeInTheDocument();
   const slowAudioSwitch = screen.getByTestId('slow-audio-switch');
   expect(slowAudioSwitch).not.toBeChecked();
-  expect(screen.getByTestId('slow-audio-label')).toHaveTextContent('🐢');
+  const slowAudioLabel = screen.getByTestId('slow-audio-label');
+  expect(slowAudioLabel).toHaveTextContent('🐢');
+  expect(slowAudioLabel).toHaveAttribute('data-even-slower', 'false');
   fireEvent.click(slowAudioSwitch);
   expect(slowAudioSwitch).toBeChecked();
   fireEvent.click(slowAudioSwitch);
