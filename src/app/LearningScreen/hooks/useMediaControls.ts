@@ -1,8 +1,12 @@
+import { useEffect, useState } from 'react';
 import {
   FormattedTranscriptTypes,
   SentenceMapItemTypes,
 } from '@/app/types/content-types';
 import { isNumber } from '@/utils/is-number';
+
+const SLOW_PLAYBACK_RATE = 0.75;
+const NORMAL_PLAYBACK_RATE = 1;
 
 type MediaControlsParams = {
   ref: React.RefObject<HTMLVideoElement | HTMLAudioElement | null>;
@@ -35,6 +39,28 @@ export const useMediaControls = ({
   setContractThreeSecondLoopState,
   formattedTranscriptMemoized,
 }: MediaControlsParams) => {
+  const [isSlowAudioState, setIsSlowAudioState] = useState(false);
+
+  const applyPlaybackRate = (isSlow: boolean) => {
+    if (ref.current) {
+      ref.current.playbackRate = isSlow
+        ? SLOW_PLAYBACK_RATE
+        : NORMAL_PLAYBACK_RATE;
+    }
+  };
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.playbackRate = isSlowAudioState
+        ? SLOW_PLAYBACK_RATE
+        : NORMAL_PLAYBACK_RATE;
+    }
+  }, [isSlowAudioState, ref]);
+
+  const handleToggleSlowAudio = () => {
+    setIsSlowAudioState((prev) => !prev);
+  };
+
   const handleTimeUpdate = () => {
     if (ref.current) {
       setCurrentTime(ref.current.currentTime);
@@ -42,8 +68,11 @@ export const useMediaControls = ({
   };
 
   const handleLoadedMetadata = () => {
-    if (ref.current?.duration) {
-      setMediaDuration(ref.current.duration);
+    if (ref.current) {
+      applyPlaybackRate(isSlowAudioState);
+      if (ref.current.duration) {
+        setMediaDuration(ref.current.duration);
+      }
     }
   };
 
@@ -249,5 +278,7 @@ export const useMediaControls = ({
     handleRewindOrToggleContract,
     handleShiftSnippetLeft,
     handleShiftSnippetRight,
+    isSlowAudioState,
+    handleToggleSlowAudio,
   };
 };

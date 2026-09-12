@@ -121,6 +121,13 @@ const checkingMediaActionButtons = () => {
   expect(trackMediaElLabel).toBeChecked();
   expect(trackMediaElLabel).toBeEnabled();
   expect(screen.getByTestId('countup-timer-button')).toBeInTheDocument();
+  const slowAudioSwitch = screen.getByTestId('slow-audio-switch');
+  expect(slowAudioSwitch).not.toBeChecked();
+  expect(screen.getByTestId('slow-audio-label')).toHaveTextContent('🐢');
+  fireEvent.click(slowAudioSwitch);
+  expect(slowAudioSwitch).toBeChecked();
+  fireEvent.click(slowAudioSwitch);
+  expect(slowAudioSwitch).not.toBeChecked();
 };
 
 const checkAllTranscriptItems = () => {

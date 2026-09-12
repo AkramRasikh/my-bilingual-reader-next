@@ -38,6 +38,7 @@ export function useGamepad(
   const gamepadConnectedRef = useRef(false);
   const lrComboFiredRef = useRef(false);
   const lxComboFiredRef = useRef(false);
+  const rxComboFiredRef = useRef(false);
   const lbComboFiredRef = useRef(false);
   const laComboFiredRef = useRef(false);
   const hatStateRef = useRef<HatAxis9DecoderState>({
@@ -176,7 +177,8 @@ export function useGamepad(
           axesPressedRef.current['dpad-left'] = false;
         }
 
-        const { l1: l1Held, r1: r1Held } = physical.shoulders;
+        const { l1: l1Held, r1: r1Held, l2: l2Held, r2: r2Held } =
+          physical.shoulders;
         const { x: xHeld, b: bHeld, a: aHeld } = physical.face;
 
         if (l1Held && r1Held && !lrComboFiredRef.current) {
@@ -206,6 +208,20 @@ export function useGamepad(
         }
         if ((!l1Held || !xHeld) && lxComboFiredRef.current) {
           lxComboFiredRef.current = false;
+        }
+
+        if (
+          r2Held &&
+          xHeld &&
+          !l1Held &&
+          !l2Held &&
+          !rxComboFiredRef.current
+        ) {
+          dispatch('TOGGLE_SLOW_AUDIO');
+          rxComboFiredRef.current = true;
+        }
+        if ((!r2Held || !xHeld) && rxComboFiredRef.current) {
+          rxComboFiredRef.current = false;
         }
 
         if (

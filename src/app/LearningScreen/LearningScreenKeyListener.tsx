@@ -6,7 +6,6 @@ import { isNumber } from '@/utils/is-number';
 
 const LearningScreenKeyListener = () => {
   const {
-    ref,
     handleRewind,
     handleJumpToSentenceViaKeys,
     isVideoPlaying,
@@ -25,15 +24,8 @@ const LearningScreenKeyListener = () => {
     handleBulkReviews,
     handleJumpToFirstElInReviewTranscript,
     handleQuickSaveSnippet,
+    handleToggleSlowAudio,
   } = useLearningScreen();
-
-  const handleSlowDownAudio = (isSlow) => {
-    if (isSlow) {
-      ref.current.playbackRate = 0.75;
-    } else {
-      ref.current.playbackRate = 1;
-    }
-  };
 
   const handleShiftSnippet = (shiftNumber: number) => {
     if (isNumber(threeSecondLoopState) && threeSecondLoopState > 0) {
@@ -44,14 +36,6 @@ const LearningScreenKeyListener = () => {
   };
 
   useEffect(() => {
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (threeSecondLoopState || loopTranscriptState) {
-        if (e.key.toLowerCase() === 'o') {
-          handleSlowDownAudio(false);
-          return;
-        }
-      }
-    };
     const handleKeyDown = (e: KeyboardEvent) => {
       const shiftKey = e.shiftKey;
 
@@ -81,7 +65,9 @@ const LearningScreenKeyListener = () => {
       }
       if (threeSecondLoopState || loopTranscriptState) {
         if (e.key.toLowerCase() === 'o') {
-          handleSlowDownAudio(true); /// refactor all this
+          if (!e.repeat) {
+            handleToggleSlowAudio();
+          }
           return;
         }
         // think of properties and array things
@@ -122,11 +108,6 @@ const LearningScreenKeyListener = () => {
             return;
           }
 
-          return;
-        }
-
-        if (e.key.toLowerCase() === 'o') {
-          handleSlowDownAudio(true);
           return;
         }
 
@@ -202,10 +183,8 @@ const LearningScreenKeyListener = () => {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
 
     return () => {
-      window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [
@@ -216,7 +195,7 @@ const LearningScreenKeyListener = () => {
     handleLoopThis3Second,
     threeSecondLoopState,
     handleShiftSnippet,
-    handleSlowDownAudio,
+    handleToggleSlowAudio,
     loopTranscriptState,
     handleAddMasterToReview,
     handleUpdateLoopedSentence,

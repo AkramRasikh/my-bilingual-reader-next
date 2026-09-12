@@ -145,6 +145,8 @@ export interface LearningScreenContextTypes {
   setShowWordsBasketState: React.Dispatch<React.SetStateAction<boolean>>;
   trackCurrentState: boolean;
   setTrackCurrentState: React.Dispatch<React.SetStateAction<boolean>>;
+  isSlowAudioState: boolean;
+  handleToggleSlowAudio: () => void;
   contractThreeSecondLoopState: boolean;
   setContractThreeSecondLoopState: React.Dispatch<
     React.SetStateAction<boolean>
@@ -787,6 +789,8 @@ export const LearningScreenProvider = ({
     handleRewindOrToggleContract,
     handleShiftSnippetLeft,
     handleShiftSnippetRight,
+    isSlowAudioState,
+    handleToggleSlowAudio,
   } = useMediaControls({
     ref,
     setCurrentTime,
@@ -1213,6 +1217,7 @@ export const LearningScreenProvider = ({
     handleAddMasterToReview,
     handleToggleReviewMode,
     handleTimerPress: onCountUpTimerPress,
+    handleToggleSlowAudio,
   });
   useGamepad(dispatch, threeSecondLoopState, isVideoPlaying);
 
@@ -1266,6 +1271,8 @@ export const LearningScreenProvider = ({
         setShowWordsBasketState,
         trackCurrentState,
         setTrackCurrentState,
+        isSlowAudioState,
+        handleToggleSlowAudio,
         contractThreeSecondLoopState,
         setContractThreeSecondLoopState,
         masterPlay,

@@ -15,6 +15,8 @@ const LearningScreenActionBarVideoControls = () => {
     isInReviewMode,
     showMasterPlayComprehensiveTargetLangForOverlayState,
     setShowMasterPlayComprehensiveTargetLangForOverlayState,
+    isSlowAudioState,
+    handleToggleSlowAudio,
   } = useLearningScreen();
 
   return (
@@ -47,6 +49,14 @@ const LearningScreenActionBarVideoControls = () => {
           checked={showMasterPlayComprehensiveTargetLangForOverlayState}
           onCheckedChange={setShowMasterPlayComprehensiveTargetLangForOverlayState}
           data-testid='overlay-switch'
+        />
+      </div>
+      <div className='flex gap-2 my-auto'>
+        <Label data-testid='slow-audio-label'>🐢</Label>
+        <Switch
+          checked={isSlowAudioState}
+          onCheckedChange={handleToggleSlowAudio}
+          data-testid='slow-audio-switch'
         />
       </div>
     </div>

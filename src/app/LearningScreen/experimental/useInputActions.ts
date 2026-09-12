@@ -15,7 +15,8 @@ export type InputAction =
   | 'BREAKDOWN_SENTENCE'
   | 'ADD_MASTER_TO_REVIEW'
   | 'TOGGLE_REVIEW_MODE'
-  | 'TIMER_PRESS';
+  | 'TIMER_PRESS'
+  | 'TOGGLE_SLOW_AUDIO';
 
 interface InputHandlers {
   handleRewind: () => void;
@@ -35,6 +36,7 @@ interface InputHandlers {
   handleAddMasterToReview: () => Promise<void>;
   handleToggleReviewMode: () => void;
   handleTimerPress: () => void;
+  handleToggleSlowAudio: () => void;
 }
 
 export const useInputActions = (handlers: InputHandlers) => {
@@ -91,6 +93,10 @@ export const useInputActions = (handlers: InputHandlers) => {
         break;
       case 'TIMER_PRESS':
         handlers.handleTimerPress();
+        break;
+      case 'TOGGLE_SLOW_AUDIO':
+        handlers.handleToggleSlowAudio();
+        break;
     }
   };
   return { dispatch };
