@@ -125,11 +125,13 @@ const checkingMediaActionButtons = () => {
   expect(slowAudioSwitch).not.toBeChecked();
   const slowAudioLabel = screen.getByTestId('slow-audio-label');
   expect(slowAudioLabel).toHaveTextContent('🐢');
-  expect(slowAudioLabel).toHaveAttribute('data-even-slower', 'false');
+  expect(slowAudioLabel).toHaveAttribute('data-slow-level', 'off');
   fireEvent.click(slowAudioSwitch);
   expect(slowAudioSwitch).toBeChecked();
+  expect(slowAudioLabel).toHaveAttribute('data-slow-level', 'slow');
   fireEvent.click(slowAudioSwitch);
   expect(slowAudioSwitch).not.toBeChecked();
+  expect(slowAudioLabel).toHaveAttribute('data-slow-level', 'off');
 };
 
 const checkAllTranscriptItems = () => {

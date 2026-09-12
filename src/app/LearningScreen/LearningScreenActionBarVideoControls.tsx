@@ -53,13 +53,23 @@ const LearningScreenActionBarVideoControls = () => {
           data-testid='overlay-switch'
         />
       </div>
-      <div className='flex gap-2 my-auto'>
+      <div className='flex flex-col items-center gap-1'>
         <Label
           data-testid='slow-audio-label'
-          data-even-slower={isHoldSlowerAudioState}
+          data-slow-level={
+            isHoldSlowerAudioState
+              ? 'very-slow'
+              : isSlowAudioState
+                ? 'slow'
+                : 'off'
+          }
           className={clsx(
             'inline-flex h-7 w-7 items-center justify-center rounded-full',
-            isHoldSlowerAudioState ? 'bg-amber-400' : 'bg-transparent',
+            isHoldSlowerAudioState
+              ? 'bg-red-500'
+              : isSlowAudioState
+                ? 'bg-amber-400'
+                : 'bg-transparent',
           )}
         >
           🐢
