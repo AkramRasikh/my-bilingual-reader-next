@@ -638,6 +638,12 @@ describe('LearningScreen - studying new content', () => {
       await reviewFirstSentenceAgain();
       await removeSecondSentenceFromReview();
     });
+
+    it('should show a slow audio switch off by default and toggle it', async () => {
+      await renderWithProvider();
+      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+      checkingMediaActionButtons();
+    });
   });
 
   describe('new words', () => {
