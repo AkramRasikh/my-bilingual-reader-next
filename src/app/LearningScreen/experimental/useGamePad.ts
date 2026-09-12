@@ -61,13 +61,22 @@ export function useGamepad(
 
     let rafId: number;
 
-    const handleGamepadConnected = () => {
+    const logGamepadConnection = (connected: boolean, id?: string) => {
+      if (connected) {
+        console.log('🎮 Gamepad connected:', id ?? 'unknown');
+      } else {
+        console.log('🎮 Gamepad not connected', id ?? '');
+      }
+    };
+
+    const handleGamepadConnected = (e: GamepadEvent) => {
       gamepadConnectedRef.current = true;
+      logGamepadConnection(true, e.gamepad.id);
     };
 
     const handleGamepadDisconnected = (e: GamepadEvent) => {
-      console.log('🎮 Gamepad disconnected:', e.gamepad.id);
       gamepadConnectedRef.current = false;
+      logGamepadConnection(false, e.gamepad.id);
     };
 
     window.addEventListener('gamepadconnected', handleGamepadConnected);
@@ -79,6 +88,9 @@ export function useGamepad(
     );
     if (connectedGamepad) {
       gamepadConnectedRef.current = true;
+      logGamepadConnection(true, connectedGamepad.id);
+    } else {
+      logGamepadConnection(false);
     }
 
     const loop = () => {
@@ -90,6 +102,7 @@ export function useGamepad(
 
         if (!gamepadConnectedRef.current) {
           gamepadConnectedRef.current = true;
+          logGamepadConnection(true, gp.id);
         }
 
         const physical = readPhysicalButtons(gp, map);
