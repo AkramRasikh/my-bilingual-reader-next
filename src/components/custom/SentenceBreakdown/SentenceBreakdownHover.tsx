@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   HoverCard,
   HoverCardContent,
@@ -16,6 +16,10 @@ const SentenceBreakdownHover = ({
   sentenceId,
 }) => {
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const openedByTouchRef = useRef(false);
+  const lastTouchToggleAtRef = useRef(Number.NEGATIVE_INFINITY);
+  const triggerRef = useRef<HTMLSpanElement>(null);
   const placeholder = meaning === 'n/a';
 
   const handleDoubleClick = async () => {
@@ -27,6 +31,71 @@ const SentenceBreakdownHover = ({
       setLoading(false);
     }
   };
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (openedByTouchRef.current && !nextOpen) {
+      return;
+    }
+    if (!nextOpen) {
+      openedByTouchRef.current = false;
+    }
+    setOpen(nextOpen);
+  };
+
+  const toggleOpenedByTouch = () => {
+    const now =
+      typeof performance !== 'undefined' ? performance.now() : Date.now();
+    if (now - lastTouchToggleAtRef.current < 50) return;
+    lastTouchToggleAtRef.current = now;
+
+    const nextOpen = !open;
+    openedByTouchRef.current = nextOpen;
+    setOpen(nextOpen);
+  };
+
+  const handleTriggerPointerDown = (event: React.PointerEvent) => {
+    if (event.pointerType !== 'touch') return;
+    event.preventDefault();
+    toggleOpenedByTouch();
+  };
+
+  const handleTriggerTouchStart = (event: React.TouchEvent) => {
+    event.preventDefault();
+    toggleOpenedByTouch();
+  };
+
+  const handleSave = (isGoogle: boolean) => {
+    openedByTouchRef.current = false;
+    setOpen(false);
+    handleSaveFunc(isGoogle, surfaceForm, meaning);
+  };
+
+  useEffect(() => {
+    if (!open || !openedByTouchRef.current) return;
+
+    const handleOutsidePointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (triggerRef.current?.contains(target)) return;
+      if (
+        target instanceof Element &&
+        target.closest('[data-testid="sentence-breakdown-hover-content"]')
+      ) {
+        return;
+      }
+      openedByTouchRef.current = false;
+      setOpen(false);
+    };
+
+    document.addEventListener('pointerdown', handleOutsidePointerDown, true);
+    return () => {
+      document.removeEventListener(
+        'pointerdown',
+        handleOutsidePointerDown,
+        true,
+      );
+    };
+  }, [open]);
 
   if (placeholder) {
     return (
@@ -64,7 +133,7 @@ const SentenceBreakdownHover = ({
     );
   }
   return (
-    <HoverCard>
+    <HoverCard open={open} onOpenChange={handleOpenChange}>
       <HoverCardTrigger
         asChild
         style={{
@@ -72,9 +141,14 @@ const SentenceBreakdownHover = ({
         }}
       >
         <span
+          ref={triggerRef}
+          className='cursor-pointer'
+          data-testid='sentence-breakdown-hover-trigger'
           style={{
             color,
           }}
+          onPointerDownCapture={handleTriggerPointerDown}
+          onTouchStart={handleTriggerTouchStart}
         >
           {surfaceForm}
         </span>
@@ -87,7 +161,7 @@ const SentenceBreakdownHover = ({
           data-testid='breakdown-save-word-deepseek-button'
           variant='secondary'
           size='icon'
-          onClick={() => handleSaveFunc(false, surfaceForm, meaning)}
+          onClick={() => handleSave(false)}
         >
           <img src='/deepseek.png' alt='Deepseek logo' />
         </Button>
@@ -96,7 +170,7 @@ const SentenceBreakdownHover = ({
           data-testid='breakdown-save-word-google-button'
           variant='secondary'
           size='icon'
-          onClick={() => handleSaveFunc(true, surfaceForm, meaning)}
+          onClick={() => handleSave(true)}
         >
           <img src='/google.png' alt='Google logo' />
         </Button>
