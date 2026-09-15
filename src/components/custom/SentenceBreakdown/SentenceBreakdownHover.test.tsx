@@ -59,7 +59,19 @@ describe('SentenceBreakdownHover', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('closes after tapping the same word again', () => {
+  it('stays open when pointerdown and touchstart fire on the same tap', () => {
+    render(<SentenceBreakdownHover {...defaultProps} />);
+    const word = screen.getByTestId('sentence-breakdown-hover-trigger');
+
+    fireEvent.pointerDown(word, { pointerType: 'touch' });
+    fireEvent.touchStart(word);
+
+    expect(
+      screen.getByTestId('sentence-breakdown-hover-content'),
+    ).toBeInTheDocument();
+  });
+
+  it('closes after a later second tap on the same word', () => {
     render(<SentenceBreakdownHover {...defaultProps} />);
     const word = screen.getByTestId('sentence-breakdown-hover-trigger');
 
@@ -68,7 +80,7 @@ describe('SentenceBreakdownHover', () => {
       screen.getByTestId('sentence-breakdown-hover-content'),
     ).toBeInTheDocument();
 
-    touchWord(word, 100);
+    touchWord(word, 500);
     expect(
       screen.queryByTestId('sentence-breakdown-hover-content'),
     ).not.toBeInTheDocument();
@@ -113,13 +125,13 @@ describe('SentenceBreakdownHover', () => {
       </div>,
     );
 
-    fireEvent.touchStart(
-      screen.getByTestId('sentence-breakdown-hover-trigger'),
-    );
+    const word = screen.getByTestId('sentence-breakdown-hover-trigger');
+    touchWord(word, 0);
     expect(
       screen.getByTestId('sentence-breakdown-hover-content'),
     ).toBeInTheDocument();
 
+    jest.spyOn(performance, 'now').mockReturnValue(500);
     fireEvent.pointerDown(screen.getByText('outside'));
     expect(
       screen.queryByTestId('sentence-breakdown-hover-content'),

@@ -19,6 +19,7 @@ const SentenceBreakdownHover = ({
   const [open, setOpen] = useState(false);
   const openedByTouchRef = useRef(false);
   const lastTouchToggleAtRef = useRef(Number.NEGATIVE_INFINITY);
+  const ignoreDismissUntilRef = useRef(0);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const placeholder = meaning === 'n/a';
 
@@ -42,26 +43,35 @@ const SentenceBreakdownHover = ({
     setOpen(nextOpen);
   };
 
-  const toggleOpenedByTouch = () => {
+  const handleTouchGesture = (event: { preventDefault: () => void }) => {
+    event.preventDefault();
+
     const now =
       typeof performance !== 'undefined' ? performance.now() : Date.now();
-    if (now - lastTouchToggleAtRef.current < 50) return;
-    lastTouchToggleAtRef.current = now;
 
-    const nextOpen = !open;
-    openedByTouchRef.current = nextOpen;
-    setOpen(nextOpen);
+    setOpen((currentlyOpen) => {
+      if (currentlyOpen) {
+        if (now - lastTouchToggleAtRef.current < 400) {
+          return currentlyOpen;
+        }
+        openedByTouchRef.current = false;
+        return false;
+      }
+
+      lastTouchToggleAtRef.current = now;
+      ignoreDismissUntilRef.current = now + 400;
+      openedByTouchRef.current = true;
+      return true;
+    });
   };
 
   const handleTriggerPointerDown = (event: React.PointerEvent) => {
     if (event.pointerType !== 'touch') return;
-    event.preventDefault();
-    toggleOpenedByTouch();
+    handleTouchGesture(event);
   };
 
   const handleTriggerTouchStart = (event: React.TouchEvent) => {
-    event.preventDefault();
-    toggleOpenedByTouch();
+    handleTouchGesture(event);
   };
 
   const handleSave = (isGoogle: boolean) => {
@@ -74,6 +84,7 @@ const SentenceBreakdownHover = ({
     if (!open || !openedByTouchRef.current) return;
 
     const handleOutsidePointerDown = (event: PointerEvent) => {
+      if (performance.now() < ignoreDismissUntilRef.current) return;
       const target = event.target;
       if (!(target instanceof Node)) return;
       if (triggerRef.current?.contains(target)) return;
