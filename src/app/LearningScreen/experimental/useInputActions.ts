@@ -12,6 +12,7 @@ export type InputAction =
   | 'SHRINK_LOOP'
   | 'THREE_SECOND_LOOP'
   | 'QUICK_SAVE_SNIPPET'
+  | 'QUICK_SAVE_CONTRACTED_SNIPPET'
   | 'SHIFT_SNIPPET_LEFT'
   | 'SHIFT_SNIPPET_RIGHT'
   | 'BREAKDOWN_SENTENCE'
@@ -33,7 +34,7 @@ interface InputHandlers {
   handleShiftLoopSentence: () => void;
   handleShrinkLoop: () => void;
   handleThreeSecondLoop: () => void;
-  handleQuickSaveSnippet: () => Promise<void | null>;
+  handleQuickSaveSnippet: (isContracted?: boolean) => Promise<void | null>;
   handleShiftSnippetLeft: () => void;
   handleShiftSnippetRight: () => void;
   handleBreakdownSentence: () => Promise<void | null>;
@@ -85,6 +86,9 @@ export const useInputActions = (handlers: InputHandlers) => {
         break;
       case 'QUICK_SAVE_SNIPPET':
         currentHandlers.handleQuickSaveSnippet();
+        break;
+      case 'QUICK_SAVE_CONTRACTED_SNIPPET':
+        currentHandlers.handleQuickSaveSnippet(true);
         break;
       case 'SHIFT_SNIPPET_LEFT':
         currentHandlers.handleShiftSnippetLeft();

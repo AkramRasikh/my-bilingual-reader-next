@@ -39,6 +39,7 @@ export function useGamepad(
   const gamepadConnectedRef = useRef(false);
   const lrComboFiredRef = useRef(false);
   const lxComboFiredRef = useRef(false);
+  const lyComboFiredRef = useRef(false);
   const rxComboFiredRef = useRef(false);
   const lbComboFiredRef = useRef(false);
   const laComboFiredRef = useRef(false);
@@ -195,7 +196,7 @@ export function useGamepad(
 
         const { l1: l1Held, r1: r1Held, l2: l2Held, r2: r2Held } =
           physical.shoulders;
-        const { x: xHeld, b: bHeld, a: aHeld } = physical.face;
+        const { x: xHeld, y: yHeld, b: bHeld, a: aHeld } = physical.face;
 
         if (l1Held && r1Held && !lrComboFiredRef.current) {
           dispatch('THREE_SECOND_LOOP');
@@ -224,6 +225,19 @@ export function useGamepad(
         }
         if ((!l1Held || !xHeld) && lxComboFiredRef.current) {
           lxComboFiredRef.current = false;
+        }
+
+        if (
+          !threeSecondLoopState &&
+          l1Held &&
+          yHeld &&
+          !lyComboFiredRef.current
+        ) {
+          dispatch('QUICK_SAVE_CONTRACTED_SNIPPET');
+          lyComboFiredRef.current = true;
+        }
+        if ((!l1Held || !yHeld) && lyComboFiredRef.current) {
+          lyComboFiredRef.current = false;
         }
 
         if (

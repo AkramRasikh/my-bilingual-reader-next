@@ -50,6 +50,7 @@ import { OverlappingSnippetData, ReviewDataTypes } from '../types/shared-types';
 import { useGamepad } from './experimental/useGamePad';
 import { useInputActions } from './experimental/useInputActions';
 import { useCountUpTimer } from '@/components/custom/CountUpTimer/useCountUpTimer';
+import { getSnippetTimeRange } from './learning-screen-review-time-range';
 
 type LearningScreenProviderProps = React.PropsWithChildren<{
   selectedContentStateMemoized: ContentTypes & { contentIndex: number };
@@ -212,7 +213,7 @@ export interface LearningScreenContextTypes {
   ) => Promise<void>;
   contentSnippets: Snippet[];
   sentenceMapMemoized: Record<string, SentenceMapItemTypes>;
-  handleQuickSaveSnippet: () => Promise<void | null>;
+  handleQuickSaveSnippet: (isContracted?: boolean) => Promise<void | null>;
   handleUpdateSnippet: (params: {
     snippetData: Snippet;
     isRemoveReview?: boolean;
@@ -425,7 +426,7 @@ export const LearningScreenProvider = ({
     return found || idsOfOverlappingSentences[0];
   };
 
-  const handleQuickSaveSnippet = async () => {
+  const handleQuickSaveSnippet = async (isContracted = false) => {
     const contentSnippets = selectedContentStateMemoized?.snippets || [];
     const hasThisSnippet =
       contentSnippets?.length === 0
@@ -444,8 +445,10 @@ export const LearningScreenProvider = ({
       contentType: srsRetentionKeyTypes.snippet,
       timeNow,
     });
-    const startTime = currentTime - 1.5;
-    const endTime = currentTime + 1.5;
+    const { startTime, endTime } = getSnippetTimeRange({
+      time: currentTime,
+      isContracted,
+    });
 
     const reviewData = nextScheduledOptions['1'].card;
 
@@ -476,7 +479,7 @@ export const LearningScreenProvider = ({
     const finalSnippetObject = {
       id: uuidv4(),
       time: currentTime,
-      isContracted: false,
+      isContracted,
       reviewData,
       targetLang,
       baseLang,
