@@ -54,9 +54,6 @@ test.describe('General toggles & verify UI elements', () => {
     const bulkReviewBefore = page.getByText('Bulk Review: 7');
     await expect(bulkReviewBefore).toBeVisible();
 
-    const repsCount = page.getByTestId('analytics-reps-count');
-    await expect(repsCount).toContainText('Reps: 0');
-
     // tab data
     await checkWordsTabCount(page, 'Words 55/84');
     await checkLearningScreenTab(
@@ -115,12 +112,8 @@ test.describe('Transcript item menu interactions and review', () => {
     await page.waitForLoadState('networkidle');
 
     // Verify initial sentence count and reps
-    const sentencesCount = page.getByTestId('analytics-sentences-count');
+    const sentencesCount = page.getByTestId('progress-header-text');
     await expect(sentencesCount).toBeVisible();
-
-    const repsCount = page.getByTestId('analytics-reps-count');
-    await expect(repsCount).toBeVisible();
-    await expect(repsCount).toContainText('Reps: 0');
 
     const firstMenuToggle = page.getByTestId(/transcript-menu-toggle-/).first();
     await expect(firstMenuToggle).toBeVisible();
@@ -148,9 +141,6 @@ test.describe('Transcript item menu interactions and review', () => {
     // Verify review button is no longer visible since menu collapsed
     await expect(reviewButton).not.toBeVisible();
 
-    // Verify reps count increased to 1
-    await expect(repsCount).toContainText('Reps: 1');
-
     // Verify sentence count increased by 1 in the denominator
     const finalSentencesText = await sentencesCount.textContent();
     expect(finalSentencesText).toContain('/201');
@@ -174,9 +164,6 @@ test.describe('Transcript item menu interactions and review', () => {
 
     // Wait for the loading to complete
     await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
-
-    // Verify reps count increased to 2
-    await expect(repsCount).toContainText('Reps: 2');
 
     // Verify sentence count reverted back to original
     const revertedSentencesText = await sentencesCount.textContent();
@@ -215,12 +202,8 @@ test.describe('Transcript item menu interactions and review', () => {
 
     // Verify initial sentence count and reps
     await checkSentenceCount(page, '/200');
-    const sentencesCount = page.getByTestId('analytics-sentences-count');
+    const sentencesCount = page.getByTestId('progress-header-text');
     const initialSentencesText = await sentencesCount.textContent();
-
-    const repsCount = page.getByTestId('analytics-reps-count');
-    await expect(repsCount).toBeVisible();
-    await expect(repsCount).toContainText('Reps: 0');
 
     // Open menu and click review button
     const firstMenuToggle = page.getByTestId(/transcript-menu-toggle-/).first();
@@ -244,9 +227,6 @@ test.describe('Transcript item menu interactions and review', () => {
 
     // Verify loading spinner disappears after error
     await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
-
-    // Verify reps count remained at 0 (no increment due to error)
-    await expect(repsCount).toContainText('Reps: 0');
 
     // Verify sentence count remained unchanged
     const finalSentencesText = await sentencesCount.textContent();

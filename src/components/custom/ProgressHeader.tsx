@@ -19,7 +19,7 @@ const ProgressHeader = ({
         className={clsx(' my-auto', small ? 'w-7/12' : 'w-full')}
       />
       <span
-        className='my-auto font-medium text-sm'
+        className='my-auto shrink-0 font-medium text-sm whitespace-nowrap'
         data-testid='progress-header-text'
       >
         {progressText}

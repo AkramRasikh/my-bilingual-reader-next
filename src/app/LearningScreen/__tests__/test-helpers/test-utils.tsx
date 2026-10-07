@@ -260,7 +260,6 @@ export const checkWordsMetaData = (
   wordsNumber: number,
   wordTabText: string,
 ) => {
-  expect(screen.getByText(`Words Due: ${wordsNumber}`)).toBeInTheDocument();
   const breadcrumbWordsButton = screen.getByTestId('breadcrumb-words-button');
   expect(breadcrumbWordsButton).toHaveTextContent(`Words (${wordsNumber})`);
   const wordsTabTrigger = screen.getByTestId('words-tab-trigger');

@@ -9,6 +9,7 @@ import WordCardJapaneseKanjiBreakdown from './experimental/WordCardJapaneseKanji
 import { extractKanji } from './experimental/utils/kanji-detector';
 import WordCardEditState from './WordCardEditState';
 import { chinese, japanese } from '@/app/languages';
+import { isIosLike } from '@/utils/is-ios-like';
 
 const WordCardInformation = ({
   baseForm,
@@ -35,6 +36,7 @@ const WordCardInformation = ({
   const [kanjiDataState, setKanjiDataState] = useState<any>(null);
   const [chineseCharDataState, setChineseCharDataState] =
     useState<ChineseCharLookupMap | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   const isJapanese = languageSelectedState === japanese;
   const isChinese = languageSelectedState === chinese;
@@ -86,6 +88,10 @@ const WordCardInformation = ({
   );
 
   useEffect(() => {
+    setIsDesktop(!isIosLike());
+  }, []);
+
+  useEffect(() => {
     setChineseCharDataState(null);
   }, [wordData.baseForm]);
 
@@ -119,7 +125,7 @@ const WordCardInformation = ({
             />
           );
         })}
-        {isJapanese && uniqueSetOfKanj?.length > 0 && (
+        {isDesktop && isJapanese && uniqueSetOfKanj?.length > 0 && (
           <WordCardJapaneseKanjiBreakdown
             kanji={hasKanji}
             uniqueSetOfKanj={uniqueSetOfKanj}
@@ -128,7 +134,7 @@ const WordCardInformation = ({
             baseForm={wordData.baseForm}
           />
         )}
-        {isChinese && uniqueChineseChars.length > 0 && (
+        {isDesktop && isChinese && uniqueChineseChars.length > 0 && (
           <WordCardChineseCharacterBreakdown
             charsInOrder={chineseCharsInOrder}
             uniqueChars={uniqueChineseChars}

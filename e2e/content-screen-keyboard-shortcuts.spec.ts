@@ -1,7 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import {
   checkSentenceCount,
-  checkSentenceRepsCount,
   goFromLandingToLearningScreen,
   sentenceToastMessage,
   thirdContentId,
@@ -43,11 +42,9 @@ test.describe('Keyboard actions', () => {
     await goFromLandingToLearningScreen(page);
     await triggerTrackSwitch(page);
     await checkSentenceCount(page, 'Sentences: 153/200');
-    await checkSentenceRepsCount(page, 'Reps: 0');
     await page.waitForTimeout(2000);
     await thirdPlayButtonAndShiftReview(page);
     await sentenceToastMessage(page, false);
-    await checkSentenceRepsCount(page, 'Reps: 1');
     await checkSentenceCount(page, 'Sentences: 153/201');
     await page.route('**/api/updateSentence', async (route) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -62,7 +59,6 @@ test.describe('Keyboard actions', () => {
     await thirdPlayButtonAndShiftReview(page);
     await sentenceToastMessage(page, true);
     await checkSentenceCount(page, 'Sentences: 153/200');
-    await checkSentenceRepsCount(page, 'Reps: 2');
   });
 
   test('breakdown sentence using Shift+B keyboard shortcut', async ({
@@ -72,7 +68,6 @@ test.describe('Keyboard actions', () => {
     await goFromLandingToLearningScreen(page);
     await triggerTrackSwitch(page);
     await checkSentenceCount(page, 'Sentences: 153/200');
-    await checkSentenceRepsCount(page, 'Reps: 0');
     const brickEmoji = page.getByTestId(
       `transcript-breakdown-complete-${firstContentId}`,
     );

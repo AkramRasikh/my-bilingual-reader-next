@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { isDueCheck } from '@/utils/is-due-check';
 import { getCloudflareImageURL } from '@/utils/get-media-url';
 import { getTimeDiffSRS } from '@/app/srs-utils/get-time-diff-srs';
+import { Trash } from 'lucide-react';
 import ReviewSRSToggles from '../ReviewSRSToggles';
 import WordCardInformation from './WordCardInformation';
 import WordCardImage from './WordCardImage';
@@ -93,6 +95,13 @@ const WordCard = ({
       setIsLoadingState(false);
       setOpenContentState(false);
     }
+  };
+
+  const handleRemoveReview = async () => {
+    await handleReviewFunc({
+      wordId: id,
+      isRemoveReview: true,
+    });
   };
 
   useEffect(() => {
@@ -203,7 +212,17 @@ const WordCard = ({
           isReadyForQuickReview={isReadyForQuickReview}
         />
       ) : (
-        <span className='font-medium text-sm'>{isDueText}</span>
+        <div className='flex w-full items-center justify-between gap-2 m-1'>
+          <span className='font-medium text-sm'>{isDueText}</span>
+          <Button
+            variant='destructive'
+            data-testid={`review-srs-toggles-remove-${id}`}
+            disabled={isLoadingState}
+            onClick={handleRemoveReview}
+          >
+            <Trash />
+          </Button>
+        </div>
       )}
     </WordCardWrapper>
   );

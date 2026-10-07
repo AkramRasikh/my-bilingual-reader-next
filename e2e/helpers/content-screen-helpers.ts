@@ -21,15 +21,11 @@ export async function sentenceToastMessage(page: Page, isLearned: boolean) {
 
 // Helper function to check sentence count
 export async function checkSentenceCount(page: Page, expectedText: string) {
-  const sentencesCount = page.getByTestId('analytics-sentences-count');
+  const sentencesCount = page.getByTestId('progress-header-text');
   await expect(sentencesCount).toBeVisible();
-  await expect(sentencesCount).toContainText(expectedText);
-}
-
-export async function checkSentenceRepsCount(page: Page, expectedText: string) {
-  const repsCount = page.getByTestId('analytics-reps-count');
-  await expect(repsCount).toBeVisible();
-  await expect(repsCount).toContainText(expectedText);
+  await expect(sentencesCount).toContainText(
+    expectedText.replace('Sentences: ', ''),
+  );
 }
 
 // Helper function to check words count
@@ -42,16 +38,20 @@ export async function checkWordsTabCount(page: Page, expectedText: string) {
 
 // Helper function to check words due count
 export async function checkWordsDueMeta(page: Page, expectedText: string) {
-  const wordsDue = page.getByTestId('analytics-words-due');
+  const dueCount = expectedText.replace('Words Due: ', '');
+  const wordsDue = page.getByTestId('progress-header-text');
   await expect(wordsDue).toBeVisible();
-  await expect(wordsDue).toContainText(expectedText);
+  await expect(wordsDue).toContainText(`🔤 ${dueCount}/`);
 }
 
 // Helper function to check snippets due count
 export async function checkSnippetsDueMeta(page: Page, expectedText: string) {
-  const snippetsDue = page.getByTestId('analytics-snippets-due');
+  const [due, withReview] = expectedText
+    .replace('Snippets Due: ', '')
+    .split('/');
+  const snippetsDue = page.getByTestId('progress-header-text');
   await expect(snippetsDue).toBeVisible();
-  await expect(snippetsDue).toContainText(expectedText);
+  await expect(snippetsDue).toContainText(`✂️ ${due}/${withReview}`);
 }
 
 // Helper function to check progress header text

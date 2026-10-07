@@ -33,11 +33,8 @@ jest.mock('next/navigation', () => ({
 }));
 
 const checkMetaDataOnLoad = () => {
-  expect(screen.getByText('Sentences: 0/0')).toBeInTheDocument();
-  expect(screen.getByText('Words Due: 0')).toBeInTheDocument();
-  expect(screen.getByText('Snippets Due: 0/0/0')).toBeInTheDocument();
-  expect(screen.getByText('Reps: 0')).toBeInTheDocument();
-  expect(screen.queryByText('Bulk Review: 0')).not.toBeInTheDocument();
+  expect(screen.getByTestId('bulk-review-count')).toBeInTheDocument();
+  expect(screen.getByText('Bulk Review: 0')).toBeInTheDocument();
 
   // navbar
   expect(screen.getByText('Home')).toBeInTheDocument();
@@ -172,11 +169,10 @@ const addFirstSentenceToReview = async () => {
   await waitFor(() => {
     expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
   });
-  expect(screen.getByText('Reps: 1')).toBeInTheDocument();
   expect(await screen.findByTestId('progress-header')).toBeInTheDocument();
-  expect(screen.getByText('0/1')).toBeInTheDocument();
-  const sentenceMetaCount = screen.getByTestId('analytics-sentences-count');
-  expect(sentenceMetaCount).toHaveTextContent('Sentences: 1/1'); // due/pending+pending
+  expect(screen.getByTestId('progress-header-text')).toHaveTextContent(
+    '📝 0/1/1',
+  );
 };
 const addSecondSentenceToReview = async () => {
   const transcriptMenuToggle = screen.getByTestId(
@@ -202,11 +198,10 @@ const addSecondSentenceToReview = async () => {
   await waitFor(() => {
     expect(screen.getAllByText('Sentence reviewed ✅')).toHaveLength(2);
   });
-  expect(screen.getByText('Reps: 2')).toBeInTheDocument();
   expect(await screen.findByTestId('progress-header')).toBeInTheDocument();
-  expect(screen.getByText('0/2')).toBeInTheDocument();
-  const sentenceMetaCount = screen.getByTestId('analytics-sentences-count');
-  expect(sentenceMetaCount).toHaveTextContent('Sentences: 2/2'); // due/pending+pending
+  expect(screen.getByTestId('progress-header-text')).toHaveTextContent(
+    '📝 0/2/2',
+  );
 };
 
 const startReviewMode = () => {
@@ -228,10 +223,10 @@ const reviewFirstSentenceAgain = async () => {
   await waitFor(() => {
     expect(screen.getAllByText('Sentence reviewed ✅')).toHaveLength(3);
   });
-  expect(screen.getByText('Reps: 3')).toBeInTheDocument();
   expect(await screen.findByTestId('progress-header')).toBeInTheDocument();
-  const sentenceMetaCount = screen.getByTestId('analytics-sentences-count');
-  expect(sentenceMetaCount).toHaveTextContent('Sentences: 1/2'); // due/pending+pending
+  expect(screen.getByTestId('progress-header-text')).toHaveTextContent(
+    '📝 0/1/2',
+  );
   // expect(screen.getByTestId('progress-header-text')).toHaveTextContent('1/2'); // come back to when fixing and testing progress header
 };
 
@@ -250,10 +245,7 @@ const removeSecondSentenceFromReview = async () => {
       screen.getByText('Successful learned sentence ✅'),
     ).toBeInTheDocument();
   });
-  expect(screen.getByText('Reps: 4')).toBeInTheDocument();
   expect(screen.queryByTestId('progress-header')).not.toBeInTheDocument();
-  const sentenceMetaCount = screen.getByTestId('analytics-sentences-count');
-  expect(sentenceMetaCount).toHaveTextContent('Sentences: 0/1'); // due/pending+pending
 };
 
 const saveWordFirstInTranscript = async () => {
@@ -312,7 +304,6 @@ const saveWordFirstInTranscript = async () => {
     expect(screen.getByText('世界 saved!')).toBeInTheDocument();
   });
   expect(wordTabText).toHaveTextContent('Words 1/1');
-  expect(screen.getByText('Words Due: 1')).toBeInTheDocument();
 };
 const saveWordSecondInTranscript = async () => {
   const element = screen.getByTestId('transcript-target-lang-sentence-2');
@@ -368,7 +359,6 @@ const saveWordSecondInTranscript = async () => {
     expect(screen.getByText('元気 saved!')).toBeInTheDocument();
   });
   expect(wordTabText).toHaveTextContent('Words 2/2'); // hmmm
-  expect(screen.getByText('Words Due: 2')).toBeInTheDocument();
 };
 
 const hoverOverSavedWord = async () => {
@@ -412,7 +402,6 @@ const deleteFirstWord = async () => {
 
   const wordTabText = screen.getByTestId('words-tab-trigger');
   expect(wordTabText).toHaveTextContent('Words 1/1');
-  expect(screen.getByText('Words Due: 1')).toBeInTheDocument();
 };
 
 const triggerSnippetViaKeyboard = async () => {
@@ -565,9 +554,6 @@ const checkNewStableSnippetUIComponents = async () => {
     'transcript-time-overlap-indicator-multi-sentence-4',
   );
   expect(savedSnippetBottomUIWidget).toBeInTheDocument();
-  expect(screen.getByTestId('analytics-snippets-due')).toHaveTextContent(
-    'Snippets Due: 1/1/1',
-  );
 
   // expect(
   //   document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
@@ -598,9 +584,6 @@ const deleteSnippet = async () => {
   await waitFor(() => {
     expect(screen.getByText('Snippet deleted ✂️✅!')).toBeInTheDocument();
   });
-  expect(screen.getByTestId('analytics-snippets-due')).toHaveTextContent(
-    'Snippets Due: 0/0/0',
-  );
 };
 
 beforeAll(() => {
@@ -625,7 +608,7 @@ describe('LearningScreen - studying new content', () => {
   describe('new sentences', () => {
     it('should render a blank project with no previously reviewed content', async () => {
       await renderWithProvider();
-      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+      expect(await screen.findByTestId('bulk-review-count')).toBeInTheDocument();
 
       checkMetaDataOnLoad();
       checkReviewTogglesOnLoad();
@@ -645,7 +628,7 @@ describe('LearningScreen - studying new content', () => {
 
     it('should show a slow audio switch off by default and toggle it', async () => {
       await renderWithProvider();
-      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+      expect(await screen.findByTestId('bulk-review-count')).toBeInTheDocument();
       checkingMediaActionButtons();
     });
   });
@@ -653,7 +636,7 @@ describe('LearningScreen - studying new content', () => {
   describe('new words', () => {
     it('should allow to add and remove words from transcript', async () => {
       await renderWithProvider();
-      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+      expect(await screen.findByTestId('bulk-review-count')).toBeInTheDocument();
       await saveWordFirstInTranscript();
       await saveWordSecondInTranscript();
       await hoverOverSavedWord();
@@ -676,7 +659,7 @@ describe('LearningScreen - studying new content', () => {
       });
 
       await renderWithProvider();
-      expect(await screen.findByText('Sentences: 0/0')).toBeInTheDocument();
+      expect(await screen.findByTestId('bulk-review-count')).toBeInTheDocument();
       expect(
         screen.queryByTestId('video-player-snippet-text'),
       ).not.toBeInTheDocument();

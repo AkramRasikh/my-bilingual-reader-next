@@ -7,6 +7,8 @@ import { FormattedTranscriptTypes } from '@/app/types/content-types';
 import { WordTypes } from '@/app/types/word-types';
 import { HandleSaveWordCallTypes } from '@/app/Providers/FetchDataProvider';
 import clsx from 'clsx';
+import { pinyin } from 'pinyin-pro';
+import { chinese } from '@/app/languages';
 import TranscriptItemSecondaryLoadingIndicators from './TranscriptItemSecondaryLoadingIndicators';
 import HighlightedText from '../HighlightedText';
 
@@ -41,6 +43,14 @@ const TranscriptItemSecondary = ({
   const wordsFromSentence = contentItem?.wordsFromSentence;
   const baseLang = contentItem?.baseLang;
   const targetLangformatted = contentItem.targetLangformatted;
+  const isChinese = languageSelectedState === chinese;
+  const sentencePinyin =
+    isChinese && hasSentenceBreakdown && contentItem.targetLang
+      ? pinyin(contentItem.targetLang, {
+          toneType: 'symbol',
+          separator: '\u2009',
+        })
+      : '';
 
   useEffect(() => {
     function handleClickOutside(event: Event) {
@@ -190,6 +200,14 @@ const TranscriptItemSecondary = ({
           matchEndKey={undefined}
         />
         <p className='mb-2'>{baseLang}</p>
+        {sentencePinyin && (
+          <p
+            data-testid='transcript-item-secondary-pinyin'
+            className='mt-1 text-sm text-gray-600'
+          >
+            {sentencePinyin}
+          </p>
+        )}
         {hasSentenceBreakdown && (
           <>
             <hr className='bg-gray-500' />

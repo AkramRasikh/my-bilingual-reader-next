@@ -1,3 +1,5 @@
+import { isIosLike } from '@/utils/is-ios-like';
+
 /**
  * Indices captured from Chrome on macOS with an 8BitDo Lite 2 in
  * non-standard mapping. The D-pad on this pad does not surface via
@@ -98,20 +100,12 @@ export function getDpadButtonState(
   };
 }
 
-function isIOSLike(): boolean {
-  if (typeof navigator === 'undefined') return false;
-  const ua = navigator.userAgent;
-  if (/iPad|iPhone|iPod/i.test(ua)) return true;
-  // iPadOS “desktop” / “request desktop site” (Safari, Chrome, etc.): Mac UA + touch
-  return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
-}
-
 export function getButtonMap(gp: Gamepad): ButtonMap {
   if (gp.mapping === 'standard') {
     return BUTTONS_STANDARD;
   }
   // WebKit on iOS/iPadOS sometimes leaves mapping empty while still using standard indices.
-  if (isIOSLike() && gp.buttons.length >= 17) {
+  if (isIosLike() && gp.buttons.length >= 17) {
     return BUTTONS_STANDARD;
   }
   return BUTTONS_DESKTOP;

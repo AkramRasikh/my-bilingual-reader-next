@@ -49,20 +49,14 @@ afterEach(() => {
 
 describe('LearningScreen - Review Mode', () => {
   const checkForDefaultReviewModeMetaData = () => {
-    const wordsDueText = screen.getByTestId('analytics-words-due');
-    const snippetsDueText = screen.getByTestId('analytics-snippets-due');
-    const sentencesCountText = screen.getByTestId('analytics-sentences-count');
     const wordsBtnLink = screen.getByTestId('breadcrumb-words-button');
     expect(wordsBtnLink).toHaveTextContent('Words (3)');
-    expect(wordsDueText).toHaveTextContent('Words Due: 3');
-    expect(snippetsDueText).toHaveTextContent('Snippets Due: 3/3/3');
-    expect(sentencesCountText).toHaveTextContent('Sentences: 3/3');
-    expect(screen.getByText('Reps: 0')).toBeInTheDocument();
-
     const wordsTabTrigger = screen.getByTestId('words-tab-trigger');
     expect(wordsTabTrigger).toHaveTextContent('Words 3/3');
     const progressHeader = screen.getByTestId('progress-header-text');
-    expect(progressHeader).toHaveTextContent('0/3');
+    expect(progressHeader).toHaveTextContent('📝 0/3/3');
+    expect(progressHeader).toHaveTextContent('🔤 3/');
+    expect(progressHeader).toHaveTextContent('✂️ 3/3');
     expect(
       document.querySelectorAll('[data-testid^="timeline-sentence-"]'),
     ).toHaveLength(3);
@@ -240,19 +234,20 @@ describe('LearningScreen - Review Mode', () => {
   const checkSentenceMetaData = (
     dueCount: number,
     pendingCountText: number,
-    reps: number,
   ) => {
-    const sentenceDueText = screen.getByTestId('analytics-sentences-count');
-    expect(sentenceDueText).toHaveTextContent(
-      `Sentences: ${dueCount}/${pendingCountText}`,
-    );
+    if (dueCount === 0) {
+      expect(screen.queryByTestId('progress-header')).not.toBeInTheDocument();
+      return;
+    }
 
-    expect(screen.getByText(`Reps: ${reps}`)).toBeInTheDocument();
+    expect(screen.getByTestId('progress-header-text')).toHaveTextContent(
+      `/${dueCount}/${pendingCountText}`,
+    );
   };
 
   const reviewSentencesInReviewMode = async () => {
     expect(screen.queryByText('Done!')).not.toBeInTheDocument();
-    checkSentenceMetaData(3, 3, 0);
+    checkSentenceMetaData(3, 3);
     mockUpdateSentenceReview(REVIEW_DATA_2_DAYS_AWAY);
     const firstSentenceDueTime = screen.getByTestId('easy-sentence-due-1');
 
@@ -260,7 +255,7 @@ describe('LearningScreen - Review Mode', () => {
     await waitFor(() => {
       expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
     });
-    checkSentenceMetaData(2, 3, 1);
+    checkSentenceMetaData(2, 3);
     checkForReviewLabelText(0, 0, 2);
     checkingTimelineMarkers(0, 0, 2);
 
@@ -271,7 +266,7 @@ describe('LearningScreen - Review Mode', () => {
       expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
     });
 
-    checkSentenceMetaData(1, 3, 2);
+    checkSentenceMetaData(1, 3);
     checkForReviewLabelText(0, 0, 1);
     checkingTimelineMarkers(0, 0, 1);
 
@@ -282,7 +277,7 @@ describe('LearningScreen - Review Mode', () => {
       expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
     });
 
-    checkSentenceMetaData(0, 3, 3);
+    checkSentenceMetaData(0, 3);
     checkForReviewLabelText(0, 0, 0);
     checkingTimelineMarkers(0, 0, 0);
 

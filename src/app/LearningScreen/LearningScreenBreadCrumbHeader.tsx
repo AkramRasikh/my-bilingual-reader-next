@@ -11,10 +11,18 @@ import ProgressHeader from '../../components/custom/ProgressHeader';
 import { RefreshCwIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { isDueCheck } from '@/utils/is-due-check';
 
 const LearningScreenBreadCrumbHeader = () => {
-  const { selectedContentState, initialSentenceCount, sentencesNeedReview } =
-    useLearningScreen();
+  const {
+    selectedContentState,
+    initialSentenceCount,
+    sentencesNeedReview,
+    sentencesPendingOrDue,
+    contentMetaWordMemoized,
+    wordsForSelectedTopic,
+    contentSnippets,
+  } = useLearningScreen();
 
   const {
     languageSelectedState,
@@ -35,7 +43,11 @@ const LearningScreenBreadCrumbHeader = () => {
   const progressValue =
     totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
 
-  const progressText = `${completedItems}/${totalItems}`;
+  const snippetsWithReviewDate = contentSnippets.filter((item) => item?.reviewData);
+  const snippetDueCount = snippetsWithReviewDate.filter((item) =>
+    isDueCheck(item, new Date()),
+  ).length;
+  const progressText = `📝 ${completedItems}/${sentencesNeedReview}/${sentencesPendingOrDue} 🔤 ${contentMetaWordMemoized.length}/${wordsForSelectedTopic.length} ✂️ ${snippetDueCount}/${snippetsWithReviewDate.length}`;
 
   const numberOfSentences = sentencesDueForReviewMemoized.length;
   const title = selectedContentState.title;

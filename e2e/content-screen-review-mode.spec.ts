@@ -273,7 +273,6 @@ test('review each variant - words/sentences/snippets - follows a change in revie
   page,
 }) => {
   await goFromLandingToLearningScreen(page);
-  const repsCount = page.getByTestId('analytics-reps-count');
   await checkPrePostReviewToggle(page);
   // check meta data
   await checkWordsDueMeta(page, 'Words Due: 55');
@@ -425,17 +424,14 @@ test('review each variant - words/sentences/snippets - follows a change in revie
   await checkSnippetsDueMeta(page, 'Snippets Due: 221/292/292');
 
   // Find the review SRS toggles container
-  await expect(repsCount).toContainText('Reps: 0');
   await reviewSentence(page, firstDueSentenceId);
   await checkReviewVariantCounts(page, 6, 1, 0);
 
-  await expect(repsCount).toContainText('Reps: 1');
   await checkSentenceCount(page, '152/200');
 
   await reviewSentence(page, secondDueSentenceId);
   await checkReviewVariantCounts(page, 6, 0, 0);
   await checkSentenceCount(page, '151/200');
-  await expect(repsCount).toContainText('Reps: 2');
   // second batch of words
   await reviewWord(page, batchDueWord[5]);
   await checkReviewVariantCounts(page, 5, 0, 0);
