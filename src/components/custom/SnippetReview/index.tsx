@@ -16,7 +16,6 @@ import {
 import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptItemLoopingSentence/useSnippetLoopEvents';
 import getColorByIndex from '@/utils/get-color-by-index';
 import SnippetReviewPinyinHelper from './SnippetReviewPinyinHelper';
-import SnippetReviewBoundaryToggles from './SnippetReviewBoundaryToggles';
 import { isTrimmedLang, LanguageEnum } from '@/app/languages';
 import { WordTypes } from '@/app/types/word-types';
 import {
@@ -83,7 +82,6 @@ const SnippetReview = ({
   handleDeleteWordDataProvider,
 }: SnippetReviewProps) => {
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
-  const [endIndexKeyState, setEndIndexKeyState] = useState(0);
   const [lengthAdjustmentState, setLengthAdjustmentState] = useState(0);
   const [wordPopUpState, setWordPopUpState] = useState([]);
   const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
@@ -99,7 +97,6 @@ const SnippetReview = ({
   >(null);
   const thisIsPlaying =
     isVideoPlaying && threeSecondLoopState === snippetData.time;
-  const isPreSnippet = snippetData?.isPreSnippet;
   const ulRef = useRef<NodeJS.Timeout | null>(null);
   const vocab = snippetData?.vocab;
 
@@ -131,11 +128,9 @@ const SnippetReview = ({
       const previousWordStart = Math.max(0, cursor + 1);
       const nextStartIndexState = previousWordStart - suggestedFocusStartIndex;
       setStartIndexKeyState(nextStartIndexState);
-      setEndIndexKeyState(nextStartIndexState);
       return;
     }
     setStartIndexKeyState(startIndexKeyState - 1);
-    setEndIndexKeyState(endIndexKeyState - 1);
   };
 
   const onMoveRight = () => {
@@ -163,11 +158,9 @@ const SnippetReview = ({
       const nextWordStart = Math.min(cursor, snippetData.targetLang.length - 1);
       const nextStartIndexState = nextWordStart - suggestedFocusStartIndex;
       setStartIndexKeyState(nextStartIndexState);
-      setEndIndexKeyState(nextStartIndexState);
       return;
     }
     setStartIndexKeyState(startIndexKeyState + 1);
-    setEndIndexKeyState(endIndexKeyState + 1);
   };
 
   const onExpandLength = () => {
@@ -227,12 +220,6 @@ const SnippetReview = ({
       return;
     }
     setLengthAdjustmentState(lengthAdjustmentState - 1);
-  };
-
-  const onReset = () => {
-    setStartIndexKeyState(0);
-    setEndIndexKeyState(0);
-    setLengthAdjustmentState(0);
   };
 
   const handlePlaySnippet = () => {
@@ -302,16 +289,12 @@ const SnippetReview = ({
         },
       });
       setStartIndexKeyState(0);
-      setEndIndexKeyState(0);
       setLengthAdjustmentState(0);
     } finally {
       setIsLoadingSaveSnippetState(false);
     }
   };
 
-  const onUpdateSnippet = async () => {
-    await handleSaveSnippetFlow();
-  };
   useEffect(() => {
     const handleSelectionEnd = () => {
       const selection = window.getSelection();
@@ -342,10 +325,7 @@ const SnippetReview = ({
     onAdjustLength: (delta) =>
       delta > 0 ? onExpandLength() : onContractLength(),
     onShiftStart: (delta) => (delta > 0 ? onMoveRight() : onMoveLeft()),
-    onSaveSnippet: async () => {
-      // console.log('## 🎮 snippet-loop-save SnippetReview');
-      await onUpdateSnippet();
-    },
+    onSaveSnippet: handleSaveSnippetFlow,
   });
 
   // Function to get the second representation for a given index in the matchKey range
@@ -629,11 +609,6 @@ const SnippetReview = ({
     });
   };
 
-  const indexHasChanged =
-    endIndexKeyState !== 0 ||
-    startIndexKeyState !== 0 ||
-    lengthAdjustmentState !== 0;
-
   return (
     <div
       className='relative'
@@ -645,90 +620,72 @@ const SnippetReview = ({
         </div>
       )}
       <div className='rounded border py-2 px-1'>
-        <div className='flex min-w-0 gap-3'>
-          <div className='min-w-0 flex-1'>
-            <div className='flex min-w-0 mb-2 gap-1'>
-              <SnippetReviewChineseAudioControls
-                thisIsPlaying={thisIsPlaying}
-                handlePlaySnippet={handlePlaySnippet}
-                isPreSnippet={snippetData?.isPreSnippet}
-                sentencesToBreakdown={sentencesToBreakdown}
-                isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
-                handleBreakdownSentence={handleBreakdownSentence}
+        <div className='flex min-w-0 mb-2 gap-1'>
+          <SnippetReviewChineseAudioControls
+            thisIsPlaying={thisIsPlaying}
+            handlePlaySnippet={handlePlaySnippet}
+            isPreSnippet={snippetData?.isPreSnippet}
+            sentencesToBreakdown={sentencesToBreakdown}
+            isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+            handleBreakdownSentence={handleBreakdownSentence}
+          />
+          <div className='min-w-0 flex-1 text-center'>
+            <div className='min-w-0 max-w-full'>
+              <FormattedSentenceSnippet
+                ref={ulRef}
+                targetLangformatted={targetLangWithVocabStartIndex}
+                wordPopUpState={wordPopUpState}
+                setWordPopUpState={setWordPopUpState}
+                handleDeleteWordDataProvider={handleDeleteWordDataProvider}
+                wordsFromSentence={wordsFromSentence}
+                languageSelectedState={languageSelectedState}
+                matchStartKey={matchStartKey}
+                matchEndKey={matchEndKey}
+                handleSaveFunc={handleSaveFunc}
+                currentTime={currentTime}
+                isReadyForQuickReview={isReadyForQuickReview}
+                matchStartWordState={matchStartWordState}
+                setMatchStartWordState={setMatchStartWordState}
+                togglableWordDataArrMemo={togglableWordDataArrMemo}
+                wordIsLoadingGamePadState={wordIsLoadingGamePadState}
+                matchWordsHighlghtedState={matchWordsHighlghtedState}
               />
-              <div className='min-w-0 flex-1 text-center'>
-                <div className='min-w-0 max-w-full'>
-                  <FormattedSentenceSnippet
-                    ref={ulRef}
-                    targetLangformatted={targetLangWithVocabStartIndex}
-                    wordPopUpState={wordPopUpState}
-                    setWordPopUpState={setWordPopUpState}
-                    handleDeleteWordDataProvider={handleDeleteWordDataProvider}
-                    wordsFromSentence={wordsFromSentence}
-                    languageSelectedState={languageSelectedState}
-                    matchStartKey={matchStartKey}
-                    matchEndKey={matchEndKey}
-                    handleSaveFunc={handleSaveFunc}
-                    currentTime={currentTime}
-                    isReadyForQuickReview={isReadyForQuickReview}
-                    matchStartWordState={matchStartWordState}
-                    setMatchStartWordState={setMatchStartWordState}
-                    togglableWordDataArrMemo={togglableWordDataArrMemo}
-                    wordIsLoadingGamePadState={wordIsLoadingGamePadState}
-                    matchWordsHighlghtedState={matchWordsHighlghtedState}
-                  />
-                </div>
-                {showTransliteration && (
-                  <SnippetReviewPinyinHelper
-                    slicedSnippetSegment={slicedSnippetSegment}
-                    getColorByIndex={getColorByIndex}
-                    matchStartKey={matchStartKey}
-                    matchEndKey={matchEndKey}
-                    pinyinStart={pinyinStart}
-                    languageSelectedState={languageSelectedState}
-                    isReadyForQuickReview={isReadyForQuickReview}
-                    currentTime={currentTime}
-                    togglableWordDataArrMemo={togglableWordDataArrMemo}
-                    matchStartWordState={matchStartWordState}
-                  />
-                )}
+            </div>
+            {showTransliteration && (
+              <SnippetReviewPinyinHelper
+                slicedSnippetSegment={slicedSnippetSegment}
+                getColorByIndex={getColorByIndex}
+                matchStartKey={matchStartKey}
+                matchEndKey={matchEndKey}
+                pinyinStart={pinyinStart}
+                languageSelectedState={languageSelectedState}
+                isReadyForQuickReview={isReadyForQuickReview}
+                currentTime={currentTime}
+                togglableWordDataArrMemo={togglableWordDataArrMemo}
+                matchStartWordState={matchStartWordState}
+              />
+            )}
 
-                <SnippetReviewBreakdownDefinitions
-                  slicedSnippetSegment={slicedSnippetSegment}
-                  getColorByIndex={getColorByIndex}
-                  matchStartKey={matchStartKey}
-                  matchEndKey={matchEndKey}
-                  pinyinStart={pinyinStart}
-                  vocab={vocab}
-                  togglableWordDataArrMemo={togglableWordDataArrMemo}
-                  matchStartWordState={matchStartWordState}
-                />
-                {highlightedTextState && (
-                  <HighlightedText
-                    isLoadingState={
-                      isLoadingWordState || isLoadingSaveSnippetState
-                    }
-                    handleSaveFunc={handleSaveFunc}
-                    highlightedTextState={highlightedTextState}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-          {isPreSnippet && (
-            <div>
-              <SnippetReviewBoundaryToggles
-                isLoading={isLoadingSaveSnippetState}
-                indexHasChanged={indexHasChanged}
-                onMoveLeft={onMoveLeft}
-                onReset={onReset}
-                onMoveRight={onMoveRight}
-                onContractLength={onContractLength}
-                onExpandLength={onExpandLength}
-                onUpdateSnippet={onUpdateSnippet}
+            <SnippetReviewBreakdownDefinitions
+              slicedSnippetSegment={slicedSnippetSegment}
+              getColorByIndex={getColorByIndex}
+              matchStartKey={matchStartKey}
+              matchEndKey={matchEndKey}
+              pinyinStart={pinyinStart}
+              vocab={vocab}
+              togglableWordDataArrMemo={togglableWordDataArrMemo}
+              matchStartWordState={matchStartWordState}
+            />
+            {highlightedTextState && (
+              <HighlightedText
+                isLoadingState={
+                  isLoadingWordState || isLoadingSaveSnippetState
+                }
+                handleSaveFunc={handleSaveFunc}
+                highlightedTextState={highlightedTextState}
               />
-            </div>
-          )}
+            )}
+          </div>
         </div>
         <ReviewSRSToggles
           isSnippet
