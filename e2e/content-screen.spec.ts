@@ -51,7 +51,7 @@ test.describe('General toggles & verify UI elements', () => {
     await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
     await checkProgressHeader(page, '0/153');
 
-    const bulkReviewBefore = page.getByText('Bulk Review: 7');
+    const bulkReviewBefore = page.getByText('💰 7');
     await expect(bulkReviewBefore).toBeVisible();
 
     // tab data
@@ -1515,15 +1515,15 @@ test.describe('Bulk sentence review functionality', () => {
     // Wait for navigation to complete
     await page.waitForURL(`**/content?topic=${contentTitle}`);
 
-    // Verify the bulk review count is initially 5
+    // Verify the 💰 count is initially 5
     const bulkReviewButton = page.getByTestId('bulk-review-button');
-    await expect(page.getByText('Bulk Review: 7')).toBeVisible();
+    await expect(page.getByText('💰 7')).toBeVisible();
     await expect(bulkReviewButton).toBeEnabled();
     await checkSentenceCount(page, '153/200');
-    const bulkReviewBefore = page.getByText('Bulk Review: 7');
+    const bulkReviewBefore = page.getByText('💰 7');
     await expect(bulkReviewBefore).toBeVisible();
 
-    // Double-click the bulk review button
+    // Double-click the 💰 button
     await bulkReviewButton.dblclick();
 
     // Wait for the API call to complete
@@ -1535,7 +1535,7 @@ test.describe('Bulk sentence review functionality', () => {
 
     await checkSentenceCount(page, '153/207');
 
-    const bulkReviewAfter = page.getByText('Bulk Review: 0');
+    const bulkReviewAfter = page.getByText('💰 0');
     await expect(bulkReviewAfter).toBeVisible();
   });
 });

@@ -34,7 +34,7 @@ jest.mock('next/navigation', () => ({
 
 const checkMetaDataOnLoad = () => {
   expect(screen.getByTestId('bulk-review-count')).toBeInTheDocument();
-  expect(screen.getByText('Bulk Review: 0')).toBeInTheDocument();
+  expect(screen.getByText('💰 0')).toBeInTheDocument();
 
   // navbar
   expect(screen.getByText('Home')).toBeInTheDocument();

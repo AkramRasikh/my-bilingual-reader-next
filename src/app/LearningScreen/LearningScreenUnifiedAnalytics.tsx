@@ -53,7 +53,7 @@ const LearningScreenUnifiedAnalytics = () => {
             </span>
           )}
           <span className='m-auto mr-2' data-testid='bulk-review-count'>
-            Bulk Review: {overlappedSentencesViableForReviewMemoized?.length ?? 0}
+            💰 {overlappedSentencesViableForReviewMemoized?.length ?? 0}
           </span>
 
           <Button
