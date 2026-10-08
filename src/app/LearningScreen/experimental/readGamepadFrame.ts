@@ -67,8 +67,15 @@ export const getDpadStateFromAxes = (axes: readonly number[]) => {
 
 export type DpadAxesState = ReturnType<typeof getDpadStateFromAxes>;
 
+/**
+ * Chromium reports a released hat switch as an out-of-range value (9/7 ≈ 1.2857),
+ * and sometimes as 0 until the pad has been touched. Directions stay inside [-1, 1],
+ * with +1 meaning up-left. Anything above 1 is "nothing pressed", not a direction.
+ */
+const isHatAxis9Released = (axis9Value: number) => axis9Value > 1;
+
 const decodeHatAxis9Direction = (axis9Value: number, maxAbsAxis9: number) => {
-  if (!maxAbsAxis9) {
+  if (!maxAbsAxis9 || isHatAxis9Released(axis9Value)) {
     return emptyCardinal();
   }
 
@@ -156,17 +163,26 @@ export function stepHatAxis9(
 } {
   const dpadBtn = getDpadButtonState(gp.buttons, map);
   const axis9Value = gp.axes[9] ?? 0;
-  const neutral = prev.neutral === null ? axis9Value : prev.neutral;
+  const released = isHatAxis9Released(axis9Value);
+  // A zeroed first sample is "no data yet", not the hat's real center. Once the
+  // released sentinel shows up, adopt it so that rest position is not a direction.
+  const neutral = released
+    ? axis9Value
+    : prev.neutral === null
+      ? axis9Value
+      : prev.neutral;
   const axis9Delta = Math.abs(axis9Value - neutral);
   const stickClickHeld =
     isGamepadButtonHeld(gp.buttons, map.L_STICK_CLICK_BTN) ||
     isGamepadButtonHeld(gp.buttons, map.R_STICK_CLICK_BTN);
 
-  const axis9LooksActive = axis9Delta > 0.25 && !stickClickHeld;
+  const axis9LooksActive = !released && axis9Delta > 0.25 && !stickClickHeld;
 
-  let maxAbsSeen = prev.maxAbsSeen;
+  // Real directions are within [-1, 1]. Keep the released sentinel (≈1.2857)
+  // from rescaling those buckets toward up-left.
+  let maxAbsSeen = Math.min(prev.maxAbsSeen, 1);
   if (axis9LooksActive) {
-    maxAbsSeen = Math.max(maxAbsSeen, Math.abs(axis9Value));
+    maxAbsSeen = Math.max(maxAbsSeen, Math.min(1, Math.abs(axis9Value)));
   }
 
   const fromAxis9 = axis9LooksActive
