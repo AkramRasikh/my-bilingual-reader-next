@@ -58,7 +58,7 @@ const LearningScreenLeftSideContainer = () => {
     !sentences.length && !words.length && !snippetsWithDueStatusMemoized.length;
 
   return (
-    <div className='min-w-0 w-full flex-1 basis-0 xl:mx-auto xl:basis-auto xl:max-w-none xl:w-xl'>
+    <div className='min-w-0 w-full flex-1 basis-0 xl:mx-auto xl:basis-auto xl:max-w-none xl:w-[45rem]'>
       {!errorVideoState ? (
         <LearningScreenVideoPlayer
           url={videoUrl}

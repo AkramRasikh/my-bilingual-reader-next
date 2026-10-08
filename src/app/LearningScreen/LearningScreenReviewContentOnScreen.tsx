@@ -2,6 +2,8 @@
 // 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useLearningScreen from './useLearningScreen';
+import { useFetchData } from '@/app/Providers/FetchDataProvider';
+import SnippetReview from '@/components/custom/SnippetReview';
 import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap';
 import {
   getCurrentTimeRangePhase,
@@ -70,10 +72,12 @@ function ReviewOverlayPanel({
   children,
   timeRangePhase = null,
   showTimeRangeSlot = false,
+  expanded = false,
 }: {
   children: React.ReactNode;
   timeRangePhase?: ReviewTimeRangePhase | null;
   showTimeRangeSlot?: boolean;
+  expanded?: boolean;
 }) {
   const textClassName =
     'text-xs font-bold break-words text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]';
@@ -83,12 +87,26 @@ function ReviewOverlayPanel({
       ? TIME_RANGE_PHASE_STYLES[timeRangePhase].borderClassName
       : 'border border-white/20';
 
+  const containerClassName = expanded
+    ? `pointer-events-auto mx-auto max-h-[50%] w-[calc(100%-1rem)] overflow-y-auto rounded-md bg-black/80 px-3 py-1.5 ${containerBorderClassName}`
+    : `pointer-events-auto mx-auto w-fit max-w-[66.666%] rounded-md bg-black/80 px-4 py-1.5 ${containerBorderClassName}`;
+
   return (
     <div className='pointer-events-none absolute inset-0 flex flex-col justify-end pb-4'>
       <div
-        className={`pointer-events-auto mx-auto w-fit max-w-[66.666%] rounded-md bg-black/80 px-4 py-1.5 ${containerBorderClassName}`}
+        className={containerClassName}
+        data-testid={
+          expanded ? 'learning-screen-review-snippet-focus-text' : undefined
+        }
       >
-        {showTimeRangeSlot ? (
+        {expanded ? (
+          <div className='flex items-start gap-2'>
+            <div className='min-w-0 flex-1'>{children}</div>
+            {showTimeRangeSlot ? (
+              <ReviewTimeRangeIndicator phase={timeRangePhase} />
+            ) : null}
+          </div>
+        ) : showTimeRangeSlot ? (
           <div className='flex items-center gap-2'>
             <p className={`min-w-0 flex-1 text-center ${textClassName}`}>{children}</p>
             <ReviewTimeRangeIndicator phase={timeRangePhase} />
@@ -112,7 +130,20 @@ const LearningScreenReviewContentOnScreen = () => {
     currentTime,
     mediaDuration,
     sentenceMapMemoized,
+    threeSecondLoopState,
+    isVideoPlaying,
+    handleUpdateSnippet,
+    isBreakingDownSentenceArrState,
+    handleBreakdownSentence,
+    getSentenceDataOfOverlappingWordsDuringSave,
+    selectedContentTitleState,
+    handleSaveWord,
+    handleDeleteWordDataProvider,
+    setThreeSecondLoopState,
+    setContractThreeSecondLoopState,
+    handleLoopReviewMode,
   } = useLearningScreen();
+  const { languageSelectedState, wordsState } = useFetchData();
 
   const [showWordDetailsState, setShowWordDetailsState] = useState(false);
   const quickReviewToggleFiredRef = useRef(false);
@@ -209,15 +240,60 @@ const LearningScreenReviewContentOnScreen = () => {
     return () => clearInterval(intervalId);
   }, [firstWordInReviewDisplay]);
 
-  if (isPlayingSnippetInReview) {
+  if (firstSnippetInReview && isPlayingSnippetInReview) {
     return (
       <ReviewOverlayPanel
         timeRangePhase={snippetTimeRangePhase}
         showTimeRangeSlot
+        expanded
       >
-        <span data-testid='learning-screen-review-snippet-focus-text'>
-          {snippetFocusText}
-        </span>
+        <SnippetReview
+          variant='overlay'
+          snippetData={firstSnippetInReview}
+          handleLoopHere={(params) =>
+            handleLoopReviewMode({
+              ...params,
+              snippetId: firstSnippetInReview.id,
+            })
+          }
+          isVideoPlaying={isVideoPlaying}
+          threeSecondLoopState={threeSecondLoopState}
+          handleUpdateSnippetComprehensiveReview={async ({
+            snippetData,
+            isRemoveReview,
+            isSnippetReview,
+          }) => {
+            await handleUpdateSnippet({
+              snippetData,
+              isRemoveReview,
+              isSnippetReview,
+            });
+            setThreeSecondLoopState(null);
+            setContractThreeSecondLoopState(false);
+          }}
+          isReadyForQuickReview={firstElIdInReview === firstSnippetInReview.id}
+          handleBreakdownSentence={({ sentenceId }) =>
+            handleBreakdownSentence({
+              sentenceId,
+              targetLang: sentenceMapMemoized[sentenceId]?.targetLang || '',
+            })
+          }
+          isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+          currentTime={currentTime}
+          getSentenceDataOfOverlappingWordsDuringSave={(time, highlightedText) => {
+            const out = getSentenceDataOfOverlappingWordsDuringSave(
+              time,
+              highlightedText,
+            );
+            return typeof out === 'string' ? out : null;
+          }}
+          selectedContentTitleState={selectedContentTitleState}
+          sentenceMapMemoized={sentenceMapMemoized}
+          languageSelectedState={languageSelectedState}
+          wordsState={wordsState}
+          handleSaveWord={handleSaveWord}
+          handleDeleteWordDataProvider={handleDeleteWordDataProvider}
+        />
       </ReviewOverlayPanel>
     );
   }

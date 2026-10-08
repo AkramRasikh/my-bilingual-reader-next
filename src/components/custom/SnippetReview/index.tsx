@@ -61,6 +61,7 @@ interface SnippetReviewProps {
   handleDeleteWordDataProvider: (
     params: HandleDeleteWordDataProviderCallTypes,
   ) => void;
+  variant?: 'default' | 'overlay';
 }
 
 const SnippetReview = ({
@@ -80,7 +81,9 @@ const SnippetReview = ({
   wordsState,
   handleSaveWord,
   handleDeleteWordDataProvider,
+  variant = 'default',
 }: SnippetReviewProps) => {
+  const isOverlay = variant === 'overlay';
   const [startIndexKeyState, setStartIndexKeyState] = useState(0);
   const [lengthAdjustmentState, setLengthAdjustmentState] = useState(0);
   const [wordPopUpState, setWordPopUpState] = useState([]);
@@ -296,6 +299,8 @@ const SnippetReview = ({
   };
 
   useEffect(() => {
+    if (isOverlay) return;
+
     const handleSelectionEnd = () => {
       const selection = window.getSelection();
       const selectedText = selection?.toString().trim();
@@ -314,10 +319,10 @@ const SnippetReview = ({
       document.removeEventListener('mouseup', handleSelectionEnd);
       document.removeEventListener('touchend', handleSelectionEnd);
     };
-  }, []);
+  }, [isOverlay]);
 
   useSnippetLoopEvents({
-    enabled: isReadyForQuickReview,
+    enabled: isReadyForQuickReview && !isOverlay,
     hasSnippetText,
     matchEndKey,
     matchStartKey,
@@ -426,7 +431,7 @@ const SnippetReview = ({
   ]);
 
   useEffect(() => {
-    if (!isReadyForQuickReview) return;
+    if (isOverlay || !isReadyForQuickReview) return;
 
     const handleSaveGamePad = async () => {
       if (matchStartWordState === null) return;
@@ -578,6 +583,7 @@ const SnippetReview = ({
     thisIsPlaying,
     snippetData.time,
     snippetData.isContracted,
+    isOverlay,
   ]);
 
   useEffect(() => {
@@ -611,24 +617,34 @@ const SnippetReview = ({
 
   return (
     <div
-      className='relative'
-      data-testid={`snippet-review-item-${snippetData.id}`}
+      className={
+        isOverlay
+          ? 'relative text-sm leading-snug text-white [&_.bg-gray-200]:text-zinc-900'
+          : 'relative'
+      }
+      data-testid={
+        isOverlay
+          ? `snippet-review-overlay-${snippetData.id}`
+          : `snippet-review-item-${snippetData.id}`
+      }
     >
       {isLoadingSaveSnippetState && (
         <div className='absolute right-1/2 top-3/10'>
           <LoadingSpinner />
         </div>
       )}
-      <div className='rounded border py-2 px-1'>
-        <div className='flex min-w-0 mb-2 gap-1'>
-          <SnippetReviewChineseAudioControls
-            thisIsPlaying={thisIsPlaying}
-            handlePlaySnippet={handlePlaySnippet}
-            isPreSnippet={snippetData?.isPreSnippet}
-            sentencesToBreakdown={sentencesToBreakdown}
-            isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
-            handleBreakdownSentence={handleBreakdownSentence}
-          />
+      <div className={isOverlay ? '' : 'rounded border py-2 px-1'}>
+        <div className={isOverlay ? 'flex min-w-0' : 'mb-2 flex min-w-0 gap-1'}>
+          {isOverlay ? null : (
+            <SnippetReviewChineseAudioControls
+              thisIsPlaying={thisIsPlaying}
+              handlePlaySnippet={handlePlaySnippet}
+              isPreSnippet={snippetData?.isPreSnippet}
+              sentencesToBreakdown={sentencesToBreakdown}
+              isBreakingDownSentenceArrState={isBreakingDownSentenceArrState}
+              handleBreakdownSentence={handleBreakdownSentence}
+            />
+          )}
           <div className='min-w-0 flex-1 text-center'>
             <div className='min-w-0 max-w-full'>
               <FormattedSentenceSnippet
@@ -676,7 +692,7 @@ const SnippetReview = ({
               togglableWordDataArrMemo={togglableWordDataArrMemo}
               matchStartWordState={matchStartWordState}
             />
-            {highlightedTextState && (
+            {!isOverlay && highlightedTextState && (
               <HighlightedText
                 isLoadingState={
                   isLoadingWordState || isLoadingSaveSnippetState
@@ -687,12 +703,14 @@ const SnippetReview = ({
             )}
           </div>
         </div>
-        <ReviewSRSToggles
-          isSnippet
-          contentItem={snippetData}
-          handleReviewFunc={handleReviewSnippetsFinal}
-          isReadyForQuickReview={isReadyForQuickReview}
-        />
+        {isOverlay ? null : (
+          <ReviewSRSToggles
+            isSnippet
+            contentItem={snippetData}
+            handleReviewFunc={handleReviewSnippetsFinal}
+            isReadyForQuickReview={isReadyForQuickReview}
+          />
+        )}
       </div>
     </div>
   );

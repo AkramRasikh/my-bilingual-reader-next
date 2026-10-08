@@ -11,7 +11,7 @@ const LearningScreenContentContainer = () => {
   const topicName = selectedContentState?.title;
 
   return (
-    <div className='min-w-0 w-full flex-1 basis-0 xl:basis-auto xl:max-w-none xl:w-xl'>
+    <div className='min-w-0 w-full flex-1 basis-0 xl:basis-auto xl:max-w-none xl:w-[27rem]'>
       <Tabs defaultValue='transcript'>
         <LearningScreenTabSelection topicName={topicName} />
         <LearningScreenTabTranscript />
