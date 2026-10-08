@@ -3,7 +3,7 @@ import LearningScreenActionBarVideoControls from './LearningScreenActionBarVideo
 
 const LearningScreenContentChapterNavigation = () => {
   return (
-    <div className='flex flex-col items-center gap-2'>
+    <div className='flex flex-col items-center gap-3'>
       <LearningScreenActionBarVideoControls />
       <LearningScreenUnifiedAnalytics />
     </div>

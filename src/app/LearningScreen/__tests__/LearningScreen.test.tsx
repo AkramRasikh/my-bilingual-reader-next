@@ -33,8 +33,9 @@ jest.mock('next/navigation', () => ({
 }));
 
 const checkMetaDataOnLoad = () => {
-  expect(screen.getByTestId('bulk-review-count')).toBeInTheDocument();
-  expect(screen.getByText('💰 0')).toBeInTheDocument();
+  const bulkReviewButton = screen.getByTestId('bulk-review-button');
+  expect(bulkReviewButton).toHaveTextContent('💰 0');
+  expect(bulkReviewButton).toBeDisabled();
 
   // navbar
   expect(screen.getByText('Home')).toBeInTheDocument();
@@ -607,7 +608,7 @@ describe('LearningScreen - studying new content', () => {
   describe('new sentences', () => {
     it('should render a blank project with no previously reviewed content', async () => {
       await renderWithProvider();
-      expect(await screen.findByTestId('bulk-review-count')).toBeInTheDocument();
+      expect(await screen.findByTestId('bulk-review-button')).toBeInTheDocument();
 
       checkMetaDataOnLoad();
       checkReviewTogglesOnLoad();
@@ -627,7 +628,7 @@ describe('LearningScreen - studying new content', () => {
 
     it('should show a slow audio switch off by default and toggle it', async () => {
       await renderWithProvider();
-      expect(await screen.findByTestId('bulk-review-count')).toBeInTheDocument();
+      expect(await screen.findByTestId('bulk-review-button')).toBeInTheDocument();
       checkingMediaActionButtons();
     });
   });
@@ -635,7 +636,7 @@ describe('LearningScreen - studying new content', () => {
   describe('new words', () => {
     it('should allow to add and remove words from transcript', async () => {
       await renderWithProvider();
-      expect(await screen.findByTestId('bulk-review-count')).toBeInTheDocument();
+      expect(await screen.findByTestId('bulk-review-button')).toBeInTheDocument();
       await saveWordFirstInTranscript();
       await saveWordSecondInTranscript();
       await hoverOverSavedWord();
@@ -658,7 +659,7 @@ describe('LearningScreen - studying new content', () => {
       });
 
       await renderWithProvider();
-      expect(await screen.findByTestId('bulk-review-count')).toBeInTheDocument();
+      expect(await screen.findByTestId('bulk-review-button')).toBeInTheDocument();
       expect(
         screen.queryByTestId('video-player-snippet-text'),
       ).not.toBeInTheDocument();

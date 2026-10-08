@@ -399,9 +399,14 @@ export const highlightJapaneseText = async (page: Page) => {
 
 export const checkBulkReviewCount = async (
   page: Page,
-  expectedText: string,
+  expectedCount: number,
 ) => {
-  const bulkReviewCount = page.getByTestId('bulk-review-count');
-  await expect(bulkReviewCount).toBeVisible();
-  await expect(bulkReviewCount).toContainText(expectedText);
+  const bulkReviewButton = page.getByTestId('bulk-review-button');
+  await expect(bulkReviewButton).toBeVisible();
+  await expect(bulkReviewButton).toHaveText(`💰 ${expectedCount}`);
+  if (expectedCount > 0) {
+    await expect(bulkReviewButton).toBeEnabled();
+  } else {
+    await expect(bulkReviewButton).toBeDisabled();
+  }
 };

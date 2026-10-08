@@ -20,7 +20,7 @@ const LearningScreenActionBarVideoControls = () => {
   } = useLearningScreen();
 
   return (
-    <div className='flex flex-col items-center pb-2 gap-3'>
+    <div className='flex flex-col items-center gap-3'>
       <CountUpTimer
         elapsed={elapsed}
         isRunning={countUpTimerIsRunning}

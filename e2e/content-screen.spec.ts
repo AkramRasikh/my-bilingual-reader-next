@@ -19,6 +19,7 @@ import {
   checkProgressHeader,
   checkVideoControl,
   checkEnglishTranscriptToggles,
+  checkBulkReviewCount,
 } from './helpers/content-screen-helpers';
 import { waitForMediaMetadata } from './helpers/wait-for-media';
 
@@ -51,8 +52,7 @@ test.describe('General toggles & verify UI elements', () => {
     await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
     await checkProgressHeader(page, '0/153');
 
-    const bulkReviewBefore = page.getByText('💰 7');
-    await expect(bulkReviewBefore).toBeVisible();
+    await checkBulkReviewCount(page, 7);
 
     // tab data
     await checkWordsTabCount(page, 'Words 55/84');
@@ -1515,13 +1515,9 @@ test.describe('Bulk sentence review functionality', () => {
     // Wait for navigation to complete
     await page.waitForURL(`**/content?topic=${contentTitle}`);
 
-    // Verify the 💰 count is initially 5
     const bulkReviewButton = page.getByTestId('bulk-review-button');
-    await expect(page.getByText('💰 7')).toBeVisible();
-    await expect(bulkReviewButton).toBeEnabled();
+    await checkBulkReviewCount(page, 7);
     await checkSentenceCount(page, '153/200');
-    const bulkReviewBefore = page.getByText('💰 7');
-    await expect(bulkReviewBefore).toBeVisible();
 
     // Double-click the 💰 button
     await bulkReviewButton.dblclick();
@@ -1535,8 +1531,7 @@ test.describe('Bulk sentence review functionality', () => {
 
     await checkSentenceCount(page, '153/207');
 
-    const bulkReviewAfter = page.getByText('💰 0');
-    await expect(bulkReviewAfter).toBeVisible();
+    await checkBulkReviewCount(page, 0);
   });
 });
 

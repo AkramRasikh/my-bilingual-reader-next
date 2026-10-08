@@ -133,7 +133,7 @@ const verifyPostSnippetSaveUI = async (page: Page) => {
   await expect(saveButton).not.toBeVisible();
   await expect(masterLoopButton).not.toBeVisible();
   await checkSnippetsDueMeta(page, 'Snippets Due: 225/293/293');
-  await checkBulkReviewCount(page, '💰 8');
+  await checkBulkReviewCount(page, 8);
   await expect(thirdMultiIndicatorItems).toHaveCount(2);
 };
 
@@ -406,7 +406,7 @@ test.describe('Loop(s)', () => {
     await goFromLandingToLearningScreen(page);
     await triggerTrackSwitch(page);
     await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
-    await checkBulkReviewCount(page, '💰 7');
+    await checkBulkReviewCount(page, 7);
     await page.waitForTimeout(500);
     await verifyPreFreeLoopUI(page);
     await startLoopOnThirdEl(page);
@@ -448,14 +448,14 @@ test.describe('Loop(s)', () => {
     await mockDeleteSnippetAPIE2E(page);
     await deleteRecentlyAddedSnippet(page);
     await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
-    await checkBulkReviewCount(page, '💰 7');
+    await checkBulkReviewCount(page, 7);
   });
 
   test('3 second loop using Shift+" TranscriptItem keys', async ({ page }) => {
     await mockAddSnippetAPIE2E(page);
     await goFromLandingToLearningScreen(page);
     await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
-    await checkBulkReviewCount(page, '💰 7');
+    await checkBulkReviewCount(page, 7);
 
     await triggerTrackSwitch(page);
     await startLoopOnThirdEl(page);
@@ -492,7 +492,7 @@ test.describe('Loop(s)', () => {
     );
     await page.keyboard.press('Shift+Enter');
     await checkSnippetsDueMeta(page, 'Snippets Due: 225/293/293');
-    await checkBulkReviewCount(page, '💰 8');
+    await checkBulkReviewCount(page, 8);
     await expect(
       page.getByTestId('transcript-time-overlap-indicator'),
     ).toHaveCount(0);
