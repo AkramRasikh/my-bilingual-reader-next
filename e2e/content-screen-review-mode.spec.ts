@@ -427,11 +427,11 @@ test('review each variant - words/sentences/snippets - follows a change in revie
   await reviewSentence(page, firstDueSentenceId);
   await checkReviewVariantCounts(page, 6, 1, 0);
 
-  await checkSentenceCount(page, '152/200');
+  await checkSentenceCount(page, '1/153/200');
 
   await reviewSentence(page, secondDueSentenceId);
   await checkReviewVariantCounts(page, 6, 0, 0);
-  await checkSentenceCount(page, '151/200');
+  await checkSentenceCount(page, '2/153/200');
   // second batch of words
   await reviewWord(page, batchDueWord[5]);
   await checkReviewVariantCounts(page, 5, 0, 0);

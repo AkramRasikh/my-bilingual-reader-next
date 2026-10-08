@@ -48,8 +48,6 @@ const LearningScreenVideoPlayer = ({
     threeSecondLoopState,
     handleSaveSnippet,
     overlappingTextMemoized,
-    masterPlayComprehensiveTargetLangForOverlay,
-    showMasterPlayComprehensiveTargetLangForOverlayState,
     isSavedLoopPlayingState,
     isVideoPlaying,
     setThreeSecondLoopState,
@@ -197,42 +195,23 @@ const LearningScreenVideoPlayer = ({
               />
             </div>
           </div>
-        )
-          : showMasterPlayComprehensiveTargetLangForOverlayState &&
-            masterPlayComprehensiveTargetLangForOverlay.length > 0 ? (
-            <div className='absolute top-0 left-0 w-full rounded-t-lg px-4 py-2 text-white'>
-              {masterPlayComprehensiveTargetLangForOverlay.map((s) => {
-                const isCurrent = s.position === 'current';
-                return (
-                  <p
-                    key={`${s.position}-${s.id}`}
-                    className={clsx(
-                      'text-center transition-all duration-200 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]',
-                      !isCurrent ? 'text-gray-400 text-xs' : 'text-white text-sm',
-                    )}
-                  >
-                    {s.targetLang}
-                  </p>
-                );
-              })}
-            </div>
-          ) : isLoopingSaved ? (
-            <div className='absolute top-0 left-0 w-full rounded-t-lg px-4 py-2 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]'>
-              <Button
-                size='icon'
-                variant='ghost'
-                className='my-auto h-8 w-8 rounded-full bg-transparent'
-                onClick={() => setThreeSecondLoopState(null)}
-              >
-                <Loader2
-                  className={clsx(
-                    isVideoPlaying ? 'animate-spin' : '',
-                    'text-amber-600',
-                  )}
-                />
-              </Button>
-            </div>
-          ) : null}
+        ) : isLoopingSaved ? (
+          <div className='absolute top-0 left-0 w-full rounded-t-lg px-4 py-2 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]'>
+            <Button
+              size='icon'
+              variant='ghost'
+              className='my-auto h-8 w-8 rounded-full bg-transparent'
+              onClick={() => setThreeSecondLoopState(null)}
+            >
+              <Loader2
+                className={clsx(
+                  isVideoPlaying ? 'animate-spin' : '',
+                  'text-amber-600',
+                )}
+              />
+            </Button>
+          </div>
+        ) : null}
         <LearningScreenReviewContentOnScreen />
       </div>
 

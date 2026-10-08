@@ -14,8 +14,6 @@ const LearningScreenActionBarVideoControls = () => {
     trackCurrentState,
     setTrackCurrentState,
     isInReviewMode,
-    showMasterPlayComprehensiveTargetLangForOverlayState,
-    setShowMasterPlayComprehensiveTargetLangForOverlayState,
     isSlowAudioState,
     isHoldSlowerAudioState,
     handleToggleSlowAudio,
@@ -29,7 +27,9 @@ const LearningScreenActionBarVideoControls = () => {
         onTimerPress={onCountUpTimerPress}
       />
       <div className='flex gap-2 my-auto'>
-        <Label data-testid='english-label'>🇬🇧</Label>
+        <Label data-testid='english-label' className='text-xs leading-none'>
+          🇬🇧
+        </Label>
         <Switch
           checked={!onlyShowEngState}
           onCheckedChange={() => setOnlyShowEngState(!onlyShowEngState)}
@@ -37,7 +37,9 @@ const LearningScreenActionBarVideoControls = () => {
         />
       </div>
       <div className='flex gap-2 my-auto'>
-        <Label data-testid='track-current-label'>🔎</Label>
+        <Label data-testid='track-current-label' className='text-xs leading-none'>
+          🔎
+        </Label>
         <Switch
           checked={trackCurrentState}
           onCheckedChange={setTrackCurrentState}
@@ -45,15 +47,7 @@ const LearningScreenActionBarVideoControls = () => {
           data-testid='track-current-switch'
         />
       </div>
-      <div className='flex gap-2 my-auto'>
-        <Label data-testid='overlay-label'>🈂️</Label>
-        <Switch
-          checked={showMasterPlayComprehensiveTargetLangForOverlayState}
-          onCheckedChange={setShowMasterPlayComprehensiveTargetLangForOverlayState}
-          data-testid='overlay-switch'
-        />
-      </div>
-      <div className='flex flex-col items-center gap-1'>
+      <div className='flex items-center gap-2'>
         <Label
           data-testid='slow-audio-label'
           data-slow-level={
@@ -64,7 +58,7 @@ const LearningScreenActionBarVideoControls = () => {
                 : 'off'
           }
           className={clsx(
-            'inline-flex h-7 w-7 items-center justify-center rounded-full',
+            'inline-flex h-5 w-5 items-center justify-center rounded-full text-xs leading-none',
             isHoldSlowerAudioState
               ? 'bg-red-500'
               : isSlowAudioState

@@ -36,18 +36,23 @@ const LearningScreenBreadCrumbHeader = () => {
 
   const router = useRouter();
 
-  // totalItems: starts at initial count, increases if new items are added
-  const totalItems = Math.max(initialSentenceCount ?? 0, sentencesNeedReview);
-  const remainingItems = sentencesNeedReview;
-  const completedItems = totalItems - remainingItems;
+  // Session target only grows, so reviewing a sentence does not shrink the middle number.
+  const sentencesNeededThisSession = Math.max(
+    initialSentenceCount ?? 0,
+    sentencesNeedReview,
+  );
+  const sentencesReviewedThisSession =
+    sentencesNeededThisSession - sentencesNeedReview;
   const progressValue =
-    totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+    sentencesNeededThisSession > 0
+      ? (sentencesReviewedThisSession / sentencesNeededThisSession) * 100
+      : 0;
 
   const snippetsWithReviewDate = contentSnippets.filter((item) => item?.reviewData);
   const snippetDueCount = snippetsWithReviewDate.filter((item) =>
     isDueCheck(item, new Date()),
   ).length;
-  const progressText = `📝 ${completedItems}/${sentencesNeedReview}/${sentencesPendingOrDue} 🔤 ${contentMetaWordMemoized.length}/${wordsForSelectedTopic.length} ✂️ ${snippetDueCount}/${snippetsWithReviewDate.length}`;
+  const progressText = `📝 ${sentencesReviewedThisSession}/${sentencesNeededThisSession}/${sentencesPendingOrDue} 🔤 ${contentMetaWordMemoized.length}/${wordsForSelectedTopic.length} ✂️ ${snippetDueCount}/${snippetsWithReviewDate.length}`;
 
   const numberOfSentences = sentencesDueForReviewMemoized.length;
   const title = selectedContentState.title;

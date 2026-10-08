@@ -19,7 +19,7 @@ import {
   REVIEW_DATA_2_DAYS_AWAY,
 } from './test-helpers/api-mocks';
 
-jest.mock('../../Providers/useDataSaveToLocalStorage', () => () => {});
+jest.mock('../../Providers/useDataSaveToLocalStorage', () => () => { });
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -225,9 +225,8 @@ const reviewFirstSentenceAgain = async () => {
   });
   expect(await screen.findByTestId('progress-header')).toBeInTheDocument();
   expect(screen.getByTestId('progress-header-text')).toHaveTextContent(
-    '📝 0/1/2',
+    '📝 1/2/2',
   );
-  // expect(screen.getByTestId('progress-header-text')).toHaveTextContent('1/2'); // come back to when fixing and testing progress header
 };
 
 const removeSecondSentenceFromReview = async () => {
