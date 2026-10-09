@@ -8,7 +8,6 @@ import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap
 import {
   getCurrentTimeRangePhase,
   getSentenceTimeRange,
-  getSnippetTimeRange,
   type ReviewTimeRangePhase,
 } from './learning-screen-review-time-range';
 
@@ -82,13 +81,14 @@ function ReviewOverlayPanel({
   const textClassName =
     'text-xs font-bold break-words text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]';
 
-  const containerBorderClassName =
-    showTimeRangeSlot && timeRangePhase
+  const containerBorderClassName = expanded
+    ? 'border border-zinc-400'
+    : showTimeRangeSlot && timeRangePhase
       ? TIME_RANGE_PHASE_STYLES[timeRangePhase].borderClassName
       : 'border border-white/20';
 
   const containerClassName = expanded
-    ? `pointer-events-auto mx-auto max-h-[50%] w-[calc(100%-1rem)] overflow-y-auto rounded-md bg-black/80 px-3 py-1.5 ${containerBorderClassName}`
+    ? `pointer-events-auto mx-auto max-h-[50%] w-fit max-w-[calc(100%-1rem)] overflow-y-auto rounded-md bg-amber-50 px-3 py-1.5 text-foreground ${containerBorderClassName}`
     : `pointer-events-auto mx-auto w-fit max-w-[66.666%] rounded-md bg-black/80 px-4 py-1.5 ${containerBorderClassName}`;
 
   return (
@@ -100,12 +100,7 @@ function ReviewOverlayPanel({
         }
       >
         {expanded ? (
-          <div className='flex items-start gap-2'>
-            <div className='min-w-0 flex-1'>{children}</div>
-            {showTimeRangeSlot ? (
-              <ReviewTimeRangeIndicator phase={timeRangePhase} />
-            ) : null}
-          </div>
+          children
         ) : showTimeRangeSlot ? (
           <div className='flex items-center gap-2'>
             <p className={`min-w-0 flex-1 text-center ${textClassName}`}>{children}</p>
@@ -142,26 +137,21 @@ const LearningScreenReviewContentOnScreen = () => {
     setThreeSecondLoopState,
     setContractThreeSecondLoopState,
     handleLoopReviewMode,
+    isInReviewMode,
   } = useLearningScreen();
   const { languageSelectedState, wordsState } = useFetchData();
 
   const [showWordDetailsState, setShowWordDetailsState] = useState(false);
   const quickReviewToggleFiredRef = useRef(false);
 
-  const firstSnippetInReview = useMemo(
-    () => postSnippetsMemoized.find((snippet) => snippet.id === firstElIdInReview),
-    [postSnippetsMemoized, firstElIdInReview],
-  );
-
-  const snippetFocusText =
-    firstSnippetInReview?.focusedText ||
-    firstSnippetInReview?.suggestedFocusText ||
-    '';
-
-  const isPlayingSnippetInReview =
-    Boolean(firstSnippetInReview) &&
-    isSavedLoopPlayingState === firstElIdInReview &&
-    snippetFocusText.length > 0;
+  const playingReviewedSnippet = useMemo(() => {
+    if (!isInReviewMode || !isSavedLoopPlayingState) {
+      return undefined;
+    }
+    return postSnippetsMemoized.find(
+      (snippet) => snippet.id === isSavedLoopPlayingState,
+    );
+  }, [isInReviewMode, isSavedLoopPlayingState, postSnippetsMemoized]);
 
   const firstSentenceInReview = useMemo(
     () => postSentencesMemoized.find((sentence) => sentence.id === firstElIdInReview),
@@ -176,14 +166,6 @@ const LearningScreenReviewContentOnScreen = () => {
   const sentenceMapEntry = firstElIdInReview
     ? sentenceMapMemoized[firstElIdInReview]
     : undefined;
-
-  const snippetTimeRangePhase = useMemo(() => {
-    if (!firstSnippetInReview) {
-      return null;
-    }
-    const { startTime, endTime } = getSnippetTimeRange(firstSnippetInReview);
-    return getCurrentTimeRangePhase(currentTime, startTime, endTime);
-  }, [firstSnippetInReview, currentTime]);
 
   const sentenceTimeRangePhase = useMemo(() => {
     if (!sentenceMapEntry) {
@@ -240,20 +222,16 @@ const LearningScreenReviewContentOnScreen = () => {
     return () => clearInterval(intervalId);
   }, [firstWordInReviewDisplay]);
 
-  if (firstSnippetInReview && isPlayingSnippetInReview) {
+  if (playingReviewedSnippet) {
     return (
-      <ReviewOverlayPanel
-        timeRangePhase={snippetTimeRangePhase}
-        showTimeRangeSlot
-        expanded
-      >
+      <ReviewOverlayPanel expanded>
         <SnippetReview
           variant='overlay'
-          snippetData={firstSnippetInReview}
+          snippetData={playingReviewedSnippet}
           handleLoopHere={(params) =>
             handleLoopReviewMode({
               ...params,
-              snippetId: firstSnippetInReview.id,
+              snippetId: playingReviewedSnippet.id,
             })
           }
           isVideoPlaying={isVideoPlaying}
@@ -271,7 +249,9 @@ const LearningScreenReviewContentOnScreen = () => {
             setThreeSecondLoopState(null);
             setContractThreeSecondLoopState(false);
           }}
-          isReadyForQuickReview={firstElIdInReview === firstSnippetInReview.id}
+          isReadyForQuickReview={
+            firstElIdInReview === playingReviewedSnippet.id
+          }
           handleBreakdownSentence={({ sentenceId }) =>
             handleBreakdownSentence({
               sentenceId,

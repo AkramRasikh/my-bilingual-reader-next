@@ -62,11 +62,9 @@ const LearningScreenUnifiedAnalytics = () => {
           💰 {bulkReviewCount}
         </Button>
       </span>
-      {totalRepsPerMinState && (
-        <p className='text-xs font-medium m-auto w-fit text-muted-foreground'>
-          Total/Min: {totalRepsPerMinState}
-        </p>
-      )}
+      <p className='w-36 overflow-hidden text-center text-xs font-medium whitespace-nowrap tabular-nums text-muted-foreground'>
+        Total/Min: {totalRepsPerMinState ?? '0.0'}
+      </p>
     </div>
   );
 };

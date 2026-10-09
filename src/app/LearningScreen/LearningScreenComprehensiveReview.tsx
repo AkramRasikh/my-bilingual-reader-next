@@ -97,7 +97,7 @@ const LearningScreenComprehensiveReview = () => {
   return (
     <>
       {postSnippetsMemoized?.length > 0 ? (
-        <div className='flex flex-col gap-2 mb-2'>
+        <div className='mb-2 flex min-w-0 max-w-full flex-col gap-2'>
           {postSnippetsMemoized.map((item) => {
             return (
               <SnippetReview

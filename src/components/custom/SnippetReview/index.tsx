@@ -1,7 +1,7 @@
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
 import SnippetReviewChineseAudioControls from './SnippetReviewAudioControls';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import FormattedSentenceSnippet from '@/components/custom/SnippetReview/SnippetReviewContent';
 import HighlightedText from '@/components/custom/HighlightedText';
 import {
@@ -28,6 +28,14 @@ import {
   getButtonMap,
   isGamepadButtonHeld,
 } from '@/app/LearningScreen/experimental/gamepadButtonMap';
+import {
+  clearSnippetReviewVisual,
+  getEmptySnippetReviewVisualSnapshot,
+  getSnippetReviewVisualSnapshot,
+  publishSnippetReviewVisual,
+  subscribeSnippetReviewVisual,
+  subscribeSnippetReviewVisualNoop,
+} from './snippetReviewVisualMirror';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -98,6 +106,29 @@ const SnippetReview = ({
   const [wordIsLoadingGamePadState, setWordIsLoadingGamePadState] = useState<
     null | number
   >(null);
+  const mirroredReviewVisual = useSyncExternalStore(
+    isOverlay ? subscribeSnippetReviewVisual : subscribeSnippetReviewVisualNoop,
+    isOverlay
+      ? getSnippetReviewVisualSnapshot
+      : getEmptySnippetReviewVisualSnapshot,
+    isOverlay
+      ? getSnippetReviewVisualSnapshot
+      : getEmptySnippetReviewVisualSnapshot,
+  );
+  const sharedVisual =
+    isOverlay && mirroredReviewVisual?.snippetId === snippetData.id
+      ? mirroredReviewVisual
+      : null;
+  const viewStartIndexKey = sharedVisual?.startIndexKey ?? startIndexKeyState;
+  const viewLengthAdjustment =
+    sharedVisual?.lengthAdjustment ?? lengthAdjustmentState;
+  const viewMatchStartWord = sharedVisual?.matchStartWord ?? matchStartWordState;
+  const viewMatchWordsHighlighted =
+    sharedVisual?.matchWordsHighlighted ?? matchWordsHighlghtedState;
+  const viewWordIsLoading =
+    sharedVisual?.wordIsLoading ?? wordIsLoadingGamePadState;
+  const viewIsLoadingSave =
+    sharedVisual?.isLoadingSave ?? isLoadingSaveSnippetState;
   const thisIsPlaying =
     isVideoPlaying && threeSecondLoopState === snippetData.time;
   const ulRef = useRef<NodeJS.Timeout | null>(null);
@@ -263,16 +294,16 @@ const SnippetReview = ({
     return highlightSnippetTextApprox(
       snippetData.targetLang,
       snippetData?.focusedText || snippetData?.suggestedFocusText || '',
-      isLoadingSaveSnippetState,
-      startIndexKeyState,
-      lengthAdjustmentState,
+      viewIsLoadingSave,
+      viewStartIndexKey,
+      viewLengthAdjustment,
       suggestedFocusStartIndex,
     );
   }, [
     snippetData,
-    isLoadingSaveSnippetState,
-    startIndexKeyState,
-    lengthAdjustmentState,
+    viewStartIndexKey,
+    viewLengthAdjustment,
+    viewIsLoadingSave,
     suggestedFocusStartIndex,
   ]);
 
@@ -297,6 +328,36 @@ const SnippetReview = ({
       setIsLoadingSaveSnippetState(false);
     }
   };
+
+  useEffect(() => {
+    if (isOverlay || !isReadyForQuickReview) return;
+
+    publishSnippetReviewVisual({
+      snippetId: snippetData.id,
+      startIndexKey: startIndexKeyState,
+      lengthAdjustment: lengthAdjustmentState,
+      matchStartWord: matchStartWordState,
+      matchWordsHighlighted: matchWordsHighlghtedState,
+      wordIsLoading: wordIsLoadingGamePadState,
+      isLoadingSave: isLoadingSaveSnippetState,
+    });
+  }, [
+    isOverlay,
+    isReadyForQuickReview,
+    snippetData.id,
+    startIndexKeyState,
+    lengthAdjustmentState,
+    matchStartWordState,
+    matchWordsHighlghtedState,
+    wordIsLoadingGamePadState,
+    isLoadingSaveSnippetState,
+  ]);
+
+  useEffect(() => {
+    if (isOverlay || !isReadyForQuickReview) return;
+
+    return () => clearSnippetReviewVisual(snippetData.id);
+  }, [isOverlay, isReadyForQuickReview, snippetData.id]);
 
   useEffect(() => {
     if (isOverlay) return;
@@ -596,6 +657,29 @@ const SnippetReview = ({
     setMatchWordsHighlghtedState(0);
   }, [matchStartWordState]);
 
+  const overlayMeanings = useMemo(() => {
+    if (!isOverlay) return [];
+
+    const meanings: string[] = [];
+    const seen = new Set<string>();
+    const pushMeaning = (value?: string) => {
+      const meaning = value?.trim();
+      if (!meaning || meaning === 'n/a' || seen.has(meaning)) return;
+      seen.add(meaning);
+      meanings.push(meaning);
+    };
+
+    const windowStart = snippetData.time - contractionAmount;
+    const windowEnd = snippetData.time + contractionAmount;
+    Object.values(sentenceMapMemoized).forEach((sentence) => {
+      const sentenceEnd = sentence.nextSentence ?? Number.POSITIVE_INFINITY;
+      const overlaps = sentence.time < windowEnd && sentenceEnd > windowStart;
+      if (overlaps) pushMeaning(sentence.meaning);
+    });
+
+    return meanings;
+  }, [isOverlay, snippetData, sentenceMapMemoized, contractionAmount]);
+
   const pinyinStart = Math.max(0, matchStartKey - 5);
 
   const slicedSnippetSegment = targetLangWithVocabStartIndex.slice(
@@ -619,8 +703,8 @@ const SnippetReview = ({
     <div
       className={
         isOverlay
-          ? 'relative text-sm leading-snug text-white [&_.bg-gray-200]:text-zinc-900'
-          : 'relative'
+          ? 'relative w-max max-w-full text-sm leading-snug text-foreground'
+          : 'relative max-w-full min-w-0'
       }
       data-testid={
         isOverlay
@@ -628,13 +712,17 @@ const SnippetReview = ({
           : `snippet-review-item-${snippetData.id}`
       }
     >
-      {isLoadingSaveSnippetState && (
+      {viewIsLoadingSave && (
         <div className='absolute right-1/2 top-3/10'>
           <LoadingSpinner />
         </div>
       )}
       <div className={isOverlay ? '' : 'rounded border py-2 px-1'}>
-        <div className={isOverlay ? 'flex min-w-0' : 'mb-2 flex min-w-0 gap-1'}>
+        <div
+          className={
+            isOverlay ? 'flex w-max max-w-full' : 'mb-2 flex min-w-0 gap-1'
+          }
+        >
           {isOverlay ? null : (
             <SnippetReviewChineseAudioControls
               thisIsPlaying={thisIsPlaying}
@@ -645,8 +733,12 @@ const SnippetReview = ({
               handleBreakdownSentence={handleBreakdownSentence}
             />
           )}
-          <div className='min-w-0 flex-1 text-center'>
-            <div className='min-w-0 max-w-full'>
+          <div
+            className={
+              isOverlay ? 'text-center' : 'min-w-0 flex-1 text-center'
+            }
+          >
+            <div className={isOverlay ? 'max-w-full' : 'min-w-0 max-w-full'}>
               <FormattedSentenceSnippet
                 ref={ulRef}
                 targetLangformatted={targetLangWithVocabStartIndex}
@@ -660,11 +752,11 @@ const SnippetReview = ({
                 handleSaveFunc={handleSaveFunc}
                 currentTime={currentTime}
                 isReadyForQuickReview={isReadyForQuickReview}
-                matchStartWordState={matchStartWordState}
+                matchStartWordState={viewMatchStartWord}
                 setMatchStartWordState={setMatchStartWordState}
                 togglableWordDataArrMemo={togglableWordDataArrMemo}
-                wordIsLoadingGamePadState={wordIsLoadingGamePadState}
-                matchWordsHighlghtedState={matchWordsHighlghtedState}
+                wordIsLoadingGamePadState={viewWordIsLoading}
+                matchWordsHighlghtedState={viewMatchWordsHighlighted}
               />
             </div>
             {showTransliteration && (
@@ -678,7 +770,7 @@ const SnippetReview = ({
                 isReadyForQuickReview={isReadyForQuickReview}
                 currentTime={currentTime}
                 togglableWordDataArrMemo={togglableWordDataArrMemo}
-                matchStartWordState={matchStartWordState}
+                matchStartWordState={viewMatchStartWord}
               />
             )}
 
@@ -690,8 +782,16 @@ const SnippetReview = ({
               pinyinStart={pinyinStart}
               vocab={vocab}
               togglableWordDataArrMemo={togglableWordDataArrMemo}
-              matchStartWordState={matchStartWordState}
+              matchStartWordState={viewMatchStartWord}
             />
+            {isOverlay && overlayMeanings.length > 0 && (
+              <p
+                data-testid='snippet-review-overlay-meaning'
+                className='mt-0.5 text-[9px] leading-tight text-zinc-600'
+              >
+                {overlayMeanings.join(' ')}
+              </p>
+            )}
             {!isOverlay && highlightedTextState && (
               <HighlightedText
                 isLoadingState={

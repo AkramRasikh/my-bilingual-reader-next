@@ -8,10 +8,10 @@ const LearningScreenTabWords = () => {
   return (
     <TabsContent
       value='words'
-      className={'p-1 max-h-130 min-[1367px]:max-h-150 overflow-y-auto'}
+      className='max-h-130 min-w-0 overflow-x-hidden overflow-y-auto p-1 min-[1367px]:max-h-150'
     >
-      <div className='text-center m-auto p-1.5'>
-        <ul className='flex flex-wrap gap-2.5 justify-center'>
+      <div className='m-auto w-full min-w-0 max-w-full p-1.5 text-center'>
+        <ul className='flex w-full min-w-0 flex-wrap justify-center gap-2.5'>
           {wordsForSelectedTopic.map((word, index) => (
             <LearningScreenWordCard
               key={word.id}

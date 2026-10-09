@@ -54,10 +54,12 @@ const ReviewTypeToggles = ({
   const checkboxesDisabled = !isInReviewMode;
 
   return (
-    <div className='flex justify-around items-center py-1 border-b-1 mx-2'>
+    <div className='mx-2 flex min-w-0 flex-wrap items-center justify-center gap-2 border-b py-1'>
       <div className='p-1 flex justify-center gap-4'>
         <div className='flex gap-2 my-auto'>
-          <Label data-testid='review-label'>Review</Label>
+          <Label data-testid='review-label' aria-label='Review'>
+            📚
+          </Label>
           <Switch
             checked={isInReviewMode}
             onCheckedChange={setIsInReviewMode}
@@ -65,7 +67,7 @@ const ReviewTypeToggles = ({
           />
         </div>
       </div>
-      <div className='flex items-center justify-center gap-6 my-auto'>
+      <div className='my-auto flex min-w-0 flex-wrap items-center justify-center gap-3'>
         <div className='flex items-center gap-2'>
           <Checkbox
             id='words-toggle'
@@ -114,19 +116,19 @@ const ReviewTypeToggles = ({
             ✂️ ({displaySnippetsCount})
           </Label>
         </div>
-        <div className='flex items-center gap-2 border rounded-md px-2 py-1'>
+        <div className='flex items-center gap-0.5 rounded-md border px-1 py-0.5'>
           <Button
             variant='ghost'
             size='icon'
-            className='h-6 w-6'
+            className='size-5'
             onClick={handleDecrement}
             disabled={!isInReviewMode || reviewIntervalState <= 30}
             data-testid='review-interval-decrement'
           >
-            <Minus className='h-3 w-3' />
+            <Minus className='size-3' />
           </Button>
           <span
-            className='text-xs font-medium min-w-12 text-center'
+            className='min-w-7 text-center text-[10px] font-medium tabular-nums'
             data-testid='review-interval-count'
           >
             {reviewIntervalState}s
@@ -134,12 +136,12 @@ const ReviewTypeToggles = ({
           <Button
             variant='ghost'
             size='icon'
-            className='h-6 w-6'
+            className='size-5'
             onClick={handleIncrement}
             disabled={!isInReviewMode || reviewIntervalState >= 210}
             data-testid='review-interval-increment'
           >
-            <Plus className='h-3 w-3' />
+            <Plus className='size-3' />
           </Button>
         </div>
       </div>

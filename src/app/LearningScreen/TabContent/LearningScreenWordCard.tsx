@@ -89,7 +89,7 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
     isVideoPlaying && word?.contexts?.[0] === masterPlay;
 
   return (
-    <li className={clsx('mx-auto', collapseState ? 'w-full' : '')}>
+    <li className='mx-auto w-full min-w-0 max-w-full'>
       {collapseState && (
         <div className='relative w-full p-3'>
           <div className='absolute left-5/10 top-1/3'>

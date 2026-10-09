@@ -71,7 +71,7 @@ test.describe('General toggles & verify UI elements', () => {
     await checkLearningScreenTab(page, 'meta-tab-trigger', 'Meta', false);
 
     // video controls
-    await checkVideoControl(page, 'review-label', 'review-switch', 'Review');
+    await checkVideoControl(page, 'review-label', 'review-switch', '📚');
     await checkVideoControl(page, 'english-label', 'english-switch', '🇬🇧');
     // test English toggle functionality
     await checkEnglishTranscriptToggles(page);

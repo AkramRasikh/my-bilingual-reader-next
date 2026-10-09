@@ -103,7 +103,7 @@ const LearningScreenTabTranscript = () => {
   }, [isInReviewMode]);
 
   return (
-    <div className={'border rounded-lg'}>
+    <div className='min-w-0 overflow-x-hidden rounded-lg border'>
       <ReviewTypeToggles
         enableWordReviewState={enableWordReviewState}
         setEnableWordReviewState={setEnableWordReviewState}
@@ -122,7 +122,7 @@ const LearningScreenTabTranscript = () => {
       <TabsContent value='transcript' className='min-h-0'>
         <div
           ref={transcriptScrollContainerRef}
-          className='max-h-130 min-[1367px]:max-h-150 overflow-y-auto'
+          className='max-h-130 min-w-0 overflow-x-hidden overflow-y-auto min-[1367px]:max-h-150'
         >
           {isInReviewMode ? (
             <LearningScreenComprehensiveReview />

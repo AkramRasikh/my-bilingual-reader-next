@@ -6,7 +6,7 @@ const WordCardWrapper = ({ isLoadingState, id, isWordDue, children }) => (
   <div
     className={clsx(
       isLoadingState ? 'mask-b-from-gray-700' : '',
-      'w-fit p-3 relative rounded-2xl min-w-md',
+      'relative w-full min-w-0 max-w-full break-words rounded-2xl p-3',
     )}
     data-testid={`word-card-wrapper-${id}`}
   >

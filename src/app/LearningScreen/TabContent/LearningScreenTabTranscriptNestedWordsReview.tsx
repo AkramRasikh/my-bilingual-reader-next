@@ -22,8 +22,8 @@ const LearningScreenTabTranscriptNestedWordsReview = ({
         </div>
       )}
       {showNestedRelevantWordsState && (
-        <div className='text-center m-auto p-1.5'>
-          <ul className='flex flex-wrap gap-2.5 m-auto'>
+        <div className='m-auto w-full min-w-0 max-w-full p-1.5 text-center'>
+          <ul className='m-auto flex w-full min-w-0 flex-wrap gap-2.5'>
             {topicWordsForReviewMemoized.map((word, index) => {
               return (
                 <LearningScreenWordCard

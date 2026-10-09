@@ -144,7 +144,7 @@ const ReviewSRSToggles = ({
   return (
     <div
       className={clsx(
-        'flex gap-1 m-1 justify-center',
+        'm-1 flex min-w-0 flex-wrap justify-center gap-1',
         isLoadingSRSState && 'opacity-25',
       )}
       data-testid={`review-srs-toggles-${contentItem.id}`}
