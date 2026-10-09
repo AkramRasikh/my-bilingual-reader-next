@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React from 'react';
 
 interface SnippetReviewBreakdownDefinitionsProps {
-  slicedSnippetSegment: Array<{ startIndex?: number }>;
+  slicedSnippetSegment: Array<{ startIndex?: number; index?: number }>;
   vocab: Record<number, { meaning: string }>;
   getColorByIndex: (index?: number) => string;
   matchStartKey: number;
@@ -41,13 +41,15 @@ const SnippetReviewBreakdownDefinitions: React.FC<
         ) {
           return null;
         }
+        const charIndex =
+          typeof item.index === 'number' ? item.index : index + pinyinStart;
         const low = Math.min(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
         const high = Math.max(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
         const animateText =
           matchingStartIndex !== undefined &&
           matchingEndIndex !== undefined &&
-          index >= low &&
-          index <= high;
+          charIndex >= low &&
+          charIndex <= high;
         if (
           typeof correspondingMeaning === 'string' &&
           correspondingMeaning.length > 20
@@ -61,11 +63,10 @@ const SnippetReviewBreakdownDefinitions: React.FC<
             style={{
               color: getColorByIndex(item?.startIndex),
               opacity:
-                index < matchStartKey - pinyinStart || index > matchEndKey
-                  ? 0.25
-                  : 1,
+                charIndex < matchStartKey || charIndex > matchEndKey ? 0.25 : 1,
               fontStyle:
-                index < Math.max(0, matchStartKey - 5) || index > matchEndKey
+                charIndex < Math.max(0, matchStartKey - 5) ||
+                charIndex > matchEndKey
                   ? 'italic'
                   : 'bold',
               fontSize: '10px',

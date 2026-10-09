@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { useGamepad } from '@/app/LearningScreen/experimental/useGamePad';
 import SnippetReviewChinese from './index';
 import { LanguageEnum } from '@/app/languages';
 
@@ -6,6 +7,7 @@ import {
   mockSnippets,
   mockSnippetNoVocab,
   mockSnippetPartiallyBrokenDown,
+  mockSnippetRepeatedSingular,
   mockSelectedContentChinese,
   mockArabicSnippet,
   mockFrenchSnippet,
@@ -17,6 +19,35 @@ type SnippetReviewChineseStoryRootProps = {
   snippetData: (typeof mockSnippets)[0];
   languageSelectedState?: LanguageEnum;
 };
+
+function bridgeStorybookGamepads() {
+  if (typeof window === 'undefined' || window.parent === window) return;
+
+  const nav = navigator as Navigator & { __snippetReviewPadsBridged?: boolean };
+  if (nav.__snippetReviewPadsBridged) return;
+
+  const original = navigator.getGamepads.bind(navigator);
+  navigator.getGamepads = () => {
+    const local = original();
+    if (Array.from(local).some((pad) => pad !== null)) return local;
+
+    try {
+      const parentPads = window.parent.navigator.getGamepads();
+      if (Array.from(parentPads).some((pad) => pad !== null)) return parentPads;
+    } catch {
+      return local;
+    }
+
+    return local;
+  };
+  nav.__snippetReviewPadsBridged = true;
+}
+
+function StorybookSnippetGamepad({ loopTime }: { loopTime: number }) {
+  bridgeStorybookGamepads();
+  useGamepad(() => {}, loopTime || 1, false, false);
+  return null;
+}
 
 const SnippetReviewChineseStoryRoot = ({
   snippetData,
@@ -49,6 +80,26 @@ const meta = {
   parameters: {
     layout: 'padded',
   },
+  decorators: [
+    (Story, context) => {
+      if (context.viewMode !== 'story') return <Story />;
+
+      const snippetData = context.args.snippetData;
+      const loopTime =
+        snippetData && typeof snippetData.time === 'number' ? snippetData.time : 1;
+
+      return (
+        <>
+          <p className='mb-3 text-xs text-muted-foreground'>
+            Click this canvas once, then use the controller. Boundary moves, word
+            selection, and the review buttons are live on this card.
+          </p>
+          <StorybookSnippetGamepad loopTime={loopTime} />
+          <Story />
+        </>
+      );
+    },
+  ],
   tags: ['autodocs'],
 } satisfies Meta<typeof SnippetReviewChineseStoryRoot>;
 
@@ -71,6 +122,12 @@ export const FocusedSnippet: Story = {
 export const ContractedSnippet: Story = {
   args: {
     snippetData: mockSnippets[2],
+  },
+};
+
+export const RepeatedSingularCharacters: Story = {
+  args: {
+    snippetData: mockSnippetRepeatedSingular,
   },
 };
 export const SnippetNoVocab: Story = {

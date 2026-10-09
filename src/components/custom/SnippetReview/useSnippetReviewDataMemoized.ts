@@ -4,6 +4,77 @@ import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/f
 import { Snippet, ContentTranscriptTypes } from '@/app/types/content-types';
 import { WordTypes } from '@/app/types/word-types';
 
+type VocabSpanItem = {
+  surfaceForm?: string;
+  meaning?: string;
+  sentenceId?: string;
+};
+
+type CharacterWithVocab<T> = T & {
+  startIndex?: number;
+  surfaceForm?: string;
+  meaning?: string;
+  sentenceId?: string;
+  secondForIndex?: number;
+};
+
+export function assignVocabSpans<T extends { text: string }>(
+  characters: T[],
+  vocab: VocabSpanItem[] | undefined,
+  secondForIndex?: (index: number) => number | false | null,
+): CharacterWithVocab<T>[] {
+  const withVocab: CharacterWithVocab<T>[] = characters.map((character) => ({
+    ...character,
+  }));
+  if (!vocab || vocab.length === 0) return withVocab;
+
+  const claimed = new Array<boolean>(withVocab.length).fill(false);
+  const placements = vocab
+    .map((item, vocabIdx) => ({ item, vocabIdx }))
+    .filter(({ item }) => Boolean(item.surfaceForm))
+    .sort(
+      (a, b) =>
+        (b.item.surfaceForm?.length ?? 0) - (a.item.surfaceForm?.length ?? 0) ||
+        a.vocabIdx - b.vocabIdx,
+    );
+
+  placements.forEach(({ item, vocabIdx }) => {
+    const surfaceForm = item.surfaceForm ?? '';
+    for (let start = 0; start <= withVocab.length - surfaceForm.length; start++) {
+      let match = true;
+      for (let offset = 0; offset < surfaceForm.length; offset++) {
+        if (
+          claimed[start + offset] ||
+          withVocab[start + offset]?.text !== surfaceForm[offset]
+        ) {
+          match = false;
+          break;
+        }
+      }
+      if (!match) continue;
+
+      for (let offset = 0; offset < surfaceForm.length; offset++) {
+        const index = start + offset;
+        claimed[index] = true;
+        const secondForIndexValue = secondForIndex?.(index);
+        withVocab[index] = {
+          ...withVocab[index],
+          startIndex: vocabIdx,
+          surfaceForm,
+          meaning: item.meaning,
+          ...(typeof secondForIndexValue === 'number'
+            ? { secondForIndex: secondForIndexValue }
+            : {}),
+          ...(item.sentenceId ? { sentenceId: item.sentenceId } : {}),
+        };
+      }
+      break;
+    }
+  });
+
+  return withVocab;
+}
+
 interface UseSnippetReviewDataMemoizedArgs {
   snippetData: Snippet & Pick<ContentTranscriptTypes, 'vocab'>;
   wordsState: WordTypes[];
@@ -38,42 +109,12 @@ export function useSnippetReviewDataMemoized({
       true,
     );
 
-    let targetLangWithVocabStartIndex = [...targetLangformatted];
-    if (snippetData.vocab && snippetData.vocab.length > 0) {
-      snippetData.vocab.forEach((vocabItem, vocabIdx) => {
-        const { surfaceForm, sentenceId, meaning } = vocabItem;
-        if (!surfaceForm) return;
-        let start = 0;
-        while (start < targetLangformatted.length) {
-          let match = true;
-          for (let j = 0; j < surfaceForm.length; j++) {
-            if (targetLangformatted[start + j]?.text !== surfaceForm[j]) {
-              match = false;
-              break;
-            }
-          }
-          if (match) {
-            for (let j = 0; j < surfaceForm.length; j++) {
-              const index = start + j;
-              const secondForIndex =
-                isReadyForQuickReview && Number?.(getSecondForIndex(index));
-
-              targetLangWithVocabStartIndex[index] = {
-                ...targetLangWithVocabStartIndex[index],
-                startIndex: vocabIdx,
-                surfaceForm,
-                meaning,
-                secondForIndex,
-                ...(sentenceId ? { sentenceId } : {}),
-              };
-            }
-            start += surfaceForm.length;
-          } else {
-            start++;
-          }
-        }
-      });
-    }
+    const targetLangWithVocabStartIndex = assignVocabSpans(
+      targetLangformatted,
+      snippetData.vocab,
+      (index) =>
+        isReadyForQuickReview ? Number(getSecondForIndex(index)) : false,
+    );
 
     const sentencesToBreakdownMap = new Map();
     targetLangWithVocabStartIndex.forEach((item, idx) => {

@@ -286,6 +286,38 @@ export const mockSnippets = [
   },
 ];
 
+export const mockSnippetRepeatedSingular = {
+  baseLang: 'Good or not good? Good.',
+  id: 'mock-repeated-singular-hao',
+  isContracted: false,
+  isPreSnippet: false,
+  focusedText: '好不好，好',
+  suggestedFocusText: '好不好',
+  targetLang: '好不好，好。',
+  time: 12,
+  reviewData: {
+    difficulty: 6.5,
+    due: '2026-02-13T05:00:00.000Z',
+    ease: 2.5,
+    elapsed_days: 1,
+    interval: 0,
+    lapses: 0,
+    last_review: '2026-02-10T10:17:43.811Z',
+    reps: 2,
+    scheduled_days: 1,
+    stability: 2.1,
+    state: 2,
+  },
+  vocab: [
+    { meaning: 'good', surfaceForm: '好' },
+    { meaning: 'not', surfaceForm: '不' },
+    { meaning: 'good', surfaceForm: '好' },
+    { meaning: 'comma', surfaceForm: '，' },
+    { meaning: 'good', surfaceForm: '好' },
+    { meaning: 'period', surfaceForm: '。' },
+  ],
+};
+
 export const mockSnippetNoVocab = {
   baseLang: "Today I'll sing you aA tongue twister, okay?",
   id: 'c0f3a3ec-afc2-4b45-a7c7-354c9000fdb6',
