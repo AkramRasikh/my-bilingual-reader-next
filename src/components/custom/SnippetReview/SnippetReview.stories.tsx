@@ -8,6 +8,8 @@ import {
   mockSnippetNoVocab,
   mockSnippetPartiallyBrokenDown,
   mockSnippetRepeatedSingular,
+  mockSnippetRepeatedSingularJapanese,
+  mockSnippetRepeatedSingularFrench,
   mockSelectedContentChinese,
   mockArabicSnippet,
   mockFrenchSnippet,
@@ -149,6 +151,13 @@ export const DefaultJapanese: Story = {
   },
 };
 
+export const RepeatedSingularCharactersJapanese: Story = {
+  args: {
+    snippetData: mockSnippetRepeatedSingularJapanese,
+    languageSelectedState: LanguageEnum.Japanese,
+  },
+};
+
 export const DefaultArabic: Story = {
   args: {
     snippetData: mockArabicSnippet,
@@ -183,5 +192,12 @@ export const DefaultFrench: Story = {
         },
       } as WordTypes,
     ],
+  },
+};
+
+export const RepeatedSingularCharactersFrench: Story = {
+  args: {
+    snippetData: mockSnippetRepeatedSingularFrench,
+    languageSelectedState: LanguageEnum.French,
   },
 };
