@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import LearningScreenThreeSecondLoopEl from './LearningScreenThreeSecondLoopEl';
 import LearningScreenReviewContentOnScreen from './LearningScreenReviewContentOnScreen';
+import LearningScreenSnippetCoverageDot from './LearningScreenSnippetCoverageDot';
 import useLearningScreen from './useLearningScreen';
 import { LanguageEnum } from '../languages';
 import {
@@ -213,6 +214,7 @@ const LearningScreenVideoPlayer = ({
           </div>
         ) : null}
         <LearningScreenReviewContentOnScreen />
+        <LearningScreenSnippetCoverageDot />
       </div>
 
       <div className='flex w-full min-w-0 items-center gap-2 border-t border-white/10 bg-zinc-950/95 px-2 py-1.5 text-white'>
