@@ -8,6 +8,7 @@ import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap
 import {
   getCurrentTimeRangePhase,
   getSentenceTimeRange,
+  getTimeRangeProgress,
   type ReviewTimeRangePhase,
 } from './learning-screen-review-time-range';
 
@@ -68,20 +69,27 @@ function ReviewOverlayPanel({
   timeRangePhase = null,
   showTimeRangeSlot = false,
   expanded = false,
+  progress = null,
 }: {
   children: React.ReactNode;
   timeRangePhase?: ReviewTimeRangePhase | null;
   showTimeRangeSlot?: boolean;
   expanded?: boolean;
+  progress?: number | null;
 }) {
   const textClassName =
     'text-sm font-medium break-words text-black';
 
   const containerBorderClassName = 'border border-zinc-400';
 
+  const showProgress = progress != null && Number.isFinite(progress);
+  const progressPercent = showProgress
+    ? Math.min(100, Math.max(0, progress * 100))
+    : 0;
+
   const containerClassName = expanded
     ? `pointer-events-auto mx-auto max-h-[50%] w-fit max-w-[calc(100%-1rem)] overflow-y-auto rounded-md bg-amber-50 px-3 py-1.5 text-foreground ${containerBorderClassName}`
-    : `pointer-events-auto mx-auto w-fit max-w-[66.666%] rounded-md bg-amber-50 px-4 py-1.5 text-black ${containerBorderClassName}`;
+    : `pointer-events-auto relative mx-auto w-fit max-w-[66.666%] overflow-hidden rounded-md bg-amber-50 px-4 py-1.5 text-black ${containerBorderClassName}`;
 
   return (
     <div className='pointer-events-none absolute inset-0 bottom-0 flex flex-col justify-end'>
@@ -91,6 +99,23 @@ function ReviewOverlayPanel({
           expanded ? 'learning-screen-review-snippet-focus-text' : undefined
         }
       >
+        {showProgress && (
+          <div
+            className='pointer-events-none absolute inset-x-0 top-0 h-1 bg-amber-200'
+            data-testid='learning-screen-review-sentence-progress'
+            role='progressbar'
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(progressPercent)}
+            aria-label='Sentence playback progress'
+          >
+            <div
+              className='h-full bg-amber-600'
+              data-testid='learning-screen-review-sentence-progress-fill'
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        )}
         {expanded ? (
           children
         ) : showTimeRangeSlot ? (
@@ -115,6 +140,7 @@ const LearningScreenReviewContentOnScreen = () => {
     postSentencesMemoized,
     isSavedLoopPlayingState,
     currentTime,
+    ref,
     mediaDuration,
     sentenceMapMemoized,
     threeSecondLoopState,
@@ -135,6 +161,7 @@ const LearningScreenReviewContentOnScreen = () => {
   const { languageSelectedState, wordsState } = useFetchData();
 
   const [showWordDetailsState, setShowWordDetailsState] = useState(false);
+  const [liveTime, setLiveTime] = useState(currentTime);
   const quickReviewToggleFiredRef = useRef(false);
 
   const playingReviewedSnippet = useMemo(() => {
@@ -157,21 +184,60 @@ const LearningScreenReviewContentOnScreen = () => {
 
   const isFirstSentenceInReview =
     Boolean(firstSentenceInReview) && sentenceTargetLang.length > 0;
+  const showSentenceOverlay =
+    isFirstSentenceInReview && !playingReviewedSnippet;
 
   const sentenceMapEntry = firstElIdInReview
     ? sentenceMapMemoized[firstElIdInReview]
     : undefined;
 
-  const sentenceTimeRangePhase = useMemo(() => {
+  useEffect(() => {
+    if (!isVideoPlaying || !showSentenceOverlay) return;
+
+    let frame = 0;
+    const tick = () => {
+      const time = ref.current?.currentTime;
+      if (typeof time === 'number' && Number.isFinite(time)) {
+        setLiveTime(time);
+      }
+      frame = requestAnimationFrame(tick);
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [isVideoPlaying, showSentenceOverlay, ref]);
+
+  const sentencePlayhead =
+    isVideoPlaying && showSentenceOverlay ? liveTime : currentTime;
+
+  const sentenceTimeRange = useMemo(() => {
     if (!sentenceMapEntry) {
       return null;
     }
-    const { startTime, endTime } = getSentenceTimeRange(
-      sentenceMapEntry,
-      mediaDuration,
+    return getSentenceTimeRange(sentenceMapEntry, mediaDuration);
+  }, [sentenceMapEntry, mediaDuration]);
+
+  const sentenceTimeRangePhase = useMemo(() => {
+    if (!sentenceTimeRange) {
+      return null;
+    }
+    return getCurrentTimeRangePhase(
+      sentencePlayhead,
+      sentenceTimeRange.startTime,
+      sentenceTimeRange.endTime,
     );
-    return getCurrentTimeRangePhase(currentTime, startTime, endTime);
-  }, [sentenceMapEntry, mediaDuration, currentTime]);
+  }, [sentenceTimeRange, sentencePlayhead]);
+
+  const sentenceProgress = useMemo(() => {
+    if (!sentenceTimeRange) {
+      return 0;
+    }
+    return getTimeRangeProgress(
+      sentencePlayhead,
+      sentenceTimeRange.startTime,
+      sentenceTimeRange.endTime,
+    );
+  }, [sentenceTimeRange, sentencePlayhead]);
 
   const phonetic = firstWordInReviewDisplay?.phonetic?.trim() ?? '';
   const transliteration = firstWordInReviewDisplay?.transliteration?.trim() ?? '';
@@ -285,6 +351,7 @@ const LearningScreenReviewContentOnScreen = () => {
       <ReviewOverlayPanel
         timeRangePhase={sentenceTimeRangePhase}
         showTimeRangeSlot
+        progress={sentenceProgress}
       >
         <span
           data-testid='learning-screen-review-sentence-target-lang'

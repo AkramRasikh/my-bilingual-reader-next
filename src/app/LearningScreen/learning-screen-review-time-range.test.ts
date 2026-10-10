@@ -3,6 +3,7 @@ import {
   getCurrentTimeRangePhase,
   getSentenceTimeRange,
   getSnippetTimeRange,
+  getTimeRangeProgress,
   isCurrentTimeBeyondRange,
 } from './learning-screen-review-time-range';
 
@@ -67,6 +68,27 @@ describe('getCurrentTimeRangePhase', () => {
 
   it('returns before when only start is known and playback is earlier', () => {
     expect(getCurrentTimeRangePhase(7, 8.5, null)).toBe('before');
+  });
+});
+
+describe('getTimeRangeProgress', () => {
+  it('stays empty before the range and full after it', () => {
+    expect(getTimeRangeProgress(8, 10, 12)).toBe(0);
+    expect(getTimeRangeProgress(10, 10, 12)).toBe(0);
+    expect(getTimeRangeProgress(13, 10, 12)).toBe(1);
+    expect(getTimeRangeProgress(12, 10, 12)).toBe(1);
+  });
+
+  it('returns the fraction of the range that has played', () => {
+    expect(getTimeRangeProgress(11, 10, 12)).toBeCloseTo(0.5);
+  });
+
+  it('returns 0 when the end is unknown', () => {
+    expect(getTimeRangeProgress(11, 10, null)).toBe(0);
+  });
+
+  it('treats a zero-length range that playback has passed as complete', () => {
+    expect(getTimeRangeProgress(11, 10, 10)).toBe(1);
   });
 });
 
