@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useLearningScreen from './useLearningScreen';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
+import { chinese } from '@/app/languages';
 import SnippetReview from '@/components/custom/SnippetReview';
 import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap';
 import {
@@ -11,7 +12,10 @@ import {
   getTimeRangeProgress,
   type ReviewTimeRangePhase,
 } from './learning-screen-review-time-range';
-import ReviewSentenceOverlayText from './ReviewSentenceOverlayText';
+import ReviewSentenceOverlayText, {
+  ColoredPhraseBreakdown,
+} from './ReviewSentenceOverlayText';
+import { findSavedWordBreakdown } from './find-breakdown-pieces-for-phrase';
 
 const TIME_RANGE_PHASE_STYLES: Record<
   ReviewTimeRangePhase,
@@ -247,15 +251,34 @@ const LearningScreenReviewContentOnScreen = () => {
   const phoneticOnFormsLine =
     phonetic && phonetic !== transliteration ? phonetic : '';
 
+  const showWordOverlay = Boolean(firstElIdInReview && firstWordDefinitionInReview);
+
+  const wordPhrasePieces = useMemo(() => {
+    const surfaceForm = firstWordInReviewDisplay?.surfaceForm;
+    if (!surfaceForm) {
+      return null;
+    }
+    const contextId = firstWordInReviewDisplay?.contextId;
+    const contextSentence = contextId
+      ? sentenceMapMemoized[contextId]
+      : undefined;
+    return findSavedWordBreakdown(
+      surfaceForm,
+      Object.values(sentenceMapMemoized),
+      contextSentence,
+    );
+  }, [firstWordInReviewDisplay, sentenceMapMemoized]);
+
+  const breakdownShowsReading =
+    Boolean(wordPhrasePieces) && languageSelectedState === chinese;
+
   const compactWordDetailsText = [
-    surfaceForm,
+    wordPhrasePieces ? '' : surfaceForm,
     baseForm && baseForm !== surfaceForm ? baseForm : '',
     phoneticOnFormsLine,
   ]
     .filter(Boolean)
     .join(' - ');
-
-  const showWordOverlay = Boolean(firstElIdInReview && firstWordDefinitionInReview);
 
   useEffect(() => {
     setShowWordDetailsState(false);
@@ -375,6 +398,15 @@ const LearningScreenReviewContentOnScreen = () => {
       <span data-testid='learning-screen-review-word-text' className='block'>
         {firstWordDefinitionInReview}
       </span>
+      {showWordDetailsState && wordPhrasePieces ? (
+        <ColoredPhraseBreakdown
+          pieces={wordPhrasePieces}
+          languageSelectedState={languageSelectedState}
+          testId='learning-screen-review-word-breakdown'
+          pinyinTestId='learning-screen-review-word-breakdown-pinyin'
+          withTopMargin
+        />
+      ) : null}
       {showWordDetailsState && compactWordDetailsText ? (
         <span
           data-testid='learning-screen-review-word-details'
@@ -383,7 +415,7 @@ const LearningScreenReviewContentOnScreen = () => {
           {compactWordDetailsText}
         </span>
       ) : null}
-      {showWordDetailsState && transliteration ? (
+      {showWordDetailsState && transliteration && !breakdownShowsReading ? (
         <span
           data-testid='learning-screen-review-word-transliteration'
           className='mt-0.5 block'

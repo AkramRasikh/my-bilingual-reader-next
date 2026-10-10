@@ -85,7 +85,9 @@ export type ContextIdType = WordTypes['contexts'][number];
 type FirstWordInReviewDisplay = Pick<
   WordTypes,
   'definition' | 'surfaceForm' | 'baseForm' | 'phonetic' | 'transliteration'
->;
+> & {
+  contextId?: string;
+};
 
 export interface LearningScreenContextTypes {
   getSentenceFromContextId: (contextId: ContextIdType) => string;
@@ -1092,6 +1094,7 @@ export const LearningScreenProvider = ({
       baseForm: firstWord.baseForm,
       phonetic: firstWord.phonetic,
       transliteration: firstWord.transliteration,
+      contextId: firstWord.contexts?.[0],
     };
   }, [firstElIdInReview, postWordsMemoized]);
 
