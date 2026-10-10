@@ -84,7 +84,7 @@ function ReviewOverlayPanel({
     : `pointer-events-auto mx-auto w-fit max-w-[66.666%] rounded-md bg-amber-50 px-4 py-1.5 text-black ${containerBorderClassName}`;
 
   return (
-    <div className='pointer-events-none absolute inset-0 flex flex-col justify-end pb-4'>
+    <div className='pointer-events-none absolute inset-0 bottom-0 flex flex-col justify-end'>
       <div
         className={containerClassName}
         data-testid={
@@ -175,14 +175,15 @@ const LearningScreenReviewContentOnScreen = () => {
 
   const phonetic = firstWordInReviewDisplay?.phonetic?.trim() ?? '';
   const transliteration = firstWordInReviewDisplay?.transliteration?.trim() ?? '';
-  const pronunciationParts =
-    phonetic && phonetic === transliteration
-      ? [phonetic]
-      : [phonetic, transliteration].filter(Boolean);
+  const surfaceForm = firstWordInReviewDisplay?.surfaceForm?.trim() ?? '';
+  const baseForm = firstWordInReviewDisplay?.baseForm?.trim() ?? '';
+  const phoneticOnFormsLine =
+    phonetic && phonetic !== transliteration ? phonetic : '';
 
   const compactWordDetailsText = [
-    firstWordInReviewDisplay?.surfaceForm?.trim() ?? '',
-    ...pronunciationParts,
+    surfaceForm,
+    baseForm && baseForm !== surfaceForm ? baseForm : '',
+    phoneticOnFormsLine,
   ]
     .filter(Boolean)
     .join(' - ');
@@ -309,11 +310,25 @@ const LearningScreenReviewContentOnScreen = () => {
 
   return (
     <ReviewOverlayPanel>
-      <span data-testid='learning-screen-review-word-text'>
-        {showWordDetailsState && compactWordDetailsText
-          ? compactWordDetailsText
-          : firstWordDefinitionInReview}
+      <span data-testid='learning-screen-review-word-text' className='block'>
+        {firstWordDefinitionInReview}
       </span>
+      {showWordDetailsState && compactWordDetailsText ? (
+        <span
+          data-testid='learning-screen-review-word-details'
+          className='mt-0.5 block'
+        >
+          {compactWordDetailsText}
+        </span>
+      ) : null}
+      {showWordDetailsState && transliteration ? (
+        <span
+          data-testid='learning-screen-review-word-transliteration'
+          className='mt-0.5 block'
+        >
+          {transliteration}
+        </span>
+      ) : null}
     </ReviewOverlayPanel>
   );
 };

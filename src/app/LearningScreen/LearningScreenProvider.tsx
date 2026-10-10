@@ -84,7 +84,7 @@ interface TopicWordsForReviewMemoizedProps extends WordTypes {
 export type ContextIdType = WordTypes['contexts'][number];
 type FirstWordInReviewDisplay = Pick<
   WordTypes,
-  'definition' | 'surfaceForm' | 'phonetic' | 'transliteration'
+  'definition' | 'surfaceForm' | 'baseForm' | 'phonetic' | 'transliteration'
 >;
 
 export interface LearningScreenContextTypes {
@@ -1089,6 +1089,7 @@ export const LearningScreenProvider = ({
     return {
       definition: firstWord.definition,
       surfaceForm: firstWord.surfaceForm,
+      baseForm: firstWord.baseForm,
       phonetic: firstWord.phonetic,
       transliteration: firstWord.transliteration,
     };
