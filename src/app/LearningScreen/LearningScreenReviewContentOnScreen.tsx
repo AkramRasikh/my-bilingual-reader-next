@@ -79,17 +79,17 @@ function ReviewOverlayPanel({
   expanded?: boolean;
 }) {
   const textClassName =
-    'text-xs font-bold break-words text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]';
+    'text-sm font-medium break-words text-black';
 
   const containerBorderClassName = expanded
     ? 'border border-zinc-400'
     : showTimeRangeSlot && timeRangePhase
       ? TIME_RANGE_PHASE_STYLES[timeRangePhase].borderClassName
-      : 'border border-white/20';
+      : 'border border-zinc-400';
 
   const containerClassName = expanded
     ? `pointer-events-auto mx-auto max-h-[50%] w-fit max-w-[calc(100%-1rem)] overflow-y-auto rounded-md bg-amber-50 px-3 py-1.5 text-foreground ${containerBorderClassName}`
-    : `pointer-events-auto mx-auto w-fit max-w-[66.666%] rounded-md bg-black/80 px-4 py-1.5 ${containerBorderClassName}`;
+    : `pointer-events-auto mx-auto w-fit max-w-[66.666%] rounded-md bg-amber-50 px-4 py-1.5 text-black ${containerBorderClassName}`;
 
   return (
     <div className='pointer-events-none absolute inset-0 flex flex-col justify-end pb-4'>
@@ -178,12 +178,18 @@ const LearningScreenReviewContentOnScreen = () => {
     return getCurrentTimeRangePhase(currentTime, startTime, endTime);
   }, [sentenceMapEntry, mediaDuration, currentTime]);
 
+  const phonetic = firstWordInReviewDisplay?.phonetic?.trim() ?? '';
+  const transliteration = firstWordInReviewDisplay?.transliteration?.trim() ?? '';
+  const pronunciationParts =
+    phonetic && phonetic === transliteration
+      ? [phonetic]
+      : [phonetic, transliteration].filter(Boolean);
+
   const compactWordDetailsText = [
-    firstWordInReviewDisplay?.surfaceForm,
-    firstWordInReviewDisplay?.phonetic,
-    firstWordInReviewDisplay?.transliteration,
+    firstWordInReviewDisplay?.surfaceForm?.trim() ?? '',
+    ...pronunciationParts,
   ]
-    .filter((item) => Boolean(item && item.trim()))
+    .filter(Boolean)
     .join(' - ');
 
   const showWordOverlay = Boolean(firstElIdInReview && firstWordDefinitionInReview);
