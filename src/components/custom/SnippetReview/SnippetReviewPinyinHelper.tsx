@@ -27,6 +27,7 @@ interface SnippetReviewPinyinHelperProps {
   currentTime?: number;
   togglableWordDataArrMemo?: TogglableWord[];
   matchStartWordState?: number | null;
+  matchWordsHighlghtedState?: number;
 }
 
 const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
@@ -40,13 +41,18 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
   currentTime,
   togglableWordDataArrMemo,
   matchStartWordState,
+  matchWordsHighlghtedState = 0,
 }) => {
   const matchingWordData =
     matchStartWordState == null
       ? undefined
       : togglableWordDataArrMemo?.[matchStartWordState];
+  const matchingEndWord =
+    matchStartWordState == null
+      ? undefined
+      : togglableWordDataArrMemo?.[matchStartWordState + matchWordsHighlghtedState];
   const matchingStartIndex = matchingWordData?.index;
-  const matchingEndIndex = matchingWordData?.endIndex;
+  const matchingEndIndex = matchingEndWord?.endIndex;
 
   const isArabic = languageSelectedState === LanguageEnum.Arabic;
   const syllables = slicedSnippetSegment.map((item, index) => {
@@ -116,14 +122,12 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
 
     const run = [current];
     let next = index + 1;
-    while (
-      next < syllables.length &&
-      syllables[next].animateText &&
-      syllables[next].item?.startIndex === current.item?.startIndex
-    ) {
+    while (next < syllables.length && syllables[next].animateText) {
       run.push(syllables[next]);
       next += 1;
     }
+    const coversSeveralWords =
+      new Set(run.map((part) => part.item?.startIndex)).size > 1;
 
     rows.push(
       <React.Fragment key={current.charIndex}>
@@ -132,18 +136,22 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
           data-testid='snippet-review-pinyin-selected'
           className='relative inline-block animate-pulse rounded border leading-none'
           style={{
-            color: getColorByIndex(current.item?.startIndex),
-            borderColor: getColorByIndex(current.item?.startIndex),
+            borderColor: coversSeveralWords
+              ? '#52525b'
+              : getColorByIndex(current.item?.startIndex),
           }}
         >
           {run.map((part, partIndex) => (
-            <React.Fragment key={part.charIndex}>
+            <span
+              key={part.charIndex}
+              style={{ color: getColorByIndex(part.item?.startIndex) }}
+            >
               {isArabic && isReadyForQuickReview && (
                 <FormattedSentenceSnippetProgressWidget played={part.played} />
               )}
               {partIndex > 0 && part.addSpace && ' '}
               {part.syllable}
-            </React.Fragment>
+            </span>
           ))}
         </span>
       </React.Fragment>,

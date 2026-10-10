@@ -771,6 +771,7 @@ const SnippetReview = ({
                 currentTime={currentTime}
                 togglableWordDataArrMemo={togglableWordDataArrMemo}
                 matchStartWordState={viewMatchStartWord}
+                matchWordsHighlghtedState={viewMatchWordsHighlighted}
               />
             )}
 
@@ -783,6 +784,7 @@ const SnippetReview = ({
               vocab={vocab}
               togglableWordDataArrMemo={togglableWordDataArrMemo}
               matchStartWordState={viewMatchStartWord}
+              matchWordsHighlghtedState={viewMatchWordsHighlighted}
             />
             {isOverlay && overlayMeanings.length > 0 && (
               <p

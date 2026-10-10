@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import React from 'react';
 
 interface SnippetReviewBreakdownDefinitionsProps {
@@ -8,6 +7,9 @@ interface SnippetReviewBreakdownDefinitionsProps {
   matchStartKey: number;
   matchEndKey: number;
   pinyinStart: number;
+  togglableWordDataArrMemo?: Array<{ index?: number; endIndex?: number }>;
+  matchStartWordState?: number | null;
+  matchWordsHighlghtedState?: number;
 }
 
 const SnippetReviewBreakdownDefinitions: React.FC<
@@ -21,70 +23,130 @@ const SnippetReviewBreakdownDefinitions: React.FC<
   pinyinStart,
   togglableWordDataArrMemo,
   matchStartWordState,
+  matchWordsHighlghtedState = 0,
 }) => {
-  const matchingWordData = togglableWordDataArrMemo?.[matchStartWordState];
-
+  const matchingWordData =
+    matchStartWordState == null
+      ? undefined
+      : togglableWordDataArrMemo?.[matchStartWordState];
+  const matchingEndWord =
+    matchStartWordState == null
+      ? undefined
+      : togglableWordDataArrMemo?.[
+          matchStartWordState + matchWordsHighlghtedState
+        ];
   const matchingStartIndex = matchingWordData?.index;
-  const matchingEndIndex =
-    togglableWordDataArrMemo?.[matchStartWordState]?.endIndex;
+  const matchingEndIndex = matchingEndWord?.endIndex;
 
-  return (
-    <div>
-      {slicedSnippetSegment.map((item, index) => {
-        const prev = slicedSnippetSegment[index - 1];
-        const addSpace = index > 0 && item?.startIndex !== prev?.startIndex;
-        let correspondingMeaning = vocab[item?.startIndex]?.meaning;
-        // Return null if meaning is 'n/a' or startIndex is the same as previous
-        if (
-          correspondingMeaning === 'n/a' ||
-          (index > 0 && item?.startIndex === prev?.startIndex)
-        ) {
-          return null;
-        }
-        const charIndex =
-          typeof item.index === 'number' ? item.index : index + pinyinStart;
-        const low = Math.min(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
-        const high = Math.max(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
-        const animateText =
-          matchingStartIndex !== undefined &&
-          matchingEndIndex !== undefined &&
-          charIndex >= low &&
-          charIndex <= high;
-        if (
-          typeof correspondingMeaning === 'string' &&
-          correspondingMeaning.length > 20
-        ) {
-          correspondingMeaning =
-            correspondingMeaning.slice(0, animateText ? 40 : 20) + '…';
-        }
-        return (
-          <span
-            key={index}
-            style={{
-              color: getColorByIndex(item?.startIndex),
-              opacity:
-                charIndex < matchStartKey || charIndex > matchEndKey ? 0.25 : 1,
-              fontStyle:
-                charIndex < Math.max(0, matchStartKey - 5) ||
-                charIndex > matchEndKey
-                  ? 'italic'
-                  : 'bold',
-              fontSize: '10px',
-              borderColor: animateText ? getColorByIndex(item?.startIndex) : '',
-            }}
-            className={clsx(
-              animateText
-                ? 'text-xl font-bold animate-pulse border-1 rounded'
-                : '',
-            )}
-          >
-            {addSpace && ' '}
-            {correspondingMeaning}
-          </span>
-        );
-      })}
-    </div>
-  );
+  const glosses = slicedSnippetSegment.flatMap((item, index) => {
+    const prev = slicedSnippetSegment[index - 1];
+    const addSpace = index > 0 && item?.startIndex !== prev?.startIndex;
+    let correspondingMeaning = vocab[item?.startIndex]?.meaning;
+    if (
+      correspondingMeaning === 'n/a' ||
+      (index > 0 && item?.startIndex === prev?.startIndex)
+    ) {
+      return [];
+    }
+    const charIndex =
+      typeof item.index === 'number' ? item.index : index + pinyinStart;
+    const low = Math.min(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
+    const high = Math.max(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
+    const animateText =
+      matchingStartIndex !== undefined &&
+      matchingEndIndex !== undefined &&
+      charIndex >= low &&
+      charIndex <= high;
+    if (
+      typeof correspondingMeaning === 'string' &&
+      correspondingMeaning.length > 20
+    ) {
+      correspondingMeaning =
+        correspondingMeaning.slice(0, animateText ? 40 : 20) + '…';
+    }
+
+    return [
+      {
+        key: index,
+        meaning: correspondingMeaning,
+        charIndex,
+        addSpace,
+        animateText,
+        startIndex: item?.startIndex,
+        opacity:
+          charIndex < matchStartKey || charIndex > matchEndKey ? 0.25 : 1,
+        fontStyle:
+          charIndex < Math.max(0, matchStartKey - 5) || charIndex > matchEndKey
+            ? ('italic' as const)
+            : ('bold' as const),
+      },
+    ];
+  });
+
+  const rows: React.ReactNode[] = [];
+  for (let index = 0; index < glosses.length; ) {
+    const current = glosses[index];
+    if (!current.animateText) {
+      rows.push(
+        <span
+          key={current.key}
+          style={{
+            color: getColorByIndex(current.startIndex),
+            opacity: current.opacity,
+            fontStyle: current.fontStyle,
+            fontSize: '10px',
+          }}
+        >
+          {current.addSpace && ' '}
+          {current.meaning}
+        </span>,
+      );
+      index += 1;
+      continue;
+    }
+
+    const run = [current];
+    let next = index + 1;
+    while (next < glosses.length && glosses[next].animateText) {
+      run.push(glosses[next]);
+      next += 1;
+    }
+    const coversSeveralWords =
+      new Set(run.map((part) => part.startIndex)).size > 1;
+
+    rows.push(
+      <React.Fragment key={current.key}>
+        {current.addSpace && ' '}
+        <span
+          data-testid='snippet-review-meaning-selected'
+          className='inline-block animate-pulse rounded border leading-none'
+          style={{
+            borderColor: coversSeveralWords
+              ? '#52525b'
+              : getColorByIndex(current.startIndex),
+          }}
+        >
+          {run.map((part, partIndex) => (
+            <span
+              key={part.key}
+              style={{
+                color: getColorByIndex(part.startIndex),
+                opacity: part.opacity,
+                fontStyle: part.fontStyle,
+                fontSize: '10px',
+              }}
+            >
+              {partIndex > 0 && part.addSpace && ' '}
+              {part.meaning}
+            </span>
+          ))}
+        </span>
+      </React.Fragment>,
+    );
+    index = next;
+  }
+
+  return <div>{rows}</div>;
 };
 
 export default SnippetReviewBreakdownDefinitions;
