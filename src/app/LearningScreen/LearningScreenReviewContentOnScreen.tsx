@@ -14,28 +14,24 @@ import {
 const TIME_RANGE_PHASE_STYLES: Record<
   ReviewTimeRangePhase,
   {
-    borderClassName: string;
     indicatorClassName: string;
     label: string;
     testId: string;
   }
 > = {
   before: {
-    borderClassName: 'border border-red-500',
     indicatorClassName:
       'size-4 rounded-full border-4 border-red-500 bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.9)]',
     label: "Playback is before this clip's range",
     testId: 'learning-screen-review-before-time-range',
   },
   during: {
-    borderClassName: 'border border-amber-500',
     indicatorClassName:
       'size-4 rounded-full border-4 border-amber-500 bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.9)]',
     label: "Playback is within this clip's range",
     testId: 'learning-screen-review-during-time-range',
   },
   beyond: {
-    borderClassName: 'border border-green-500',
     indicatorClassName:
       'size-4 rounded-full border-4 border-green-500 bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.9)]',
     label: "Playback is past this clip's range",
@@ -81,11 +77,7 @@ function ReviewOverlayPanel({
   const textClassName =
     'text-sm font-medium break-words text-black';
 
-  const containerBorderClassName = expanded
-    ? 'border border-zinc-400'
-    : showTimeRangeSlot && timeRangePhase
-      ? TIME_RANGE_PHASE_STYLES[timeRangePhase].borderClassName
-      : 'border border-zinc-400';
+  const containerBorderClassName = 'border border-zinc-400';
 
   const containerClassName = expanded
     ? `pointer-events-auto mx-auto max-h-[50%] w-fit max-w-[calc(100%-1rem)] overflow-y-auto rounded-md bg-amber-50 px-3 py-1.5 text-foreground ${containerBorderClassName}`
@@ -138,6 +130,7 @@ const LearningScreenReviewContentOnScreen = () => {
     setContractThreeSecondLoopState,
     handleLoopReviewMode,
     isInReviewMode,
+    onlyShowEngState,
   } = useLearningScreen();
   const { languageSelectedState, wordsState } = useFetchData();
 
@@ -159,6 +152,8 @@ const LearningScreenReviewContentOnScreen = () => {
   );
 
   const sentenceTargetLang = firstSentenceInReview?.targetLang?.trim() || '';
+  const sentenceBaseLang = firstSentenceInReview?.baseLang?.trim() || '';
+  const showSentenceEnglish = !onlyShowEngState && sentenceBaseLang.length > 0;
 
   const isFirstSentenceInReview =
     Boolean(firstSentenceInReview) && sentenceTargetLang.length > 0;
@@ -290,9 +285,20 @@ const LearningScreenReviewContentOnScreen = () => {
         timeRangePhase={sentenceTimeRangePhase}
         showTimeRangeSlot
       >
-        <span data-testid='learning-screen-review-sentence-target-lang'>
+        <span
+          data-testid='learning-screen-review-sentence-target-lang'
+          className='text-base'
+        >
           {sentenceTargetLang}
         </span>
+        {showSentenceEnglish && (
+          <span
+            data-testid='learning-screen-review-sentence-base-lang'
+            className='mt-0.5 block text-xs leading-tight'
+          >
+            {sentenceBaseLang}
+          </span>
+        )}
       </ReviewOverlayPanel>
     );
   }
