@@ -11,6 +11,7 @@ import {
   getTimeRangeProgress,
   type ReviewTimeRangePhase,
 } from './learning-screen-review-time-range';
+import ReviewSentenceOverlayText from './ReviewSentenceOverlayText';
 
 const TIME_RANGE_PHASE_STYLES: Record<
   ReviewTimeRangePhase,
@@ -353,20 +354,14 @@ const LearningScreenReviewContentOnScreen = () => {
         showTimeRangeSlot
         progress={sentenceProgress}
       >
-        <span
-          data-testid='learning-screen-review-sentence-target-lang'
-          className='text-base'
-        >
-          {sentenceTargetLang}
-        </span>
-        {showSentenceEnglish && (
-          <span
-            data-testid='learning-screen-review-sentence-base-lang'
-            className='mt-0.5 block text-xs leading-tight'
-          >
-            {sentenceBaseLang}
-          </span>
-        )}
+        <ReviewSentenceOverlayText
+          targetLang={sentenceTargetLang}
+          baseLang={sentenceBaseLang}
+          showEnglish={showSentenceEnglish}
+          vocab={firstSentenceInReview?.vocab}
+          sentenceStructure={firstSentenceInReview?.sentenceStructure}
+          languageSelectedState={languageSelectedState}
+        />
       </ReviewOverlayPanel>
     );
   }

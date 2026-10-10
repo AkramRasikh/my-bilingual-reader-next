@@ -1,0 +1,93 @@
+import { render, screen } from '@testing-library/react';
+import { pinyin } from 'pinyin-pro';
+import { chinese, japanese } from '@/app/languages';
+import ReviewSentenceOverlayText from './ReviewSentenceOverlayText';
+
+const vocab = [
+  { meaning: 'really want to', surfaceForm: '好想' },
+  { meaning: 'at', surfaceForm: '在' },
+  { meaning: 'on-site', surfaceForm: '现场' },
+];
+
+describe('ReviewSentenceOverlayText', () => {
+  it('shows the plain sentence and English when there is no breakdown', () => {
+    render(
+      <ReviewSentenceOverlayText
+        targetLang='好想在现场'
+        baseLang='I really want to see it'
+        showEnglish
+        languageSelectedState={chinese}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('learning-screen-review-sentence-target-lang'),
+    ).toHaveTextContent('好想在现场');
+    expect(
+      screen.getByTestId('learning-screen-review-sentence-base-lang'),
+    ).toHaveTextContent('I really want to see it');
+    expect(
+      screen.queryByTestId('learning-screen-review-sentence-pinyin'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows colored pieces, pinyin, then English for a broken-down Chinese sentence', () => {
+    render(
+      <ReviewSentenceOverlayText
+        targetLang='好想在现场'
+        baseLang='I really want to see it'
+        showEnglish
+        vocab={vocab}
+        sentenceStructure='好想 + 在 + 现场'
+        languageSelectedState={chinese}
+      />,
+    );
+
+    const target = screen.getByTestId(
+      'learning-screen-review-sentence-target-lang',
+    );
+    const pieces = target.querySelectorAll('span');
+    expect(pieces).toHaveLength(3);
+    expect(pieces[0]).toHaveTextContent('好想');
+    expect(pieces[0]).toHaveStyle({ color: '#1f77b4' });
+    expect(pieces[1]).toHaveStyle({ color: '#ff7f0e' });
+
+    const pinyinLine = screen.getByTestId(
+      'learning-screen-review-sentence-pinyin',
+    );
+    const pinyinParts = pinyinLine.querySelectorAll('span');
+    expect(pinyinParts).toHaveLength(3);
+    expect(pinyinParts[0]).toHaveStyle({ color: '#1f77b4' });
+    expect(pinyinParts[0].textContent).toBe(
+      pinyin('好想', { toneType: 'symbol', separator: '\u2009' }),
+    );
+    expect(pinyinParts[1]).toHaveStyle({ color: '#ff7f0e' });
+    expect(pinyinParts[1].textContent).toContain(
+      pinyin('在', { toneType: 'symbol', separator: '\u2009' }),
+    );
+    expect(pinyinLine.nextElementSibling).toHaveAttribute(
+      'data-testid',
+      'learning-screen-review-sentence-base-lang',
+    );
+  });
+
+  it('hides pinyin for a non-Chinese breakdown', () => {
+    render(
+      <ReviewSentenceOverlayText
+        targetLang='この発言'
+        baseLang='this statement'
+        showEnglish
+        vocab={[{ meaning: 'this', surfaceForm: 'この' }]}
+        sentenceStructure='この + 発言'
+        languageSelectedState={japanese}
+      />,
+    );
+
+    expect(
+      screen.queryByTestId('learning-screen-review-sentence-pinyin'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId('learning-screen-review-sentence-base-lang'),
+    ).toBeInTheDocument();
+  });
+});
