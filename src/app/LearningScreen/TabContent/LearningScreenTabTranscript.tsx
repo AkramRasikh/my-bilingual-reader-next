@@ -8,6 +8,7 @@ import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import getBiggestOverlap from '@/components/custom/TranscriptItem/get-biggest-overlap';
 import LearningScreenComprehensiveReview from '../LearningScreenComprehensiveReview';
 import useAutoScrollToCurrentItem from './useAutoScrollToCurrentItem';
+import { useTranscriptPlayheadWindow } from './useTranscriptPlayheadWindow';
 import ReviewTypeToggles from '../components/ReviewTypeToggles';
 import useComprehensiveReviewModeData from '../hooks/useComprehensiveReviewModeData';
 
@@ -61,6 +62,14 @@ const LearningScreenTabTranscript = () => {
   } = useLearningScreen();
   const { languageSelectedState, wordsState } = useFetchData();
   const transcriptScrollContainerRef = useRef<HTMLDivElement>(null);
+  const playheadWindow = useTranscriptPlayheadWindow(
+    learnFormattedTranscript,
+    masterPlay,
+    scrollToElState,
+  );
+  const visibleTranscript = isInReviewMode
+    ? learnFormattedTranscript
+    : playheadWindow.items;
 
   const biggestOverlappedSnippet = useMemo(() => {
     if (overlappingSnippetDataState.length === 0) {
@@ -91,7 +100,7 @@ const LearningScreenTabTranscript = () => {
     masterPlay,
     transcriptRef,
     isInReviewMode,
-    learnFormattedTranscript,
+    learnFormattedTranscript: visibleTranscript,
   });
 
   useEffect(() => {
@@ -134,11 +143,11 @@ const LearningScreenTabTranscript = () => {
               )}
               ref={transcriptRef}
             >
-              {learnFormattedTranscript.map((contentItem, index) => {
+              {visibleTranscript.map((contentItem, index) => {
                 return (
-                  <div key={index}>
+                  <div key={contentItem.id}>
                     <TranscriptItemProvider
-                      indexNum={index}
+                      indexNum={playheadWindow.startIndex + index}
                       threeSecondLoopState={threeSecondLoopState}
                       overlappingSnippetDataState={overlappingSnippetDataState}
                       contentItem={contentItem}
