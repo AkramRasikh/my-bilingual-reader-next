@@ -5,7 +5,10 @@ import useLearningScreen from './useLearningScreen';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { chinese } from '@/app/languages';
 import SnippetReview from '@/components/custom/SnippetReview';
-import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap';
+import {
+  getButtonMap,
+  isGamepadButtonHeld,
+} from '@/app/LearningScreen/experimental/gamepadButtonMap';
 import {
   getCurrentTimeRangePhase,
   getSentenceTimeRange,
@@ -15,11 +18,12 @@ import {
 import ReviewSentenceOverlayText, {
   ColoredPhraseBreakdown,
 } from './ReviewSentenceOverlayText';
-import { findSavedWordBreakdown } from './find-breakdown-pieces-for-phrase';
+import { findSavedWordBreakdown, findWordContextSentence, splitSentenceAroundPhrase } from './find-breakdown-pieces-for-phrase';
 
 const WORD_OVERLAY_LINE_CLASS =
   'mx-auto block w-fit max-w-full rounded-sm bg-amber-50 px-1.5 py-0.5 text-center leading-tight shadow-[0_1px_3px_rgba(0,0,0,0.45)]';
 
+const WORD_SENTENCE_HOLD_MS = 180;
 const CLOSED_WORD_DEFINITION_LENGTH = 60;
 
 function closedWordDefinition(definition: string) {
@@ -128,8 +132,12 @@ const LearningScreenReviewContentOnScreen = () => {
   const { languageSelectedState, wordsState } = useFetchData();
 
   const [showWordDetailsState, setShowWordDetailsState] = useState(false);
+  const [showWordSentenceState, setShowWordSentenceState] = useState(false);
   const [liveTime, setLiveTime] = useState(currentTime);
   const quickReviewToggleFiredRef = useRef(false);
+  const wordSentenceHoldStartedAtRef = useRef<number | null>(null);
+  const showWordDetailsRef = useRef(false);
+  showWordDetailsRef.current = showWordDetailsState;
 
   const playingReviewedSnippet = useMemo(() => {
     if (!isInReviewMode || !isSavedLoopPlayingState) {
@@ -211,7 +219,11 @@ const LearningScreenReviewContentOnScreen = () => {
   const surfaceForm = firstWordInReviewDisplay?.surfaceForm?.trim() ?? '';
   const baseForm = firstWordInReviewDisplay?.baseForm?.trim() ?? '';
   const phoneticOnFormsLine =
-    phonetic && phonetic !== transliteration ? phonetic : '';
+    phonetic &&
+    phonetic.replace(/\s/g, '').toLowerCase() !==
+      transliteration.replace(/\s/g, '').toLowerCase()
+      ? phonetic
+      : '';
 
   const showWordOverlay = Boolean(firstElIdInReview && firstWordDefinitionInReview);
 
@@ -251,38 +263,91 @@ const LearningScreenReviewContentOnScreen = () => {
     })
     .join(' - ');
 
+  const wordContextSentenceText = useMemo(() => {
+    const surface = firstWordInReviewDisplay?.surfaceForm?.trim();
+    if (!surface) {
+      return null;
+    }
+    const contextId = firstWordInReviewDisplay?.contextId;
+    const contextSentence = contextId
+      ? sentenceMapMemoized[contextId]
+      : undefined;
+    return findWordContextSentence(
+      surface,
+      Object.values(sentenceMapMemoized),
+      contextSentence,
+    );
+  }, [firstWordInReviewDisplay, sentenceMapMemoized]);
+
   useEffect(() => {
     setShowWordDetailsState(false);
+    showWordDetailsRef.current = false;
+    setShowWordSentenceState(false);
+    wordSentenceHoldStartedAtRef.current = null;
   }, [firstElIdInReview]);
 
   useEffect(() => {
     if (!firstWordInReviewDisplay) return;
 
+    let frameId = 0;
     const handleGamepadPress = () => {
-      const gamepads = navigator.getGamepads();
-      const gamepad = Array.from(gamepads).find((gp) => gp !== null);
+      const gamepads = navigator.getGamepads?.();
+      let sawGamepad = false;
+      let aPressed = false;
+      let rPressed = false;
 
-      if (!gamepad) {
+      if (gamepads) {
+        for (const gamepad of gamepads) {
+          if (!gamepad) continue;
+          sawGamepad = true;
+          const map = getButtonMap(gamepad);
+          aPressed =
+            aPressed || isGamepadButtonHeld(gamepad.buttons, map.A_BTN);
+          rPressed =
+            rPressed || isGamepadButtonHeld(gamepad.buttons, map.R1_BTN);
+        }
+      }
+
+      if (!sawGamepad) {
+        frameId = requestAnimationFrame(handleGamepadPress);
         return;
       }
 
-      const map = getButtonMap(gamepad);
-      const aPressed = gamepad.buttons[map.A_BTN]?.pressed;
-      const rPressed = gamepad.buttons[map.R1_BTN]?.pressed;
-
       if (aPressed && rPressed && !quickReviewToggleFiredRef.current) {
-        setShowWordDetailsState((prev) => !prev);
+        setShowWordDetailsState((prev) => {
+          const next = !prev;
+          showWordDetailsRef.current = next;
+          return next;
+        });
+        setShowWordSentenceState(false);
+        wordSentenceHoldStartedAtRef.current = null;
         quickReviewToggleFiredRef.current = true;
+        frameId = requestAnimationFrame(handleGamepadPress);
         return;
       }
 
       if (!aPressed || !rPressed) {
         quickReviewToggleFiredRef.current = false;
       }
+
+      if (showWordDetailsRef.current && aPressed) {
+        if (wordSentenceHoldStartedAtRef.current == null) {
+          wordSentenceHoldStartedAtRef.current = performance.now();
+        } else if (
+          performance.now() - wordSentenceHoldStartedAtRef.current >=
+          WORD_SENTENCE_HOLD_MS
+        ) {
+          setShowWordSentenceState(true);
+        }
+      } else if (!aPressed) {
+        wordSentenceHoldStartedAtRef.current = null;
+      }
+
+      frameId = requestAnimationFrame(handleGamepadPress);
     };
 
-    const intervalId = setInterval(handleGamepadPress, 100);
-    return () => clearInterval(intervalId);
+    frameId = requestAnimationFrame(handleGamepadPress);
+    return () => cancelAnimationFrame(frameId);
   }, [firstWordInReviewDisplay]);
 
   if (playingReviewedSnippet) {
@@ -397,6 +462,27 @@ const LearningScreenReviewContentOnScreen = () => {
           className={`${WORD_OVERLAY_LINE_CLASS} mt-0.5`}
         >
           {transliteration}
+        </span>
+      ) : null}
+      {showWordDetailsState && showWordSentenceState && wordContextSentenceText ? (
+        <span
+          data-testid='learning-screen-review-word-sentence'
+          className={`${WORD_OVERLAY_LINE_CLASS} mt-0.5 text-xs`}
+        >
+          {splitSentenceAroundPhrase(wordContextSentenceText, surfaceForm).map(
+            (part, index) =>
+              part.highlighted ? (
+                <span
+                  key={`${part.text}-${index}`}
+                  data-testid='learning-screen-review-word-sentence-mark'
+                  className='rounded-sm bg-amber-400 px-0.5 font-semibold'
+                >
+                  {part.text}
+                </span>
+              ) : (
+                <span key={`${part.text}-${index}`}>{part.text}</span>
+              ),
+          )}
         </span>
       ) : null}
     </ReviewOverlayPanel>

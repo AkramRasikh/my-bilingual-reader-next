@@ -125,3 +125,108 @@ export function findSavedWordBreakdown(
   pool.sort((a, b) => a.distance - b.distance);
   return pool[0]?.pieces ?? null;
 }
+
+function sentenceTextEqualsPhrase(text: string, phrase: string) {
+  const compactText = text.replace(/[\s\-—–]/g, '');
+  const compactPhrase = phrase.replace(/\s/g, '');
+  return compactText === compactPhrase;
+}
+
+export type SentencePhrasePart = {
+  text: string;
+  highlighted: boolean;
+};
+
+const SENTENCE_GAP = /[\s\-—–]/;
+
+export function splitSentenceAroundPhrase(
+  sentence: string,
+  phrase: string,
+): SentencePhrasePart[] {
+  const text = sentence ?? '';
+  const target = phrase?.trim() ?? '';
+  if (!text) {
+    return [];
+  }
+  if (!target) {
+    return [{ text, highlighted: false }];
+  }
+
+  const needle = comparable(target.replace(/\s/g, ''));
+  if (!needle) {
+    return [{ text, highlighted: false }];
+  }
+
+  const positions: number[] = [];
+  let compact = '';
+  for (let index = 0; index < text.length; index++) {
+    const char = text[index];
+    if (SENTENCE_GAP.test(char)) {
+      continue;
+    }
+    positions.push(index);
+    compact += comparable(char);
+  }
+
+  const matchAt = compact.indexOf(needle);
+  if (matchAt < 0) {
+    return [{ text, highlighted: false }];
+  }
+
+  const start = positions[matchAt];
+  const end = positions[matchAt + needle.length - 1] + 1;
+  const parts: SentencePhrasePart[] = [];
+  if (start > 0) {
+    parts.push({ text: text.slice(0, start), highlighted: false });
+  }
+  parts.push({ text: text.slice(start, end), highlighted: true });
+  if (end < text.length) {
+    parts.push({ text: text.slice(end), highlighted: false });
+  }
+  return parts;
+}
+
+export function findWordContextSentence(
+  phrase: string,
+  sentences: BreakdownSentence[],
+  contextSentence?: BreakdownSentence | null,
+): string | null {
+  const target = phrase?.trim();
+  if (!target) {
+    return null;
+  }
+
+  const usableText = (sentence?: BreakdownSentence | null) => {
+    const text = sentence?.targetLang?.trim();
+    if (!text || sentenceTextEqualsPhrase(text, target)) {
+      return null;
+    }
+    return sentenceTextIncludesPhrase(text, target) ? text : null;
+  };
+
+  const linkedText = usableText(contextSentence);
+  if (linkedText) {
+    return linkedText;
+  }
+
+  let best: { text: string; distance: number } | null = null;
+  for (const sentence of sentences) {
+    if (contextSentence?.id && sentence.id === contextSentence.id) {
+      continue;
+    }
+    const text = usableText(sentence);
+    if (!text) {
+      continue;
+    }
+    const distance =
+      typeof contextSentence?.index === 'number' &&
+      typeof sentence.index === 'number'
+        ? Math.abs(sentence.index - contextSentence.index)
+        : Number.MAX_SAFE_INTEGER;
+    if (!best || distance < best.distance) {
+      best = { text, distance };
+    }
+  }
+
+  return best?.text ?? null;
+}

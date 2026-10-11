@@ -2,6 +2,8 @@ import { describe, expect, it } from '@jest/globals';
 import {
   findBreakdownPiecesForPhrase,
   findSavedWordBreakdown,
+  findWordContextSentence,
+  splitSentenceAroundPhrase,
 } from './find-breakdown-pieces-for-phrase';
 
 const sentence = [
@@ -127,6 +129,100 @@ describe('findBreakdownPiecesForPhrase', () => {
       { surfaceForm: 'let', index: 0 },
       { surfaceForm: 'me', index: 1 },
       { surfaceForm: 'speak', index: 2 },
+    ]);
+  });
+
+  it('uses the linked sentence when it contains the saved word', () => {
+    const linkedSentence = {
+      id: 'linked',
+      index: 4,
+      targetLang: '我去彩券行买了一张',
+    };
+
+    expect(
+      findWordContextSentence('彩券行', [linkedSentence], linkedSentence),
+    ).toBe('我去彩券行买了一张');
+  });
+
+  it('uses a nearby sentence when the linked one does not contain the word', () => {
+    const linkedSentence = {
+      id: 'linked',
+      index: 4,
+      targetLang: '捷运上本来就有很多状况嘛',
+    };
+    const stevenSentence = {
+      id: 'steven',
+      index: 5,
+      targetLang: '-我知道-好但怎么样都不会有Steven',
+    };
+
+    expect(
+      findWordContextSentence(
+        '但怎么样都不会有Steven',
+        [linkedSentence, stevenSentence],
+        linkedSentence,
+      ),
+    ).toBe('-我知道-好但怎么样都不会有Steven');
+  });
+
+  it('uses a nearby sentence when the saved context is the previous line', () => {
+    const linkedSentence = {
+      id: 'c13e5c14-5604-4dc3-9ec3-c38b3d081589',
+      index: 200,
+      targetLang: '我要啦',
+    };
+
+    expect(
+      findWordContextSentence(
+        '彩券行',
+        [
+          linkedSentence,
+          {
+            id: 'a9eda746-df1e-4993-bf38-72263f41acc6',
+            index: 201,
+            targetLang: '嗯彩券行不还给我啊',
+          },
+        ],
+        linkedSentence,
+      ),
+    ).toBe('嗯彩券行不还给我啊');
+  });
+  it('skips a sentence that is only the saved word', () => {
+    expect(
+      findWordContextSentence(
+        '彩券行',
+        [{ id: 'only', index: 1, targetLang: '彩券行' }],
+        { id: 'only', index: 1, targetLang: '彩券行' },
+      ),
+    ).toBeNull();
+  });
+
+  it('marks the saved word inside its sentence', () => {
+    expect(splitSentenceAroundPhrase('嗯彩券行不还给我啊', '彩券行')).toEqual([
+      { text: '嗯', highlighted: false },
+      { text: '彩券行', highlighted: true },
+      { text: '不还给我啊', highlighted: false },
+    ]);
+  });
+
+  it('marks the saved word when the sentence has spaces or dashes', () => {
+    expect(
+      splitSentenceAroundPhrase(
+        '-我知道-好但怎么样都不会有Steven',
+        '但怎么样都不会有Steven',
+      ),
+    ).toEqual([
+      { text: '-我知道-好', highlighted: false },
+      { text: '但怎么样都不会有Steven', highlighted: true },
+    ]);
+  });
+
+  it('marks the sentence spelling when the saved word uses 得', () => {
+    expect(
+      splitSentenceAroundPhrase('我每天都还是硬的起来', '还是硬得起来'),
+    ).toEqual([
+      { text: '我每天都', highlighted: false },
+      { text: '还是硬的起来', highlighted: true },
     ]);
   });
 });
