@@ -7,8 +7,6 @@ import {
   firstNonDueWordId,
   checkSentenceCount,
   checkActionBarButtons,
-  testCurrentButtonNavigation,
-  testStudyHereMode,
   checkPrePostReviewToggle,
   triggerTrackSwitch,
   goFromLandingToLearningScreen,
@@ -80,14 +78,6 @@ test.describe('General toggles & verify UI elements', () => {
 
     // check action bar buttons (non-review state)
     await checkActionBarButtons(page);
-  });
-  test('study from here', async ({ page }) => {
-    await goFromLandingToLearningScreen(page);
-    await waitForMediaMetadata(page);
-    await triggerTrackSwitch(page);
-    // Verify the URL includes the topic query parameter
-    await testCurrentButtonNavigation(page);
-    await testStudyHereMode(page);
   });
   test('pre-post review toggles', async ({ page }) => {
     await goFromLandingToLearningScreen(page);
@@ -1347,155 +1337,15 @@ test.describe('Transcript item sentence breakdown', () => {
 });
 
 test.describe('Transcript scroll functionality', () => {
-  test('checkpoint button scrolls to last reviewed sentence', async ({
+  test('checkpoint timestamp shows the last reviewed sentence time', async ({
     page,
   }) => {
     await goFromLandingToLearningScreen(page);
-    // Turn off track-current switch before testing checkpoint
-    await triggerTrackSwitch(page);
-    await page.waitForTimeout(500);
 
-    // The checkpoint text from the last reviewed sentence
-    const checkpointText =
-      'Hori/In the meantime, we look forward to everyone continuing to subscribe, like, and leave comments with their thoughts, so please feel free to send in whatever you think. Wed/Yes.';
-
-    // Find the checkpoint element by text
-    const checkpointElement = page.getByText(checkpointText);
-
-    // Verify checkpoint element is NOT in viewport initially
-    const checkpointNotVisibleInitially = await checkpointElement.evaluate(
-      (el) => {
-        const rect = el.getBoundingClientRect();
-        return (
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.bottom <=
-            (window.innerHeight || document.documentElement.clientHeight) &&
-          rect.right <=
-            (window.innerWidth || document.documentElement.clientWidth)
-        );
-      },
-    );
-    expect(checkpointNotVisibleInitially).toBe(false);
-
-    // Click checkpoint button
-    const checkpointButton = page.getByTestId('checkpoint-button');
-    await expect(checkpointButton).toBeVisible();
-    await checkpointButton.click();
-
-    // Wait for scroll animation to complete
-    await page.waitForTimeout(1500);
-
-    // Verify checkpoint text is now in viewport
-    const checkpointVisible = await checkpointElement.evaluate((el) => {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth)
-      );
-    });
-    expect(checkpointVisible).toBe(true);
-
-    // Scroll to the top of the page manually
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.waitForTimeout(1000);
-
-    // Define the first transcript container element
-    const firstTranscriptContainer = page.getByTestId(
-      `transcript-target-lang-${firstContentId}`,
-    );
-
-    // Verify first transcript container is NOT visible before clicking play
-    const firstContainerNotVisibleBeforePlay =
-      await firstTranscriptContainer.evaluate((el) => {
-        const rect = el.getBoundingClientRect();
-        return (
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.bottom <=
-            (window.innerHeight || document.documentElement.clientHeight) &&
-          rect.right <=
-            (window.innerWidth || document.documentElement.clientWidth)
-        );
-      });
-    expect(firstContainerNotVisibleBeforePlay).toBe(false);
-
-    // Click play on the first transcript item
-    const playButton = page.getByTestId(
-      `transcript-play-button-${firstContentId}`,
-    );
-    await expect(playButton).toBeVisible();
-    await playButton.click();
-
-    // Wait for play action to register
-    await page.waitForTimeout(1000);
-
-    // Verify first transcript container is visible in viewport
-    const firstContainerVisible = await firstTranscriptContainer.evaluate(
-      (el) => {
-        const rect = el.getBoundingClientRect();
-        return (
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.bottom <=
-            (window.innerHeight || document.documentElement.clientHeight) &&
-          rect.right <=
-            (window.innerWidth || document.documentElement.clientWidth)
-        );
-      },
-    );
-    expect(firstContainerVisible).toBe(true);
-
-    // Verify checkpoint text is NOT visible in viewport
-    const checkpointNotVisibleNow = await checkpointElement.evaluate((el) => {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth)
-      );
-    });
-    expect(checkpointNotVisibleNow).toBe(false);
-
-    // Click checkpoint button again to scroll back to checkpoint
-    await checkpointButton.click();
-    await page.waitForTimeout(1000);
-
-    // Verify checkpoint is visible in viewport
-    const checkpointVisibleAgain = await checkpointElement.evaluate((el) => {
-      const rect = el.getBoundingClientRect();
-      return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <=
-          (window.innerWidth || document.documentElement.clientWidth)
-      );
-    });
-    expect(checkpointVisibleAgain).toBe(true);
-
-    // Verify first transcript container is NOT visible in viewport
-    const firstContainerNotVisibleAgain =
-      await firstTranscriptContainer.evaluate((el) => {
-        const rect = el.getBoundingClientRect();
-        return (
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.bottom <=
-            (window.innerHeight || document.documentElement.clientHeight) &&
-          rect.right <=
-            (window.innerWidth || document.documentElement.clientWidth)
-        );
-      });
-    expect(firstContainerNotVisibleAgain).toBe(false);
+    await expect(page.getByTestId('checkpoint-button')).toHaveCount(0);
+    const checkpointTimestamp = page.getByTestId('checkpoint-timestamp');
+    await expect(checkpointTimestamp).toBeVisible();
+    await expect(checkpointTimestamp).toHaveText(/🚩\s+\d+:\d{2}(?::\d{2})?/);
   });
 });
 

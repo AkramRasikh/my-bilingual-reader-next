@@ -66,6 +66,9 @@ describe('LearningScreen - Review Mode', () => {
     expect(
       document.querySelectorAll('[data-testid^="timeline-snippet-marker-"]'),
     ).toHaveLength(3);
+    expect(screen.getByTestId('checkpoint-timestamp')).toHaveTextContent(
+      '🚩 0:07',
+    );
   };
 
   const checkForReviewLabelText = (

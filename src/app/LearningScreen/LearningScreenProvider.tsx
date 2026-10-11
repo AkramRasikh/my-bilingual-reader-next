@@ -161,11 +161,6 @@ export interface LearningScreenContextTypes {
     params: HandleBreakdownSentenceParams,
   ) => Promise<void>;
   isBreakingDownSentenceArrState: SentenceMapItemTypes['id'][];
-  handleStudyFromHere: () => void;
-  setStudyFromHereTimeState: React.Dispatch<
-    React.SetStateAction<number | null>
-  >;
-  studyFromHereTimeState: number | null;
   transcriptRef: React.RefObject<HTMLElement | null>;
   scrollToElState: string;
   selectedContentTitleState: string;
@@ -265,9 +260,6 @@ export const LearningScreenProvider = ({
   const [sentenceRepsState, setSentenceRepsState] = useState(0);
   const [wordRepsState, setWordRepsState] = useState(0);
   const [snippetRepsState, setSnippetRepsState] = useState(0);
-  const [studyFromHereTimeState, setStudyFromHereTimeState] = useState<
-    number | null
-  >(null);
 
   const [isGenericItemsLoadingArrayState, setIsGenericItemsLoadingArrayState] =
     useState<SentenceMapItemTypes['id'][]>([]);
@@ -372,17 +364,6 @@ export const LearningScreenProvider = ({
     enableTranscriptReviewState,
     wordsState,
   });
-
-  const handleStudyFromHere = () => {
-    if (!masterPlayComprehensive) {
-      return;
-    }
-    const masterPlayIndex = masterPlayComprehensive.index;
-    setStudyFromHereTimeState(masterPlayIndex);
-    if (transcriptRef.current) {
-      transcriptRef.current.scrollIntoView();
-    }
-  };
 
   const getSentenceDataOfOverlappingWordsDuringSave = (
     thisSnippetsTime: number,
@@ -662,12 +643,6 @@ export const LearningScreenProvider = ({
       startTime,
       endTime,
     });
-
-  useEffect(() => {
-    if (isInReviewMode) {
-      setStudyFromHereTimeState(null);
-    }
-  }, [isInReviewMode, studyFromHereTimeState]);
 
   const loopedTranscriptMemoized = useLoopedTranscriptMemoized({
     threeSecondLoopState,
@@ -1007,9 +982,7 @@ export const LearningScreenProvider = ({
     }
   }, [sentencesNeedReview]);
 
-  const learnFormattedTranscript = studyFromHereTimeState
-    ? formattedTranscriptMemoized.slice(studyFromHereTimeState)
-    : formattedTranscriptMemoized;
+  const learnFormattedTranscript = formattedTranscriptMemoized;
 
   const topicWordsForReviewMemoized = useTopicWordsForReviewMemoized({
     learnFormattedTranscript,
@@ -1243,9 +1216,6 @@ export const LearningScreenProvider = ({
         handleReviewFunc,
         handleBreakdownSentence,
         isBreakingDownSentenceArrState,
-        handleStudyFromHere,
-        setStudyFromHereTimeState,
-        studyFromHereTimeState,
         transcriptRef,
         scrollToElState,
         selectedContentTitleState,

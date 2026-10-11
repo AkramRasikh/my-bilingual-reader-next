@@ -103,12 +103,10 @@ const checkingForLearningActionBar = (isInReviewMode: boolean) => {
       'learning-screen-action-bar',
     );
     expect(learningScreenActionBar).toBeInTheDocument();
-    const currentMediaPositionBtn = screen.getByTestId('current-button');
-    expect(currentMediaPositionBtn).toBeInTheDocument();
-    const studyHereButton = screen.getByTestId('study-here-button');
-    expect(studyHereButton).toHaveTextContent('Study here 1');
-    const checkpointButton = screen.getByTestId('checkpoint-button');
-    expect(checkpointButton).toBeInTheDocument();
+    expect(screen.queryByTestId('current-button')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('study-here-button')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('checkpoint-button')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('checkpoint-timestamp')).not.toBeInTheDocument();
   }
 };
 
