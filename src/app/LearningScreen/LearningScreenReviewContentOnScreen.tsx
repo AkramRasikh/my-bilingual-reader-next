@@ -29,62 +29,9 @@ function closedWordDefinition(definition: string) {
   return `${definition.slice(0, CLOSED_WORD_DEFINITION_LENGTH).trimEnd()}…`;
 }
 
-const TIME_RANGE_PHASE_STYLES: Record<
-  ReviewTimeRangePhase,
-  {
-    indicatorClassName: string;
-    label: string;
-    testId: string;
-  }
-> = {
-  before: {
-    indicatorClassName:
-      'size-4 rounded-full border-4 border-red-500 bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.9)]',
-    label: "Playback is before this clip's range",
-    testId: 'learning-screen-review-before-time-range',
-  },
-  during: {
-    indicatorClassName:
-      'size-4 rounded-full border-4 border-amber-500 bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.9)]',
-    label: "Playback is within this clip's range",
-    testId: 'learning-screen-review-during-time-range',
-  },
-  beyond: {
-    indicatorClassName:
-      'size-4 rounded-full border-4 border-green-500 bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.9)]',
-    label: "Playback is past this clip's range",
-    testId: 'learning-screen-review-past-time-range',
-  },
-};
-
-function ReviewTimeRangeIndicator({
-  phase,
-}: {
-  phase: ReviewTimeRangePhase | null;
-}) {
-  const indicator = phase ? TIME_RANGE_PHASE_STYLES[phase] : null;
-
-  return (
-    <span
-      className='flex w-4 shrink-0 items-center justify-center self-center'
-      aria-hidden={!indicator}
-    >
-      <span
-        className={
-          indicator?.indicatorClassName ?? 'size-2 rounded-full bg-transparent'
-        }
-        title={indicator?.label}
-        aria-label={indicator?.label}
-        data-testid={indicator?.testId}
-      />
-    </span>
-  );
-}
-
 function ReviewOverlayPanel({
   children,
   timeRangePhase = null,
-  showTimeRangeSlot = false,
   expanded = false,
   progress = null,
   anchor = 'bottom',
@@ -92,7 +39,6 @@ function ReviewOverlayPanel({
 }: {
   children: React.ReactNode;
   timeRangePhase?: ReviewTimeRangePhase | null;
-  showTimeRangeSlot?: boolean;
   expanded?: boolean;
   progress?: number | null;
   anchor?: 'top' | 'bottom';
@@ -127,7 +73,7 @@ function ReviewOverlayPanel({
       >
         {showProgress && (
           <div
-            className='pointer-events-none absolute inset-x-0 top-0 h-1 bg-amber-200'
+            className={`pointer-events-none absolute inset-x-0 top-0 h-1 ${timeRangePhase === 'beyond' ? 'bg-green-200' : 'bg-amber-200'}`}
             data-testid='learning-screen-review-sentence-progress'
             role='progressbar'
             aria-valuemin={0}
@@ -136,7 +82,7 @@ function ReviewOverlayPanel({
             aria-label='Sentence playback progress'
           >
             <div
-              className='h-full bg-amber-600'
+              className={`h-full ${timeRangePhase === 'beyond' ? 'bg-green-500' : 'bg-amber-600'}`}
               data-testid='learning-screen-review-sentence-progress-fill'
               style={{ width: `${progressPercent}%` }}
             />
@@ -144,11 +90,6 @@ function ReviewOverlayPanel({
         )}
         {expanded ? (
           children
-        ) : showTimeRangeSlot ? (
-          <div className='flex items-center gap-2'>
-            <p className={`min-w-0 flex-1 text-center ${textClassName}`}>{children}</p>
-            <ReviewTimeRangeIndicator phase={timeRangePhase} />
-          </div>
         ) : (
           <p className={`text-center ${textClassName}`}>{children}</p>
         )}
@@ -404,7 +345,6 @@ const LearningScreenReviewContentOnScreen = () => {
     return (
       <ReviewOverlayPanel
         timeRangePhase={sentenceTimeRangePhase}
-        showTimeRangeSlot
         progress={sentenceProgress}
       >
         <ReviewSentenceOverlayText
