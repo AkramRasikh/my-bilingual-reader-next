@@ -4,7 +4,6 @@ import KeyListener from './LearningScreenKeyListener';
 import LearningScreenVideoPlayer from './LearningScreenVideoPlayer';
 import TranscriptItemSecondary from '../../components/custom/TranscriptItem/TranscriptItemSecondary';
 import useLearningScreen from './useLearningScreen';
-import LearningScreenActionBar from './LearningScreenActionBar';
 import { useFetchData } from '../Providers/FetchDataProvider';
 import AudioPlayer from '@/components/AudioPlayer';
 import clsx from 'clsx';
@@ -100,7 +99,6 @@ const LearningScreenLeftSideContainer = () => {
           firstTime={firstTime}
         />
       ) : null}
-      {!isInReviewMode && <LearningScreenActionBar />}
       {masterPlayComprehensive && (
         <TranscriptItemSecondary
           contentItem={masterPlayComprehensive}

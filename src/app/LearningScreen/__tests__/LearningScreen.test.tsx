@@ -93,19 +93,10 @@ const checkingMainTranscriptContent = () => {
 };
 
 const checkingForLearningActionBar = (isInReviewMode: boolean) => {
-  if (isInReviewMode) {
-    const learningScreenActionBarQueried = screen.queryByTestId(
-      'learning-screen-action-bar',
-    );
-    expect(learningScreenActionBarQueried).not.toBeInTheDocument();
-  } else {
-    const learningScreenActionBar = screen.getByTestId(
-      'learning-screen-action-bar',
-    );
-    expect(learningScreenActionBar).toBeInTheDocument();
-    expect(screen.queryByTestId('current-button')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('study-here-button')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('checkpoint-button')).not.toBeInTheDocument();
+  expect(
+    screen.queryByTestId('learning-screen-action-bar'),
+  ).not.toBeInTheDocument();
+  if (!isInReviewMode) {
     expect(screen.queryByTestId('checkpoint-timestamp')).not.toBeInTheDocument();
   }
 };

@@ -155,7 +155,6 @@ export interface LearningScreenContextTypes {
   handleBreakdownMasterSentence: () => Promise<void | null>;
   handleAddMasterToReview: () => Promise<void>;
   handleIsEasyReviewShortCut: () => Promise<void>;
-  handleBulkReviews: () => Promise<void>;
   handleReviewFunc: (params: HandleReviewFuncParams) => Promise<void>;
   handleBreakdownSentence: (
     params: HandleBreakdownSentenceParams,
@@ -820,44 +819,6 @@ export const LearningScreenProvider = ({
     enableWordReviewState,
   });
 
-  const handleBulkReviews = async () => {
-    // const emptyCard = getEmptyCard();
-    //
-    // const sentenceIdData =
-    //   loopTranscriptState.filter((item) => !item?.reviewData) || [];
-    // const nextScheduledOptions = getNextScheduledOptions({
-    //   card: emptyCard,
-    //   contentType: srsRetentionKeyTypes.sentences,
-    // });
-    // const hasContentToReview = content?.some(
-    //   (sentenceWidget) => sentenceWidget?.reviewData,
-    // );
-    // const nextDueCard = nextScheduledOptions['2'].card;
-    // if (sentenceIdData.length === 0) {
-    //   console.log('## no sentenceIds');
-    //   return;
-    // }
-    // const sentenceIds = sentenceIdData.map((item) => item.id);
-    // try {
-    //   setIsGenericItemsLoadingArrayState((prev) => [...prev, ...sentenceIds]);
-    //   await sentenceReviewBulk({
-    //     topicName: selectedContentStateMemoized.title,
-    //     fieldToUpdate: {
-    //       reviewData: nextDueCard,
-    //     },
-    //     contentIndex,
-    //     removeReview: hasContentToReview,
-    //     sentenceIds,
-    //   });
-    //   setSentenceRepsState((prev) => prev + sentenceIds.length);
-    // } catch (error) {
-    // } finally {
-    //   setIsGenericItemsLoadingArrayState((prev) =>
-    //     prev.filter((item) => !sentenceIds.includes(item)),
-    //   );
-    // }
-  };
-
   const handleReviewFunc = async ({
     sentenceId,
     isRemoveReview,
@@ -1212,7 +1173,6 @@ export const LearningScreenProvider = ({
         handleBreakdownMasterSentence,
         handleAddMasterToReview,
         handleIsEasyReviewShortCut,
-        handleBulkReviews,
         handleReviewFunc,
         handleBreakdownSentence,
         isBreakingDownSentenceArrState,

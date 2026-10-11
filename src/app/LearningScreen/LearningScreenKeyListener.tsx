@@ -21,7 +21,6 @@ const LearningScreenKeyListener = () => {
     handleBreakdownMasterSentence,
     handleAddMasterToReview,
     handleIsEasyReviewShortCut,
-    handleBulkReviews,
     handleJumpToFirstElInReviewTranscript,
     handleQuickSaveSnippet,
     handleToggleSlowAudio,
@@ -122,9 +121,6 @@ const LearningScreenKeyListener = () => {
             handleShiftLoopSentence(true);
             return;
           }
-          //  else if (e.key.toLowerCase() === 'enter') {
-          //   handleBulkReviews();
-          // }
         }
       }
 
@@ -203,7 +199,6 @@ const LearningScreenKeyListener = () => {
     isInReviewMode,
     handleIsEasyReviewShortCut,
     setContractThreeSecondLoopState,
-    handleBulkReviews,
     handleJumpToFirstElInReviewTranscript,
     handleQuickSaveSnippet,
   ]);
