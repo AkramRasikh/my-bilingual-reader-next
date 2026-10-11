@@ -17,6 +17,18 @@ import ReviewSentenceOverlayText, {
 } from './ReviewSentenceOverlayText';
 import { findSavedWordBreakdown } from './find-breakdown-pieces-for-phrase';
 
+const WORD_OVERLAY_LINE_CLASS =
+  'mx-auto block w-fit max-w-full rounded-sm bg-amber-50 px-1.5 py-0.5 text-center leading-tight shadow-[0_1px_3px_rgba(0,0,0,0.45)]';
+
+const CLOSED_WORD_DEFINITION_LENGTH = 60;
+
+function closedWordDefinition(definition: string) {
+  if (definition.length <= CLOSED_WORD_DEFINITION_LENGTH) {
+    return definition;
+  }
+  return `${definition.slice(0, CLOSED_WORD_DEFINITION_LENGTH).trimEnd()}…`;
+}
+
 const TIME_RANGE_PHASE_STYLES: Record<
   ReviewTimeRangePhase,
   {
@@ -75,15 +87,20 @@ function ReviewOverlayPanel({
   showTimeRangeSlot = false,
   expanded = false,
   progress = null,
+  anchor = 'bottom',
+  plain = false,
 }: {
   children: React.ReactNode;
   timeRangePhase?: ReviewTimeRangePhase | null;
   showTimeRangeSlot?: boolean;
   expanded?: boolean;
   progress?: number | null;
+  anchor?: 'top' | 'bottom';
+  plain?: boolean;
 }) {
-  const textClassName =
-    'text-sm font-medium break-words text-black';
+  const textClassName = plain
+    ? 'text-sm font-medium leading-tight break-words text-black'
+    : 'text-sm font-medium break-words text-black';
 
   const containerBorderClassName = 'border border-zinc-400';
 
@@ -94,10 +111,14 @@ function ReviewOverlayPanel({
 
   const containerClassName = expanded
     ? `pointer-events-auto mx-auto max-h-[50%] w-fit max-w-[calc(100%-1rem)] overflow-y-auto rounded-md bg-amber-50 px-3 py-1.5 text-foreground ${containerBorderClassName}`
-    : `pointer-events-auto relative mx-auto w-fit max-w-[66.666%] overflow-hidden rounded-md bg-amber-50 px-4 py-1.5 text-black ${containerBorderClassName}`;
+    : plain
+      ? 'pointer-events-auto relative mx-auto w-fit max-w-[66.666%] px-1 py-0.5 text-black'
+      : `pointer-events-auto relative mx-auto w-fit max-w-[66.666%] overflow-hidden rounded-md bg-amber-50 px-4 py-1.5 text-black ${containerBorderClassName}`;
 
   return (
-    <div className='pointer-events-none absolute inset-0 bottom-0 flex flex-col justify-end'>
+    <div
+      className={`pointer-events-none absolute inset-0 flex flex-col ${anchor === 'top' ? 'justify-start' : 'justify-end'}`}
+    >
       <div
         className={containerClassName}
         data-testid={
@@ -272,12 +293,21 @@ const LearningScreenReviewContentOnScreen = () => {
   const breakdownShowsReading =
     Boolean(wordPhrasePieces) && languageSelectedState === chinese;
 
-  const compactWordDetailsText = [
-    wordPhrasePieces ? '' : surfaceForm,
-    baseForm && baseForm !== surfaceForm ? baseForm : '',
-    phoneticOnFormsLine,
-  ]
-    .filter(Boolean)
+  const shownWordForms = new Set<string>();
+  if (wordPhrasePieces?.length) {
+    shownWordForms.add(wordPhrasePieces.map((piece) => piece.surfaceForm).join(''));
+    shownWordForms.add(
+      wordPhrasePieces.map((piece) => piece.surfaceForm).join(' '),
+    );
+  }
+  const compactWordDetailsText = [surfaceForm, baseForm, phoneticOnFormsLine]
+    .filter((part) => {
+      if (!part || shownWordForms.has(part)) {
+        return false;
+      }
+      shownWordForms.add(part);
+      return true;
+    })
     .join(' - ');
 
   useEffect(() => {
@@ -394,9 +424,14 @@ const LearningScreenReviewContentOnScreen = () => {
   }
 
   return (
-    <ReviewOverlayPanel>
-      <span data-testid='learning-screen-review-word-text' className='block'>
-        {firstWordDefinitionInReview}
+    <ReviewOverlayPanel anchor='top' plain>
+      <span
+        data-testid='learning-screen-review-word-text'
+        className={WORD_OVERLAY_LINE_CLASS}
+      >
+        {showWordDetailsState
+          ? firstWordDefinitionInReview
+          : closedWordDefinition(firstWordDefinitionInReview ?? '')}
       </span>
       {showWordDetailsState && wordPhrasePieces ? (
         <ColoredPhraseBreakdown
@@ -405,12 +440,13 @@ const LearningScreenReviewContentOnScreen = () => {
           testId='learning-screen-review-word-breakdown'
           pinyinTestId='learning-screen-review-word-breakdown-pinyin'
           withTopMargin
+          chip
         />
       ) : null}
       {showWordDetailsState && compactWordDetailsText ? (
         <span
           data-testid='learning-screen-review-word-details'
-          className='mt-0.5 block'
+          className={`${WORD_OVERLAY_LINE_CLASS} mt-0.5`}
         >
           {compactWordDetailsText}
         </span>
@@ -418,7 +454,7 @@ const LearningScreenReviewContentOnScreen = () => {
       {showWordDetailsState && transliteration && !breakdownShowsReading ? (
         <span
           data-testid='learning-screen-review-word-transliteration'
-          className='mt-0.5 block'
+          className={`${WORD_OVERLAY_LINE_CLASS} mt-0.5`}
         >
           {transliteration}
         </span>

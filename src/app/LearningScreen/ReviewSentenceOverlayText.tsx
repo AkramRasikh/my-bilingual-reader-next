@@ -10,12 +10,14 @@ export function ColoredPhraseBreakdown({
   testId,
   pinyinTestId,
   withTopMargin = false,
+  chip = false,
 }: {
   pieces: PhraseBreakdownPiece[];
   languageSelectedState: string;
   testId: string;
   pinyinTestId: string;
   withTopMargin?: boolean;
+  chip?: boolean;
 }) {
   const addSpace = !isTrimmedLang(languageSelectedState as LanguageEnum);
   const pinyinPieces =
@@ -32,7 +34,11 @@ export function ColoredPhraseBreakdown({
     <>
       <span
         data-testid={testId}
-        className={`flex flex-wrap justify-center text-base ${withTopMargin ? 'mt-0.5' : ''}`}
+        className={
+          chip
+            ? `mx-auto flex w-fit max-w-full flex-wrap justify-center rounded-sm bg-amber-50 px-1.5 py-0.5 text-center text-base leading-tight shadow-[0_1px_3px_rgba(0,0,0,0.45)] ${withTopMargin ? 'mt-0.5' : ''}`
+            : `flex flex-wrap justify-center text-base ${withTopMargin ? 'mt-0.5' : ''}`
+        }
       >
         {pieces.map((piece) => (
           <span
@@ -47,7 +53,11 @@ export function ColoredPhraseBreakdown({
       {pinyinPieces.length > 0 ? (
         <span
           data-testid={pinyinTestId}
-          className='mt-0.5 flex flex-wrap justify-center text-xs leading-tight'
+          className={
+            chip
+              ? 'mx-auto mt-0.5 flex w-fit max-w-full flex-wrap justify-center rounded-sm bg-amber-50 px-1.5 py-0.5 text-center text-xs leading-tight shadow-[0_1px_3px_rgba(0,0,0,0.45)]'
+              : 'mt-0.5 flex flex-wrap justify-center text-xs leading-tight'
+          }
         >
           {pinyinPieces.map((syllables, index) => (
             <span
