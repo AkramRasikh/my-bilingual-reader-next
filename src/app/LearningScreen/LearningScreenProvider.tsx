@@ -141,6 +141,10 @@ export interface LearningScreenContextTypes {
   setShowWordsBasketState: React.Dispatch<React.SetStateAction<boolean>>;
   trackCurrentState: boolean;
   setTrackCurrentState: React.Dispatch<React.SetStateAction<boolean>>;
+  showPlaybackCaptionsState: boolean;
+  setShowPlaybackCaptionsState: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
   isSlowAudioState: boolean;
   isHoldSlowerAudioState: boolean;
   handleToggleSlowAudio: () => void;
@@ -260,6 +264,8 @@ export const LearningScreenProvider = ({
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
   const [trackCurrentState, setTrackCurrentState] = useState(true);
+  const [showPlaybackCaptionsState, setShowPlaybackCaptionsState] =
+    useState(false);
   const initialSentenceCount = useRef<number | null>(null);
 
   const [scrollToElState, setScrollToElState] = useState('');
@@ -1194,6 +1200,8 @@ export const LearningScreenProvider = ({
         setShowWordsBasketState,
         trackCurrentState,
         setTrackCurrentState,
+        showPlaybackCaptionsState,
+        setShowPlaybackCaptionsState,
         isSlowAudioState,
         isHoldSlowerAudioState,
         handleToggleSlowAudio,

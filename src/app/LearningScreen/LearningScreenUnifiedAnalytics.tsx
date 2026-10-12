@@ -1,8 +1,14 @@
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import useLearningScreen from './useLearningScreen';
 import { useMemo, useState } from 'react';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import clsx from 'clsx';
+
+const toggleRowClass = 'grid grid-cols-[1.25rem_2rem] items-center gap-2';
+const emojiClass =
+  'flex size-5 shrink-0 items-center justify-center text-sm leading-none';
 
 function formatCheckpointTime(seconds: number) {
   const total = Math.floor(seconds);
@@ -26,6 +32,8 @@ const LearningScreenUnifiedAnalytics = () => {
     snippetRepsState,
     elapsed,
     formattedTranscriptState,
+    showPlaybackCaptionsState,
+    setShowPlaybackCaptionsState,
   } = useLearningScreen();
 
   const handleBulkAddToReviews = async () => {
@@ -96,6 +104,17 @@ const LearningScreenUnifiedAnalytics = () => {
       <p className='w-36 overflow-hidden text-center text-xs font-medium whitespace-nowrap tabular-nums text-muted-foreground'>
         Total/Min: {totalRepsPerMinState ?? '0.0'}
       </p>
+      <div className={toggleRowClass}>
+        <Label data-testid='playback-captions-label' className={emojiClass}>
+          💬
+        </Label>
+        <Switch
+          checked={showPlaybackCaptionsState}
+          onCheckedChange={setShowPlaybackCaptionsState}
+          data-testid='playback-captions-switch'
+          aria-label='Playback captions'
+        />
+      </div>
     </div>
   );
 };

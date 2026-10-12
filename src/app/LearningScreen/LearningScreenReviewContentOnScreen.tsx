@@ -40,6 +40,7 @@ function ReviewOverlayPanel({
   progress = null,
   anchor = 'bottom',
   plain = false,
+  liftForCaptions = false,
 }: {
   children: React.ReactNode;
   timeRangePhase?: ReviewTimeRangePhase | null;
@@ -47,6 +48,7 @@ function ReviewOverlayPanel({
   progress?: number | null;
   anchor?: 'top' | 'bottom';
   plain?: boolean;
+  liftForCaptions?: boolean;
 }) {
   const textClassName = plain
     ? 'text-sm font-medium leading-tight break-words text-black'
@@ -67,7 +69,7 @@ function ReviewOverlayPanel({
 
   return (
     <div
-      className={`pointer-events-none absolute inset-0 flex flex-col ${anchor === 'top' ? 'justify-start' : 'justify-end'}`}
+      className={`pointer-events-none absolute inset-0 flex flex-col ${anchor === 'top' ? 'justify-start' : 'justify-end'} ${liftForCaptions && anchor === 'bottom' ? 'pb-28' : ''}`}
     >
       <div
         className={containerClassName}
@@ -128,6 +130,7 @@ const LearningScreenReviewContentOnScreen = () => {
     handleLoopReviewMode,
     isInReviewMode,
     onlyShowEngState,
+    showPlaybackCaptionsState,
   } = useLearningScreen();
   const { languageSelectedState, wordsState } = useFetchData();
 
@@ -352,7 +355,7 @@ const LearningScreenReviewContentOnScreen = () => {
 
   if (playingReviewedSnippet) {
     return (
-      <ReviewOverlayPanel expanded>
+      <ReviewOverlayPanel expanded liftForCaptions={showPlaybackCaptionsState}>
         <SnippetReview
           variant='overlay'
           snippetData={playingReviewedSnippet}
@@ -411,6 +414,7 @@ const LearningScreenReviewContentOnScreen = () => {
       <ReviewOverlayPanel
         timeRangePhase={sentenceTimeRangePhase}
         progress={sentenceProgress}
+        liftForCaptions={showPlaybackCaptionsState}
       >
         <ReviewSentenceOverlayText
           targetLang={sentenceTargetLang}
