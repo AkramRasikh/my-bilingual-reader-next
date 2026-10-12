@@ -4,6 +4,10 @@ import { Label } from '@/components/ui/label';
 import useLearningScreen from './useLearningScreen';
 import CountUpTimer from '@/components/custom/CountUpTimer';
 
+const toggleRowClass = 'grid grid-cols-[1.25rem_2rem] items-center gap-2';
+const emojiClass =
+  'flex size-5 shrink-0 items-center justify-center text-sm leading-none';
+
 const LearningScreenActionBarVideoControls = () => {
   const {
     onlyShowEngState,
@@ -17,6 +21,8 @@ const LearningScreenActionBarVideoControls = () => {
     isSlowAudioState,
     isHoldSlowerAudioState,
     handleToggleSlowAudio,
+    autoSentenceBreakdownEnabled,
+    setAutoSentenceBreakdownEnabled,
   } = useLearningScreen();
 
   return (
@@ -26,53 +32,71 @@ const LearningScreenActionBarVideoControls = () => {
         isRunning={countUpTimerIsRunning}
         onTimerPress={onCountUpTimerPress}
       />
-      <div className='flex gap-2 my-auto'>
-        <Label data-testid='english-label' className='text-xs leading-none'>
-          🇬🇧
-        </Label>
-        <Switch
-          checked={!onlyShowEngState}
-          onCheckedChange={() => setOnlyShowEngState(!onlyShowEngState)}
-          data-testid='english-switch'
-        />
-      </div>
-      <div className='flex gap-2 my-auto'>
-        <Label data-testid='track-current-label' className='text-xs leading-none'>
-          🔎
-        </Label>
-        <Switch
-          checked={trackCurrentState}
-          onCheckedChange={setTrackCurrentState}
-          disabled={isInReviewMode}
-          data-testid='track-current-switch'
-        />
-      </div>
-      <div className='flex items-center gap-2'>
-        <Label
-          data-testid='slow-audio-label'
-          data-slow-level={
-            isHoldSlowerAudioState
-              ? 'very-slow'
-              : isSlowAudioState
-                ? 'slow'
-                : 'off'
-          }
-          className={clsx(
-            'inline-flex h-5 w-5 items-center justify-center rounded-full text-xs leading-none',
-            isHoldSlowerAudioState
-              ? 'bg-red-500'
-              : isSlowAudioState
-                ? 'bg-amber-400'
-                : 'bg-transparent',
-          )}
-        >
-          🐢
-        </Label>
-        <Switch
-          checked={isSlowAudioState}
-          onCheckedChange={handleToggleSlowAudio}
-          data-testid='slow-audio-switch'
-        />
+      <div className='flex flex-col gap-3'>
+        <div className={toggleRowClass}>
+          <Label data-testid='english-label' className={emojiClass}>
+            🇬🇧
+          </Label>
+          <Switch
+            checked={!onlyShowEngState}
+            onCheckedChange={() => setOnlyShowEngState(!onlyShowEngState)}
+            data-testid='english-switch'
+          />
+        </div>
+        <div className={toggleRowClass}>
+          <Label data-testid='track-current-label' className={emojiClass}>
+            🔎
+          </Label>
+          <Switch
+            checked={trackCurrentState}
+            onCheckedChange={setTrackCurrentState}
+            disabled={isInReviewMode}
+            data-testid='track-current-switch'
+          />
+        </div>
+        <div className={toggleRowClass}>
+          <Label
+            data-testid='slow-audio-label'
+            data-slow-level={
+              isHoldSlowerAudioState
+                ? 'very-slow'
+                : isSlowAudioState
+                  ? 'slow'
+                  : 'off'
+            }
+            className={clsx(
+              emojiClass,
+              'rounded-full',
+              isHoldSlowerAudioState
+                ? 'bg-red-500'
+                : isSlowAudioState
+                  ? 'bg-amber-400'
+                  : 'bg-transparent',
+            )}
+          >
+            🐢
+          </Label>
+          <Switch
+            checked={isSlowAudioState}
+            onCheckedChange={handleToggleSlowAudio}
+            data-testid='slow-audio-switch'
+          />
+        </div>
+        <div className={toggleRowClass}>
+          <Label
+            data-testid='auto-sentence-breakdown-label'
+            className={emojiClass}
+          >
+            🧱
+          </Label>
+          <Switch
+            checked={!isInReviewMode && autoSentenceBreakdownEnabled}
+            onCheckedChange={setAutoSentenceBreakdownEnabled}
+            disabled={isInReviewMode}
+            data-testid='auto-sentence-breakdown-switch'
+            aria-label='Auto sentence breakdown'
+          />
+        </div>
       </div>
     </div>
   );

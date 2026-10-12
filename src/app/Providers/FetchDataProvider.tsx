@@ -178,7 +178,7 @@ export interface FetchDataContextTypes {
   ) => Promise<void>;
   handleSaveSnippetFetchProvider: (
     params: HandleSaveSnippetCallTypes,
-  ) => Promise<void>;
+  ) => Promise<boolean>;
   handleDeleteSnippetFetchProvider: (
     params: HandleDeleteSnippetCallTypes,
   ) => Promise<void>;
@@ -202,7 +202,7 @@ export const FetchDataContext = createContext<FetchDataContextTypes>({
   handleDeleteWordDataProvider: () => { },
   addImageDataProvider: () => { },
   adhocSentenceCustomWord: async () => { },
-  handleSaveSnippetFetchProvider: async () => { },
+  handleSaveSnippetFetchProvider: async () => false,
   handleDeleteSnippetFetchProvider: async () => { },
   wordsToReviewGivenOriginalContextId: {},
   languageSelectedState: LanguageEnum.None,
@@ -451,9 +451,11 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         isUpdate,
       });
       setToastMessageState('Snippet saved ✂️✅!');
+      return true;
     } catch (error) {
       console.log('## handleSaveSnippetFetchProvider', { error });
       setToastMessageState('Error saving snippet ✂️❌!');
+      return false;
     }
   };
 

@@ -51,6 +51,7 @@ import { useGamepad } from './experimental/useGamePad';
 import { useInputActions } from './experimental/useInputActions';
 import { useCountUpTimer } from '@/components/custom/CountUpTimer/useCountUpTimer';
 import { getSnippetTimeRange } from './learning-screen-review-time-range';
+import { getAutoBreakdownSentenceIds } from './utils/get-sentence-snippet-coverage';
 
 type LearningScreenProviderProps = React.PropsWithChildren<{
   selectedContentStateMemoized: ContentTypes & { contentIndex: number };
@@ -115,6 +116,10 @@ export interface LearningScreenContextTypes {
   setIsVideoPlaying: React.Dispatch<React.SetStateAction<boolean>>;
   isInReviewMode: boolean;
   setIsInReviewMode: React.Dispatch<React.SetStateAction<boolean>>;
+  autoSentenceBreakdownEnabled: boolean;
+  setAutoSentenceBreakdownEnabled: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
   isGenericItemsLoadingArrayState: SentenceMapItemTypes['id'][];
   setIsGenericItemsLoadingArrayState: React.Dispatch<
     React.SetStateAction<SentenceMapItemTypes['id'][]>
@@ -250,6 +255,8 @@ export const LearningScreenProvider = ({
   const [loopSecondsState, setLoopSecondsState] = useState([]);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isInReviewMode, setIsInReviewMode] = useState(false);
+  const [autoSentenceBreakdownEnabled, setAutoSentenceBreakdownEnabled] =
+    useState(false);
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
   const [trackCurrentState, setTrackCurrentState] = useState(true);
@@ -458,11 +465,14 @@ export const LearningScreenProvider = ({
         ...prev,
         ...overlappingIds,
       ]);
-      await handleSaveSnippetFetchProvider({
+      const saved = await handleSaveSnippetFetchProvider({
         snippetData: finalSnippetObject,
         contentId,
         contentIndex,
       });
+      if (saved) {
+        await maybeAutoBreakdownSentences(finalSnippetObject);
+      }
     } finally {
       setIsGenericItemsLoadingArrayState((prev) =>
         prev.filter((item) => !overlappingIds.includes(item)),
@@ -499,17 +509,21 @@ export const LearningScreenProvider = ({
       isSnippetReview: _isSnippetReview,
       ...finalSnippetWithoutVocab
     } = snippetArgs;
-    await handleSaveSnippetFetchProvider({
-      snippetData: {
-        id: uuidv4(),
-        time: threeSecondLoopState,
-        isContracted: contractThreeSecondLoopState,
-        reviewData,
-        ...finalSnippetWithoutVocab,
-      },
+    const snippetData: Snippet = {
+      id: uuidv4(),
+      time: threeSecondLoopState,
+      isContracted: contractThreeSecondLoopState,
+      reviewData,
+      ...finalSnippetWithoutVocab,
+    };
+    const saved = await handleSaveSnippetFetchProvider({
+      snippetData,
       contentId,
       contentIndex,
     });
+    if (saved) {
+      await maybeAutoBreakdownSentences(snippetData);
+    }
     if (_isSnippetReview) {
       setSnippetRepsState((prev) => prev + 1);
     }
@@ -936,6 +950,28 @@ export const LearningScreenProvider = ({
     }
   };
 
+  const maybeAutoBreakdownSentences = async (newSnippet: Snippet) => {
+    if (!autoSentenceBreakdownEnabled || isInReviewMode) {
+      return;
+    }
+
+    const existingSnippets = selectedContentStateMemoized?.snippets ?? [];
+    const snippets = existingSnippets.some((item) => item.id === newSnippet.id)
+      ? existingSnippets
+      : [...existingSnippets, newSnippet];
+    const sentenceIds = getAutoBreakdownSentenceIds({
+      snippets,
+      newSnippet,
+      sentenceMap: sentenceMapMemoized,
+      mediaDuration,
+      getLoopTranscriptSegment,
+    });
+
+    await Promise.all(
+      sentenceIds.map((sentenceId) => handleBreakdownSentence({ sentenceId })),
+    );
+  };
+
   useEffect(() => {
     const seenThisSession = initialSentenceCount.current ?? 0;
     if (sentencesNeedReview > seenThisSession) {
@@ -1139,6 +1175,8 @@ export const LearningScreenProvider = ({
         setIsVideoPlaying,
         isInReviewMode,
         setIsInReviewMode,
+        autoSentenceBreakdownEnabled,
+        setAutoSentenceBreakdownEnabled,
         isGenericItemsLoadingArrayState,
         setIsGenericItemsLoadingArrayState,
         snippetLoadingState,

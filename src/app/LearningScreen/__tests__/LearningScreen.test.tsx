@@ -620,6 +620,36 @@ describe('LearningScreen - studying new content', () => {
       expect(await screen.findByTestId('bulk-review-button')).toBeInTheDocument();
       checkingMediaActionButtons();
     });
+
+    it('toggles auto sentence breakdown off while review mode is on', async () => {
+      await renderWithProvider();
+      const autoBreakdownSwitch = await screen.findByTestId(
+        'auto-sentence-breakdown-switch',
+      );
+      const slowAudioSwitch = screen.getByTestId('slow-audio-switch');
+      expect(slowAudioSwitch.parentElement?.nextElementSibling).toBe(
+        autoBreakdownSwitch.parentElement,
+      );
+      expect(autoBreakdownSwitch).not.toBeChecked();
+      expect(autoBreakdownSwitch).toBeEnabled();
+
+      fireEvent.click(autoBreakdownSwitch);
+      expect(autoBreakdownSwitch).toBeChecked();
+
+      fireEvent.click(screen.getByTestId('review-switch'));
+      const autoBreakdownInReview = screen.getByTestId(
+        'auto-sentence-breakdown-switch',
+      );
+      expect(autoBreakdownInReview).not.toBeChecked();
+      expect(autoBreakdownInReview).toBeDisabled();
+
+      fireEvent.click(screen.getByTestId('review-switch'));
+      const autoBreakdownAfterReview = screen.getByTestId(
+        'auto-sentence-breakdown-switch',
+      );
+      expect(autoBreakdownAfterReview).toBeChecked();
+      expect(autoBreakdownAfterReview).toBeEnabled();
+    });
   });
 
   describe('new words', () => {
