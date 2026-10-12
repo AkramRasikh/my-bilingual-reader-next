@@ -2,8 +2,6 @@ import { createEmptyCard, generatorParameters, fsrs, State } from 'ts-fsrs';
 import { getTimeDiffSRS } from './get-time-diff-srs';
 import { ReviewDataTypes } from '../types/shared-types';
 
-const sentenceHelperUpperLimit = 30;
-
 interface SRSContentTypeOptions {
   vocab: 'vocab';
   sentences: 'sentences';
@@ -45,19 +43,11 @@ export const srsCalculationAndText = ({
   const goodDue = nextScheduledOptions['3'].card.due;
   const easyDue = nextScheduledOptions['4'].card.due;
 
-  const date1 = new Date(timeNow);
-  const date2 = new Date(easyDue);
-  const diffMs = date1.getTime() - date2.getTime();
-
-  // Convert to seconds, minutes, hours, days
-  const diffSeconds = diffMs / 1000;
-  const diffMinutes = diffSeconds / 60;
-  const diffHours = diffMinutes / 60;
-  const diffDays = diffHours / 24;
-
-  const isScheduledForDeletion =
-    srsRetentionKeyTypes.sentences === contentType &&
-    Math.abs(diffDays) > sentenceHelperUpperLimit;
+  const isScheduledForDeletion = isEasyIntervalScheduledForDeletion({
+    contentType,
+    easyDue,
+    timeNow,
+  });
 
   const againText = getTimeDiffSRS({
     dueTimeStamp: againDue,
@@ -93,6 +83,36 @@ export const srsRetentionKeyTypes = {
   media: 'media',
   snippet: 'snippet',
 } as SRSContentTypeOptions;
+
+export const VOCAB_EASY_DELETE_AFTER_DAYS = 45;
+export const SENTENCE_EASY_DELETE_AFTER_DAYS = 30;
+
+export const isEasyIntervalScheduledForDeletion = ({
+  contentType,
+  easyDue,
+  timeNow,
+}: {
+  contentType: keyof SRSContentTypeOptions;
+  easyDue: Date;
+  timeNow: Date;
+}) => {
+  const deleteAfterDays =
+    contentType === srsRetentionKeyTypes.vocab
+      ? VOCAB_EASY_DELETE_AFTER_DAYS
+      : contentType === srsRetentionKeyTypes.sentences
+        ? SENTENCE_EASY_DELETE_AFTER_DAYS
+        : null;
+
+  if (deleteAfterDays == null) {
+    return false;
+  }
+
+  const daysAhead =
+    (new Date(easyDue).getTime() - new Date(timeNow).getTime()) /
+    (1000 * 60 * 60 * 24);
+
+  return daysAhead >= deleteAfterDays;
+};
 
 const initFsrs = ({
   contentType,

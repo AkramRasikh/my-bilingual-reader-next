@@ -896,11 +896,12 @@ export const LearningScreenProvider = ({
     }
     const sentenceHasReview = masterPlayComprehensive?.reviewData;
 
-    const { nextScheduledOptions } = srsCalculationAndText({
-      reviewData: sentenceHasReview,
-      contentType: srsRetentionKeyTypes.sentences,
-      timeNow: new Date(),
-    });
+    const { nextScheduledOptions, isScheduledForDeletion } =
+      srsCalculationAndText({
+        reviewData: sentenceHasReview,
+        contentType: srsRetentionKeyTypes.sentences,
+        timeNow: new Date(),
+      });
 
     const nextReviewData = nextScheduledOptions['4'].card;
 
@@ -909,6 +910,13 @@ export const LearningScreenProvider = ({
         ...prev,
         masterPlayComprehensive.id,
       ]);
+      if (isScheduledForDeletion) {
+        await handleReviewFunc({
+          sentenceId: masterPlayComprehensive.id,
+          isRemoveReview: true,
+        });
+        return;
+      }
       await handleReviewFunc({
         sentenceId: masterPlayComprehensive.id,
         nextDue: nextReviewData,

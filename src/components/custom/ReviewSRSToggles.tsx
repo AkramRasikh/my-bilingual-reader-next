@@ -39,8 +39,42 @@ const ReviewSRSToggles = ({
     timeNow,
   });
 
+  const handleRemoveReview = useCallback(async () => {
+    try {
+      setIsLoadingSRSState(true);
+      if (isVocab) {
+        await handleReviewFunc({
+          wordId: contentItem.id,
+          isRemoveReview: true,
+        });
+      } else if (isSnippet) {
+        await handleReviewFunc({
+          snippetData: {
+            ...contentItem,
+            reviewData: undefined,
+          },
+          isRemoveReview: true,
+        });
+      } else {
+        await handleReviewFunc({
+          sentenceId: contentItem.id,
+          isRemoveReview: true,
+        });
+      }
+    } catch (error) {
+      console.log('## handleRemoveReview', { error });
+    } finally {
+      setIsLoadingSRSState(false);
+    }
+  }, [contentItem, handleReviewFunc, isSnippet, isVocab]);
+
   const handleNextReview = useCallback(
     async (difficulty) => {
+      if (difficulty === '4' && isScheduledForDeletion) {
+        await handleRemoveReview();
+        return;
+      }
+
       const nextReviewData = nextScheduledOptions[difficulty].card;
       const isMoreThanADayAheadBool = isMoreThanADayAhead(
         nextReviewData.due,
@@ -75,60 +109,43 @@ const ReviewSRSToggles = ({
         setIsLoadingSRSState(false);
       }
     },
-    [contentItem, handleReviewFunc, isSnippet, isVocab, nextScheduledOptions],
+    [
+      contentItem,
+      handleRemoveReview,
+      handleReviewFunc,
+      isScheduledForDeletion,
+      isSnippet,
+      isVocab,
+      nextScheduledOptions,
+    ],
   );
-
-  const handleRemoveReview = useCallback(async () => {
-    try {
-      setIsLoadingSRSState(true);
-      if (isVocab) {
-        await handleReviewFunc({
-          wordId: contentItem.id,
-          isRemoveReview: true,
-        });
-      } else if (isSnippet) {
-        await handleReviewFunc({
-          snippetData: {
-            ...contentItem,
-            reviewData: undefined,
-          },
-          isRemoveReview: true,
-        });
-      } else {
-        await handleReviewFunc({
-          sentenceId: contentItem.id,
-          isRemoveReview: true,
-        });
-      }
-    } catch (error) {
-      console.log('## handleRemoveReview', { error });
-    } finally {
-      setIsLoadingSRSState(false);
-    }
-  }, [contentItem, handleReviewFunc, isSnippet, isVocab]);
 
   const reviewTogglesMap = [
     {
       disabled: isLoadingSRSState,
       text: againText,
+      ariaLabel: undefined,
       difficultyNumber: '1',
       dataTestId: `again-${contentItem.id}`,
     },
     {
       disabled: isLoadingSRSState,
       text: hardText,
+      ariaLabel: undefined,
       difficultyNumber: '2',
       dataTestId: `hard-${contentItem.id}`,
     },
     {
       disabled: isLoadingSRSState,
       text: goodText,
+      ariaLabel: undefined,
       difficultyNumber: '3',
       dataTestId: `good-${contentItem.id}`,
     },
     {
-      disabled: isLoadingSRSState || isScheduledForDeletion,
-      text: easyText,
+      disabled: isLoadingSRSState,
+      text: isScheduledForDeletion ? <Trash aria-hidden /> : easyText,
+      ariaLabel: isScheduledForDeletion ? 'Delete' : undefined,
       difficultyNumber: '4',
       dataTestId: `easy-${contentItem.id}`,
     },
@@ -156,6 +173,7 @@ const ReviewSRSToggles = ({
           disabled={btn.disabled}
           onClick={() => handleNextReview(btn.difficultyNumber)}
           data-testid={btn.dataTestId}
+          aria-label={btn.ariaLabel}
           className={clsx(
             isReadyForQuickReview && btn.difficultyNumber === '4'
               ? 'animate-pulse bg-green-400'
