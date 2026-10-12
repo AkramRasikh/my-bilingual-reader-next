@@ -5,6 +5,7 @@ import { useYoutubeUpload } from './YoutubeUploadProvider';
 import YoutubeUploadTranscriptActions from './YoutubeUploadTranscriptActions';
 import YoutubeUploadTranscript from './YoutubeUploadTranscript';
 import YoutubeUploadAudioEl from './YoutubeUploadAudioEl';
+import YoutubeUploadFormatDialog from './YoutubeUploadFormatDialog';
 
 const YoutubeUploadContainer = () => {
   const { videoTitleState, transcriptState, publicAudioUrlState } =
@@ -36,6 +37,7 @@ const YoutubeUploadContainer = () => {
           <YoutubeUploadTranscript />
         </div>
       )}
+      <YoutubeUploadFormatDialog />
     </div>
   );
 };

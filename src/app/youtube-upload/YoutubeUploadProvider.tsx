@@ -24,6 +24,18 @@ export interface FormData {
   title: string;
 }
 
+export type YoutubeFormat = {
+  id: string;
+  ext: string;
+  resolution: string | null;
+  fps: number | null;
+  filesize: number | null;
+  vcodec: string | null;
+  acodec: string | null;
+  note: string | null;
+  kind: 'audio' | 'video' | 'both';
+};
+
 export function YoutubeUploadProvider({ children }) {
   const [form, setForm] = useState<FormData>({
     url: '',
@@ -44,6 +56,13 @@ export function YoutubeUploadProvider({ children }) {
   const [secondsState, setSecondsState] = useState([]);
   const [onlyShowNonBaseLangState, setOnlyShowNonBaseLangState] =
     useState(false);
+  const [formats, setFormats] = useState<YoutubeFormat[]>([]);
+  const [formatSelectionRequired, setFormatSelectionRequired] = useState(false);
+  const [formatDialogOpen, setFormatDialogOpen] = useState(false);
+  const [formatListError, setFormatListError] = useState<string | null>(null);
+  const [formatRetryError, setFormatRetryError] = useState<string | null>(
+    null,
+  );
   const masterPlay =
     secondsState?.length > 0 ? secondsState[Math.floor(currentTime)] : '';
 
@@ -162,8 +181,17 @@ export function YoutubeUploadProvider({ children }) {
     checkYoutubeVideoLoads();
   }, [form, videoTitleState]);
 
+  const clearFormatSelection = () => {
+    setFormats([]);
+    setFormatSelectionRequired(false);
+    setFormatDialogOpen(false);
+    setFormatListError(null);
+    setFormatRetryError(null);
+  };
+
   const getYoutubeData = async () => {
     try {
+      clearFormatSelection();
       const res = await fetch('/api/getYoutubeVideo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -176,7 +204,6 @@ export function YoutubeUploadProvider({ children }) {
 
       const data = await res.json();
       if (res.ok) {
-        setMessage(`Success! File URL: ${data.publicUrl}`);
         setPublicAudioUrlState(data.publicUrl);
         setTranscriptState(
           data.transcript.map((item, index) => ({
@@ -184,11 +211,61 @@ export function YoutubeUploadProvider({ children }) {
             originalIndex: index,
           })),
         );
+        if (data.formatSelectionRequired) {
+          setFormats(data.formats ?? []);
+          setFormatListError(data.formatListError ?? null);
+          setFormatSelectionRequired(true);
+          setFormatDialogOpen(true);
+          setMessage(
+            'Audio downloaded. Pick a video and audio format to finish the video.',
+          );
+        } else {
+          setMessage(`Success! File URL: ${data.publicUrl}`);
+        }
       } else {
         setMessage(`Error: ${data.error}`);
       }
     } catch (err: any) {
       setMessage(`Error: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const retryVideoDownload = async ({
+    videoFormatId,
+    audioFormatId,
+  }: {
+    videoFormatId: string;
+    audioFormatId: string;
+  }) => {
+    try {
+      setLoading(true);
+      setFormatRetryError(null);
+      const res = await fetch('/api/getYoutubeVideo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: form.url,
+          title: form.title,
+          retryVideoOnly: true,
+          videoFormatId,
+          audioFormatId,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setFormatSelectionRequired(false);
+        setFormatDialogOpen(false);
+        setMessage('Video downloaded.');
+      } else {
+        setFormatRetryError(data.error ?? 'Video download failed');
+        setFormatDialogOpen(true);
+      }
+    } catch (err: any) {
+      setFormatRetryError(err.message);
+      setFormatDialogOpen(true);
     } finally {
       setLoading(false);
     }
@@ -219,6 +296,13 @@ export function YoutubeUploadProvider({ children }) {
         onlyShowNonBaseLangState,
         setOnlyShowNonBaseLangState,
         numberOfBaseLangLessItems,
+        formats,
+        formatSelectionRequired,
+        formatDialogOpen,
+        setFormatDialogOpen,
+        formatListError,
+        formatRetryError,
+        retryVideoDownload,
       }}
     >
       {children}

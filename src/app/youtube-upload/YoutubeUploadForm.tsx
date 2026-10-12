@@ -30,6 +30,8 @@ const YouTubeUploadForm = () => {
     publicAudioUrlState,
     transcriptState,
     uploadContentToDb,
+    formatSelectionRequired,
+    setFormatDialogOpen,
   } = useYoutubeUpload();
 
   const handleChange = (field: keyof FormData, value: string) => {
@@ -55,6 +57,7 @@ const YouTubeUploadForm = () => {
   const disableSubmit = loading || !form.url || !form.title || !form.language;
   const disableUploadToDb =
     loading ||
+    formatSelectionRequired ||
     !form.url ||
     !form.title ||
     !form.language ||
@@ -126,7 +129,17 @@ const YouTubeUploadForm = () => {
             disabled={disableUploadToDb}
             className='ml-2'
           >
-            {loading ? 'Uploading...' : 'Upload to DB'}
+            {loading && !formatSelectionRequired ? 'Uploading...' : 'Upload to DB'}
+          </Button>
+        )}
+        {formatSelectionRequired && (
+          <Button
+            type='button'
+            variant='outline'
+            className='ml-2'
+            onClick={() => setFormatDialogOpen(true)}
+          >
+            Choose video format
           </Button>
         )}
         {message && (
