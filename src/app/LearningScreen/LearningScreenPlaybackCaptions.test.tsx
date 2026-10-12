@@ -1,8 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import {
-  getCaptionSentenceProgress,
-  PlaybackCaptionStack,
-} from './LearningScreenPlaybackCaptions';
+import { PlaybackCaptionStack } from './LearningScreenPlaybackCaptions';
 
 const previous = {
   targetLang: '上一句',
@@ -82,31 +79,17 @@ describe('PlaybackCaptionStack', () => {
     expect(screen.queryByTestId('playback-captions')).not.toBeInTheDocument();
   });
 
-  it('draws a progress bar only on the current sentence, with a smaller previous container', () => {
+  it('keeps the previous sentence smaller and does not draw a progress bar', () => {
     render(
-      <PlaybackCaptionStack
-        previous={previous}
-        current={current}
-        showEnglish
-        currentProgress={0.4}
-        currentPhase='during'
-      />,
+      <PlaybackCaptionStack previous={previous} current={current} showEnglish />,
     );
 
     expect(
-      screen.queryByTestId('playback-caption-previous-progress'),
+      screen.queryByRole('progressbar'),
     ).not.toBeInTheDocument();
     expect(
       screen.getByTestId('playback-caption-previous-target').parentElement,
     ).toHaveClass('text-sm');
-
-    const currentBar = screen.getByTestId('playback-caption-current-progress');
-    expect(currentBar).toHaveAttribute('aria-valuenow', '40');
-    expect(currentBar).toHaveClass('bg-amber-200');
-    expect(screen.getByTestId('playback-caption-current-progress-fill')).toHaveStyle({
-      width: '40%',
-    });
-    expect(currentBar.className).toContain('top-0');
     expect(
       screen.getByTestId('playback-caption-current-target').parentElement,
     ).toHaveClass('text-base');
@@ -152,13 +135,7 @@ describe('PlaybackCaptionStack', () => {
 
     try {
       const { rerender } = render(
-        <PlaybackCaptionStack
-          previous={null}
-          current={first}
-          showEnglish
-          currentProgress={0.2}
-          currentPhase='during'
-        />,
+        <PlaybackCaptionStack previous={null} current={first} showEnglish />,
       );
 
       rerender(
@@ -166,8 +143,6 @@ describe('PlaybackCaptionStack', () => {
           previous={first}
           current={second}
           showEnglish
-          currentProgress={0.1}
-          currentPhase='during'
         />,
       );
 
@@ -177,9 +152,7 @@ describe('PlaybackCaptionStack', () => {
       expect(screen.getByTestId('playback-caption-current-target')).toHaveTextContent(
         '第二句',
       );
-      expect(
-        screen.queryByTestId('playback-caption-previous-progress'),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
 
       const slide = animate.mock.calls.find((call) =>
         String(call[0]?.[0]?.transform ?? '').includes('scale('),
@@ -195,25 +168,5 @@ describe('PlaybackCaptionStack', () => {
         }
       }
     }
-  });
-});
-
-describe('getCaptionSentenceProgress', () => {
-  it('fills the current sentence from its start to the next sentence', () => {
-    expect(
-      getCaptionSentenceProgress(
-        { time: 12, nextSentence: 14 },
-        13,
-        100,
-      ),
-    ).toEqual({ progress: 0.5, timeRangePhase: 'during' });
-
-    expect(
-      getCaptionSentenceProgress(
-        { time: 11, nextSentence: 12 },
-        13,
-        100,
-      ),
-    ).toEqual({ progress: 1, timeRangePhase: 'beyond' });
   });
 });

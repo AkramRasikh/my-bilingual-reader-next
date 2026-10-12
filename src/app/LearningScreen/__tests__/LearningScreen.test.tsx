@@ -627,8 +627,14 @@ describe('LearningScreen - studying new content', () => {
         'auto-sentence-breakdown-switch',
       );
       const slowAudioSwitch = screen.getByTestId('slow-audio-switch');
+      const playbackCaptionsSwitch = screen.getByTestId(
+        'playback-captions-switch',
+      );
       expect(slowAudioSwitch.parentElement?.nextElementSibling).toBe(
         autoBreakdownSwitch.parentElement,
+      );
+      expect(autoBreakdownSwitch.parentElement?.nextElementSibling).toBe(
+        playbackCaptionsSwitch.parentElement,
       );
       expect(autoBreakdownSwitch).not.toBeChecked();
       expect(autoBreakdownSwitch).toBeEnabled();

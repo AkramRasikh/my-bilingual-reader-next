@@ -1,13 +1,7 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import useLearningScreen from './useLearningScreen';
-import {
-  getCurrentTimeRangePhase,
-  getSentenceTimeRange,
-  getTimeRangeProgress,
-  type ReviewTimeRangePhase,
-} from './learning-screen-review-time-range';
 
 export type PlaybackCaptionSentence = {
   id?: string;
@@ -63,53 +57,20 @@ function fadeCaptionIn(node: HTMLElement) {
   );
 }
 
-export function getCaptionSentenceProgress(
-  sentence: { time: number; nextSentence?: number | null } | null,
-  playhead: number,
-  mediaDuration: number | null,
-) {
-  if (!sentence || !Number.isFinite(sentence.time)) {
-    return { progress: null, timeRangePhase: null as ReviewTimeRangePhase | null };
-  }
-
-  const range = getSentenceTimeRange(
-    { time: sentence.time, nextSentence: sentence.nextSentence ?? null },
-    mediaDuration,
-  );
-
-  return {
-    progress: getTimeRangeProgress(playhead, range.startTime, range.endTime),
-    timeRangePhase: getCurrentTimeRangePhase(
-      playhead,
-      range.startTime,
-      range.endTime,
-    ),
-  };
-}
-
 function CaptionLine({
   sentence,
   showEnglish,
   testId,
-  progress = null,
-  timeRangePhase = null,
   compact = false,
   role,
 }: {
   sentence: PlaybackCaptionSentence;
   showEnglish: boolean;
   testId: string;
-  progress?: number | null;
-  timeRangePhase?: ReviewTimeRangePhase | null;
   compact?: boolean;
   role: 'previous' | 'current';
 }) {
   const baseLang = sentence.baseLang?.trim() ?? '';
-  const showProgress = progress != null && Number.isFinite(progress);
-  const progressPercent = showProgress
-    ? Math.min(100, Math.max(0, progress * 100))
-    : 0;
-  const beyond = timeRangePhase === 'beyond';
 
   return (
     <div
@@ -117,23 +78,6 @@ function CaptionLine({
       data-caption-role={role}
       className={`relative overflow-hidden rounded-md bg-black/70 text-center text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] ${compact ? 'max-w-[82%] px-2.5 py-0.5 text-sm' : 'max-w-[90%] px-3 py-1 text-base'}`}
     >
-      {showProgress ? (
-        <div
-          className={`pointer-events-none absolute inset-x-0 top-0 h-1 ${beyond ? 'bg-green-200' : 'bg-amber-200'}`}
-          data-testid={`${testId}-progress`}
-          role='progressbar'
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.round(progressPercent)}
-          aria-label='Sentence playback progress'
-        >
-          <div
-            className={`h-full ${beyond ? 'bg-green-500' : 'bg-amber-600'}`}
-            data-testid={`${testId}-progress-fill`}
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-      ) : null}
       <p data-testid={`${testId}-target`} className='leading-tight'>
         {sentence.targetLang}
       </p>
@@ -153,14 +97,10 @@ export function PlaybackCaptionStack({
   previous,
   current,
   showEnglish,
-  currentProgress = null,
-  currentPhase = null,
 }: {
   previous: PlaybackCaptionSentence | null;
   current: PlaybackCaptionSentence | null;
   showEnglish: boolean;
-  currentProgress?: number | null;
-  currentPhase?: ReviewTimeRangePhase | null;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const boxesRef = useRef(new Map<string, CaptionBox>());
@@ -234,8 +174,6 @@ export function PlaybackCaptionStack({
         sentence={{ ...current, targetLang: currentTarget }}
         showEnglish={showEnglish}
         testId='playback-caption-current'
-        progress={currentProgress}
-        timeRangePhase={currentPhase}
         role='current'
       />
     </div>
@@ -248,58 +186,23 @@ const LearningScreenPlaybackCaptions = () => {
     masterPlayComprehensive,
     formattedTranscriptState,
     onlyShowEngState,
-    currentTime,
-    mediaDuration,
-    isVideoPlaying,
-    ref,
   } = useLearningScreen();
-  const [liveTime, setLiveTime] = useState(currentTime);
-
-  useEffect(() => {
-    if (!isVideoPlaying || !showPlaybackCaptionsState) return;
-
-    let frame = 0;
-    const tick = () => {
-      const time = ref.current?.currentTime;
-      if (typeof time === 'number' && Number.isFinite(time)) {
-        setLiveTime(time);
-      }
-      frame = requestAnimationFrame(tick);
-    };
-
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [isVideoPlaying, showPlaybackCaptionsState, ref]);
 
   if (!showPlaybackCaptionsState) {
     return null;
   }
 
-  const playhead =
-    isVideoPlaying && showPlaybackCaptionsState ? liveTime : currentTime;
   const index = masterPlayComprehensive?.index;
   const previous =
     typeof index === 'number' && index > 0
       ? (formattedTranscriptState[index - 1] ?? null)
       : null;
-  const currentProgress = getCaptionSentenceProgress(
-    masterPlayComprehensive
-      ? {
-          time: masterPlayComprehensive.time,
-          nextSentence: masterPlayComprehensive.nextSentence,
-        }
-      : null,
-    playhead,
-    mediaDuration,
-  );
 
   return (
     <PlaybackCaptionStack
       previous={previous}
       current={masterPlayComprehensive ?? null}
       showEnglish={!onlyShowEngState}
-      currentProgress={currentProgress.progress}
-      currentPhase={currentProgress.timeRangePhase}
     />
   );
 };

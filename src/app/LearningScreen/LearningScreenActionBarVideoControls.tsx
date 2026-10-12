@@ -23,6 +23,8 @@ const LearningScreenActionBarVideoControls = () => {
     handleToggleSlowAudio,
     autoSentenceBreakdownEnabled,
     setAutoSentenceBreakdownEnabled,
+    showPlaybackCaptionsState,
+    setShowPlaybackCaptionsState,
   } = useLearningScreen();
 
   return (
@@ -95,6 +97,17 @@ const LearningScreenActionBarVideoControls = () => {
             disabled={isInReviewMode}
             data-testid='auto-sentence-breakdown-switch'
             aria-label='Auto sentence breakdown'
+          />
+        </div>
+        <div className={toggleRowClass}>
+          <Label data-testid='playback-captions-label' className={emojiClass}>
+            💬
+          </Label>
+          <Switch
+            checked={showPlaybackCaptionsState}
+            onCheckedChange={setShowPlaybackCaptionsState}
+            data-testid='playback-captions-switch'
+            aria-label='Playback captions'
           />
         </div>
       </div>
