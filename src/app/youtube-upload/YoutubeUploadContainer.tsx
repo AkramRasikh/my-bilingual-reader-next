@@ -6,6 +6,7 @@ import YoutubeUploadTranscriptActions from './YoutubeUploadTranscriptActions';
 import YoutubeUploadTranscript from './YoutubeUploadTranscript';
 import YoutubeUploadAudioEl from './YoutubeUploadAudioEl';
 import YoutubeUploadFormatDialog from './YoutubeUploadFormatDialog';
+import YoutubeUploadRemoveSlashH from './YoutubeUploadRemoveSlashH';
 
 const YoutubeUploadContainer = () => {
   const { videoTitleState, transcriptState, publicAudioUrlState } =
@@ -34,6 +35,7 @@ const YoutubeUploadContainer = () => {
         <div className={clsx('w-lg', hasTranscript ? '' : 'mx-auto')}>
           <YoutubeUploadTranscriptActions />
           {publicAudioUrlState && <YoutubeUploadAudioEl />}
+          <YoutubeUploadRemoveSlashH />
           <YoutubeUploadTranscript />
         </div>
       )}

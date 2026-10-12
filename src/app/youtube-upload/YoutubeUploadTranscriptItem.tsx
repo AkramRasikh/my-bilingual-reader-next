@@ -3,6 +3,7 @@ import { Textarea } from '@/components/ui/textarea';
 import clsx from 'clsx';
 import { Edit2Icon, PauseCircleIcon, PlayIcon } from 'lucide-react';
 import { useState } from 'react';
+import { removeFirstSlashH, slashHIn } from './slashH';
 
 const YoutubeUploadTranscriptItem = ({
   item,
@@ -16,6 +17,7 @@ const YoutubeUploadTranscriptItem = ({
   indexNum,
 }) => {
   const [openToEditState, setOpenToEditState] = useState(false);
+  const slashHMatch = slashHIn(item.targetLang ?? '');
   return (
     <div
       className={clsx(
@@ -42,15 +44,41 @@ const YoutubeUploadTranscriptItem = ({
         >
           <Edit2Icon />
         </Button>
+        {slashHMatch && (
+          <Button
+            type='button'
+            size='sm'
+            className='bg-amber-500 px-2 text-white hover:bg-amber-600'
+            onClick={() =>
+              handleChange(
+                indexNum,
+                'targetLang',
+                removeFirstSlashH(item.targetLang),
+              )
+            }
+          >
+            {slashHMatch[0]}
+          </Button>
+        )}
       </div>
       <div className='flex-1 flex flex-col space-y-1'>
         <div
           className={clsx('w-full', isArabic ? 'text-right' : '')}
           dir={isArabic ? 'rtl' : 'ltr'}
         >
-          <span>
-            {item.originalIndex}) {item.targetLang}
-          </span>
+          <span>{item.originalIndex})</span>
+          {openToEditState ? (
+            <Textarea
+              value={item.targetLang ?? ''}
+              placeholder='Target language text'
+              onChange={(e) =>
+                handleChange(indexNum, 'targetLang', e.target.value)
+              }
+              className='mt-1'
+            />
+          ) : (
+            <span> {item.targetLang}</span>
+          )}
         </div>
 
         <div>
