@@ -26,6 +26,12 @@ const LearningScreenUnifiedAnalytics = () => {
     snippetRepsState,
     elapsed,
     formattedTranscriptState,
+    isInReviewMode,
+    handleFromHere,
+    loopTranscriptState,
+    setLoopTranscriptState,
+    threeSecondLoopState,
+    setThreeSecondLoopState,
   } = useLearningScreen();
 
   const handleBulkAddToReviews = async () => {
@@ -55,26 +61,53 @@ const LearningScreenUnifiedAnalytics = () => {
     return ((totalReps / elapsed) * 60).toFixed(1);
   }, [elapsed, sentenceRepsState, snippetRepsState, wordRepsState]);
 
-  const checkpointTimeLabel = useMemo(() => {
+  const checkpoint = useMemo(() => {
     const lastReviewed = [...formattedTranscriptState]
       .reverse()
       .find((item) => item?.reviewData?.due);
     if (lastReviewed == null || !Number.isFinite(lastReviewed.time)) {
       return null;
     }
-    return formatCheckpointTime(lastReviewed.time);
+    return {
+      id: lastReviewed.id,
+      time: lastReviewed.time,
+      label: formatCheckpointTime(lastReviewed.time),
+    };
   }, [formattedTranscriptState]);
+
+  const handleCheckpointClick = () => {
+    if (isInReviewMode || checkpoint == null) {
+      return;
+    }
+    if (loopTranscriptState.length > 0) {
+      setLoopTranscriptState([]);
+    }
+    if (threeSecondLoopState != null) {
+      setThreeSecondLoopState(null);
+    }
+    handleFromHere(checkpoint.time);
+  };
 
   return (
     <div className='flex flex-col items-center gap-3'>
-      {checkpointTimeLabel && (
-        <p
-          className='text-center text-xs tabular-nums text-muted-foreground'
-          data-testid='checkpoint-timestamp'
-        >
-          🚩 {checkpointTimeLabel}
-        </p>
-      )}
+      {checkpoint &&
+        (isInReviewMode ? (
+          <p
+            className='text-center text-xs tabular-nums text-muted-foreground'
+            data-testid='checkpoint-timestamp'
+          >
+            🚩 {checkpoint.label}
+          </p>
+        ) : (
+          <button
+            type='button'
+            className='cursor-pointer border-0 bg-transparent p-0 text-center text-xs tabular-nums text-muted-foreground'
+            data-testid='checkpoint-timestamp'
+            onClick={handleCheckpointClick}
+          >
+            🚩 {checkpoint.label}
+          </button>
+        ))}
       <span
         className={clsx('relative', isLoadingBulkState ? 'opacity-50' : '')}
       >
