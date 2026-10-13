@@ -636,11 +636,8 @@ describe('LearningScreen - studying new content', () => {
       expect(autoBreakdownSwitch.parentElement?.nextElementSibling).toBe(
         playbackCaptionsSwitch.parentElement,
       );
-      expect(autoBreakdownSwitch).not.toBeChecked();
-      expect(autoBreakdownSwitch).toBeEnabled();
-
-      fireEvent.click(autoBreakdownSwitch);
       expect(autoBreakdownSwitch).toBeChecked();
+      expect(autoBreakdownSwitch).toBeEnabled();
 
       fireEvent.click(screen.getByTestId('review-switch'));
       const autoBreakdownInReview = screen.getByTestId(

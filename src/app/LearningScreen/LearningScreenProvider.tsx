@@ -260,7 +260,7 @@ export const LearningScreenProvider = ({
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isInReviewMode, setIsInReviewMode] = useState(false);
   const [autoSentenceBreakdownEnabled, setAutoSentenceBreakdownEnabled] =
-    useState(false);
+    useState(true);
   const [onlyShowEngState, setOnlyShowEngState] = useState(false);
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
   const [trackCurrentState, setTrackCurrentState] = useState(true);
