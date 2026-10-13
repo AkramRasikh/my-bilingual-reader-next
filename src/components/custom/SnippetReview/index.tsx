@@ -19,7 +19,7 @@ import SnippetReviewPinyinHelper from './SnippetReviewPinyinHelper';
 import { isTrimmedLang, LanguageEnum } from '@/app/languages';
 import {
   SNIPPET_OVERLAY_LINE_CLASS,
-  SNIPPET_OVERLAY_SECONDARY_TEXT_CLASS,
+  SNIPPET_OVERLAY_MEANING_LINE_CLASS,
 } from '@/app/LearningScreen/playbackCaptionSurface';
 import { WordTypes } from '@/app/types/word-types';
 import {
@@ -823,7 +823,7 @@ const SnippetReview = ({
             {isOverlay && overlayMeanings.length > 0 && (
               <p
                 data-testid='snippet-review-overlay-meaning'
-                className={`text-[9px] leading-tight ${SNIPPET_OVERLAY_LINE_CLASS} ${SNIPPET_OVERLAY_SECONDARY_TEXT_CLASS}`}
+                className={SNIPPET_OVERLAY_MEANING_LINE_CLASS}
               >
                 {overlayMeanings.join(' ')}
               </p>

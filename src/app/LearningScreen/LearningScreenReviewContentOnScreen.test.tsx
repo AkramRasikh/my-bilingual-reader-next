@@ -85,6 +85,7 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     mockLearningScreenState.firstWordInReviewDisplay = null;
     mockLearningScreenState.postSentencesMemoized = [];
     mockLearningScreenState.postSnippetsMemoized = [];
+    mockLearningScreenState.sentenceMapMemoized = {};
     mockLearningScreenState.isInReviewMode = false;
     mockLearningScreenState.isSavedLoopPlayingState = null;
   });
@@ -160,5 +161,33 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
       expect(line).toHaveClass('bg-amber-100');
       expect(line).not.toHaveClass('bg-amber-50');
     }
+  });
+
+  it('puts the sentence meaning on the black review plate', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.isSavedLoopPlayingState = 'snip-1';
+    mockLearningScreenState.postSnippetsMemoized = [
+      {
+        id: 'snip-1',
+        time: 10,
+        targetLang: '你好',
+        baseLang: 'hello',
+        vocab: [],
+      },
+    ];
+    mockLearningScreenState.sentenceMapMemoized = {
+      'sentence-1': {
+        time: 10,
+        meaning: 'hello there',
+      },
+    };
+
+    render(<LearningScreenReviewContentOnScreen />);
+
+    const meaning = screen.getByTestId('snippet-review-overlay-meaning');
+    expect(meaning).toHaveTextContent('hello there');
+    expect(meaning).toHaveClass('bg-black/70');
+    expect(meaning).toHaveClass('text-white');
+    expect(meaning).not.toHaveClass('bg-amber-100');
   });
 });
