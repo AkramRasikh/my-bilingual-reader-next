@@ -25,6 +25,7 @@ interface SnippetReviewPinyinHelperProps {
   togglableWordDataArrMemo?: TogglableWord[];
   matchStartWordState?: number | null;
   matchWordsHighlghtedState?: number;
+  className?: string;
 }
 
 const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
@@ -37,6 +38,7 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
   togglableWordDataArrMemo,
   matchStartWordState,
   matchWordsHighlghtedState = 0,
+  className,
 }) => {
   const matchingWordData =
     matchStartWordState == null
@@ -140,7 +142,16 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
     index = next;
   }
 
-  return <div>{rows}</div>;
+  if (rows.length === 0) return null;
+
+  return (
+    <div
+      className={className}
+      data-testid={className ? 'snippet-overlay-line' : undefined}
+    >
+      {rows}
+    </div>
+  );
 };
 
 export default SnippetReviewPinyinHelper;

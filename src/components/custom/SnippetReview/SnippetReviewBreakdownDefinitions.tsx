@@ -10,6 +10,7 @@ interface SnippetReviewBreakdownDefinitionsProps {
   togglableWordDataArrMemo?: Array<{ index?: number; endIndex?: number }>;
   matchStartWordState?: number | null;
   matchWordsHighlghtedState?: number;
+  className?: string;
 }
 
 const SnippetReviewBreakdownDefinitions: React.FC<
@@ -24,6 +25,7 @@ const SnippetReviewBreakdownDefinitions: React.FC<
   togglableWordDataArrMemo,
   matchStartWordState,
   matchWordsHighlghtedState = 0,
+  className,
 }) => {
   const matchingWordData =
     matchStartWordState == null
@@ -146,7 +148,16 @@ const SnippetReviewBreakdownDefinitions: React.FC<
     index = next;
   }
 
-  return <div>{rows}</div>;
+  if (!glosses.some((gloss) => gloss.meaning)) return null;
+
+  return (
+    <div
+      className={className}
+      data-testid={className ? 'snippet-overlay-line' : undefined}
+    >
+      {rows}
+    </div>
+  );
 };
 
 export default SnippetReviewBreakdownDefinitions;

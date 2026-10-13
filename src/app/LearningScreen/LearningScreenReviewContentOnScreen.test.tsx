@@ -84,6 +84,7 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     mockLearningScreenState.firstWordDefinitionInReview = null;
     mockLearningScreenState.firstWordInReviewDisplay = null;
     mockLearningScreenState.postSentencesMemoized = [];
+    mockLearningScreenState.postSnippetsMemoized = [];
     mockLearningScreenState.isInReviewMode = false;
     mockLearningScreenState.isSavedLoopPlayingState = null;
   });
@@ -114,5 +115,36 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     render(<LearningScreenReviewContentOnScreen />);
 
     expectCaptionPlate(screen.getByTestId('learning-screen-review-word-text'));
+  });
+
+  it('gives each snippet overlay line its own solid beige plate', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.isSavedLoopPlayingState = 'snip-1';
+    mockLearningScreenState.postSnippetsMemoized = [
+      {
+        id: 'snip-1',
+        time: 10,
+        targetLang: '你好',
+        baseLang: 'hello',
+        vocab: [
+          { surfaceForm: '你', meaning: 'you' },
+          { surfaceForm: '好', meaning: 'good' },
+        ],
+      },
+    ];
+
+    render(<LearningScreenReviewContentOnScreen />);
+
+    const frame = screen.getByTestId('learning-screen-review-snippet-focus-text');
+    expect(frame).not.toHaveClass('bg-amber-50');
+    expect(frame).not.toHaveClass('bg-amber-50/80');
+
+    const lines = screen.getAllByTestId('snippet-overlay-line');
+    expect(lines.length).toBeGreaterThan(1);
+    for (const line of lines) {
+      expect(line).toHaveClass('w-fit');
+      expect(line).toHaveClass('bg-amber-50');
+      expect(line).not.toHaveClass('bg-amber-50/80');
+    }
   });
 });

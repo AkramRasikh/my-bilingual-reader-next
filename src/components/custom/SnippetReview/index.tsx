@@ -17,7 +17,10 @@ import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptI
 import getColorByIndex from '@/utils/get-color-by-index';
 import SnippetReviewPinyinHelper from './SnippetReviewPinyinHelper';
 import { isTrimmedLang, LanguageEnum } from '@/app/languages';
-import { PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS } from '@/app/LearningScreen/playbackCaptionSurface';
+import {
+  SNIPPET_OVERLAY_LINE_CLASS,
+  SNIPPET_OVERLAY_SECONDARY_TEXT_CLASS,
+} from '@/app/LearningScreen/playbackCaptionSurface';
 import { WordTypes } from '@/app/types/word-types';
 import {
   HandleDeleteWordDataProviderCallTypes,
@@ -725,7 +728,7 @@ const SnippetReview = ({
     <div
       className={
         isOverlay
-          ? 'relative w-max max-w-full text-sm leading-snug text-white'
+          ? 'relative w-max max-w-full text-sm leading-snug text-foreground'
           : 'relative max-w-full min-w-0'
       }
       data-testid={
@@ -757,10 +760,17 @@ const SnippetReview = ({
           )}
           <div
             className={
-              isOverlay ? 'text-center' : 'min-w-0 flex-1 text-center'
+              isOverlay
+                ? 'flex max-w-full flex-col items-center gap-0.5 text-center'
+                : 'min-w-0 flex-1 text-center'
             }
           >
-            <div className={isOverlay ? 'max-w-full' : 'min-w-0 max-w-full'}>
+            <div
+              className={
+                isOverlay ? SNIPPET_OVERLAY_LINE_CLASS : 'min-w-0 max-w-full'
+              }
+              data-testid={isOverlay ? 'snippet-overlay-line' : undefined}
+            >
               <FormattedSentenceSnippet
                 ref={ulRef}
                 targetLangformatted={targetLangWithVocabStartIndex}
@@ -794,6 +804,7 @@ const SnippetReview = ({
                 togglableWordDataArrMemo={togglableWordDataArrMemo}
                 matchStartWordState={viewMatchStartWord}
                 matchWordsHighlghtedState={viewMatchWordsHighlighted}
+                className={isOverlay ? SNIPPET_OVERLAY_LINE_CLASS : undefined}
               />
             )}
 
@@ -807,11 +818,12 @@ const SnippetReview = ({
               togglableWordDataArrMemo={togglableWordDataArrMemo}
               matchStartWordState={viewMatchStartWord}
               matchWordsHighlghtedState={viewMatchWordsHighlighted}
+              className={isOverlay ? SNIPPET_OVERLAY_LINE_CLASS : undefined}
             />
             {isOverlay && overlayMeanings.length > 0 && (
               <p
                 data-testid='snippet-review-overlay-meaning'
-                className={`mt-0.5 text-[9px] leading-tight ${PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS}`}
+                className={`text-[9px] leading-tight ${SNIPPET_OVERLAY_LINE_CLASS} ${SNIPPET_OVERLAY_SECONDARY_TEXT_CLASS}`}
               >
                 {overlayMeanings.join(' ')}
               </p>

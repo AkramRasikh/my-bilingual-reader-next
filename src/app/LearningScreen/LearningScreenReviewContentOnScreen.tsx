@@ -67,7 +67,7 @@ function ReviewOverlayPanel({
     : 0;
 
   const containerClassName = expanded
-    ? `pointer-events-auto mx-auto max-h-[50%] w-fit max-w-[calc(100%-1rem)] overflow-y-auto px-3 py-1.5 ${PLAYBACK_CAPTION_PLATE_CLASS}`
+    ? 'pointer-events-auto mx-auto flex max-h-[50%] w-fit max-w-[calc(100%-1rem)] flex-col items-center overflow-y-auto'
     : plain
       ? 'pointer-events-auto relative mx-auto w-fit max-w-[66.666%] px-1 py-0.5 text-white'
       : `pointer-events-auto relative mx-auto w-fit max-w-[66.666%] overflow-hidden px-4 py-1.5 ${PLAYBACK_CAPTION_PLATE_CLASS}`;
