@@ -143,8 +143,8 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     expect(lines.length).toBeGreaterThan(1);
     for (const line of lines) {
       expect(line).toHaveClass('w-fit');
-      expect(line).toHaveClass('bg-amber-50');
-      expect(line).not.toHaveClass('bg-amber-50/80');
+      expect(line).toHaveClass('bg-amber-100');
+      expect(line).not.toHaveClass('bg-amber-50');
     }
   });
 });
