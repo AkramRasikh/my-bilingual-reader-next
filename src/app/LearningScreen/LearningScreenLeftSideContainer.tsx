@@ -12,7 +12,13 @@ import LearningScreenLoopUI from './LearningScreenLoopUI';
 import useCheckVideoIsWorking from './useCheckVideoIsWorking';
 import TranscriptTimeline from '@/components/experimental/TranscriptTimeline';
 
-const LearningScreenLeftSideContainer = () => {
+type LearningScreenLeftSideContainerProps = {
+  isRightPanelOpen: boolean;
+};
+
+const LearningScreenLeftSideContainer = ({
+  isRightPanelOpen,
+}: LearningScreenLeftSideContainerProps) => {
   const {
     masterPlayComprehensive,
     setIsVideoPlaying,
@@ -57,7 +63,15 @@ const LearningScreenLeftSideContainer = () => {
     !sentences.length && !words.length && !snippetsWithDueStatusMemoized.length;
 
   return (
-    <div className='min-w-0 w-full flex-1 basis-0 xl:mx-auto xl:basis-auto xl:max-w-none xl:w-[45rem]'>
+    <div
+      data-testid='learning-screen-video-column'
+      className={clsx(
+        'min-w-0 w-full flex-1 basis-0 xl:mx-auto xl:basis-auto xl:max-w-none',
+        isRightPanelOpen
+          ? 'xl:w-[45rem]'
+          : 'xl:w-[calc(45rem+27rem+1.25rem)]',
+      )}
+    >
       {!errorVideoState ? (
         <LearningScreenVideoPlayer
           url={videoUrl}
