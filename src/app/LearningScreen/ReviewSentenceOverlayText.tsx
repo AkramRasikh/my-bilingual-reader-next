@@ -3,6 +3,10 @@ import { chinese, isTrimmedLang, LanguageEnum } from '@/app/languages';
 import { Vocab } from '@/app/types/content-types';
 import getColorByIndex from '@/utils/get-color-by-index';
 import { PhraseBreakdownPiece } from './find-breakdown-pieces-for-phrase';
+import {
+  PLAYBACK_CAPTION_PLATE_CLASS,
+  PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS,
+} from './playbackCaptionSurface';
 
 export function ColoredPhraseBreakdown({
   pieces,
@@ -36,7 +40,7 @@ export function ColoredPhraseBreakdown({
         data-testid={testId}
         className={
           chip
-            ? `mx-auto flex w-fit max-w-full flex-wrap justify-center rounded-sm bg-amber-50 px-1.5 py-0.5 text-center text-base leading-tight shadow-[0_1px_3px_rgba(0,0,0,0.45)] ${withTopMargin ? 'mt-0.5' : ''}`
+            ? `mx-auto flex w-fit max-w-full flex-wrap justify-center px-1.5 py-0.5 text-base leading-tight ${PLAYBACK_CAPTION_PLATE_CLASS} ${withTopMargin ? 'mt-0.5' : ''}`
             : `flex flex-wrap justify-center text-base ${withTopMargin ? 'mt-0.5' : ''}`
         }
       >
@@ -55,7 +59,7 @@ export function ColoredPhraseBreakdown({
           data-testid={pinyinTestId}
           className={
             chip
-              ? 'mx-auto mt-0.5 flex w-fit max-w-full flex-wrap justify-center rounded-sm bg-amber-50 px-1.5 py-0.5 text-center text-xs leading-tight shadow-[0_1px_3px_rgba(0,0,0,0.45)]'
+              ? `mx-auto mt-0.5 flex w-fit max-w-full flex-wrap justify-center px-1.5 py-0.5 text-xs leading-tight ${PLAYBACK_CAPTION_PLATE_CLASS}`
               : 'mt-0.5 flex flex-wrap justify-center text-xs leading-tight'
           }
         >
@@ -111,7 +115,7 @@ const ReviewSentenceOverlayText = ({
       ) : (
         <span
           data-testid='learning-screen-review-sentence-target-lang'
-          className='text-base'
+          className='text-base text-white'
         >
           {targetLang}
         </span>
@@ -119,7 +123,7 @@ const ReviewSentenceOverlayText = ({
       {showEnglish && baseLang ? (
         <span
           data-testid='learning-screen-review-sentence-base-lang'
-          className='mt-0.5 block text-xs leading-tight'
+          className={`mt-0.5 block text-xs leading-tight ${PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS}`}
         >
           {baseLang}
         </span>

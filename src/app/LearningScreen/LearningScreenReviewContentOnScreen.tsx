@@ -15,13 +15,13 @@ import {
   getTimeRangeProgress,
   type ReviewTimeRangePhase,
 } from './learning-screen-review-time-range';
+import { PLAYBACK_CAPTION_PLATE_CLASS } from './playbackCaptionSurface';
 import ReviewSentenceOverlayText, {
   ColoredPhraseBreakdown,
 } from './ReviewSentenceOverlayText';
 import { findSavedWordBreakdown, findWordContextSentence, splitSentenceAroundPhrase } from './find-breakdown-pieces-for-phrase';
 
-const WORD_OVERLAY_LINE_CLASS =
-  'mx-auto block w-fit max-w-full rounded-sm bg-amber-50 px-1.5 py-0.5 text-center leading-tight shadow-[0_1px_3px_rgba(0,0,0,0.45)]';
+const WORD_OVERLAY_LINE_CLASS = `mx-auto block w-fit max-w-full px-1.5 py-0.5 leading-tight ${PLAYBACK_CAPTION_PLATE_CLASS}`;
 
 const WORD_SENTENCE_HOLD_MS = 180;
 const CLOSED_WORD_DEFINITION_LENGTH = 60;
@@ -51,10 +51,8 @@ function ReviewOverlayPanel({
   liftForCaptions?: boolean;
 }) {
   const textClassName = plain
-    ? 'text-sm font-medium leading-tight break-words text-black'
-    : 'text-sm font-medium break-words text-black';
-
-  const containerBorderClassName = 'border border-zinc-400';
+    ? 'text-sm font-medium leading-tight break-words text-white'
+    : 'text-sm font-medium break-words text-white';
 
   const showProgress = progress != null && Number.isFinite(progress);
   const progressPercent = showProgress
@@ -62,10 +60,10 @@ function ReviewOverlayPanel({
     : 0;
 
   const containerClassName = expanded
-    ? `pointer-events-auto mx-auto max-h-[50%] w-fit max-w-[calc(100%-1rem)] overflow-y-auto rounded-md bg-amber-50 px-3 py-1.5 text-foreground ${containerBorderClassName}`
+    ? `pointer-events-auto mx-auto max-h-[50%] w-fit max-w-[calc(100%-1rem)] overflow-y-auto px-3 py-1.5 ${PLAYBACK_CAPTION_PLATE_CLASS}`
     : plain
-      ? 'pointer-events-auto relative mx-auto w-fit max-w-[66.666%] px-1 py-0.5 text-black'
-      : `pointer-events-auto relative mx-auto w-fit max-w-[66.666%] overflow-hidden rounded-md bg-amber-50 px-4 py-1.5 text-black ${containerBorderClassName}`;
+      ? 'pointer-events-auto relative mx-auto w-fit max-w-[66.666%] px-1 py-0.5 text-white'
+      : `pointer-events-auto relative mx-auto w-fit max-w-[66.666%] overflow-hidden px-4 py-1.5 ${PLAYBACK_CAPTION_PLATE_CLASS}`;
 
   return (
     <div

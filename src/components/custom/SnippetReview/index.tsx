@@ -17,6 +17,7 @@ import useSnippetLoopEvents from '@/components/custom/TranscriptItem/TranscriptI
 import getColorByIndex from '@/utils/get-color-by-index';
 import SnippetReviewPinyinHelper from './SnippetReviewPinyinHelper';
 import { isTrimmedLang, LanguageEnum } from '@/app/languages';
+import { PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS } from '@/app/LearningScreen/playbackCaptionSurface';
 import { WordTypes } from '@/app/types/word-types';
 import {
   HandleDeleteWordDataProviderCallTypes,
@@ -703,7 +704,7 @@ const SnippetReview = ({
     <div
       className={
         isOverlay
-          ? 'relative w-max max-w-full text-sm leading-snug text-foreground'
+          ? 'relative w-max max-w-full text-sm leading-snug text-white'
           : 'relative max-w-full min-w-0'
       }
       data-testid={
@@ -789,7 +790,7 @@ const SnippetReview = ({
             {isOverlay && overlayMeanings.length > 0 && (
               <p
                 data-testid='snippet-review-overlay-meaning'
-                className='mt-0.5 text-[9px] leading-tight text-zinc-600'
+                className={`mt-0.5 text-[9px] leading-tight ${PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS}`}
               >
                 {overlayMeanings.join(' ')}
               </p>

@@ -1,6 +1,10 @@
 'use client';
 
 import { useLayoutEffect, useRef } from 'react';
+import {
+  PLAYBACK_CAPTION_PLATE_CLASS,
+  PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS,
+} from './playbackCaptionSurface';
 import useLearningScreen from './useLearningScreen';
 
 export type PlaybackCaptionSentence = {
@@ -76,7 +80,7 @@ function CaptionLine({
     <div
       data-caption-id={sentence.id}
       data-caption-role={role}
-      className={`relative overflow-hidden rounded-md bg-black/70 text-center text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] ${compact ? 'max-w-[82%] px-2.5 py-0.5 text-sm' : 'max-w-[90%] px-3 py-1 text-base'}`}
+      className={`relative overflow-hidden ${PLAYBACK_CAPTION_PLATE_CLASS} ${compact ? 'max-w-[82%] px-2.5 py-0.5 text-sm' : 'max-w-[90%] px-3 py-1 text-base'}`}
     >
       <p data-testid={`${testId}-target`} className='leading-tight'>
         {sentence.targetLang}
@@ -84,7 +88,7 @@ function CaptionLine({
       {showEnglish && baseLang ? (
         <p
           data-testid={`${testId}-base`}
-          className='mt-0.5 text-xs leading-tight text-white/80'
+          className={`mt-0.5 text-xs leading-tight ${PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS}`}
         >
           {baseLang}
         </p>

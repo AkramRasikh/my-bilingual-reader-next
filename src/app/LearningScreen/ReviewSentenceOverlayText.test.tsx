@@ -1,7 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import { pinyin } from 'pinyin-pro';
 import { chinese, japanese } from '@/app/languages';
-import ReviewSentenceOverlayText from './ReviewSentenceOverlayText';
+import ReviewSentenceOverlayText, {
+  ColoredPhraseBreakdown,
+} from './ReviewSentenceOverlayText';
+import {
+  PLAYBACK_CAPTION_PLATE_CLASS,
+  PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS,
+} from './playbackCaptionSurface';
 
 const vocab = [
   { meaning: 'really want to', surfaceForm: '好想' },
@@ -20,12 +26,14 @@ describe('ReviewSentenceOverlayText', () => {
       />,
     );
 
-    expect(
-      screen.getByTestId('learning-screen-review-sentence-target-lang'),
-    ).toHaveTextContent('好想在现场');
-    expect(
-      screen.getByTestId('learning-screen-review-sentence-base-lang'),
-    ).toHaveTextContent('I really want to see it');
+    const target = screen.getByTestId(
+      'learning-screen-review-sentence-target-lang',
+    );
+    expect(target).toHaveTextContent('好想在现场');
+    expect(target).toHaveClass('text-white');
+    const base = screen.getByTestId('learning-screen-review-sentence-base-lang');
+    expect(base).toHaveTextContent('I really want to see it');
+    expect(base).toHaveClass(PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS);
     expect(
       screen.queryByTestId('learning-screen-review-sentence-pinyin'),
     ).not.toBeInTheDocument();
@@ -69,6 +77,27 @@ describe('ReviewSentenceOverlayText', () => {
       'data-testid',
       'learning-screen-review-sentence-base-lang',
     );
+  });
+
+  it('gives a breakdown chip the caption plate and keeps piece colors', () => {
+    render(
+      <ColoredPhraseBreakdown
+        pieces={[
+          { surfaceForm: '好想', index: 0 },
+          { surfaceForm: '在', index: 1 },
+        ]}
+        languageSelectedState={chinese}
+        testId='breakdown-chip'
+        pinyinTestId='breakdown-chip-pinyin'
+        chip
+      />,
+    );
+
+    const chip = screen.getByTestId('breakdown-chip');
+    for (const className of PLAYBACK_CAPTION_PLATE_CLASS.split(' ')) {
+      expect(chip).toHaveClass(className);
+    }
+    expect(chip.querySelector('span')).toHaveStyle({ color: '#1f77b4' });
   });
 
   it('hides pinyin for a non-Chinese breakdown', () => {
