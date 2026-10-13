@@ -636,6 +636,11 @@ describe('LearningScreen - studying new content', () => {
       expect(autoBreakdownSwitch.parentElement?.nextElementSibling).toBe(
         playbackCaptionsSwitch.parentElement,
       );
+      const wordHintsSwitch = screen.getByTestId('word-hints-switch');
+      expect(playbackCaptionsSwitch.parentElement?.nextElementSibling).toBe(
+        wordHintsSwitch.parentElement,
+      );
+      expect(wordHintsSwitch).toBeEnabled();
       expect(autoBreakdownSwitch).toBeChecked();
       expect(autoBreakdownSwitch).toBeEnabled();
 
@@ -645,6 +650,7 @@ describe('LearningScreen - studying new content', () => {
       );
       expect(autoBreakdownInReview).not.toBeChecked();
       expect(autoBreakdownInReview).toBeDisabled();
+      expect(screen.getByTestId('word-hints-switch')).toBeEnabled();
 
       fireEvent.click(screen.getByTestId('review-switch'));
       const autoBreakdownAfterReview = screen.getByTestId(

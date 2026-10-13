@@ -362,6 +362,10 @@ const LearningScreenReviewContentOnScreen = () => {
     return () => cancelAnimationFrame(frameId);
   }, [firstWordInReviewDisplay]);
 
+  if (!isInReviewMode) {
+    return null;
+  }
+
   if (playingReviewedSnippet) {
     return (
       <ReviewOverlayPanel expanded liftForCaptions={showPlaybackCaptionsState}>

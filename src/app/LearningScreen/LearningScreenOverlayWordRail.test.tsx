@@ -2,33 +2,54 @@ import { render, screen } from '@testing-library/react';
 import { pinyin } from 'pinyin-pro';
 import { chinese, french } from '@/app/languages';
 import getColorByIndex from '@/utils/get-color-by-index';
+import { WordTypes } from '@/app/types/word-types';
 import LearningScreenOverlayWordRail from './LearningScreenOverlayWordRail';
 import { PLAYBACK_CAPTION_PLATE_CLASS } from './playbackCaptionSurface';
 
 const mockLearningScreenState = {
+  showWordHintsState: false,
   masterPlayComprehensive: null as null | {
-    sentenceStructure?: string;
-    vocab?: { meaning: string; surfaceForm: string }[];
+    wordsFromSentence?: WordTypes[];
   },
 };
 
 jest.mock('./useLearningScreen', () => () => mockLearningScreenState);
 
-const vocab = [
-  { meaning: 'really want to', surfaceForm: '好想' },
-  { meaning: 'n/a', surfaceForm: '，' },
-  { meaning: 'at', surfaceForm: '在' },
-  { meaning: 'on-site', surfaceForm: '现场' },
+function savedWord(
+  surfaceForm: string,
+  definition: string,
+  transliteration = '',
+): WordTypes {
+  return {
+    id: surfaceForm,
+    baseForm: surfaceForm,
+    contexts: [],
+    definition,
+    phonetic: '',
+    reviewData: {} as WordTypes['reviewData'],
+    surfaceForm,
+    transliteration,
+    originalContext: '',
+    isDue: false,
+  };
+}
+
+const savedWords = [
+  savedWord('好想', 'really want to', 'hǎo xiǎng'),
+  savedWord('在', 'at'),
+  savedWord('现场', 'on-site', 'xiànchǎng'),
 ];
 
 describe('LearningScreenOverlayWordRail', () => {
   beforeEach(() => {
+    mockLearningScreenState.showWordHintsState = false;
     mockLearningScreenState.masterPlayComprehensive = null;
   });
 
-  it('stays hidden when the current sentence has no breakdown', () => {
+  it('stays hidden unless word hints are on and the sentence has saved words', () => {
+    mockLearningScreenState.showWordHintsState = true;
     mockLearningScreenState.masterPlayComprehensive = {
-      vocab,
+      wordsFromSentence: [],
     };
 
     const { rerender } = render(
@@ -39,7 +60,10 @@ describe('LearningScreenOverlayWordRail', () => {
       screen.queryByTestId('learning-screen-overlay-word-rail'),
     ).not.toBeInTheDocument();
 
-    mockLearningScreenState.masterPlayComprehensive = null;
+    mockLearningScreenState.showWordHintsState = false;
+    mockLearningScreenState.masterPlayComprehensive = {
+      wordsFromSentence: savedWords,
+    };
     rerender(
       <LearningScreenOverlayWordRail languageSelectedState={chinese} />,
     );
@@ -49,10 +73,10 @@ describe('LearningScreenOverlayWordRail', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('stacks the target word, pinyin, and meaning in that word’s color', () => {
+  it('stacks each saved word, its reading, and its meaning in that word’s color', () => {
+    mockLearningScreenState.showWordHintsState = true;
     mockLearningScreenState.masterPlayComprehensive = {
-      sentenceStructure: '好想 + 在 + 现场',
-      vocab,
+      wordsFromSentence: savedWords,
     };
 
     render(
@@ -60,23 +84,30 @@ describe('LearningScreenOverlayWordRail', () => {
     );
 
     const rail = screen.getByTestId('learning-screen-overlay-word-rail');
-    expect(rail).toHaveClass('left-[3%]', 'top-[10%]', 'bottom-[10%]');
+    expect(rail).toHaveClass(
+      'left-[3%]',
+      'top-[10%]',
+      'bottom-[10%]',
+      'items-start',
+      'gap-1',
+    );
 
     const items = screen.getAllByTestId('learning-screen-overlay-word-rail-item');
     expect(items).toHaveLength(3);
 
     const expected = [
-      { surfaceForm: '好想', meaning: 'really want to', index: 0 },
-      { surfaceForm: '在', meaning: 'at', index: 2 },
-      { surfaceForm: '现场', meaning: 'on-site', index: 3 },
+      { surfaceForm: '好想', reading: 'hǎo xiǎng', meaning: 'really want to' },
+      {
+        surfaceForm: '在',
+        reading: pinyin('在', { toneType: 'symbol', separator: '\u2009' }),
+        meaning: 'at',
+      },
+      { surfaceForm: '现场', reading: 'xiànchǎng', meaning: 'on-site' },
     ];
 
-    expected.forEach((word, itemIndex) => {
-      const item = items[itemIndex];
-      expect(item).toHaveStyle({ color: getColorByIndex(word.index) });
-      for (const className of PLAYBACK_CAPTION_PLATE_CLASS.split(' ')) {
-        expect(item).toHaveClass(className);
-      }
+    expected.forEach((word, index) => {
+      const item = items[index];
+      expect(item).toHaveClass('w-[100px]', 'max-w-[100px]', 'items-center', 'gap-0');
 
       const surface = item.querySelector(
         '[data-testid="learning-screen-overlay-word-rail-surface"]',
@@ -89,21 +120,48 @@ describe('LearningScreenOverlayWordRail', () => {
       );
 
       expect(surface).toHaveTextContent(word.surfaceForm);
-      expect(reading?.textContent).toBe(
-        pinyin(word.surfaceForm, { toneType: 'symbol', separator: '\u2009' }),
-      );
+      expect(reading?.textContent).toBe(word.reading);
       expect(meaning).toHaveTextContent(word.meaning);
+      for (const line of [surface, reading, meaning]) {
+        for (const className of PLAYBACK_CAPTION_PLATE_CLASS.split(' ')) {
+          expect(line).toHaveClass(className);
+        }
+        expect(line).toHaveClass('w-full', 'text-center');
+        expect(line).toHaveStyle({ color: getColorByIndex(index) });
+      }
+      expect(surface).toHaveClass('text-sm');
+      expect(reading).toHaveClass('text-xs');
+      expect(meaning).toHaveClass('text-xs');
       expect(surface?.nextElementSibling).toBe(reading);
       expect(reading?.nextElementSibling).toBe(meaning);
     });
   });
 
-  it('omits pinyin when the language is not Chinese', () => {
+  it('truncates a meaning to forty characters', () => {
+    const meaning =
+      'priority seat (on public transport, for those in need)';
+    mockLearningScreenState.showWordHintsState = true;
     mockLearningScreenState.masterPlayComprehensive = {
-      sentenceStructure: 'bonjour + le monde',
-      vocab: [
-        { meaning: 'hello', surfaceForm: 'bonjour' },
-        { meaning: 'the world', surfaceForm: 'le monde' },
+      wordsFromSentence: [savedWord('博爱座', meaning, 'bó ài zuò')],
+    };
+
+    render(
+      <LearningScreenOverlayWordRail languageSelectedState={chinese} />,
+    );
+
+    const shown = screen.getByTestId(
+      'learning-screen-overlay-word-rail-meaning',
+    ).textContent;
+    expect(shown).toHaveLength(40);
+    expect(shown).toBe(`${meaning.slice(0, 39)}…`);
+  });
+
+  it('omits pinyin when the language is not Chinese', () => {
+    mockLearningScreenState.showWordHintsState = true;
+    mockLearningScreenState.masterPlayComprehensive = {
+      wordsFromSentence: [
+        savedWord('bonjour', 'hello', 'bon-zhoor'),
+        savedWord('le monde', 'the world'),
       ],
     };
 

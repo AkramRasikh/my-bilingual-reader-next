@@ -90,6 +90,7 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
   });
 
   it('puts the caption plate behind a plain review sentence', () => {
+    mockLearningScreenState.isInReviewMode = true;
     mockLearningScreenState.firstElIdInReview = 'sentence-1';
     mockLearningScreenState.postSentencesMemoized = [
       {
@@ -109,12 +110,25 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
   });
 
   it('puts the caption plate on a review word line', () => {
+    mockLearningScreenState.isInReviewMode = true;
     mockLearningScreenState.firstElIdInReview = 'word-1';
     mockLearningScreenState.firstWordDefinitionInReview = 'a greeting';
 
     render(<LearningScreenReviewContentOnScreen />);
 
     expectCaptionPlate(screen.getByTestId('learning-screen-review-word-text'));
+  });
+
+  it('hides a queued review word after leaving review mode', () => {
+    mockLearningScreenState.isInReviewMode = false;
+    mockLearningScreenState.firstElIdInReview = 'word-1';
+    mockLearningScreenState.firstWordDefinitionInReview = 'a greeting';
+
+    render(<LearningScreenReviewContentOnScreen />);
+
+    expect(
+      screen.queryByTestId('learning-screen-review-word-text'),
+    ).not.toBeInTheDocument();
   });
 
   it('gives each snippet overlay line its own solid beige plate', () => {

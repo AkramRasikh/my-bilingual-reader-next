@@ -25,6 +25,8 @@ const LearningScreenActionBarVideoControls = () => {
     setAutoSentenceBreakdownEnabled,
     showPlaybackCaptionsState,
     setShowPlaybackCaptionsState,
+    showWordHintsState,
+    setShowWordHintsState,
   } = useLearningScreen();
 
   return (
@@ -108,6 +110,17 @@ const LearningScreenActionBarVideoControls = () => {
             onCheckedChange={setShowPlaybackCaptionsState}
             data-testid='playback-captions-switch'
             aria-label='Playback captions'
+          />
+        </div>
+        <div className={toggleRowClass}>
+          <Label data-testid='word-hints-label' className={emojiClass}>
+            💡
+          </Label>
+          <Switch
+            checked={showWordHintsState}
+            onCheckedChange={setShowWordHintsState}
+            data-testid='word-hints-switch'
+            aria-label='Word hints'
           />
         </div>
       </div>
