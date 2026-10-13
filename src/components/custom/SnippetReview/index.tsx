@@ -25,6 +25,7 @@ import {
 } from '@/app/Providers/FetchDataProvider';
 import SnippetReviewBreakdownDefinitions from './SnippetReviewBreakdownDefinitions';
 import { useSnippetReviewDataMemoized } from './useSnippetReviewDataMemoized';
+import { indexOfFirstTogglableWordInRange } from './indexOfFirstTogglableWordInRange';
 import {
   getButtonMap,
   isGamepadButtonHeld,
@@ -133,6 +134,7 @@ const SnippetReview = ({
   const thisIsPlaying =
     isVideoPlaying && threeSecondLoopState === snippetData.time;
   const ulRef = useRef<NodeJS.Timeout | null>(null);
+  const seededSnippetIdRef = useRef<string | null>(null);
   const vocab = snippetData?.vocab;
 
   const contractionAmount = snippetData?.isContracted ? 0.75 : 1.5;
@@ -649,10 +651,29 @@ const SnippetReview = ({
   ]);
 
   useEffect(() => {
-    if (matchStartWordState === null && togglableWordDataArrMemo.length > 0) {
-      setMatchStartWordState(0);
+    if (togglableWordDataArrMemo.length === 0) return;
+
+    const snippetChanged = seededSnippetIdRef.current !== snippetData.id;
+    if (!snippetChanged && matchStartWordState !== null) return;
+
+    seededSnippetIdRef.current = snippetData.id;
+    if (snippetChanged && matchStartWordState !== null) {
+      setMatchWordsHighlghtedState(0);
     }
-  }, [togglableWordDataArrMemo.length, matchStartWordState]);
+    setMatchStartWordState(
+      indexOfFirstTogglableWordInRange(
+        togglableWordDataArrMemo,
+        matchStartKey,
+        matchEndKey,
+      ),
+    );
+  }, [
+    matchEndKey,
+    matchStartKey,
+    matchStartWordState,
+    snippetData.id,
+    togglableWordDataArrMemo,
+  ]);
 
   useEffect(() => {
     setMatchWordsHighlghtedState(0);
