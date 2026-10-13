@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import LearningScreenThreeSecondLoopEl from './LearningScreenThreeSecondLoopEl';
 import LearningScreenReviewContentOnScreen from './LearningScreenReviewContentOnScreen';
 import LearningScreenPlaybackCaptions from './LearningScreenPlaybackCaptions';
+import LearningScreenOverlayWordRail from './LearningScreenOverlayWordRail';
 import LearningScreenSnippetCoverageDot from './LearningScreenSnippetCoverageDot';
 import useLearningScreen from './useLearningScreen';
 import { LanguageEnum } from '../languages';
@@ -216,6 +217,9 @@ const LearningScreenVideoPlayer = ({
         ) : null}
         <LearningScreenReviewContentOnScreen />
         <LearningScreenPlaybackCaptions />
+        <LearningScreenOverlayWordRail
+          languageSelectedState={languageSelectedState}
+        />
         <LearningScreenSnippetCoverageDot />
       </div>
 
