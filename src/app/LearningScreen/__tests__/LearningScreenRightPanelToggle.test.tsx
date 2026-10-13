@@ -20,7 +20,8 @@ jest.mock('next/navigation', () => ({
 }));
 
 const openWidthClass = 'xl:w-[45rem]';
-const closedWidthClass = 'xl:w-[calc(45rem+27rem+1.25rem)]';
+const closedWidthClass =
+  'xl:w-[min(calc(45rem+27rem+1.25rem),50rem,calc((100dvh-18rem)*16/9))]';
 
 beforeAll(() => {
   Object.defineProperty(HTMLMediaElement.prototype, 'duration', {

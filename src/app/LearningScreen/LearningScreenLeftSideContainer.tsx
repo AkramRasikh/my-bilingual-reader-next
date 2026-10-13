@@ -66,10 +66,10 @@ const LearningScreenLeftSideContainer = ({
     <div
       data-testid='learning-screen-video-column'
       className={clsx(
-        'min-w-0 w-full flex-1 basis-0 xl:mx-auto xl:basis-auto xl:max-w-none',
+        'min-w-0 w-full flex-1 basis-0 xl:mx-auto xl:basis-auto',
         isRightPanelOpen
-          ? 'xl:w-[45rem]'
-          : 'xl:w-[calc(45rem+27rem+1.25rem)]',
+          ? 'xl:max-w-none xl:w-[45rem]'
+          : 'mx-auto max-w-[min(50rem,calc((100dvh-18rem)*16/9))] xl:w-[min(calc(45rem+27rem+1.25rem),50rem,calc((100dvh-18rem)*16/9))]',
       )}
     >
       {!errorVideoState ? (
