@@ -3,6 +3,7 @@ import useLearningScreen from './useLearningScreen';
 import LearningScreenContentContainer from './LearningScreenContentContainer';
 import LearningScreenLeftSideContainer from './LearningScreenLeftSideContainer';
 import LearningScreenContentChapterNavigation from './LearningScreenContentChapterNavigation';
+import LearningScreenClosedPanelReviewActions from './LearningScreenClosedPanelReviewActions';
 
 const LearningScreen = () => {
   const { formattedTranscriptState, secondsState, selectedContentState } =
@@ -22,6 +23,9 @@ const LearningScreen = () => {
         />
       </div>
       <LearningScreenLeftSideContainer isRightPanelOpen={isRightPanelOpen} />
+      <LearningScreenClosedPanelReviewActions
+        isRightPanelOpen={isRightPanelOpen}
+      />
       {isRightPanelOpen && secondsState.length > 0 && (
         <LearningScreenContentContainer />
       )}
