@@ -1,20 +1,15 @@
-import React from 'react';
-import clsx from 'clsx';
+export function getSnippetBoundaryFillStyle(
+  progress: number,
+  direction: 'ltr' | 'rtl',
+): React.CSSProperties {
+  const amount = Math.min(1, Math.max(0, progress)) * 100;
+  const played = '#cde2fe';
+  const rest = '#f6f7f8';
+  const to = direction === 'rtl' ? 'to left' : 'to right';
 
-interface FormattedSentenceSnippetProgressWidgetProps {
-  played: boolean;
+  return {
+    backgroundImage: `linear-gradient(${to}, ${played} ${amount}%, ${rest} ${amount}%)`,
+    boxDecorationBreak: 'slice',
+    WebkitBoxDecorationBreak: 'slice',
+  };
 }
-
-const FormattedSentenceSnippetProgressWidget: React.FC<
-  FormattedSentenceSnippetProgressWidgetProps
-> = ({ played }) => (
-  <span
-    className={clsx(
-      'absolute left-0 -top-1 h-0.5 bg-blue-500',
-      played ? 'w-full transition-all duration-400' : 'w-0',
-    )}
-    style={{ borderRadius: '2px', zIndex: 2 }}
-  />
-);
-
-export default FormattedSentenceSnippetProgressWidget;

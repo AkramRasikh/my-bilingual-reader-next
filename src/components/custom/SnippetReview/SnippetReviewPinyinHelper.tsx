@@ -2,7 +2,6 @@ import React from 'react';
 import { LanguageEnum } from '@/app/languages';
 import { pinyin } from 'pinyin-pro';
 import arabicTransliterate from 'arabic-transliterate';
-import FormattedSentenceSnippetProgressWidget from './SnippetReviewProgressWidget';
 
 interface correspondingRomanized {
   text: string;
@@ -23,8 +22,6 @@ interface SnippetReviewPinyinHelperProps {
   matchEndKey: number;
   pinyinStart: number;
   languageSelectedState: LanguageEnum;
-  isReadyForQuickReview?: boolean;
-  currentTime?: number;
   togglableWordDataArrMemo?: TogglableWord[];
   matchStartWordState?: number | null;
   matchWordsHighlghtedState?: number;
@@ -37,8 +34,6 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
   matchEndKey,
   pinyinStart,
   languageSelectedState,
-  isReadyForQuickReview,
-  currentTime,
   togglableWordDataArrMemo,
   matchStartWordState,
   matchWordsHighlghtedState = 0,
@@ -60,13 +55,6 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
     const addSpace = index > 0 && item?.startIndex !== prev?.startIndex;
     const charIndex =
       typeof item.index === 'number' ? item.index : index + pinyinStart;
-    const hasHighlightedBackground =
-      charIndex >= matchStartKey && charIndex <= matchEndKey;
-    const played =
-      hasHighlightedBackground &&
-      currentTime !== undefined &&
-      item.secondForIndex !== undefined &&
-      currentTime >= item.secondForIndex;
     const low = Math.min(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
     const high = Math.max(matchingStartIndex ?? 0, matchingEndIndex ?? 0);
     const animateText =
@@ -82,7 +70,6 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
       item,
       addSpace,
       charIndex,
-      played,
       animateText,
       syllable,
     };
@@ -109,9 +96,6 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
                 : 'normal',
           }}
         >
-          {isArabic && isReadyForQuickReview && (
-            <FormattedSentenceSnippetProgressWidget played={current.played} />
-          )}
           {current.addSpace && ' '}
           {current.syllable}
         </span>,
@@ -146,9 +130,6 @@ const SnippetReviewPinyinHelper: React.FC<SnippetReviewPinyinHelperProps> = ({
               key={part.charIndex}
               style={{ color: getColorByIndex(part.item?.startIndex) }}
             >
-              {isArabic && isReadyForQuickReview && (
-                <FormattedSentenceSnippetProgressWidget played={part.played} />
-              )}
               {partIndex > 0 && part.addSpace && ' '}
               {part.syllable}
             </span>

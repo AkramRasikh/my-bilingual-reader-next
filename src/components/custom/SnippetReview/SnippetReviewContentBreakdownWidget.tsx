@@ -67,7 +67,7 @@ const FormattedSentenceSnippetBreakdownWidget: React.FC<
           data-testid={`formatted-chunk-${indexNum}`}
           style={{ color }}
           className={clsx(
-            hasHighlightedBackground ? 'bg-gray-200' : 'opacity-35',
+            hasHighlightedBackground ? '' : 'opacity-35',
             textOpacity,
           )}
         >
