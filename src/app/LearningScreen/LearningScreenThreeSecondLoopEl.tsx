@@ -16,6 +16,8 @@ interface LearningScreenThreeSecondLoopElProps {
   isLoadingSaveSnippetState: boolean;
   highlightedTextFocusLoopState: string;
   onSaveSnippetClick: () => void;
+  onSaveFocusedText?: (focusedText: string) => Promise<void>;
+  saveFromGamepad?: boolean;
   languageSelectedState: LanguageEnum;
 }
 
@@ -26,6 +28,8 @@ const LearningScreenThreeSecondLoopEl = ({
   isLoadingSaveSnippetState,
   highlightedTextFocusLoopState,
   onSaveSnippetClick,
+  onSaveFocusedText,
+  saveFromGamepad = false,
   languageSelectedState,
 }: LearningScreenThreeSecondLoopElProps) => {
   const targetLang = overlappingTextMemoized?.targetLang;
@@ -59,10 +63,13 @@ const LearningScreenThreeSecondLoopEl = ({
     onAdjustLength: (delta) =>
       delta > 0 ? onExpandLength() : onContractLength(),
     onShiftStart: (delta) => (delta > 0 ? onMoveRight() : onMoveLeft()),
-    // onSaveSnippet: async () => {
-    // console.log('## 🎮 snippet-loop-save LearningScreenThreeSecondLoopEl');
-    //   // await onUpdateSnippet();
-    // },
+    onSaveSnippet:
+      saveFromGamepad && onSaveFocusedText
+        ? async () => {
+            if (!textMatch) return;
+            await onSaveFocusedText(textMatch);
+          }
+        : undefined,
   });
 
   return (

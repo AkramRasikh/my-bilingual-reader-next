@@ -61,6 +61,30 @@ describe('LearningScreen right panel toggle', () => {
     expect(toggle).toHaveAttribute('aria-pressed', 'false');
     expect(toggle).toHaveAccessibleName('Show transcript panel');
     expect(screen.queryByTestId('transcript-tab-trigger')).not.toBeInTheDocument();
+    expect(toggle.nextElementSibling).toHaveAttribute(
+      'data-testid',
+      'closed-panel-review-filters',
+    );
+    expect(screen.getByTestId('closed-panel-review-mode')).toHaveAttribute(
+      'data-review-mode',
+      'off',
+    );
+    const wordsInReview = screen.getByTestId('closed-panel-words-toggle');
+    const sentencesInReview = screen.getByTestId('closed-panel-sentences-toggle');
+    const snippetsInReview = screen.getByTestId('closed-panel-snippets-toggle');
+    expect(wordsInReview).toBeChecked();
+    expect(sentencesInReview).toBeChecked();
+    expect(snippetsInReview).toBeChecked();
+    expect(wordsInReview).toBeDisabled();
+    expect(sentencesInReview).toBeDisabled();
+    expect(snippetsInReview).toBeDisabled();
+    expect(wordsInReview.parentElement?.parentElement).toHaveClass('opacity-40');
+    expect(wordsInReview.nextElementSibling).toHaveTextContent('🔤 (0)');
+    expect(sentencesInReview.nextElementSibling).toHaveTextContent('📝 (0)');
+    expect(snippetsInReview.nextElementSibling).toHaveTextContent('✂️ (0)');
+
+    fireEvent.click(wordsInReview);
+    expect(wordsInReview).toBeChecked();
     expect(videoColumn).toHaveClass(closedWidthClass);
     expect(videoColumn).not.toHaveClass(openWidthClass);
 
@@ -68,6 +92,7 @@ describe('LearningScreen right panel toggle', () => {
 
     expect(toggle).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByTestId('transcript-tab-trigger')).toBeInTheDocument();
+    expect(screen.queryByTestId('closed-panel-review-filters')).not.toBeInTheDocument();
     expect(videoColumn).toHaveClass(openWidthClass);
     expect(videoColumn).not.toHaveClass(closedWidthClass);
   });

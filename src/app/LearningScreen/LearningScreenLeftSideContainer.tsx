@@ -76,6 +76,7 @@ const LearningScreenLeftSideContainer = ({
         <LearningScreenVideoPlayer
           url={videoUrl}
           languageSelectedState={languageSelectedState}
+          isRightPanelOpen={isRightPanelOpen}
         />
       ) : (
         <div>

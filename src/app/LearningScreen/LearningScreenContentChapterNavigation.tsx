@@ -2,6 +2,7 @@ import { PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import LearningScreenUnifiedAnalytics from './LearningScreenUnifiedAnalytics';
 import LearningScreenActionBarVideoControls from './LearningScreenActionBarVideoControls';
+import LearningScreenClosedPanelReviewFilters from './LearningScreenClosedPanelReviewFilters';
 
 type LearningScreenContentChapterNavigationProps = {
   isRightPanelOpen: boolean;
@@ -36,6 +37,7 @@ const LearningScreenContentChapterNavigation = ({
       >
         <PanelIcon className='size-4' />
       </Button>
+      {isRightPanelOpen ? null : <LearningScreenClosedPanelReviewFilters />}
     </section>
   );
 };

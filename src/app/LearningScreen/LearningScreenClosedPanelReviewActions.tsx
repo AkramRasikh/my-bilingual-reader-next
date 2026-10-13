@@ -2,9 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 import ReviewSRSToggles from '@/components/custom/ReviewSRSToggles';
+import SnippetReview from '@/components/custom/SnippetReview';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
-import { findAllInstancesOfWordsInSentence } from '@/utils/sentence-formatting/find-all-instances-of-words-in-sentences';
-import { Snippet } from '@/app/types/content-types';
 import {
   getButtonMap,
   isGamepadButtonHeld,
@@ -21,7 +20,7 @@ const LearningScreenClosedPanelReviewActions = ({
   isRightPanelOpen: boolean;
 }) => {
   const learningScreen = useLearningScreen();
-  const { wordsState } = useFetchData();
+  const { wordsState, languageSelectedState } = useFetchData();
   const learningScreenRef = useRef(learningScreen);
   learningScreenRef.current = learningScreen;
   const bWasDownRef = useRef(false);
@@ -51,7 +50,12 @@ const LearningScreenClosedPanelReviewActions = ({
 
       if (bDown && !bWasDownRef.current) {
         const current = learningScreenRef.current;
-        if (current.isInReviewMode) {
+        const quickReviewSnippetId = current.postSnippetsMemoized[0]?.id;
+        const snippetControlsAreMounted =
+          current.isInReviewMode &&
+          quickReviewSnippetId != null &&
+          quickReviewSnippetId === current.firstElIdInReview;
+        if (current.isInReviewMode && !snippetControlsAreMounted) {
           playFirstReviewItem({
             snippets: current.postSnippetsMemoized,
             words: current.postWordsMemoized,
@@ -103,37 +107,70 @@ const LearningScreenClosedPanelReviewActions = ({
     });
   };
 
-  const handleReviewSnippet = async (arg: {
-    snippetData: Snippet;
-    isRemoveReview?: boolean;
-  }) => {
-    const savedWordsInSnippet = findAllInstancesOfWordsInSentence(
-      arg.snippetData.focusedText || arg.snippetData.suggestedFocusText || '',
-      wordsState,
-    );
-    await learningScreen.handleUpdateSnippet({
-      snippetData: arg.snippetData,
-      isRemoveReview:
-        Boolean(arg.isRemoveReview) && savedWordsInSnippet.length === 0,
-      isSnippetReview: true,
-    });
-  };
+  const quickReviewSnippet =
+    gradeTarget.kind === 'snippet' ? gradeTarget.item : null;
 
   return (
-    <div className='hidden' aria-hidden>
+    <div className='hidden' aria-hidden data-testid='closed-panel-review-controls'>
+      {quickReviewSnippet ? (
+        <SnippetReview
+          snippetData={quickReviewSnippet}
+          handleLoopHere={(params) =>
+            learningScreen.handleLoopReviewMode({
+              ...params,
+              snippetId: quickReviewSnippet.id,
+            })
+          }
+          isVideoPlaying={learningScreen.isVideoPlaying}
+          threeSecondLoopState={learningScreen.threeSecondLoopState}
+          handleUpdateSnippetComprehensiveReview={async ({
+            snippetData,
+            isRemoveReview,
+            isSnippetReview,
+          }) => {
+            await learningScreen.handleUpdateSnippet({
+              snippetData,
+              isRemoveReview,
+              isSnippetReview,
+            });
+            learningScreen.setThreeSecondLoopState(null);
+            learningScreen.setContractThreeSecondLoopState(false);
+          }}
+          isReadyForQuickReview
+          handleBreakdownSentence={({ sentenceId }) =>
+            learningScreen.handleBreakdownSentence({
+              sentenceId,
+              targetLang:
+                learningScreen.sentenceMapMemoized[sentenceId]?.targetLang ||
+                '',
+            })
+          }
+          isBreakingDownSentenceArrState={
+            learningScreen.isBreakingDownSentenceArrState
+          }
+          currentTime={learningScreen.currentTime}
+          getSentenceDataOfOverlappingWordsDuringSave={(time, highlightedText) => {
+            const out = learningScreen.getSentenceDataOfOverlappingWordsDuringSave(
+              time,
+              highlightedText,
+            );
+            return typeof out === 'string' ? out : null;
+          }}
+          selectedContentTitleState={learningScreen.selectedContentTitleState}
+          sentenceMapMemoized={learningScreen.sentenceMapMemoized}
+          languageSelectedState={languageSelectedState}
+          wordsState={wordsState}
+          handleSaveWord={learningScreen.handleSaveWord}
+          handleDeleteWordDataProvider={
+            learningScreen.handleDeleteWordDataProvider
+          }
+        />
+      ) : null}
       {gradeTarget.kind === 'word' ? (
         <ReviewSRSToggles
           isVocab
           contentItem={gradeTarget.item}
           handleReviewFunc={handleReviewWord}
-          isReadyForQuickReview
-        />
-      ) : null}
-      {gradeTarget.kind === 'snippet' ? (
-        <ReviewSRSToggles
-          isSnippet
-          contentItem={gradeTarget.item}
-          handleReviewFunc={handleReviewSnippet}
           isReadyForQuickReview
         />
       ) : null}

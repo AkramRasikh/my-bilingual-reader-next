@@ -37,11 +37,13 @@ function formatPlaybackTime(seconds: number) {
 type LearningScreenVideoPlayerProps = {
   url: string;
   languageSelectedState: LanguageEnum;
+  isRightPanelOpen: boolean;
 };
 
 const LearningScreenVideoPlayer = ({
   url,
   languageSelectedState,
+  isRightPanelOpen,
 }: LearningScreenVideoPlayerProps) => {
   const {
     ref,
@@ -194,6 +196,19 @@ const LearningScreenVideoPlayer = ({
                 isLoadingSaveSnippetState={isLoadingSaveSnippetState}
                 highlightedTextFocusLoopState={highlightedTextFocusLoopState}
                 onSaveSnippetClick={handleSaveSnippetFlow}
+                saveFromGamepad={!isRightPanelOpen}
+                onSaveFocusedText={async (focusedText) => {
+                  if (!handleSaveSnippet || !overlappingTextMemoized) return;
+                  setIsLoadingSaveSnippetState(true);
+                  try {
+                    await handleSaveSnippet({
+                      ...overlappingTextMemoized,
+                      focusedText,
+                    });
+                  } finally {
+                    setIsLoadingSaveSnippetState(false);
+                  }
+                }}
                 languageSelectedState={languageSelectedState}
               />
             </div>
