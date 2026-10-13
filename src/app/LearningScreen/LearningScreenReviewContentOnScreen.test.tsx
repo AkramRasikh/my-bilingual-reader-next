@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { PLAYBACK_CAPTION_PLATE_CLASS } from './playbackCaptionSurface';
-import LearningScreenReviewContentOnScreen from './LearningScreenReviewContentOnScreen';
+import LearningScreenReviewContentOnScreen, {
+  reviewWordLinesMatch,
+} from './LearningScreenReviewContentOnScreen';
 
 const mockLearningScreenState = {
   firstElIdInReview: null as string | null,
@@ -49,6 +51,32 @@ function expectCaptionPlate(element: Element | null) {
     expect(element).toHaveClass(className);
   }
 }
+
+describe('reviewWordLinesMatch', () => {
+  it('treats the details line and transliteration as the same text', () => {
+    expect(
+      reviewWordLinesMatch(
+        'J\'ai posé un pied au Québec',
+        'J\'ai posé un pied au Québec',
+      ),
+    ).toBe(true);
+    expect(
+      reviewWordLinesMatch(
+        'J\'ai posé un pied au Québec',
+        '  J\'ai   posé un pied au Québec  ',
+      ),
+    ).toBe(true);
+  });
+
+  it('keeps a transliteration that adds something to the details line', () => {
+    expect(
+      reviewWordLinesMatch(
+        'J\'ai posé un pied au Québec - I set foot in Quebec',
+        'J\'ai posé un pied au Québec',
+      ),
+    ).toBe(false);
+  });
+});
 
 describe('LearningScreenReviewContentOnScreen caption contrast', () => {
   beforeEach(() => {

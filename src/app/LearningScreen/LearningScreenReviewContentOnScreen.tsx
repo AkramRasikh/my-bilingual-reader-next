@@ -24,6 +24,13 @@ import { findSavedWordBreakdown, findWordContextSentence, splitSentenceAroundPhr
 const WORD_OVERLAY_LINE_CLASS = `mx-auto block w-fit max-w-full px-1.5 py-0.5 leading-tight ${PLAYBACK_CAPTION_PLATE_CLASS}`;
 
 const WORD_SENTENCE_HOLD_MS = 180;
+
+export function reviewWordLinesMatch(details: string, transliteration: string) {
+  const normalize = (value: string) => value.trim().replace(/\s+/g, ' ');
+  const left = normalize(details);
+  const right = normalize(transliteration);
+  return left.length > 0 && left === right;
+}
 const CLOSED_WORD_DEFINITION_LENGTH = 60;
 
 function closedWordDefinition(definition: string) {
@@ -263,6 +270,10 @@ const LearningScreenReviewContentOnScreen = () => {
       return true;
     })
     .join(' - ');
+  const transliterationRepeatsDetails = reviewWordLinesMatch(
+    compactWordDetailsText,
+    transliteration,
+  );
 
   const wordContextSentenceText = useMemo(() => {
     const surface = firstWordInReviewDisplay?.surfaceForm?.trim();
@@ -458,7 +469,10 @@ const LearningScreenReviewContentOnScreen = () => {
           {compactWordDetailsText}
         </span>
       ) : null}
-      {showWordDetailsState && transliteration && !breakdownShowsReading ? (
+      {showWordDetailsState &&
+      transliteration &&
+      !breakdownShowsReading &&
+      !transliterationRepeatsDetails ? (
         <span
           data-testid='learning-screen-review-word-transliteration'
           className={`${WORD_OVERLAY_LINE_CLASS} mt-0.5`}
