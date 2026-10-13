@@ -12,7 +12,7 @@ const current = {
 };
 
 describe('PlaybackCaptionStack', () => {
-  it('shows the previous and current sentences with English under each', () => {
+  it('shows only the playing sentence, with English underneath', () => {
     render(
       <PlaybackCaptionStack
         previous={previous}
@@ -21,12 +21,9 @@ describe('PlaybackCaptionStack', () => {
       />,
     );
 
-    expect(screen.getByTestId('playback-caption-previous-target')).toHaveTextContent(
-      '上一句',
-    );
-    expect(screen.getByTestId('playback-caption-previous-base')).toHaveTextContent(
-      'the previous sentence',
-    );
+    expect(
+      screen.queryByTestId('playback-caption-previous-target'),
+    ).not.toBeInTheDocument();
     expect(screen.getByTestId('playback-caption-current-target')).toHaveTextContent(
       '这一句',
     );
@@ -60,11 +57,10 @@ describe('PlaybackCaptionStack', () => {
       />,
     );
 
-    expect(screen.getByTestId('playback-caption-previous-target')).toBeInTheDocument();
-    expect(screen.getByTestId('playback-caption-current-target')).toBeInTheDocument();
     expect(
-      screen.queryByTestId('playback-caption-previous-base'),
+      screen.queryByTestId('playback-caption-previous-target'),
     ).not.toBeInTheDocument();
+    expect(screen.getByTestId('playback-caption-current-target')).toBeInTheDocument();
     expect(
       screen.queryByTestId('playback-caption-current-base'),
     ).not.toBeInTheDocument();
@@ -79,7 +75,7 @@ describe('PlaybackCaptionStack', () => {
     expect(screen.queryByTestId('playback-captions')).not.toBeInTheDocument();
   });
 
-  it('keeps the previous sentence smaller and does not draw a progress bar', () => {
+  it('shows the playing sentence at full size and does not draw a progress bar', () => {
     render(
       <PlaybackCaptionStack previous={previous} current={current} showEnglish />,
     );
@@ -88,14 +84,14 @@ describe('PlaybackCaptionStack', () => {
       screen.queryByRole('progressbar'),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByTestId('playback-caption-previous-target').parentElement,
-    ).toHaveClass('text-sm');
+      screen.queryByTestId('playback-caption-previous-target'),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByTestId('playback-caption-current-target').parentElement,
     ).toHaveClass('text-base');
   });
 
-  it('moves the current sentence up into the previous slot when the sentence changes', () => {
+  it('replaces the playing sentence instead of keeping the previous one on screen', () => {
     const animate = jest.fn(() => ({ cancel() {} }));
     const originalAnimate = HTMLElement.prototype.animate;
     HTMLElement.prototype.animate = animate as unknown as HTMLElement['animate'];
@@ -146,18 +142,17 @@ describe('PlaybackCaptionStack', () => {
         />,
       );
 
-      expect(screen.getByTestId('playback-caption-previous-target')).toHaveTextContent(
-        '第一句',
-      );
+      expect(
+        screen.queryByTestId('playback-caption-previous-target'),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText('第一句')).not.toBeInTheDocument();
       expect(screen.getByTestId('playback-caption-current-target')).toHaveTextContent(
         '第二句',
       );
       expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
 
-      const slide = animate.mock.calls.find((call) =>
-        String(call[0]?.[0]?.transform ?? '').includes('scale('),
-      );
-      expect(slide?.[1]).toMatchObject({ duration: 450 });
+      const fade = animate.mock.calls.find((call) => call[0]?.[0]?.opacity === 0);
+      expect(fade?.[1]).toMatchObject({ duration: 450 });
     } finally {
       HTMLElement.prototype.animate = originalAnimate;
       for (const [key, original] of originals) {

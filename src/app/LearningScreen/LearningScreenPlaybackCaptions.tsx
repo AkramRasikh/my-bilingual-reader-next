@@ -65,22 +65,18 @@ function CaptionLine({
   sentence,
   showEnglish,
   testId,
-  compact = false,
-  role,
 }: {
   sentence: PlaybackCaptionSentence;
   showEnglish: boolean;
   testId: string;
-  compact?: boolean;
-  role: 'previous' | 'current';
 }) {
   const baseLang = sentence.baseLang?.trim() ?? '';
 
   return (
     <div
       data-caption-id={sentence.id}
-      data-caption-role={role}
-      className={`relative overflow-hidden ${PLAYBACK_CAPTION_PLATE_CLASS} ${compact ? 'max-w-[82%] px-2.5 py-0.5 text-sm' : 'max-w-[90%] px-3 py-1 text-base'}`}
+      data-caption-role='current'
+      className={`relative overflow-hidden ${PLAYBACK_CAPTION_PLATE_CLASS} max-w-[90%] px-3 py-1 text-base`}
     >
       <p data-testid={`${testId}-target`} className='leading-tight'>
         {sentence.targetLang}
@@ -110,7 +106,6 @@ export function PlaybackCaptionStack({
   const boxesRef = useRef(new Map<string, CaptionBox>());
   const lastCurrentIdRef = useRef<string | null>(null);
   const currentTarget = current?.targetLang?.trim() ?? '';
-  const previousTarget = previous?.targetLang?.trim() ?? '';
   const layoutKey = `${previous?.id ?? ''}|${current?.id ?? ''}`;
 
   useLayoutEffect(() => {
@@ -163,22 +158,11 @@ export function PlaybackCaptionStack({
       data-testid='playback-captions'
       className='pointer-events-none absolute inset-x-0 bottom-2 z-20 flex flex-col items-center gap-2 px-3'
     >
-      {previous && previousTarget ? (
-        <CaptionLine
-          key={previous.id ?? 'previous'}
-          sentence={previous}
-          showEnglish={showEnglish}
-          testId='playback-caption-previous'
-          compact
-          role='previous'
-        />
-      ) : null}
       <CaptionLine
         key={current.id ?? 'current'}
         sentence={{ ...current, targetLang: currentTarget }}
         showEnglish={showEnglish}
         testId='playback-caption-current'
-        role='current'
       />
     </div>
   );
