@@ -1,8 +1,12 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { PLAYBACK_CAPTION_PLATE_CLASS } from './playbackCaptionSurface';
 import LearningScreenReviewContentOnScreen, {
   reviewWordLinesMatch,
 } from './LearningScreenReviewContentOnScreen';
+import {
+  publishReviewOverlayWait,
+  resetReviewOverlayWait,
+} from './reviewOverlayWait';
 
 const mockLearningScreenState = {
   firstElIdInReview: null as string | null,
@@ -89,6 +93,7 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     mockLearningScreenState.sentenceMapMemoized = {};
     mockLearningScreenState.isInReviewMode = false;
     mockLearningScreenState.isSavedLoopPlayingState = null;
+    resetReviewOverlayWait();
   });
 
   it('puts the caption plate behind a plain review sentence', () => {
@@ -210,5 +215,59 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     expect(meaning).toHaveClass('bg-black/70');
     expect(meaning).toHaveClass('text-white');
     expect(meaning).not.toHaveClass('bg-amber-100');
+  });
+
+  it('dims the sentence, word, and snippet overlays while that review is in flight', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.firstElIdInReview = 'sentence-1';
+    mockLearningScreenState.postSentencesMemoized = [
+      {
+        id: 'sentence-1',
+        targetLang: '你好',
+        baseLang: 'hello',
+      },
+    ];
+    publishReviewOverlayWait('other-item');
+    const { rerender } = render(<LearningScreenReviewContentOnScreen />);
+    expect(screen.queryByTestId('review-overlay-wait')).not.toBeInTheDocument();
+
+    act(() => publishReviewOverlayWait('sentence-1'));
+    const sentencePlate = screen
+      .getByTestId('learning-screen-review-sentence-target-lang')
+      .parentElement?.parentElement;
+    const sentenceWait = screen.getByTestId('review-overlay-wait');
+    expect(sentencePlate).toContainElement(sentenceWait);
+    expect(sentenceWait).toHaveClass('inset-0', 'items-center', 'justify-center');
+    expect(sentencePlate).toHaveClass('opacity-60');
+    expect(sentencePlate).toHaveAttribute('data-review-wait', 'on');
+
+    mockLearningScreenState.postSentencesMemoized = [];
+    mockLearningScreenState.firstElIdInReview = 'word-1';
+    mockLearningScreenState.firstWordDefinitionInReview = 'a greeting';
+    act(() => publishReviewOverlayWait('word-1'));
+    rerender(<LearningScreenReviewContentOnScreen />);
+    const wordPlate = screen.getByTestId('learning-screen-review-word-text')
+      .parentElement?.parentElement;
+    expect(wordPlate).toContainElement(screen.getByTestId('review-overlay-wait'));
+    expect(wordPlate).toHaveClass('opacity-60');
+    expect(wordPlate).toHaveClass('max-w-[66.666%]');
+
+    mockLearningScreenState.firstWordDefinitionInReview = null;
+    mockLearningScreenState.isSavedLoopPlayingState = 'snip-1';
+    mockLearningScreenState.postSnippetsMemoized = [
+      {
+        id: 'snip-1',
+        time: 10,
+        targetLang: '你好',
+        baseLang: 'hello',
+        vocab: [],
+      },
+    ];
+    act(() => publishReviewOverlayWait('snip-1'));
+    rerender(<LearningScreenReviewContentOnScreen />);
+    expect(screen.getByTestId('review-overlay-wait')).toBeInTheDocument();
+    expect(
+      screen.getByTestId('learning-screen-review-snippet-focus-text'),
+    ).toHaveClass('opacity-60');
   });
 });

@@ -9,6 +9,10 @@ import {
 import { Trash } from 'lucide-react';
 import clsx from 'clsx';
 import { useGamePadSRSShortcut } from './useGamePadSRSShortcut';
+import {
+  clearReviewOverlayWait,
+  publishReviewOverlayWait,
+} from '@/app/LearningScreen/reviewOverlayWait';
 
 const ReviewSRSToggles = ({
   contentItem,
@@ -42,6 +46,7 @@ const ReviewSRSToggles = ({
   const handleRemoveReview = useCallback(async () => {
     try {
       setIsLoadingSRSState(true);
+      publishReviewOverlayWait(contentItem.id);
       if (isVocab) {
         await handleReviewFunc({
           wordId: contentItem.id,
@@ -65,6 +70,7 @@ const ReviewSRSToggles = ({
       console.log('## handleRemoveReview', { error });
     } finally {
       setIsLoadingSRSState(false);
+      clearReviewOverlayWait(contentItem.id);
     }
   }, [contentItem, handleReviewFunc, isSnippet, isVocab]);
 
@@ -87,6 +93,7 @@ const ReviewSRSToggles = ({
 
       try {
         setIsLoadingSRSState(true);
+        publishReviewOverlayWait(contentItem.id);
         if (isVocab) {
           await handleReviewFunc({
             wordId: contentItem.id,
@@ -107,6 +114,7 @@ const ReviewSRSToggles = ({
         }
       } finally {
         setIsLoadingSRSState(false);
+        clearReviewOverlayWait(contentItem.id);
       }
     },
     [

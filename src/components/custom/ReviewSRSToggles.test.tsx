@@ -1,6 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import ReviewSRSToggles from './ReviewSRSToggles';
 import { srsCalculationAndText } from '@/app/srs-utils/srs-algo';
+import {
+  getReviewOverlayWaitSnapshot,
+  resetReviewOverlayWait,
+} from '@/app/LearningScreen/reviewOverlayWait';
 
 jest.mock('@/app/srs-utils/srs-algo', () => {
   const actual = jest.requireActual('@/app/srs-utils/srs-algo');
@@ -29,6 +33,10 @@ const scheduledOptions = {
 };
 
 describe('ReviewSRSToggles easy delete', () => {
+  afterEach(() => {
+    resetReviewOverlayWait();
+  });
+
   it('replaces the Easy interval with a trash icon and deletes on click', async () => {
     mockedSrsCalculation.mockReturnValue({
       ...scheduledOptions,
@@ -58,6 +66,43 @@ describe('ReviewSRSToggles easy delete', () => {
         wordId: 'word-1',
         isRemoveReview: true,
       });
+    });
+    expect(getReviewOverlayWaitSnapshot()).toBeNull();
+  });
+
+  it('marks the reviewed item while the request is still running', async () => {
+    mockedSrsCalculation.mockReturnValue({
+      ...scheduledOptions,
+      isScheduledForDeletion: false,
+    });
+    let finishReview: () => void = () => {};
+    const handleReviewFunc = jest.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          finishReview = resolve;
+        }),
+    );
+
+    render(
+      <ReviewSRSToggles
+        contentItem={{ id: 'sentence-1', reviewData: card }}
+        handleReviewFunc={handleReviewFunc}
+        isSnippet={false}
+        isVocab={false}
+        isReadyForQuickReview={false}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('good-sentence-1'));
+
+    await waitFor(() => {
+      expect(getReviewOverlayWaitSnapshot()).toBe('sentence-1');
+    });
+
+    finishReview();
+
+    await waitFor(() => {
+      expect(getReviewOverlayWaitSnapshot()).toBeNull();
     });
   });
 

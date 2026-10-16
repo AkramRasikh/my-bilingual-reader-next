@@ -1,6 +1,7 @@
 'use client';
 // 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import useLearningScreen from './useLearningScreen';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import { chinese } from '@/app/languages';
@@ -20,6 +21,10 @@ import ReviewSentenceOverlayText, {
   ColoredPhraseBreakdown,
 } from './ReviewSentenceOverlayText';
 import { findSavedWordBreakdown, findWordContextSentence, splitSentenceAroundPhrase } from './find-breakdown-pieces-for-phrase';
+import {
+  getReviewOverlayWaitSnapshot,
+  subscribeReviewOverlayWait,
+} from './reviewOverlayWait';
 
 const WORD_OVERLAY_LINE_CLASS = `mx-auto block w-fit max-w-full px-1.5 py-0.5 leading-tight ${PLAYBACK_CAPTION_PLATE_CLASS}`;
 
@@ -48,6 +53,7 @@ function ReviewOverlayPanel({
   anchor = 'bottom',
   plain = false,
   liftForCaptions = false,
+  busy = false,
 }: {
   children: React.ReactNode;
   timeRangePhase?: ReviewTimeRangePhase | null;
@@ -56,6 +62,7 @@ function ReviewOverlayPanel({
   anchor?: 'top' | 'bottom';
   plain?: boolean;
   liftForCaptions?: boolean;
+  busy?: boolean;
 }) {
   const textClassName = plain
     ? 'text-sm font-medium leading-tight break-words text-white'
@@ -67,21 +74,30 @@ function ReviewOverlayPanel({
     : 0;
 
   const containerClassName = expanded
-    ? 'pointer-events-auto mx-auto flex max-h-[50%] w-fit max-w-[calc(100%-1rem)] flex-col items-center overflow-y-auto'
+    ? 'pointer-events-auto relative mx-auto flex max-h-[50%] w-fit max-w-[calc(100%-1rem)] flex-col items-center overflow-y-auto'
     : plain
       ? 'pointer-events-auto relative mx-auto w-fit max-w-[66.666%] px-1 py-0.5 text-white'
       : `pointer-events-auto relative mx-auto w-fit max-w-[66.666%] overflow-hidden px-4 py-1.5 ${PLAYBACK_CAPTION_PLATE_CLASS}`;
 
   return (
     <div
-      className={`pointer-events-none absolute inset-0 flex flex-col ${anchor === 'top' ? 'justify-start' : 'justify-end'} ${liftForCaptions && anchor === 'bottom' ? 'pb-28' : ''}`}
+      className={`pointer-events-none absolute inset-0 flex flex-col items-center ${anchor === 'top' ? 'justify-start' : 'justify-end'} ${liftForCaptions && anchor === 'bottom' ? 'pb-28' : ''}`}
     >
       <div
-        className={containerClassName}
+        className={`${containerClassName}${busy ? ' opacity-60' : ''}`}
+        data-review-wait={busy ? 'on' : 'off'}
         data-testid={
           expanded ? 'learning-screen-review-snippet-focus-text' : undefined
         }
       >
+        {busy ? (
+          <span
+            data-testid='review-overlay-wait'
+            className='pointer-events-none absolute inset-0 z-10 flex items-center justify-center'
+          >
+            <LoadingSpinner />
+          </span>
+        ) : null}
         {showProgress && (
           <div
             className={`pointer-events-none absolute inset-x-0 top-0 h-1 ${timeRangePhase === 'beyond' ? 'bg-green-200' : 'bg-amber-200'}`}
@@ -138,6 +154,11 @@ const LearningScreenReviewContentOnScreen = () => {
     showPlaybackCaptionsState,
   } = useLearningScreen();
   const { languageSelectedState, wordsState } = useFetchData();
+  const reviewWaitId = useSyncExternalStore(
+    subscribeReviewOverlayWait,
+    getReviewOverlayWaitSnapshot,
+    getReviewOverlayWaitSnapshot,
+  );
 
   const [showWordDetailsState, setShowWordDetailsState] = useState(false);
   const [showWordSentenceState, setShowWordSentenceState] = useState(false);
@@ -371,7 +392,11 @@ const LearningScreenReviewContentOnScreen = () => {
 
   if (playingReviewedSnippet) {
     return (
-      <ReviewOverlayPanel expanded liftForCaptions={showPlaybackCaptionsState}>
+      <ReviewOverlayPanel
+        expanded
+        liftForCaptions={showPlaybackCaptionsState}
+        busy={reviewWaitId === playingReviewedSnippet.id}
+      >
         <SnippetReview
           variant='overlay'
           snippetData={playingReviewedSnippet}
@@ -431,6 +456,7 @@ const LearningScreenReviewContentOnScreen = () => {
         timeRangePhase={sentenceTimeRangePhase}
         progress={sentenceProgress}
         liftForCaptions={showPlaybackCaptionsState}
+        busy={reviewWaitId === firstSentenceInReview?.id}
       >
         <ReviewSentenceOverlayText
           targetLang={sentenceTargetLang}
@@ -450,7 +476,11 @@ const LearningScreenReviewContentOnScreen = () => {
   }
 
   return (
-    <ReviewOverlayPanel anchor='top' plain>
+    <ReviewOverlayPanel
+      anchor='top'
+      plain
+      busy={reviewWaitId === firstElIdInReview}
+    >
       <span
         data-testid='learning-screen-review-word-text'
         className={WORD_OVERLAY_LINE_CLASS}
