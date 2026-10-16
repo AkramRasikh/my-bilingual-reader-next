@@ -114,7 +114,7 @@ const LearningScreenLeftSideContainer = ({
           firstTime={firstTime}
         />
       ) : null}
-      {masterPlayComprehensive && (
+      {isRightPanelOpen && masterPlayComprehensive && (
         <TranscriptItemSecondary
           contentItem={masterPlayComprehensive}
           handleSaveWord={handleSaveWord}
