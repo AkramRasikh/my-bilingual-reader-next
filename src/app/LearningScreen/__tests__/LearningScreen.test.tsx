@@ -659,6 +659,33 @@ describe('LearningScreen - studying new content', () => {
       expect(autoBreakdownAfterReview).toBeChecked();
       expect(autoBreakdownAfterReview).toBeEnabled();
     });
+
+    it('turns playback captions off during review and restores them afterward', async () => {
+      await renderWithProvider();
+      const playbackCaptionsSwitch = await screen.findByTestId(
+        'playback-captions-switch',
+      );
+      expect(playbackCaptionsSwitch).not.toBeChecked();
+
+      fireEvent.click(screen.getByTestId('review-switch'));
+      expect(screen.getByTestId('playback-captions-switch')).not.toBeChecked();
+      expect(screen.getByTestId('playback-captions-switch')).toBeDisabled();
+      fireEvent.click(screen.getByTestId('review-switch'));
+      expect(screen.getByTestId('playback-captions-switch')).not.toBeChecked();
+      expect(screen.getByTestId('playback-captions-switch')).toBeEnabled();
+
+      fireEvent.click(screen.getByTestId('playback-captions-switch'));
+      expect(screen.getByTestId('playback-captions-switch')).toBeChecked();
+
+      fireEvent.click(screen.getByTestId('review-switch'));
+      expect(screen.getByTestId('playback-captions-switch')).not.toBeChecked();
+      expect(screen.getByTestId('playback-captions-switch')).toBeDisabled();
+      expect(screen.queryByTestId('playback-captions')).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByTestId('review-switch'));
+      expect(screen.getByTestId('playback-captions-switch')).toBeChecked();
+      expect(screen.getByTestId('playback-captions-switch')).toBeEnabled();
+    });
   });
 
   describe('new words', () => {

@@ -39,6 +39,39 @@ describe('ReviewSentenceOverlayText', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('shows the sentence meaning in place of the base language', () => {
+    render(
+      <ReviewSentenceOverlayText
+        targetLang='好想在现场'
+        baseLang='I really want to see it'
+        meaning='I really want to be there'
+        showEnglish
+        languageSelectedState={chinese}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('learning-screen-review-sentence-base-lang'),
+    ).toHaveTextContent('I really want to be there');
+    expect(screen.queryByText('I really want to see it')).not.toBeInTheDocument();
+  });
+
+  it('keeps the base language when meaning is unavailable', () => {
+    render(
+      <ReviewSentenceOverlayText
+        targetLang='好想在现场'
+        baseLang='I really want to see it'
+        meaning='n/a'
+        showEnglish
+        languageSelectedState={chinese}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('learning-screen-review-sentence-base-lang'),
+    ).toHaveTextContent('I really want to see it');
+  });
+
   it('shows colored pieces, pinyin, then English for a broken-down Chinese sentence', () => {
     render(
       <ReviewSentenceOverlayText

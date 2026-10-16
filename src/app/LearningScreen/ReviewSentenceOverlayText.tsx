@@ -81,20 +81,29 @@ export function ColoredPhraseBreakdown({
 type ReviewSentenceOverlayTextProps = {
   targetLang: string;
   baseLang: string;
+  meaning?: string;
   showEnglish: boolean;
   vocab?: Vocab[];
   sentenceStructure?: string;
   languageSelectedState: string;
 };
 
+function reviewSentenceEnglish(baseLang: string, meaning?: string) {
+  const trimmedMeaning = meaning?.trim() ?? '';
+  if (trimmedMeaning && trimmedMeaning !== 'n/a') return trimmedMeaning;
+  return baseLang;
+}
+
 const ReviewSentenceOverlayText = ({
   targetLang,
   baseLang,
+  meaning,
   showEnglish,
   vocab,
   sentenceStructure,
   languageSelectedState,
 }: ReviewSentenceOverlayTextProps) => {
+  const english = reviewSentenceEnglish(baseLang, meaning);
   const hasBreakdown = Boolean(sentenceStructure);
   const pieces: PhraseBreakdownPiece[] = hasBreakdown
     ? (vocab ?? []).flatMap((item, index) => {
@@ -120,12 +129,12 @@ const ReviewSentenceOverlayText = ({
           {targetLang}
         </span>
       )}
-      {showEnglish && baseLang ? (
+      {showEnglish && english ? (
         <span
           data-testid='learning-screen-review-sentence-base-lang'
           className={`mt-0.5 block text-xs leading-tight ${PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS}`}
         >
-          {baseLang}
+          {english}
         </span>
       ) : null}
     </>

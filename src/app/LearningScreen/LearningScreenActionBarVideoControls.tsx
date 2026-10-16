@@ -108,6 +108,7 @@ const LearningScreenActionBarVideoControls = () => {
           <Switch
             checked={showPlaybackCaptionsState}
             onCheckedChange={setShowPlaybackCaptionsState}
+            disabled={isInReviewMode}
             data-testid='playback-captions-switch'
             aria-label='Playback captions'
           />

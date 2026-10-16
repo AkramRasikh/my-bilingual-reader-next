@@ -13,6 +13,7 @@ const mockLearningScreenState = {
     id: string;
     targetLang: string;
     baseLang: string;
+    meaning?: string;
   }>,
   isSavedLoopPlayingState: null,
   currentTime: 0,
@@ -108,6 +109,26 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     );
     expect(target).toHaveClass('text-white');
     expectCaptionPlate(target.parentElement?.parentElement ?? null);
+  });
+
+  it('shows the sentence meaning in place of the base language', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.firstElIdInReview = 'sentence-1';
+    mockLearningScreenState.postSentencesMemoized = [
+      {
+        id: 'sentence-1',
+        targetLang: '你好',
+        baseLang: 'hello',
+        meaning: 'hello there',
+      },
+    ];
+
+    render(<LearningScreenReviewContentOnScreen />);
+
+    expect(
+      screen.getByTestId('learning-screen-review-sentence-base-lang'),
+    ).toHaveTextContent('hello there');
+    expect(screen.queryByText('hello')).not.toBeInTheDocument();
   });
 
   it('puts the caption plate on a review word line', () => {

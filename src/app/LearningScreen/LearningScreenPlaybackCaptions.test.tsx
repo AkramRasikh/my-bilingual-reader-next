@@ -48,6 +48,35 @@ describe('PlaybackCaptionStack', () => {
     );
   });
 
+  it('shows the sentence meaning in place of the base language', () => {
+    render(
+      <PlaybackCaptionStack
+        previous={previous}
+        current={{ ...current, meaning: 'what this sentence means' }}
+        showEnglish
+      />,
+    );
+
+    expect(screen.getByTestId('playback-caption-current-base')).toHaveTextContent(
+      'what this sentence means',
+    );
+    expect(screen.queryByText('this sentence')).not.toBeInTheDocument();
+  });
+
+  it('keeps the base language when meaning is unavailable', () => {
+    render(
+      <PlaybackCaptionStack
+        previous={previous}
+        current={{ ...current, meaning: 'n/a' }}
+        showEnglish
+      />,
+    );
+
+    expect(screen.getByTestId('playback-caption-current-base')).toHaveTextContent(
+      'this sentence',
+    );
+  });
+
   it('hides English lines when showEnglish is false', () => {
     render(
       <PlaybackCaptionStack

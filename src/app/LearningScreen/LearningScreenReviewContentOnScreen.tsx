@@ -163,7 +163,10 @@ const LearningScreenReviewContentOnScreen = () => {
 
   const sentenceTargetLang = firstSentenceInReview?.targetLang?.trim() || '';
   const sentenceBaseLang = firstSentenceInReview?.baseLang?.trim() || '';
-  const showSentenceEnglish = !onlyShowEngState && sentenceBaseLang.length > 0;
+  const sentenceMeaning = firstSentenceInReview?.meaning?.trim() || '';
+  const showSentenceEnglish =
+    !onlyShowEngState &&
+    (sentenceMeaning.length > 0 || sentenceBaseLang.length > 0);
 
   const isFirstSentenceInReview =
     Boolean(firstSentenceInReview) && sentenceTargetLang.length > 0;
@@ -432,6 +435,7 @@ const LearningScreenReviewContentOnScreen = () => {
         <ReviewSentenceOverlayText
           targetLang={sentenceTargetLang}
           baseLang={sentenceBaseLang}
+          meaning={sentenceMeaning}
           showEnglish={showSentenceEnglish}
           vocab={firstSentenceInReview?.vocab}
           sentenceStructure={firstSentenceInReview?.sentenceStructure}

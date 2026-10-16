@@ -11,7 +11,14 @@ export type PlaybackCaptionSentence = {
   id?: string;
   targetLang: string;
   baseLang: string;
+  meaning?: string;
 };
+
+function captionEnglish(sentence: PlaybackCaptionSentence) {
+  const meaning = sentence.meaning?.trim() ?? '';
+  if (meaning && meaning !== 'n/a') return meaning;
+  return sentence.baseLang?.trim() ?? '';
+}
 
 const CAPTION_MOVE_MS = 450;
 
@@ -70,7 +77,7 @@ function CaptionLine({
   showEnglish: boolean;
   testId: string;
 }) {
-  const baseLang = sentence.baseLang?.trim() ?? '';
+  const english = captionEnglish(sentence);
 
   return (
     <div
@@ -81,12 +88,12 @@ function CaptionLine({
       <p data-testid={`${testId}-target`} className='leading-tight'>
         {sentence.targetLang}
       </p>
-      {showEnglish && baseLang ? (
+      {showEnglish && english ? (
         <p
           data-testid={`${testId}-base`}
           className={`mt-0.5 text-xs leading-tight ${PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS}`}
         >
-          {baseLang}
+          {english}
         </p>
       ) : null}
     </div>
