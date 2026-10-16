@@ -108,6 +108,8 @@ const checkingMediaActionButtons = () => {
   expect(trackMediaElLabel).toBeChecked();
   expect(trackMediaElLabel).toBeEnabled();
   expect(screen.getByTestId('countup-timer-button')).toBeInTheDocument();
+  expect(screen.getByTestId('word-hints-switch')).toBeChecked();
+  expect(screen.getByTestId('playback-captions-switch')).toBeChecked();
   const slowAudioSwitch = screen.getByTestId('slow-audio-switch');
   expect(slowAudioSwitch).not.toBeChecked();
   const slowAudioLabel = screen.getByTestId('slow-audio-label');
@@ -665,25 +667,25 @@ describe('LearningScreen - studying new content', () => {
       const playbackCaptionsSwitch = await screen.findByTestId(
         'playback-captions-switch',
       );
-      expect(playbackCaptionsSwitch).not.toBeChecked();
-
-      fireEvent.click(screen.getByTestId('review-switch'));
-      expect(screen.getByTestId('playback-captions-switch')).not.toBeChecked();
-      expect(screen.getByTestId('playback-captions-switch')).toBeDisabled();
-      fireEvent.click(screen.getByTestId('review-switch'));
-      expect(screen.getByTestId('playback-captions-switch')).not.toBeChecked();
-      expect(screen.getByTestId('playback-captions-switch')).toBeEnabled();
-
-      fireEvent.click(screen.getByTestId('playback-captions-switch'));
-      expect(screen.getByTestId('playback-captions-switch')).toBeChecked();
+      expect(playbackCaptionsSwitch).toBeChecked();
 
       fireEvent.click(screen.getByTestId('review-switch'));
       expect(screen.getByTestId('playback-captions-switch')).not.toBeChecked();
       expect(screen.getByTestId('playback-captions-switch')).toBeDisabled();
       expect(screen.queryByTestId('playback-captions')).not.toBeInTheDocument();
-
       fireEvent.click(screen.getByTestId('review-switch'));
       expect(screen.getByTestId('playback-captions-switch')).toBeChecked();
+      expect(screen.getByTestId('playback-captions-switch')).toBeEnabled();
+
+      fireEvent.click(screen.getByTestId('playback-captions-switch'));
+      expect(screen.getByTestId('playback-captions-switch')).not.toBeChecked();
+
+      fireEvent.click(screen.getByTestId('review-switch'));
+      expect(screen.getByTestId('playback-captions-switch')).not.toBeChecked();
+      expect(screen.getByTestId('playback-captions-switch')).toBeDisabled();
+
+      fireEvent.click(screen.getByTestId('review-switch'));
+      expect(screen.getByTestId('playback-captions-switch')).not.toBeChecked();
       expect(screen.getByTestId('playback-captions-switch')).toBeEnabled();
     });
   });

@@ -267,9 +267,9 @@ export const LearningScreenProvider = ({
   const [showWordsBasketState, setShowWordsBasketState] = useState(false);
   const [trackCurrentState, setTrackCurrentState] = useState(true);
   const [playbackCaptionsEnabled, setShowPlaybackCaptionsState] =
-    useState(false);
+    useState(true);
   const showPlaybackCaptionsState = playbackCaptionsEnabled && !isInReviewMode;
-  const [showWordHintsState, setShowWordHintsState] = useState(false);
+  const [showWordHintsState, setShowWordHintsState] = useState(true);
   const initialSentenceCount = useRef<number | null>(null);
 
   const [scrollToElState, setScrollToElState] = useState('');
