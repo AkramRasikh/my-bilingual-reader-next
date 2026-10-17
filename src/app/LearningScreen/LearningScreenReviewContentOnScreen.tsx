@@ -418,8 +418,10 @@ const LearningScreenReviewContentOnScreen = () => {
               isRemoveReview,
               isSnippetReview,
             });
-            setThreeSecondLoopState(null);
-            setContractThreeSecondLoopState(false);
+            if (isSnippetReview) {
+              setThreeSecondLoopState(null);
+              setContractThreeSecondLoopState(false);
+            }
           }}
           isReadyForQuickReview={
             firstElIdInReview === playingReviewedSnippet.id

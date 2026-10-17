@@ -133,8 +133,10 @@ const LearningScreenClosedPanelReviewActions = ({
               isRemoveReview,
               isSnippetReview,
             });
-            learningScreen.setThreeSecondLoopState(null);
-            learningScreen.setContractThreeSecondLoopState(false);
+            if (isSnippetReview) {
+              learningScreen.setThreeSecondLoopState(null);
+              learningScreen.setContractThreeSecondLoopState(false);
+            }
           }}
           isReadyForQuickReview
           handleBreakdownSentence={({ sentenceId }) =>

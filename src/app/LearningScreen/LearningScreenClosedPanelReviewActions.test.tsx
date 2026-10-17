@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { mockSnippetPartiallyBrokenDown } from '@/components/custom/SnippetReview/SnippetReview.mocks';
 import {
   clearSnippetReviewVisual,
@@ -42,6 +42,8 @@ jest.mock('@/app/Providers/FetchDataProvider', () => ({
 describe('closed panel snippet controls', () => {
   beforeEach(() => {
     handleUpdateSnippet.mockReset();
+    mockLearningScreenState.setThreeSecondLoopState.mockClear();
+    mockLearningScreenState.setContractThreeSecondLoopState.mockClear();
     clearSnippetReviewVisual(mockSnippetPartiallyBrokenDown.id);
     Object.defineProperty(navigator, 'getGamepads', {
       configurable: true,
@@ -93,6 +95,36 @@ describe('closed panel snippet controls', () => {
         }),
       );
     });
+    expect(mockLearningScreenState.setThreeSecondLoopState).not.toHaveBeenCalled();
+    expect(
+      mockLearningScreenState.setContractThreeSecondLoopState,
+    ).not.toHaveBeenCalled();
+  });
+
+  it('stops the snippet loop after an SRS grade', async () => {
+    handleUpdateSnippet.mockResolvedValue(undefined);
+    render(<LearningScreenClosedPanelReviewActions isRightPanelOpen={false} />);
+
+    fireEvent.click(
+      screen.getByTestId(`good-${mockSnippetPartiallyBrokenDown.id}`),
+    );
+
+    await waitFor(() => {
+      expect(handleUpdateSnippet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          isSnippetReview: true,
+          snippetData: expect.objectContaining({
+            id: mockSnippetPartiallyBrokenDown.id,
+          }),
+        }),
+      );
+    });
+    expect(mockLearningScreenState.setThreeSecondLoopState).toHaveBeenCalledWith(
+      null,
+    );
+    expect(
+      mockLearningScreenState.setContractThreeSecondLoopState,
+    ).toHaveBeenCalledWith(false);
   });
 
   it('leaves snippet controls to the open transcript panel', () => {

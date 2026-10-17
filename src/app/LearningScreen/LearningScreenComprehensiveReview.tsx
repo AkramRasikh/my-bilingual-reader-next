@@ -78,8 +78,10 @@ const LearningScreenComprehensiveReview = () => {
       isRemoveReview,
       isSnippetReview,
     });
-    setThreeSecondLoopState(null);
-    setContractThreeSecondLoopState(false);
+    if (isSnippetReview) {
+      setThreeSecondLoopState(null);
+      setContractThreeSecondLoopState(false);
+    }
   };
 
   if (
