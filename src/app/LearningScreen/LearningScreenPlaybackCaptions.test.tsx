@@ -114,6 +114,32 @@ describe('PlaybackCaptionStack', () => {
     expect(brick).toHaveTextContent('🧱');
   });
 
+  it('draws a thin amber border when the playing sentence has been reviewed', () => {
+    render(
+      <PlaybackCaptionStack
+        previous={previous}
+        current={current}
+        showEnglish
+        reviewed
+      />,
+    );
+
+    const plate = screen.getByTestId('playback-caption-current-target').parentElement;
+    expect(plate).toHaveClass('border', 'border-amber-500');
+    expect(plate).not.toHaveClass('border-2');
+    expect(plate).toHaveAttribute('data-caption-reviewed', 'on');
+  });
+
+  it('leaves the caption border off when the playing sentence has not been reviewed', () => {
+    render(
+      <PlaybackCaptionStack previous={previous} current={current} showEnglish />,
+    );
+
+    const plate = screen.getByTestId('playback-caption-current-target').parentElement;
+    expect(plate).not.toHaveClass('border-amber-500');
+    expect(plate).toHaveAttribute('data-caption-reviewed', 'off');
+  });
+
   it('renders nothing when there is no current sentence', () => {
     const { container } = render(
       <PlaybackCaptionStack previous={previous} current={null} showEnglish />,

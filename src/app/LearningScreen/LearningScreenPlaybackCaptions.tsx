@@ -74,11 +74,13 @@ function CaptionLine({
   showEnglish,
   testId,
   breakingDown = false,
+  reviewed = false,
 }: {
   sentence: PlaybackCaptionSentence;
   showEnglish: boolean;
   testId: string;
   breakingDown?: boolean;
+  reviewed?: boolean;
 }) {
   const english = captionEnglish(sentence);
 
@@ -86,7 +88,8 @@ function CaptionLine({
     <div
       data-caption-id={sentence.id}
       data-caption-role='current'
-      className={`relative overflow-hidden ${breakingDown ? 'opacity-60 ' : ''}${PLAYBACK_CAPTION_PLATE_CLASS} max-w-[90%] px-3 py-1 text-base`}
+      data-caption-reviewed={reviewed ? 'on' : 'off'}
+      className={`relative overflow-hidden ${breakingDown ? 'opacity-60 ' : ''}${reviewed ? 'border border-amber-500 ' : ''}${PLAYBACK_CAPTION_PLATE_CLASS} max-w-[90%] px-3 py-1 text-base`}
     >
       {breakingDown ? <SentenceBreakdownOverlayBrick /> : null}
       <p data-testid={`${testId}-target`} className='leading-tight'>
@@ -109,11 +112,13 @@ export function PlaybackCaptionStack({
   current,
   showEnglish,
   breakingDown = false,
+  reviewed = false,
 }: {
   previous: PlaybackCaptionSentence | null;
   current: PlaybackCaptionSentence | null;
   showEnglish: boolean;
   breakingDown?: boolean;
+  reviewed?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const boxesRef = useRef(new Map<string, CaptionBox>());
@@ -177,6 +182,7 @@ export function PlaybackCaptionStack({
         showEnglish={showEnglish}
         testId='playback-caption-current'
         breakingDown={breakingDown}
+        reviewed={reviewed}
       />
     </div>
   );
@@ -210,6 +216,7 @@ const LearningScreenPlaybackCaptions = () => {
         masterPlayComprehensive?.id &&
           isBreakingDownSentenceArrState.includes(masterPlayComprehensive.id),
       )}
+      reviewed={Boolean(masterPlayComprehensive?.reviewData?.due)}
     />
   );
 };
