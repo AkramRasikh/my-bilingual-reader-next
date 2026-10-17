@@ -30,7 +30,7 @@ export function wordsForOverlayRail(
     return [
       {
         surfaceForm,
-        meaning: truncateOverlayRailMeaning(item.definition ?? ''),
+        meaning: item.definition?.trim() ?? '',
         reading: item.transliteration?.trim() ?? '',
         index,
       },
@@ -68,11 +68,14 @@ const LearningScreenOverlayWordRail = ({
           : '';
         const lineClass = `block w-full break-words px-0.5 py-px text-center leading-tight ${PLAYBACK_CAPTION_PLATE_CLASS}`;
 
+        const compactMeaning = truncateOverlayRailMeaning(word.meaning);
+        const meaningExpands = compactMeaning !== word.meaning;
+
         return (
           <div
             key={`${word.index}-${word.surfaceForm}`}
             data-testid='learning-screen-overlay-word-rail-item'
-            className='flex w-[100px] max-w-[100px] flex-col items-center gap-0 overflow-hidden'
+            className='group pointer-events-auto relative flex w-[100px] max-w-[100px] flex-col items-center gap-0 overflow-hidden transition-[width,max-width] duration-150 ease-out hover:z-30 hover:w-[240px] hover:max-w-[240px]'
             style={{ color }}
           >
             <span
@@ -94,7 +97,16 @@ const LearningScreenOverlayWordRail = ({
             {word.meaning ? (
               <span
                 data-testid='learning-screen-overlay-word-rail-meaning'
-                className={`${lineClass} text-xs`}
+                className={`${lineClass} text-xs${meaningExpands ? ' group-hover:hidden' : ''}`}
+                style={{ color }}
+              >
+                {compactMeaning}
+              </span>
+            ) : null}
+            {meaningExpands ? (
+              <span
+                data-testid='learning-screen-overlay-word-rail-meaning-expanded'
+                className={`${lineClass} hidden text-xs group-hover:block`}
                 style={{ color }}
               >
                 {word.meaning}

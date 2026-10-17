@@ -107,7 +107,15 @@ describe('LearningScreenOverlayWordRail', () => {
 
     expected.forEach((word, index) => {
       const item = items[index];
-      expect(item).toHaveClass('w-[100px]', 'max-w-[100px]', 'items-center', 'gap-0');
+      expect(item).toHaveClass(
+        'w-[100px]',
+        'max-w-[100px]',
+        'items-center',
+        'gap-0',
+        'pointer-events-auto',
+        'hover:w-[240px]',
+        'hover:max-w-[240px]',
+      );
 
       const surface = item.querySelector(
         '[data-testid="learning-screen-overlay-word-rail-surface"]',
@@ -151,9 +159,19 @@ describe('LearningScreenOverlayWordRail', () => {
 
     const shown = screen.getByTestId(
       'learning-screen-overlay-word-rail-meaning',
-    ).textContent;
-    expect(shown).toHaveLength(40);
-    expect(shown).toBe(`${meaning.slice(0, 39)}…`);
+    );
+    expect(shown.textContent).toHaveLength(40);
+    expect(shown.textContent).toBe(`${meaning.slice(0, 39)}…`);
+    expect(shown).toHaveClass('group-hover:hidden');
+
+    const expanded = screen.getByTestId(
+      'learning-screen-overlay-word-rail-meaning-expanded',
+    );
+    expect(expanded).toHaveTextContent(meaning);
+    expect(expanded).toHaveClass('hidden', 'group-hover:block');
+    expect(
+      screen.getByTestId('learning-screen-overlay-word-rail-item'),
+    ).toHaveClass('hover:w-[240px]', 'hover:max-w-[240px]');
   });
 
   it('omits pinyin when the language is not Chinese', () => {
