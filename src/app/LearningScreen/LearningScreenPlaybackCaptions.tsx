@@ -1,10 +1,13 @@
 'use client';
 
 import { useLayoutEffect, useRef } from 'react';
+import { useFetchData } from '@/app/Providers/FetchDataProvider';
+import getColorByIndex from '@/utils/get-color-by-index';
 import {
   PLAYBACK_CAPTION_PLATE_CLASS,
   PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS,
 } from './playbackCaptionSurface';
+import { ColoredPhraseBreakdown } from './ReviewSentenceOverlayText';
 import { SentenceBreakdownOverlayBrick } from './SentenceBreakdownOverlayBrick';
 import useLearningScreen from './useLearningScreen';
 
@@ -13,7 +16,25 @@ export type PlaybackCaptionSentence = {
   targetLang: string;
   baseLang: string;
   meaning?: string;
+  sentenceStructure?: string;
+  vocab?: Array<{ surfaceForm?: string; meaning?: string }>;
 };
+
+function captionBreakdownPieces(sentence: PlaybackCaptionSentence) {
+  if (!sentence.sentenceStructure) return [];
+  return (sentence.vocab ?? []).flatMap((item, index) => {
+    const surfaceForm = item.surfaceForm?.trim();
+    if (!surfaceForm) return [];
+    const meaning = item.meaning?.trim() ?? '';
+    return [
+      {
+        surfaceForm,
+        index,
+        meaning: meaning && meaning.toLowerCase() !== 'n/a' ? meaning : '',
+      },
+    ];
+  });
+}
 
 function captionEnglish(sentence: PlaybackCaptionSentence) {
   const meaning = sentence.meaning?.trim() ?? '';
@@ -75,26 +96,66 @@ function CaptionLine({
   testId,
   breakingDown = false,
   reviewed = false,
+  showBreakdown = false,
+  languageSelectedState = '',
 }: {
   sentence: PlaybackCaptionSentence;
   showEnglish: boolean;
   testId: string;
   breakingDown?: boolean;
   reviewed?: boolean;
+  showBreakdown?: boolean;
+  languageSelectedState?: string;
 }) {
   const english = captionEnglish(sentence);
+  const hasBreakdown = Boolean(sentence.sentenceStructure);
+  const pieces = showBreakdown ? captionBreakdownPieces(sentence) : [];
+  const wordMeanings = pieces.filter((piece) => piece.meaning);
 
   return (
     <div
       data-caption-id={sentence.id}
       data-caption-role='current'
       data-caption-reviewed={reviewed ? 'on' : 'off'}
-      className={`relative overflow-hidden ${breakingDown ? 'opacity-60 ' : ''}${reviewed ? 'border border-amber-500 ' : ''}${PLAYBACK_CAPTION_PLATE_CLASS} max-w-[90%] px-3 py-1 text-base`}
+      className={`relative overflow-hidden ${breakingDown ? 'opacity-60 ' : ''}${reviewed ? 'border border-amber-500 ' : ''}${hasBreakdown ? 'pl-5 pr-3 ' : 'px-3 '}${PLAYBACK_CAPTION_PLATE_CLASS} max-w-[90%] py-1 text-base`}
     >
+      {hasBreakdown ? (
+        <span
+          data-testid={`${testId}-breakdown-mark`}
+          className='pointer-events-none absolute top-1/2 left-1 -translate-y-1/2 text-[10px] leading-none opacity-70'
+          aria-hidden
+        >
+          🧱
+        </span>
+      ) : null}
       {breakingDown ? <SentenceBreakdownOverlayBrick /> : null}
-      <p data-testid={`${testId}-target`} className='leading-tight'>
-        {sentence.targetLang}
-      </p>
+      {pieces.length > 0 ? (
+        <ColoredPhraseBreakdown
+          pieces={pieces}
+          languageSelectedState={languageSelectedState}
+          testId={`${testId}-target`}
+          pinyinTestId={`${testId}-pinyin`}
+        />
+      ) : (
+        <p data-testid={`${testId}-target`} className='leading-tight'>
+          {sentence.targetLang}
+        </p>
+      )}
+      {wordMeanings.length > 0 ? (
+        <p
+          data-testid={`${testId}-word-meanings`}
+          className='mt-0.5 flex flex-wrap justify-center gap-x-1 text-xs leading-tight'
+        >
+          {wordMeanings.map((piece) => (
+            <span
+              key={`${piece.surfaceForm}-${piece.index}`}
+              style={{ color: getColorByIndex(piece.index) }}
+            >
+              {piece.meaning}
+            </span>
+          ))}
+        </p>
+      ) : null}
       {showEnglish && english ? (
         <p
           data-testid={`${testId}-base`}
@@ -113,12 +174,16 @@ export function PlaybackCaptionStack({
   showEnglish,
   breakingDown = false,
   reviewed = false,
+  showBreakdown = false,
+  languageSelectedState = '',
 }: {
   previous: PlaybackCaptionSentence | null;
   current: PlaybackCaptionSentence | null;
   showEnglish: boolean;
   breakingDown?: boolean;
   reviewed?: boolean;
+  showBreakdown?: boolean;
+  languageSelectedState?: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const boxesRef = useRef(new Map<string, CaptionBox>());
@@ -183,6 +248,8 @@ export function PlaybackCaptionStack({
         testId='playback-caption-current'
         breakingDown={breakingDown}
         reviewed={reviewed}
+        showBreakdown={showBreakdown}
+        languageSelectedState={languageSelectedState}
       />
     </div>
   );
@@ -195,7 +262,9 @@ const LearningScreenPlaybackCaptions = () => {
     formattedTranscriptState,
     onlyShowEngState,
     isBreakingDownSentenceArrState,
+    playbackCaptionBreakdownId,
   } = useLearningScreen();
+  const { languageSelectedState } = useFetchData();
 
   if (!showPlaybackCaptionsState) {
     return null;
@@ -217,6 +286,11 @@ const LearningScreenPlaybackCaptions = () => {
           isBreakingDownSentenceArrState.includes(masterPlayComprehensive.id),
       )}
       reviewed={Boolean(masterPlayComprehensive?.reviewData?.due)}
+      showBreakdown={
+        playbackCaptionBreakdownId === masterPlayComprehensive?.id &&
+        Boolean(masterPlayComprehensive?.sentenceStructure)
+      }
+      languageSelectedState={languageSelectedState}
     />
   );
 };

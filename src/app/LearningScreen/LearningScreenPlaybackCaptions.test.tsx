@@ -1,4 +1,7 @@
 import { render, screen } from '@testing-library/react';
+import { pinyin } from 'pinyin-pro';
+import { chinese, french } from '@/app/languages';
+import getColorByIndex from '@/utils/get-color-by-index';
 import { PlaybackCaptionStack } from './LearningScreenPlaybackCaptions';
 
 const previous = {
@@ -138,6 +141,104 @@ describe('PlaybackCaptionStack', () => {
     const plate = screen.getByTestId('playback-caption-current-target').parentElement;
     expect(plate).not.toHaveClass('border-amber-500');
     expect(plate).toHaveAttribute('data-caption-reviewed', 'off');
+  });
+
+  it('shows the breakdown, word meanings, and pinyin when that caption is opened', () => {
+    render(
+      <PlaybackCaptionStack
+        previous={null}
+        current={{
+          id: 'sentence-1',
+          targetLang: '你好世界',
+          baseLang: 'hello world',
+          meaning: 'a greeting',
+          sentenceStructure: 'greeting',
+          vocab: [
+            { surfaceForm: '你好', meaning: 'hello' },
+            { surfaceForm: '世界', meaning: 'n/a' },
+          ],
+        }}
+        showEnglish
+        showBreakdown
+        languageSelectedState={chinese}
+      />,
+    );
+
+    expect(screen.getByTestId('playback-caption-current-target')).toHaveTextContent(
+      '你好世界',
+    );
+    const helloPinyin = pinyin('你好', { toneType: 'symbol', separator: ' ' });
+    const worldPinyin = pinyin('世界', { toneType: 'symbol', separator: ' ' });
+    expect(screen.getByTestId('playback-caption-current-pinyin')).toHaveTextContent(
+      `${helloPinyin} ${worldPinyin}`,
+    );
+    const meanings = screen.getByTestId('playback-caption-current-word-meanings');
+    expect(meanings).toHaveTextContent('hello');
+    expect(meanings).not.toHaveTextContent('n/a');
+    expect(meanings.querySelector('span')).toHaveStyle({
+      color: getColorByIndex(0),
+    });
+    expect(screen.getByTestId('playback-caption-current-base')).toHaveTextContent(
+      'a greeting',
+    );
+  });
+
+  it('keeps pinyin off the opened breakdown when the language is not Chinese', () => {
+    render(
+      <PlaybackCaptionStack
+        previous={null}
+        current={{
+          targetLang: 'bonjour le monde',
+          baseLang: 'hello world',
+          sentenceStructure: 'greeting',
+          vocab: [
+            { surfaceForm: 'bonjour', meaning: 'hello' },
+            { surfaceForm: 'le monde', meaning: 'the world' },
+          ],
+        }}
+        showEnglish
+        showBreakdown
+        languageSelectedState={french}
+      />,
+    );
+
+    expect(screen.queryByTestId('playback-caption-current-pinyin')).not.toBeInTheDocument();
+    expect(screen.getByTestId('playback-caption-current-word-meanings')).toHaveTextContent(
+      'hello',
+    );
+    expect(screen.getByTestId('playback-caption-current-word-meanings')).toHaveTextContent(
+      'the world',
+    );
+  });
+
+  it('puts a small brick on the left of a caption that already has a breakdown', () => {
+    render(
+      <PlaybackCaptionStack
+        previous={null}
+        current={{
+          targetLang: '你好',
+          baseLang: 'hello',
+          sentenceStructure: 'greeting',
+        }}
+        showEnglish
+      />,
+    );
+
+    const plate = screen.getByTestId('playback-caption-current-target').parentElement;
+    const mark = screen.getByTestId('playback-caption-current-breakdown-mark');
+    expect(plate).toContainElement(mark);
+    expect(mark).toHaveTextContent('🧱');
+    expect(mark).toHaveClass('left-1', 'text-[10px]', 'opacity-70');
+  });
+
+  it('leaves the brick off a caption that has not been broken down', () => {
+    render(
+      <PlaybackCaptionStack previous={null} current={current} showEnglish />,
+    );
+
+    expect(
+      screen.queryByTestId('playback-caption-current-breakdown-mark'),
+    ).not.toBeInTheDocument();
   });
 
   it('renders nothing when there is no current sentence', () => {

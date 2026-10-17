@@ -23,6 +23,7 @@ import {
 } from '../Providers/FetchDataProvider';
 import { WordTypes } from '../types/word-types';
 import { isTrimmedLang, LanguageEnum } from '../languages';
+import { playbackCaptionBreakdownToggle } from './playbackCaptionBreakdown';
 import useManageThreeSecondLoopMemo from './hooks/useManageThreeSecondLoopMemo';
 import { getSecondsLoopedTranscriptData } from './utils/get-seconds-looped-transcript-data';
 import { useSecondsStateMemoized } from './hooks/useSecondsStateMemoized';
@@ -147,6 +148,7 @@ export interface LearningScreenContextTypes {
   >;
   showWordHintsState: boolean;
   setShowWordHintsState: React.Dispatch<React.SetStateAction<boolean>>;
+  playbackCaptionBreakdownId: string | null;
   isSlowAudioState: boolean;
   isHoldSlowerAudioState: boolean;
   handleToggleSlowAudio: () => void;
@@ -270,6 +272,9 @@ export const LearningScreenProvider = ({
     useState(true);
   const showPlaybackCaptionsState = playbackCaptionsEnabled && !isInReviewMode;
   const [showWordHintsState, setShowWordHintsState] = useState(true);
+  const [playbackCaptionBreakdownId, setPlaybackCaptionBreakdownId] = useState<
+    string | null
+  >(null);
   const initialSentenceCount = useRef<number | null>(null);
 
   const [scrollToElState, setScrollToElState] = useState('');
@@ -692,6 +697,10 @@ export const LearningScreenProvider = ({
     ? sentenceMapMemoized[masterPlay]
     : null;
 
+  useEffect(() => {
+    setPlaybackCaptionBreakdownId(null);
+  }, [masterPlayComprehensive?.id]);
+
   useManageLoopInit({
     ref,
     threeSecondLoopState,
@@ -792,8 +801,15 @@ export const LearningScreenProvider = ({
 
   const handleBreakdownMasterSentence = async () => {
     if (!masterPlayComprehensive) return null;
-    const alreadyHasBreakdown = masterPlayComprehensive?.sentenceStructure;
-    if (alreadyHasBreakdown) {
+    const alreadyHasBreakdown = Boolean(masterPlayComprehensive?.sentenceStructure);
+    const breakdownToggle = playbackCaptionBreakdownToggle(
+      playbackCaptionBreakdownId,
+      masterPlayComprehensive.id,
+      alreadyHasBreakdown,
+      isInReviewMode,
+    );
+    if (!breakdownToggle.requestBreakdown) {
+      setPlaybackCaptionBreakdownId(breakdownToggle.nextId);
       return null;
     }
 
@@ -1216,6 +1232,7 @@ export const LearningScreenProvider = ({
         setShowPlaybackCaptionsState,
         showWordHintsState,
         setShowWordHintsState,
+        playbackCaptionBreakdownId,
         isSlowAudioState,
         isHoldSlowerAudioState,
         handleToggleSlowAudio,
