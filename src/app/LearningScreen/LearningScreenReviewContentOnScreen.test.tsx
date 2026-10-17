@@ -27,7 +27,7 @@ const mockLearningScreenState = {
   threeSecondLoopState: null,
   isVideoPlaying: false,
   handleUpdateSnippet: jest.fn(),
-  isBreakingDownSentenceArrState: [],
+  isBreakingDownSentenceArrState: [] as string[],
   handleBreakdownSentence: jest.fn(),
   getSentenceDataOfOverlappingWordsDuringSave: jest.fn(),
   selectedContentTitleState: '',
@@ -93,6 +93,7 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     mockLearningScreenState.sentenceMapMemoized = {};
     mockLearningScreenState.isInReviewMode = false;
     mockLearningScreenState.isSavedLoopPlayingState = null;
+    mockLearningScreenState.isBreakingDownSentenceArrState = [];
     resetReviewOverlayWait();
   });
 
@@ -114,6 +115,32 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     );
     expect(target).toHaveClass('text-white');
     expectCaptionPlate(target.parentElement?.parentElement ?? null);
+  });
+
+  it('puts a brick in the middle of the sentence overlay while that sentence is breaking down', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.firstElIdInReview = 'sentence-1';
+    mockLearningScreenState.postSentencesMemoized = [
+      {
+        id: 'sentence-1',
+        targetLang: '你好',
+        baseLang: 'hello',
+      },
+    ];
+    mockLearningScreenState.isBreakingDownSentenceArrState = ['sentence-1'];
+
+    render(<LearningScreenReviewContentOnScreen />);
+
+    const plate = screen.getByTestId(
+      'learning-screen-review-sentence-target-lang',
+    ).parentElement?.parentElement;
+    const brick = screen.getByTestId('sentence-breakdown-overlay-brick');
+    expect(plate).toContainElement(brick);
+    expect(plate).toHaveClass('opacity-60');
+    expect(plate).toHaveAttribute('data-sentence-breakdown', 'on');
+    expect(brick).toHaveClass('inset-0', 'items-center', 'justify-center');
+    expect(brick.querySelector('span')).toHaveClass('opacity-60');
+    expect(brick).toHaveTextContent('🧱');
   });
 
   it('shows the sentence meaning in place of the base language', () => {

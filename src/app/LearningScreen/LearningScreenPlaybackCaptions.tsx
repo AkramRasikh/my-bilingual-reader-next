@@ -5,6 +5,7 @@ import {
   PLAYBACK_CAPTION_PLATE_CLASS,
   PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS,
 } from './playbackCaptionSurface';
+import { SentenceBreakdownOverlayBrick } from './SentenceBreakdownOverlayBrick';
 import useLearningScreen from './useLearningScreen';
 
 export type PlaybackCaptionSentence = {
@@ -72,10 +73,12 @@ function CaptionLine({
   sentence,
   showEnglish,
   testId,
+  breakingDown = false,
 }: {
   sentence: PlaybackCaptionSentence;
   showEnglish: boolean;
   testId: string;
+  breakingDown?: boolean;
 }) {
   const english = captionEnglish(sentence);
 
@@ -83,8 +86,9 @@ function CaptionLine({
     <div
       data-caption-id={sentence.id}
       data-caption-role='current'
-      className={`relative overflow-hidden ${PLAYBACK_CAPTION_PLATE_CLASS} max-w-[90%] px-3 py-1 text-base`}
+      className={`relative overflow-hidden ${breakingDown ? 'opacity-60 ' : ''}${PLAYBACK_CAPTION_PLATE_CLASS} max-w-[90%] px-3 py-1 text-base`}
     >
+      {breakingDown ? <SentenceBreakdownOverlayBrick /> : null}
       <p data-testid={`${testId}-target`} className='leading-tight'>
         {sentence.targetLang}
       </p>
@@ -104,10 +108,12 @@ export function PlaybackCaptionStack({
   previous,
   current,
   showEnglish,
+  breakingDown = false,
 }: {
   previous: PlaybackCaptionSentence | null;
   current: PlaybackCaptionSentence | null;
   showEnglish: boolean;
+  breakingDown?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const boxesRef = useRef(new Map<string, CaptionBox>());
@@ -170,6 +176,7 @@ export function PlaybackCaptionStack({
         sentence={{ ...current, targetLang: currentTarget }}
         showEnglish={showEnglish}
         testId='playback-caption-current'
+        breakingDown={breakingDown}
       />
     </div>
   );
@@ -181,6 +188,7 @@ const LearningScreenPlaybackCaptions = () => {
     masterPlayComprehensive,
     formattedTranscriptState,
     onlyShowEngState,
+    isBreakingDownSentenceArrState,
   } = useLearningScreen();
 
   if (!showPlaybackCaptionsState) {
@@ -198,6 +206,10 @@ const LearningScreenPlaybackCaptions = () => {
       previous={previous}
       current={masterPlayComprehensive ?? null}
       showEnglish={!onlyShowEngState}
+      breakingDown={Boolean(
+        masterPlayComprehensive?.id &&
+          isBreakingDownSentenceArrState.includes(masterPlayComprehensive.id),
+      )}
     />
   );
 };

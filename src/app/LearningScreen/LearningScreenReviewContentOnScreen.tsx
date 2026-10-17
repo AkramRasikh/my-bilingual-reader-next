@@ -17,6 +17,7 @@ import {
   type ReviewTimeRangePhase,
 } from './learning-screen-review-time-range';
 import { PLAYBACK_CAPTION_PLATE_CLASS } from './playbackCaptionSurface';
+import { SentenceBreakdownOverlayBrick } from './SentenceBreakdownOverlayBrick';
 import ReviewSentenceOverlayText, {
   ColoredPhraseBreakdown,
 } from './ReviewSentenceOverlayText';
@@ -27,6 +28,33 @@ import {
 } from './reviewOverlayWait';
 
 const WORD_OVERLAY_LINE_CLASS = `mx-auto block w-fit max-w-full px-1.5 py-0.5 leading-tight ${PLAYBACK_CAPTION_PLATE_CLASS}`;
+
+function snippetBreakdownIsRunning(
+  snippet: {
+    time: number;
+    isContracted?: boolean;
+    vocab?: Array<{ sentenceId?: string }>;
+  },
+  breakingDownIds: string[],
+  sentenceMap: Record<string, { time?: number; nextSentence?: number | null }>,
+) {
+  if (breakingDownIds.length === 0) return false;
+
+  const listed = (snippet.vocab ?? []).some(
+    (item) => item.sentenceId && breakingDownIds.includes(item.sentenceId),
+  );
+  if (listed) return true;
+
+  const contraction = snippet.isContracted ? 0.75 : 1.5;
+  const windowStart = snippet.time - contraction;
+  const windowEnd = snippet.time + contraction;
+  return breakingDownIds.some((id) => {
+    const sentence = sentenceMap[id];
+    if (!sentence || typeof sentence.time !== 'number') return false;
+    const sentenceEnd = sentence.nextSentence ?? Number.POSITIVE_INFINITY;
+    return sentence.time < windowEnd && sentenceEnd > windowStart;
+  });
+}
 
 const WORD_SENTENCE_HOLD_MS = 180;
 
@@ -54,6 +82,7 @@ function ReviewOverlayPanel({
   plain = false,
   liftForCaptions = false,
   busy = false,
+  breakingDown = false,
 }: {
   children: React.ReactNode;
   timeRangePhase?: ReviewTimeRangePhase | null;
@@ -63,6 +92,7 @@ function ReviewOverlayPanel({
   plain?: boolean;
   liftForCaptions?: boolean;
   busy?: boolean;
+  breakingDown?: boolean;
 }) {
   const textClassName = plain
     ? 'text-sm font-medium leading-tight break-words text-white'
@@ -84,8 +114,9 @@ function ReviewOverlayPanel({
       className={`pointer-events-none absolute inset-0 flex flex-col items-center ${anchor === 'top' ? 'justify-start' : 'justify-end'} ${liftForCaptions && anchor === 'bottom' ? 'pb-28' : ''}`}
     >
       <div
-        className={`${containerClassName}${busy ? ' opacity-60' : ''}`}
+        className={`${containerClassName}${busy || breakingDown ? ' opacity-60' : ''}`}
         data-review-wait={busy ? 'on' : 'off'}
+        data-sentence-breakdown={breakingDown ? 'on' : 'off'}
         data-testid={
           expanded ? 'learning-screen-review-snippet-focus-text' : undefined
         }
@@ -98,6 +129,7 @@ function ReviewOverlayPanel({
             <LoadingSpinner />
           </span>
         ) : null}
+        {breakingDown ? <SentenceBreakdownOverlayBrick /> : null}
         {showProgress && (
           <div
             className={`pointer-events-none absolute inset-x-0 top-0 h-1 ${timeRangePhase === 'beyond' ? 'bg-green-200' : 'bg-amber-200'}`}
@@ -390,12 +422,21 @@ const LearningScreenReviewContentOnScreen = () => {
     return null;
   }
 
+  const snippetBreakingDown = playingReviewedSnippet
+    ? snippetBreakdownIsRunning(
+        playingReviewedSnippet,
+        isBreakingDownSentenceArrState,
+        sentenceMapMemoized,
+      )
+    : false;
+
   if (playingReviewedSnippet) {
     return (
       <ReviewOverlayPanel
         expanded
         liftForCaptions={showPlaybackCaptionsState}
         busy={reviewWaitId === playingReviewedSnippet.id}
+        breakingDown={snippetBreakingDown}
       >
         <SnippetReview
           variant='overlay'
@@ -459,6 +500,10 @@ const LearningScreenReviewContentOnScreen = () => {
         progress={sentenceProgress}
         liftForCaptions={showPlaybackCaptionsState}
         busy={reviewWaitId === firstSentenceInReview?.id}
+        breakingDown={
+          Boolean(firstSentenceInReview?.id) &&
+          isBreakingDownSentenceArrState.includes(firstSentenceInReview.id)
+        }
       >
         <ReviewSentenceOverlayText
           targetLang={sentenceTargetLang}

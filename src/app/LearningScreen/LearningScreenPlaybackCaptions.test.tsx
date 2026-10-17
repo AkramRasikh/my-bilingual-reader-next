@@ -95,6 +95,25 @@ describe('PlaybackCaptionStack', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('puts a brick in the middle of the caption while that sentence is breaking down', () => {
+    render(
+      <PlaybackCaptionStack
+        previous={previous}
+        current={{ ...current, id: 'sentence-1' }}
+        showEnglish
+        breakingDown
+      />,
+    );
+
+    const plate = screen.getByTestId('playback-caption-current-target').parentElement;
+    const brick = screen.getByTestId('sentence-breakdown-overlay-brick');
+    expect(plate).toContainElement(brick);
+    expect(plate).toHaveClass('opacity-60');
+    expect(brick).toHaveClass('inset-0', 'items-center', 'justify-center');
+    expect(brick.querySelector('span')).toHaveClass('opacity-60');
+    expect(brick).toHaveTextContent('🧱');
+  });
+
   it('renders nothing when there is no current sentence', () => {
     const { container } = render(
       <PlaybackCaptionStack previous={previous} current={null} showEnglish />,
