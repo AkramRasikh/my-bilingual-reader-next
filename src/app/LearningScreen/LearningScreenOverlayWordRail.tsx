@@ -1,7 +1,7 @@
 'use client';
 
 import { pinyin } from 'pinyin-pro';
-import { chinese, LanguageEnum } from '@/app/languages';
+import { chinese, japanese, LanguageEnum } from '@/app/languages';
 import { WordTypes } from '@/app/types/word-types';
 import getColorByIndex from '@/utils/get-color-by-index';
 import { PLAYBACK_CAPTION_PLATE_CLASS } from './playbackCaptionSurface';
@@ -50,8 +50,6 @@ const LearningScreenOverlayWordRail = ({
 
   if (words.length === 0) return null;
 
-  const showPinyin = languageSelectedState === chinese;
-
   return (
     <div
       data-testid='learning-screen-overlay-word-rail'
@@ -59,13 +57,16 @@ const LearningScreenOverlayWordRail = ({
     >
       {words.map((word) => {
         const color = getColorByIndex(word.index);
-        const reading = showPinyin
-          ? word.reading ||
-            pinyin(word.surfaceForm, {
-              toneType: 'symbol',
-              separator: '\u2009',
-            })
-          : '';
+        const reading =
+          languageSelectedState === chinese
+            ? word.reading ||
+              pinyin(word.surfaceForm, {
+                toneType: 'symbol',
+                separator: '\u2009',
+              })
+            : languageSelectedState === japanese
+              ? word.reading
+              : '';
         const lineClass = `block w-full break-words px-0.5 py-px text-center leading-tight ${PLAYBACK_CAPTION_PLATE_CLASS}`;
 
         const compactMeaning = truncateOverlayRailMeaning(word.meaning);

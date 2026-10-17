@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { pinyin } from 'pinyin-pro';
-import { chinese, french } from '@/app/languages';
+import { chinese, french, japanese } from '@/app/languages';
 import getColorByIndex from '@/utils/get-color-by-index';
 import { WordTypes } from '@/app/types/word-types';
 import LearningScreenOverlayWordRail from './LearningScreenOverlayWordRail';
@@ -172,6 +172,33 @@ describe('LearningScreenOverlayWordRail', () => {
     expect(
       screen.getByTestId('learning-screen-overlay-word-rail-item'),
     ).toHaveClass('hover:w-[240px]', 'hover:max-w-[240px]');
+  });
+
+  it('shows a Japanese word’s stored transliteration', () => {
+    mockLearningScreenState.showWordHintsState = true;
+    mockLearningScreenState.masterPlayComprehensive = {
+      wordsFromSentence: [
+        savedWord('天気予報', 'weather forecast', 'tenki yohou'),
+        savedWord('です', 'is'),
+      ],
+    };
+
+    render(
+      <LearningScreenOverlayWordRail languageSelectedState={japanese} />,
+    );
+
+    const readings = screen.getAllByTestId(
+      'learning-screen-overlay-word-rail-pinyin',
+    );
+    expect(readings).toHaveLength(1);
+    expect(readings[0]).toHaveTextContent('tenki yohou');
+    expect(
+      screen.getAllByTestId('learning-screen-overlay-word-rail-surface')[1]
+        .nextElementSibling,
+    ).toHaveAttribute(
+      'data-testid',
+      'learning-screen-overlay-word-rail-meaning',
+    );
   });
 
   it('omits pinyin when the language is not Chinese', () => {
