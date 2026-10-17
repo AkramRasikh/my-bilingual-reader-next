@@ -697,10 +697,6 @@ export const LearningScreenProvider = ({
     ? sentenceMapMemoized[masterPlay]
     : null;
 
-  useEffect(() => {
-    setPlaybackCaptionBreakdownId(null);
-  }, [masterPlayComprehensive?.id]);
-
   useManageLoopInit({
     ref,
     threeSecondLoopState,
@@ -800,13 +796,19 @@ export const LearningScreenProvider = ({
   };
 
   const handleBreakdownMasterSentence = async () => {
-    if (!masterPlayComprehensive) return null;
-    const alreadyHasBreakdown = Boolean(masterPlayComprehensive?.sentenceStructure);
+    const reviewSentenceOnScreen =
+      isInReviewMode && firstElIdInReview
+        ? postSentencesMemoized.find((sentence) => sentence.id === firstElIdInReview)
+        : undefined;
+    const sentenceForBreakdown = reviewSentenceOnScreen
+      ? sentenceMapMemoized[reviewSentenceOnScreen.id] ?? masterPlayComprehensive
+      : masterPlayComprehensive;
+    if (!sentenceForBreakdown) return null;
+    const alreadyHasBreakdown = Boolean(sentenceForBreakdown.sentenceStructure);
     const breakdownToggle = playbackCaptionBreakdownToggle(
       playbackCaptionBreakdownId,
-      masterPlayComprehensive.id,
+      sentenceForBreakdown.id,
       alreadyHasBreakdown,
-      isInReviewMode,
     );
     if (!breakdownToggle.requestBreakdown) {
       setPlaybackCaptionBreakdownId(breakdownToggle.nextId);
@@ -814,21 +816,21 @@ export const LearningScreenProvider = ({
     }
 
     const prevSentence =
-      formattedTranscriptMemoized[masterPlayComprehensive.index - 1]
+      formattedTranscriptMemoized[sentenceForBreakdown.index - 1]
         ?.targetLang;
     const nextSentence =
-      formattedTranscriptMemoized[masterPlayComprehensive.index + 1]
+      formattedTranscriptMemoized[sentenceForBreakdown.index + 1]
         ?.targetLang;
 
     try {
       setIsBreakingDownSentenceArrState((prev) => [
         ...prev,
-        masterPlayComprehensive.id,
+        sentenceForBreakdown.id,
       ]);
       await breakdownSentence({
         indexKey: selectedContentStateMemoized.id,
-        sentenceId: masterPlayComprehensive.id,
-        targetLang: masterPlayComprehensive.targetLang,
+        sentenceId: sentenceForBreakdown.id,
+        targetLang: sentenceForBreakdown.targetLang,
         contentIndex,
         prevSentence,
         nextSentence,
@@ -837,7 +839,7 @@ export const LearningScreenProvider = ({
       });
     } finally {
       setIsBreakingDownSentenceArrState((prev) =>
-        prev.filter((item) => item !== masterPlayComprehensive.id),
+        prev.filter((item) => item !== sentenceForBreakdown.id),
       );
     }
   };
@@ -1075,6 +1077,16 @@ export const LearningScreenProvider = ({
     ...postWordsMemoized,
     ...postSentencesMemoized,
   ]?.[0]?.id;
+
+  const onScreenBreakdownSentenceId =
+    isInReviewMode &&
+    postSentencesMemoized.some((sentence) => sentence.id === firstElIdInReview)
+      ? firstElIdInReview
+      : masterPlayComprehensive?.id;
+
+  useEffect(() => {
+    setPlaybackCaptionBreakdownId(null);
+  }, [onScreenBreakdownSentenceId]);
 
   const firstWordDefinitionInReview = useMemo(() => {
     if (!firstElIdInReview) {

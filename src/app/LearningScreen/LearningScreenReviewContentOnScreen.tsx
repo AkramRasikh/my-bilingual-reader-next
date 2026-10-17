@@ -184,6 +184,7 @@ const LearningScreenReviewContentOnScreen = () => {
     isInReviewMode,
     onlyShowEngState,
     showPlaybackCaptionsState,
+    playbackCaptionBreakdownId,
   } = useLearningScreen();
   const { languageSelectedState, wordsState } = useFetchData();
   const reviewWaitId = useSyncExternalStore(
@@ -513,6 +514,9 @@ const LearningScreenReviewContentOnScreen = () => {
           vocab={firstSentenceInReview?.vocab}
           sentenceStructure={firstSentenceInReview?.sentenceStructure}
           languageSelectedState={languageSelectedState}
+          showBreakdown={
+            playbackCaptionBreakdownId === firstSentenceInReview?.id
+          }
         />
       </ReviewOverlayPanel>
     );

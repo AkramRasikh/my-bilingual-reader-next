@@ -72,6 +72,32 @@ describe('ReviewSentenceOverlayText', () => {
     ).toHaveTextContent('I really want to see it');
   });
 
+  it('keeps a broken-down sentence plain until it is opened', () => {
+    render(
+      <ReviewSentenceOverlayText
+        targetLang='好想在现场'
+        baseLang='I really want to see it'
+        showEnglish
+        vocab={vocab}
+        sentenceStructure='好想 + 在 + 现场'
+        languageSelectedState={chinese}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('learning-screen-review-sentence-target-lang'),
+    ).toHaveTextContent('好想在现场');
+    expect(
+      screen.queryByTestId('learning-screen-review-sentence-pinyin'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('learning-screen-review-sentence-word-meanings'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId('learning-screen-review-sentence-breakdown-mark'),
+    ).toHaveClass('left-1', 'text-[10px]');
+  });
+
   it('shows colored pieces, pinyin, then English for a broken-down Chinese sentence', () => {
     render(
       <ReviewSentenceOverlayText
@@ -81,6 +107,7 @@ describe('ReviewSentenceOverlayText', () => {
         vocab={vocab}
         sentenceStructure='好想 + 在 + 现场'
         languageSelectedState={chinese}
+        showBreakdown
       />,
     );
 
@@ -106,10 +133,18 @@ describe('ReviewSentenceOverlayText', () => {
     expect(pinyinParts[1].textContent).toContain(
       pinyin('在', { toneType: 'symbol', separator: '\u2009' }),
     );
-    expect(pinyinLine.nextElementSibling).toHaveAttribute(
+    const meanings = screen.getByTestId(
+      'learning-screen-review-sentence-word-meanings',
+    );
+    expect(pinyinLine.nextElementSibling).toBe(meanings);
+    expect(meanings).toHaveTextContent('really want to');
+    expect(meanings.nextElementSibling).toHaveAttribute(
       'data-testid',
       'learning-screen-review-sentence-base-lang',
     );
+    expect(
+      screen.getByTestId('learning-screen-review-sentence-breakdown-mark'),
+    ).toHaveTextContent('🧱');
   });
 
   it('gives a breakdown chip the caption plate and keeps piece colors', () => {
@@ -142,6 +177,7 @@ describe('ReviewSentenceOverlayText', () => {
         vocab={[{ meaning: 'this', surfaceForm: 'この' }]}
         sentenceStructure='この + 発言'
         languageSelectedState={japanese}
+        showBreakdown
       />,
     );
 

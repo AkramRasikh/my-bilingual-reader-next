@@ -86,6 +86,7 @@ type ReviewSentenceOverlayTextProps = {
   vocab?: Vocab[];
   sentenceStructure?: string;
   languageSelectedState: string;
+  showBreakdown?: boolean;
 };
 
 function reviewSentenceEnglish(baseLang: string, meaning?: string) {
@@ -102,21 +103,44 @@ const ReviewSentenceOverlayText = ({
   vocab,
   sentenceStructure,
   languageSelectedState,
+  showBreakdown = false,
 }: ReviewSentenceOverlayTextProps) => {
   const english = reviewSentenceEnglish(baseLang, meaning);
   const hasBreakdown = Boolean(sentenceStructure);
-  const pieces: PhraseBreakdownPiece[] = hasBreakdown
+  const pieces: Array<PhraseBreakdownPiece & { meaning: string }> = hasBreakdown
     ? (vocab ?? []).flatMap((item, index) => {
         const surfaceForm = item.surfaceForm?.trim();
-        return surfaceForm ? [{ surfaceForm, index }] : [];
+        if (!surfaceForm) return [];
+        const pieceMeaning = item.meaning?.trim() ?? '';
+        return [
+          {
+            surfaceForm,
+            index,
+            meaning:
+              pieceMeaning && pieceMeaning.toLowerCase() !== 'n/a'
+                ? pieceMeaning
+                : '',
+          },
+        ];
       })
     : [];
+  const visiblePieces = showBreakdown ? pieces : [];
+  const wordMeanings = visiblePieces.filter((piece) => piece.meaning);
 
   return (
     <>
-      {pieces.length > 0 ? (
+      {hasBreakdown ? (
+        <span
+          data-testid='learning-screen-review-sentence-breakdown-mark'
+          className='pointer-events-none absolute top-1/2 left-1 z-10 -translate-y-1/2 text-[10px] leading-none opacity-70'
+          aria-hidden
+        >
+          🧱
+        </span>
+      ) : null}
+      {visiblePieces.length > 0 ? (
         <ColoredPhraseBreakdown
-          pieces={pieces}
+          pieces={visiblePieces}
           languageSelectedState={languageSelectedState}
           testId='learning-screen-review-sentence-target-lang'
           pinyinTestId='learning-screen-review-sentence-pinyin'
@@ -129,6 +153,21 @@ const ReviewSentenceOverlayText = ({
           {targetLang}
         </span>
       )}
+      {wordMeanings.length > 0 ? (
+        <span
+          data-testid='learning-screen-review-sentence-word-meanings'
+          className='mt-0.5 flex flex-wrap justify-center gap-x-1 text-xs leading-tight'
+        >
+          {wordMeanings.map((piece) => (
+            <span
+              key={`${piece.surfaceForm}-${piece.index}`}
+              style={{ color: getColorByIndex(piece.index) }}
+            >
+              {piece.meaning}
+            </span>
+          ))}
+        </span>
+      ) : null}
       {showEnglish && english ? (
         <span
           data-testid='learning-screen-review-sentence-base-lang'
