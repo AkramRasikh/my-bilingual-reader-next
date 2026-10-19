@@ -14,6 +14,7 @@ import {
   Maximize2,
   Pause,
   Play,
+  Repeat2,
   Volume2,
   VolumeX,
 } from 'lucide-react';
@@ -58,6 +59,7 @@ const LearningScreenVideoPlayer = ({
     setThreeSecondLoopState,
     currentTime,
     mediaDuration,
+    loopTranscriptState,
   } = useLearningScreen();
 
   const [isLoadingSaveSnippetState, setIsLoadingSaveSnippetState] =
@@ -168,6 +170,7 @@ const LearningScreenVideoPlayer = ({
 
   const isLooping = Boolean(threeSecondLoopState);
   const isLoopingSaved = isLooping && isSavedLoopPlayingState;
+  const sentenceLoopCount = loopTranscriptState?.length ?? 0;
   const durationForSlider = mediaDuration && mediaDuration > 0 ? mediaDuration : 1;
   const scrubberValue = Math.min(currentTime, durationForSlider);
 
@@ -213,21 +216,43 @@ const LearningScreenVideoPlayer = ({
               />
             </div>
           </div>
-        ) : isLoopingSaved ? (
-          <div className='absolute top-0 left-0 w-full rounded-t-lg px-4 py-2 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]'>
-            <Button
-              size='icon'
-              variant='ghost'
-              className='my-auto h-8 w-8 rounded-full bg-transparent'
-              onClick={() => setThreeSecondLoopState(null)}
-            >
-              <Loader2
-                className={clsx(
-                  isVideoPlaying ? 'animate-spin' : '',
-                  'text-amber-600',
-                )}
-              />
-            </Button>
+        ) : null}
+        {isLoopingSaved || sentenceLoopCount > 0 ? (
+          <div className='pointer-events-none absolute top-0 left-0 z-30 flex items-center gap-1 px-4 py-2 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]'>
+            {isLoopingSaved ? (
+              <Button
+                size='icon'
+                variant='ghost'
+                className='pointer-events-auto my-auto h-8 w-8 rounded-full bg-transparent'
+                onClick={() => setThreeSecondLoopState(null)}
+              >
+                <Loader2
+                  className={clsx(
+                    isVideoPlaying ? 'animate-spin' : '',
+                    'text-amber-600',
+                  )}
+                />
+              </Button>
+            ) : null}
+            {sentenceLoopCount > 0 ? (
+              <div
+                data-testid='learning-screen-sentence-loop-indicator'
+                className={`flex items-center gap-0.5${isLoopingSaved ? '' : ' ml-[15px]'}`}
+              >
+                <Repeat2
+                  className={clsx(
+                    'size-3.5 shrink-0',
+                    isVideoPlaying ? 'animate-spin' : '',
+                  )}
+                />
+                <span
+                  data-testid='learning-screen-sentence-loop-count'
+                  className='text-[11px] font-semibold tabular-nums leading-none'
+                >
+                  {sentenceLoopCount}
+                </span>
+              </div>
+            ) : null}
           </div>
         ) : null}
         <LearningScreenReviewContentOnScreen />
