@@ -517,6 +517,11 @@ const LearningScreenReviewContentOnScreen = () => {
           showBreakdown={
             playbackCaptionBreakdownId === firstSentenceInReview?.id
           }
+          sentenceId={firstSentenceInReview?.id}
+          time={firstSentenceInReview?.time}
+          originalContext={selectedContentTitleState}
+          wordsState={wordsState}
+          onSaveWord={handleSaveWord}
         />
       </ReviewOverlayPanel>
     );

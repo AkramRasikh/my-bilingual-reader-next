@@ -1,8 +1,49 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { pinyin } from 'pinyin-pro';
 import { chinese, french } from '@/app/languages';
 import getColorByIndex from '@/utils/get-color-by-index';
-import { PlaybackCaptionStack } from './LearningScreenPlaybackCaptions';
+import LearningScreenPlaybackCaptions, {
+  PlaybackCaptionStack,
+} from './LearningScreenPlaybackCaptions';
+
+const mockCaptionSaveWord = jest.fn();
+
+jest.mock('./useLearningScreen', () => ({
+  __esModule: true,
+  default: () => captionLearningScreen(),
+}));
+
+jest.mock('@/app/Providers/FetchDataProvider', () => ({
+  useFetchData: () => captionFetchData(),
+}));
+
+function captionLearningScreen() {
+  return {
+    showPlaybackCaptionsState: true,
+    masterPlayComprehensive: {
+      id: 'sentence-1',
+      index: 0,
+      targetLang: '你好',
+      baseLang: 'hello',
+      time: 4,
+      sentenceStructure: 'greeting',
+      vocab: [{ surfaceForm: '你好', meaning: 'hello' }],
+    },
+    formattedTranscriptState: [],
+    onlyShowEngState: true,
+    isBreakingDownSentenceArrState: [],
+    playbackCaptionBreakdownId: 'sentence-1',
+    handleSaveWord: mockCaptionSaveWord,
+    selectedContentTitleState: 'My video',
+  };
+}
+
+function captionFetchData() {
+  return {
+    languageSelectedState: chinese,
+    wordsState: [],
+  };
+}
 
 const previous = {
   targetLang: '上一句',
@@ -36,6 +77,35 @@ describe('PlaybackCaptionStack', () => {
     expect(screen.getByTestId('playback-caption-current-base')).toHaveClass(
       'text-xs',
     );
+  });
+
+  it('underlines saved words on the plain caption and leaves the rest plain', () => {
+    render(
+      <PlaybackCaptionStack
+        previous={null}
+        current={{
+          targetLang: '我喜欢博爱座',
+          baseLang: 'I like priority seats',
+          targetLangformatted: [
+            { text: '我喜欢', savedWords: [] },
+            { text: '博爱座', savedWords: ['word-1'] },
+          ],
+        }}
+        showEnglish={false}
+      />,
+    );
+
+    const target = screen.getByTestId('playback-caption-current-target');
+    expect(target).toHaveTextContent('我喜欢博爱座');
+    expect(target.querySelector('span')).toHaveStyle({
+      textDecorationLine: 'none',
+    });
+    expect(screen.getByTestId('underlined-word-博爱座')).toHaveStyle({
+      textDecorationLine: 'underline',
+    });
+    expect(
+      screen.queryByTestId('sentence-breakdown-hover-trigger'),
+    ).not.toBeInTheDocument();
   });
 
   it('omits the previous line when there is no previous sentence', () => {
@@ -181,6 +251,93 @@ describe('PlaybackCaptionStack', () => {
     expect(screen.getByTestId('playback-caption-current-base')).toHaveTextContent(
       'a greeting',
     );
+    expect(
+      screen.queryByTestId('sentence-breakdown-hover-trigger'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('saves a broken-down caption word with DeepSeek or Google', () => {
+    const onSaveWord = jest.fn();
+    render(
+      <PlaybackCaptionStack
+        previous={null}
+        current={{
+          id: 'sentence-1',
+          time: 8,
+          targetLang: '你好世界',
+          baseLang: 'hello world',
+          sentenceStructure: 'greeting',
+          vocab: [
+            { surfaceForm: '你好', meaning: 'hello' },
+            { surfaceForm: '世界', meaning: 'world' },
+          ],
+        }}
+        showEnglish={false}
+        showBreakdown
+        languageSelectedState={chinese}
+        originalContext='My video'
+        onSaveWord={onSaveWord}
+      />,
+    );
+
+    expect(screen.getByTestId('playback-captions')).toHaveClass(
+      'pointer-events-none',
+    );
+    const triggers = screen.getAllByTestId('sentence-breakdown-hover-trigger');
+    expect(triggers).toHaveLength(2);
+    expect(triggers[0].parentElement).toHaveClass('pointer-events-auto');
+
+    fireEvent.touchStart(triggers[0]);
+    fireEvent.click(screen.getByTestId('breakdown-save-word-deepseek-button'));
+    expect(onSaveWord).toHaveBeenCalledWith({
+      highlightedWord: '你好',
+      highlightedWordSentenceId: 'sentence-1',
+      contextSentence: '你好世界',
+      meaning: 'hello',
+      isGoogle: false,
+      originalContext: 'My video',
+      time: 8,
+    });
+
+    fireEvent.touchStart(triggers[1]);
+    fireEvent.click(screen.getByTestId('breakdown-save-word-google-button'));
+    expect(onSaveWord).toHaveBeenCalledWith({
+      highlightedWord: '世界',
+      highlightedWordSentenceId: 'sentence-1',
+      contextSentence: '你好世界',
+      meaning: 'world',
+      isGoogle: true,
+      originalContext: 'My video',
+      time: 8,
+    });
+  });
+
+  it('underlines a saved caption word and leaves off its add buttons', () => {
+    render(
+      <PlaybackCaptionStack
+        previous={null}
+        current={{
+          id: 'sentence-1',
+          targetLang: '你好世界',
+          baseLang: 'hello world',
+          sentenceStructure: 'greeting',
+          vocab: [
+            { surfaceForm: '你好', meaning: 'hello' },
+            { surfaceForm: '世界', meaning: 'world' },
+          ],
+        }}
+        showEnglish={false}
+        showBreakdown
+        languageSelectedState={chinese}
+        wordsState={[{ surfaceForm: '世界' }]}
+        onSaveWord={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText('世界')).toHaveClass('underline');
+    expect(
+      screen.getByTestId('sentence-breakdown-hover-trigger'),
+    ).toHaveTextContent('你好');
   });
 
   it('keeps pinyin off the opened breakdown when the language is not Chinese', () => {
@@ -338,5 +495,28 @@ describe('PlaybackCaptionStack', () => {
         }
       }
     }
+  });
+});
+
+describe('LearningScreenPlaybackCaptions', () => {
+  beforeEach(() => {
+    mockCaptionSaveWord.mockClear();
+  });
+
+  it('saves the playing breakdown word through the learning screen', () => {
+    render(<LearningScreenPlaybackCaptions />);
+
+    fireEvent.touchStart(screen.getByTestId('sentence-breakdown-hover-trigger'));
+    fireEvent.click(screen.getByTestId('breakdown-save-word-google-button'));
+
+    expect(mockCaptionSaveWord).toHaveBeenCalledWith({
+      highlightedWord: '你好',
+      highlightedWordSentenceId: 'sentence-1',
+      contextSentence: '你好',
+      meaning: 'hello',
+      isGoogle: true,
+      originalContext: 'My video',
+      time: 4,
+    });
   });
 });

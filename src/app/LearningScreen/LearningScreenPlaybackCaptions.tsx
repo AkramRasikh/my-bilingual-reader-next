@@ -1,13 +1,21 @@
 'use client';
 
 import { useLayoutEffect, useRef } from 'react';
-import { useFetchData } from '@/app/Providers/FetchDataProvider';
+import {
+  useFetchData,
+  type HandleSaveWordCallTypes,
+} from '@/app/Providers/FetchDataProvider';
+import { TargetLangFormattedChunk } from '@/app/types/content-types';
 import getColorByIndex from '@/utils/get-color-by-index';
 import {
   PLAYBACK_CAPTION_PLATE_CLASS,
   PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS,
 } from './playbackCaptionSurface';
-import { ColoredPhraseBreakdown } from './ReviewSentenceOverlayText';
+import {
+  BreakdownSavedWord,
+  ColoredPhraseBreakdown,
+  breakdownPieceSaveHandler,
+} from './ReviewSentenceOverlayText';
 import { SentenceBreakdownOverlayBrick } from './SentenceBreakdownOverlayBrick';
 import useLearningScreen from './useLearningScreen';
 
@@ -17,7 +25,9 @@ export type PlaybackCaptionSentence = {
   baseLang: string;
   meaning?: string;
   sentenceStructure?: string;
+  time?: number;
   vocab?: Array<{ surfaceForm?: string; meaning?: string }>;
+  targetLangformatted?: TargetLangFormattedChunk[];
 };
 
 function captionBreakdownPieces(sentence: PlaybackCaptionSentence) {
@@ -98,6 +108,9 @@ function CaptionLine({
   reviewed = false,
   showBreakdown = false,
   languageSelectedState = '',
+  wordsState,
+  onSaveWord,
+  originalContext,
 }: {
   sentence: PlaybackCaptionSentence;
   showEnglish: boolean;
@@ -106,11 +119,21 @@ function CaptionLine({
   reviewed?: boolean;
   showBreakdown?: boolean;
   languageSelectedState?: string;
+  wordsState?: BreakdownSavedWord[];
+  onSaveWord?: (params: HandleSaveWordCallTypes) => void;
+  originalContext?: string;
 }) {
   const english = captionEnglish(sentence);
   const hasBreakdown = Boolean(sentence.sentenceStructure);
   const pieces = showBreakdown ? captionBreakdownPieces(sentence) : [];
   const wordMeanings = pieces.filter((piece) => piece.meaning);
+  const onSavePiece = breakdownPieceSaveHandler({
+    onSaveWord,
+    sentenceId: sentence.id,
+    contextSentence: sentence.targetLang,
+    originalContext,
+    time: sentence.time,
+  });
 
   return (
     <div
@@ -135,10 +158,30 @@ function CaptionLine({
           languageSelectedState={languageSelectedState}
           testId={`${testId}-target`}
           pinyinTestId={`${testId}-pinyin`}
+          wordsState={wordsState}
+          onSavePiece={onSavePiece}
+          sentenceId={sentence.id}
         />
       ) : (
         <p data-testid={`${testId}-target`} className='leading-tight'>
-          {sentence.targetLang}
+          {sentence.targetLangformatted?.length
+            ? sentence.targetLangformatted.map((chunk, index) => {
+                const saved = chunk.savedWords.length > 0;
+                return (
+                  <span
+                    key={`${index}-${chunk.text}`}
+                    style={{
+                      textDecorationLine: saved ? 'underline' : 'none',
+                    }}
+                    data-testid={
+                      saved ? `underlined-word-${chunk.text}` : undefined
+                    }
+                  >
+                    {chunk.text}
+                  </span>
+                );
+              })
+            : sentence.targetLang}
         </p>
       )}
       {wordMeanings.length > 0 ? (
@@ -176,6 +219,9 @@ export function PlaybackCaptionStack({
   reviewed = false,
   showBreakdown = false,
   languageSelectedState = '',
+  wordsState,
+  onSaveWord,
+  originalContext,
 }: {
   previous: PlaybackCaptionSentence | null;
   current: PlaybackCaptionSentence | null;
@@ -184,6 +230,9 @@ export function PlaybackCaptionStack({
   reviewed?: boolean;
   showBreakdown?: boolean;
   languageSelectedState?: string;
+  wordsState?: BreakdownSavedWord[];
+  onSaveWord?: (params: HandleSaveWordCallTypes) => void;
+  originalContext?: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const boxesRef = useRef(new Map<string, CaptionBox>());
@@ -250,6 +299,9 @@ export function PlaybackCaptionStack({
         reviewed={reviewed}
         showBreakdown={showBreakdown}
         languageSelectedState={languageSelectedState}
+        wordsState={wordsState}
+        onSaveWord={onSaveWord}
+        originalContext={originalContext}
       />
     </div>
   );
@@ -263,8 +315,10 @@ const LearningScreenPlaybackCaptions = () => {
     onlyShowEngState,
     isBreakingDownSentenceArrState,
     playbackCaptionBreakdownId,
+    handleSaveWord,
+    selectedContentTitleState,
   } = useLearningScreen();
-  const { languageSelectedState } = useFetchData();
+  const { languageSelectedState, wordsState } = useFetchData();
 
   if (!showPlaybackCaptionsState) {
     return null;
@@ -291,6 +345,9 @@ const LearningScreenPlaybackCaptions = () => {
         Boolean(masterPlayComprehensive?.sentenceStructure)
       }
       languageSelectedState={languageSelectedState}
+      wordsState={wordsState}
+      onSaveWord={handleSaveWord}
+      originalContext={selectedContentTitleState}
     />
   );
 };

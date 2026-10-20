@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { pinyin } from 'pinyin-pro';
 import { chinese, japanese } from '@/app/languages';
 import ReviewSentenceOverlayText, {
@@ -36,6 +36,9 @@ describe('ReviewSentenceOverlayText', () => {
     expect(base).toHaveClass(PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS);
     expect(
       screen.queryByTestId('learning-screen-review-sentence-pinyin'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId('sentence-breakdown-hover-trigger'),
     ).not.toBeInTheDocument();
   });
 
@@ -94,6 +97,9 @@ describe('ReviewSentenceOverlayText', () => {
       screen.queryByTestId('learning-screen-review-sentence-word-meanings'),
     ).not.toBeInTheDocument();
     expect(
+      screen.queryByTestId('sentence-breakdown-hover-trigger'),
+    ).not.toBeInTheDocument();
+    expect(
       screen.getByTestId('learning-screen-review-sentence-breakdown-mark'),
     ).toHaveClass('left-1', 'text-[10px]');
   });
@@ -145,6 +151,78 @@ describe('ReviewSentenceOverlayText', () => {
     expect(
       screen.getByTestId('learning-screen-review-sentence-breakdown-mark'),
     ).toHaveTextContent('🧱');
+  });
+
+  it('saves a broken-down word with DeepSeek or Google', () => {
+    const onSaveWord = jest.fn();
+    render(
+      <ReviewSentenceOverlayText
+        targetLang='好想在现场'
+        baseLang='I really want to see it'
+        showEnglish
+        vocab={vocab}
+        sentenceStructure='好想 + 在 + 现场'
+        languageSelectedState={chinese}
+        showBreakdown
+        sentenceId='sentence-1'
+        time={12}
+        originalContext='Video title'
+        onSaveWord={onSaveWord}
+      />,
+    );
+
+    const triggers = screen.getAllByTestId('sentence-breakdown-hover-trigger');
+    expect(triggers).toHaveLength(3);
+    expect(triggers[0].parentElement).toHaveClass('pointer-events-auto');
+
+    fireEvent.touchStart(triggers[0]);
+    fireEvent.click(screen.getByTestId('breakdown-save-word-deepseek-button'));
+    expect(onSaveWord).toHaveBeenCalledWith({
+      highlightedWord: '好想',
+      highlightedWordSentenceId: 'sentence-1',
+      contextSentence: '好想在现场',
+      meaning: 'really want to',
+      isGoogle: false,
+      originalContext: 'Video title',
+      time: 12,
+    });
+
+    fireEvent.touchStart(triggers[1]);
+    fireEvent.click(screen.getByTestId('breakdown-save-word-google-button'));
+    expect(onSaveWord).toHaveBeenCalledWith({
+      highlightedWord: '在',
+      highlightedWordSentenceId: 'sentence-1',
+      contextSentence: '好想在现场',
+      meaning: 'at',
+      isGoogle: true,
+      originalContext: 'Video title',
+      time: 12,
+    });
+  });
+
+  it('underlines a saved breakdown word and leaves off its add buttons', () => {
+    render(
+      <ReviewSentenceOverlayText
+        targetLang='好想在现场'
+        baseLang='I really want to see it'
+        showEnglish={false}
+        vocab={vocab}
+        sentenceStructure='好想 + 在 + 现场'
+        languageSelectedState={chinese}
+        showBreakdown
+        sentenceId='sentence-1'
+        wordsState={[{ baseForm: '在' }]}
+        onSaveWord={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByText('在')).toHaveClass('underline');
+    const triggers = screen.getAllByTestId('sentence-breakdown-hover-trigger');
+    expect(triggers).toHaveLength(2);
+    expect(triggers.map((trigger) => trigger.textContent)).toEqual([
+      '好想',
+      '现场',
+    ]);
   });
 
   it('gives a breakdown chip the caption plate and keeps piece colors', () => {

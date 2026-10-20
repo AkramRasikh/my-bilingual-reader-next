@@ -1,12 +1,63 @@
+'use client';
+
 import { pinyin } from 'pinyin-pro';
 import { chinese, isTrimmedLang, LanguageEnum } from '@/app/languages';
+import { type HandleSaveWordCallTypes } from '@/app/Providers/FetchDataProvider';
 import { Vocab } from '@/app/types/content-types';
+import SentenceBreakdownHover from '@/components/custom/SentenceBreakdown/SentenceBreakdownHover';
+import SentenceBreakdownTargetLangWord from '@/components/custom/SentenceBreakdown/SentenceBreakdownTargetLangWord';
 import getColorByIndex from '@/utils/get-color-by-index';
 import { PhraseBreakdownPiece } from './find-breakdown-pieces-for-phrase';
 import {
   PLAYBACK_CAPTION_PLATE_CLASS,
   PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS,
 } from './playbackCaptionSurface';
+
+export type BreakdownSavedWord = {
+  surfaceForm?: string;
+  baseForm?: string;
+};
+
+export type BreakdownPiece = PhraseBreakdownPiece & { meaning?: string };
+
+export function breakdownPieceSaveHandler({
+  onSaveWord,
+  sentenceId,
+  contextSentence,
+  originalContext,
+  time,
+}: {
+  onSaveWord?: (params: HandleSaveWordCallTypes) => void;
+  sentenceId?: string;
+  contextSentence: string;
+  originalContext?: string;
+  time?: number;
+}) {
+  if (!onSaveWord || !sentenceId) return undefined;
+  return (isGoogle: boolean, surfaceForm: string, meaning: string) => {
+    onSaveWord({
+      highlightedWord: surfaceForm,
+      highlightedWordSentenceId: sentenceId,
+      contextSentence,
+      meaning,
+      isGoogle,
+      originalContext,
+      time,
+    });
+  };
+}
+
+function wordIsSaved(
+  surfaceForm: string,
+  wordsState: BreakdownSavedWord[] | undefined,
+) {
+  return Boolean(
+    wordsState?.some(
+      (item) =>
+        item.surfaceForm === surfaceForm || item.baseForm === surfaceForm,
+    ),
+  );
+}
 
 export function ColoredPhraseBreakdown({
   pieces,
@@ -15,13 +66,23 @@ export function ColoredPhraseBreakdown({
   pinyinTestId,
   withTopMargin = false,
   chip = false,
+  wordsState,
+  onSavePiece,
+  sentenceId,
 }: {
-  pieces: PhraseBreakdownPiece[];
+  pieces: BreakdownPiece[];
   languageSelectedState: string;
   testId: string;
   pinyinTestId: string;
   withTopMargin?: boolean;
   chip?: boolean;
+  wordsState?: BreakdownSavedWord[];
+  onSavePiece?: (
+    isGoogle: boolean,
+    surfaceForm: string,
+    meaning: string,
+  ) => void;
+  sentenceId?: string;
 }) {
   const addSpace = !isTrimmedLang(languageSelectedState as LanguageEnum);
   const pinyinPieces =
@@ -44,15 +105,47 @@ export function ColoredPhraseBreakdown({
             : `flex flex-wrap justify-center text-base ${withTopMargin ? 'mt-0.5' : ''}`
         }
       >
-        {pieces.map((piece) => (
-          <span
-            key={`${piece.surfaceForm}-${piece.index}`}
-            style={{ color: getColorByIndex(piece.index) }}
-          >
-            {piece.surfaceForm}
-            {addSpace ? '\u00A0' : ''}
-          </span>
-        ))}
+        {pieces.map((piece) => {
+          const color = getColorByIndex(piece.index);
+          const meaning = piece.meaning ?? '';
+          if (!onSavePiece) {
+            return (
+              <span
+                key={`${piece.surfaceForm}-${piece.index}`}
+                style={{ color }}
+              >
+                {piece.surfaceForm}
+                {addSpace ? '\u00A0' : ''}
+              </span>
+            );
+          }
+
+          const saved = wordIsSaved(piece.surfaceForm, wordsState);
+          return (
+            <span
+              key={`${piece.surfaceForm}-${piece.index}`}
+              className='pointer-events-auto'
+            >
+              {saved ? (
+                <SentenceBreakdownTargetLangWord
+                  color={color}
+                  wordIsSaved={saved}
+                  surfaceForm={piece.surfaceForm}
+                />
+              ) : (
+                <SentenceBreakdownHover
+                  handleSaveFunc={onSavePiece}
+                  surfaceForm={piece.surfaceForm}
+                  meaning={meaning}
+                  color={color}
+                  wordIsSaved={false}
+                  sentenceId={sentenceId ?? ''}
+                />
+              )}
+              {addSpace ? '\u00A0' : ''}
+            </span>
+          );
+        })}
       </span>
       {pinyinPieces.length > 0 ? (
         <span
@@ -87,6 +180,11 @@ type ReviewSentenceOverlayTextProps = {
   sentenceStructure?: string;
   languageSelectedState: string;
   showBreakdown?: boolean;
+  sentenceId?: string;
+  time?: number;
+  originalContext?: string;
+  wordsState?: BreakdownSavedWord[];
+  onSaveWord?: (params: HandleSaveWordCallTypes) => void;
 };
 
 function reviewSentenceEnglish(baseLang: string, meaning?: string) {
@@ -104,6 +202,11 @@ const ReviewSentenceOverlayText = ({
   sentenceStructure,
   languageSelectedState,
   showBreakdown = false,
+  sentenceId,
+  time,
+  originalContext,
+  wordsState,
+  onSaveWord,
 }: ReviewSentenceOverlayTextProps) => {
   const english = reviewSentenceEnglish(baseLang, meaning);
   const hasBreakdown = Boolean(sentenceStructure);
@@ -126,6 +229,13 @@ const ReviewSentenceOverlayText = ({
     : [];
   const visiblePieces = showBreakdown ? pieces : [];
   const wordMeanings = visiblePieces.filter((piece) => piece.meaning);
+  const onSavePiece = breakdownPieceSaveHandler({
+    onSaveWord,
+    sentenceId,
+    contextSentence: targetLang,
+    originalContext,
+    time,
+  });
 
   return (
     <>
@@ -144,6 +254,9 @@ const ReviewSentenceOverlayText = ({
           languageSelectedState={languageSelectedState}
           testId='learning-screen-review-sentence-target-lang'
           pinyinTestId='learning-screen-review-sentence-pinyin'
+          wordsState={wordsState}
+          onSavePiece={onSavePiece}
+          sentenceId={sentenceId}
         />
       ) : (
         <span
