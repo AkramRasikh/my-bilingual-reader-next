@@ -4,6 +4,7 @@ import {
   mockSelectedContent,
   checkingTimelineMarkers,
   renderWithProvider,
+  openRightPanel,
 } from './test-helpers/test-utils';
 import {
   DEFAULT_REVIEW_DATA,
@@ -600,6 +601,7 @@ describe('LearningScreen - studying new content', () => {
     it('should render a blank project with no previously reviewed content', async () => {
       await renderWithProvider();
       expect(await screen.findByTestId('bulk-review-button')).toBeInTheDocument();
+      openRightPanel();
 
       checkMetaDataOnLoad();
       checkReviewTogglesOnLoad();
@@ -625,6 +627,7 @@ describe('LearningScreen - studying new content', () => {
 
     it('toggles auto sentence breakdown off while review mode is on', async () => {
       await renderWithProvider();
+      openRightPanel();
       const autoBreakdownSwitch = await screen.findByTestId(
         'auto-sentence-breakdown-switch',
       );
@@ -664,6 +667,7 @@ describe('LearningScreen - studying new content', () => {
 
     it('turns playback captions off during review and restores them afterward', async () => {
       await renderWithProvider();
+      openRightPanel();
       const playbackCaptionsSwitch = await screen.findByTestId(
         'playback-captions-switch',
       );
@@ -694,6 +698,7 @@ describe('LearningScreen - studying new content', () => {
     it('should allow to add and remove words from transcript', async () => {
       await renderWithProvider();
       expect(await screen.findByTestId('bulk-review-button')).toBeInTheDocument();
+      openRightPanel();
       await saveWordFirstInTranscript();
       await saveWordSecondInTranscript();
       await hoverOverSavedWord();
@@ -717,6 +722,7 @@ describe('LearningScreen - studying new content', () => {
 
       await renderWithProvider();
       expect(await screen.findByTestId('bulk-review-button')).toBeInTheDocument();
+      openRightPanel();
       expect(
         screen.queryByTestId('video-player-snippet-text'),
       ).not.toBeInTheDocument();

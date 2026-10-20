@@ -6,6 +6,7 @@ import {
   checkWordsMetaData,
   checkingTimelineMarkers,
   renderWithProvider,
+  openRightPanel,
 } from './test-helpers/test-utils';
 import {
   mockGetOnLoadData,
@@ -291,6 +292,7 @@ describe('LearningScreen - Review Mode', () => {
   it.only('should allow user to review words/sentences/snippets', async () => {
     await renderWithProvider(mockSelectedContentWithDueData);
     const onLoadTitle = await screen.findByText(mockTitle);
+    openRightPanel();
     expect(onLoadTitle).toBeDefined();
     checkForDefaultReviewModeMetaData();
     await switchToReviewMode();

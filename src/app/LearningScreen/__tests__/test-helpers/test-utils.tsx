@@ -285,6 +285,13 @@ export const checkingTimelineMarkers = (
   ).toHaveLength(0);
 };
 
+export const openRightPanel = () => {
+  const toggle = screen.getByTestId('right-panel-toggle');
+  if (toggle.getAttribute('aria-pressed') === 'false') {
+    fireEvent.click(toggle);
+  }
+};
+
 export const renderWithProvider = async (
   selectedContent = mockSelectedContent,
 ) => {

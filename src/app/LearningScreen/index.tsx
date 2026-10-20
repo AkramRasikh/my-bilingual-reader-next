@@ -8,7 +8,7 @@ import LearningScreenClosedPanelReviewActions from './LearningScreenClosedPanelR
 const LearningScreen = () => {
   const { formattedTranscriptState, secondsState, selectedContentState } =
     useLearningScreen();
-  const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
 
   if (!formattedTranscriptState || !selectedContentState) {
     return null;

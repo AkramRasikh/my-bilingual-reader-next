@@ -47,22 +47,14 @@ describe('LearningScreen right panel toggle', () => {
     await renderWithProvider();
 
     const toggle = await screen.findByTestId('right-panel-toggle');
-    expect(toggle).toHaveAttribute('aria-pressed', 'true');
-    expect(toggle).toHaveAccessibleName('Hide transcript panel');
-    expect(toggle.previousElementSibling).toHaveTextContent('Total/Min');
-
-    const videoColumn = screen.getByTestId('learning-screen-video-column');
-    expect(screen.getByTestId('transcript-tab-trigger')).toBeInTheDocument();
-    expect(screen.getByTestId('transcript-item-secondary')).toBeInTheDocument();
-    expect(videoColumn).toHaveClass(openWidthClass);
-    expect(videoColumn).not.toHaveClass(closedWidthClass);
-
-    fireEvent.click(toggle);
-
     expect(toggle).toHaveAttribute('aria-pressed', 'false');
     expect(toggle).toHaveAccessibleName('Show transcript panel');
+
+    const videoColumn = screen.getByTestId('learning-screen-video-column');
     expect(screen.queryByTestId('transcript-tab-trigger')).not.toBeInTheDocument();
     expect(screen.queryByTestId('transcript-item-secondary')).not.toBeInTheDocument();
+    expect(videoColumn).toHaveClass(closedWidthClass);
+    expect(videoColumn).not.toHaveClass(openWidthClass);
     expect(toggle.nextElementSibling).toHaveAttribute(
       'data-testid',
       'closed-panel-review-filters',
@@ -93,10 +85,20 @@ describe('LearningScreen right panel toggle', () => {
     fireEvent.click(toggle);
 
     expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    expect(toggle).toHaveAccessibleName('Hide transcript panel');
+    expect(toggle.previousElementSibling).toHaveTextContent('Total/Min');
     expect(screen.getByTestId('transcript-tab-trigger')).toBeInTheDocument();
     expect(screen.getByTestId('transcript-item-secondary')).toBeInTheDocument();
     expect(screen.queryByTestId('closed-panel-review-filters')).not.toBeInTheDocument();
     expect(videoColumn).toHaveClass(openWidthClass);
     expect(videoColumn).not.toHaveClass(closedWidthClass);
+
+    fireEvent.click(toggle);
+
+    expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.queryByTestId('transcript-tab-trigger')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('transcript-item-secondary')).not.toBeInTheDocument();
+    expect(videoColumn).toHaveClass(closedWidthClass);
+    expect(videoColumn).not.toHaveClass(openWidthClass);
   });
 });
