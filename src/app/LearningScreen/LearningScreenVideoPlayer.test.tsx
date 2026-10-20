@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { chinese } from '@/app/languages';
 import LearningScreenVideoPlayer from './LearningScreenVideoPlayer';
 
@@ -115,5 +115,38 @@ describe('LearningScreenVideoPlayer sentence loop indicator', () => {
     expect(
       screen.getByTestId('learning-screen-sentence-loop-count'),
     ).toHaveTextContent('2');
+  });
+});
+
+describe('caption lift stepper', () => {
+  it('steps the transcript from the bottom toward the midpoint by 10%', () => {
+    renderPlayer();
+
+    const raise = screen.getByRole('button', { name: 'Raise transcript' });
+    const lower = screen.getByRole('button', { name: 'Lower transcript' });
+    const percent = screen.getByTestId('caption-lift-percent');
+
+    expect(percent.textContent).toBe('0');
+    expect(lower).toBeDisabled();
+    expect(screen.getByTestId('caption-lift-control')).toHaveClass(
+      'left-1',
+      'top-1/2',
+    );
+
+    fireEvent.click(raise);
+    expect(percent.textContent).toBe('10');
+    expect(lower).toBeEnabled();
+
+    for (let step = 0; step < 9; step += 1) {
+      fireEvent.click(raise);
+    }
+    expect(percent.textContent).toBe('100');
+    expect(raise).toBeDisabled();
+
+    fireEvent.click(raise);
+    expect(percent.textContent).toBe('100');
+
+    fireEvent.click(lower);
+    expect(percent.textContent).toBe('90');
   });
 });

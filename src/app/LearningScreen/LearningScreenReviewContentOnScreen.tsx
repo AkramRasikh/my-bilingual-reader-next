@@ -16,6 +16,7 @@ import {
   getTimeRangeProgress,
   type ReviewTimeRangePhase,
 } from './learning-screen-review-time-range';
+import { reviewCaptionPaddingBottom } from './captionLift';
 import { PLAYBACK_CAPTION_PLATE_CLASS } from './playbackCaptionSurface';
 import { SentenceBreakdownOverlayBrick } from './SentenceBreakdownOverlayBrick';
 import ReviewSentenceOverlayText, {
@@ -83,6 +84,7 @@ function ReviewOverlayPanel({
   liftForCaptions = false,
   busy = false,
   breakingDown = false,
+  captionLiftPercent = 0,
 }: {
   children: React.ReactNode;
   timeRangePhase?: ReviewTimeRangePhase | null;
@@ -93,6 +95,7 @@ function ReviewOverlayPanel({
   liftForCaptions?: boolean;
   busy?: boolean;
   breakingDown?: boolean;
+  captionLiftPercent?: number;
 }) {
   const textClassName = plain
     ? 'text-sm font-medium leading-tight break-words text-white'
@@ -109,9 +112,14 @@ function ReviewOverlayPanel({
       ? 'pointer-events-auto relative mx-auto w-fit max-w-[66.666%] px-1 py-0.5 text-white'
       : `pointer-events-auto relative mx-auto w-fit max-w-[66.666%] overflow-hidden px-4 py-1.5 ${PLAYBACK_CAPTION_PLATE_CLASS}`;
 
+  const liftedPadding =
+    anchor === 'bottom' ? reviewCaptionPaddingBottom(captionLiftPercent) : undefined;
+
   return (
     <div
+      data-testid='review-overlay-stage'
       className={`pointer-events-none absolute inset-0 flex flex-col items-center ${anchor === 'top' ? 'justify-start' : 'justify-end'} ${liftForCaptions && anchor === 'bottom' ? 'pb-28' : ''}`}
+      style={liftedPadding ? { paddingBottom: liftedPadding } : undefined}
     >
       <div
         className={`${containerClassName}${busy || breakingDown ? ' opacity-60' : ''}`}
@@ -157,7 +165,11 @@ function ReviewOverlayPanel({
   );
 }
 
-const LearningScreenReviewContentOnScreen = () => {
+const LearningScreenReviewContentOnScreen = ({
+  captionLiftPercent = 0,
+}: {
+  captionLiftPercent?: number;
+}) => {
   const {
     firstElIdInReview,
     firstWordDefinitionInReview,
@@ -438,6 +450,7 @@ const LearningScreenReviewContentOnScreen = () => {
         liftForCaptions={showPlaybackCaptionsState}
         busy={reviewWaitId === playingReviewedSnippet.id}
         breakingDown={snippetBreakingDown}
+        captionLiftPercent={captionLiftPercent}
       >
         <SnippetReview
           variant='overlay'
@@ -505,6 +518,7 @@ const LearningScreenReviewContentOnScreen = () => {
           Boolean(firstSentenceInReview?.id) &&
           isBreakingDownSentenceArrState.includes(firstSentenceInReview.id)
         }
+        captionLiftPercent={captionLiftPercent}
       >
         <ReviewSentenceOverlayText
           targetLang={sentenceTargetLang}
@@ -536,6 +550,7 @@ const LearningScreenReviewContentOnScreen = () => {
       anchor='top'
       plain
       busy={reviewWaitId === firstElIdInReview}
+      captionLiftPercent={captionLiftPercent}
     >
       <span
         data-testid='learning-screen-review-word-text'

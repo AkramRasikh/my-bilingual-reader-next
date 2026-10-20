@@ -163,6 +163,57 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     expect(screen.queryByText('hello')).not.toBeInTheDocument();
   });
 
+  it('raises a review sentence to the video midpoint', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.firstElIdInReview = 'sentence-1';
+    mockLearningScreenState.postSentencesMemoized = [
+      {
+        id: 'sentence-1',
+        targetLang: '你好',
+        baseLang: 'hello',
+      },
+    ];
+
+    render(<LearningScreenReviewContentOnScreen captionLiftPercent={100} />);
+
+    const stage = screen.getByTestId('review-overlay-stage');
+    expect(stage).toHaveClass('justify-end');
+    expect(stage.style.paddingBottom).toBe('50%');
+  });
+
+  it('raises a review snippet by the same session lift', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.isSavedLoopPlayingState = 'snip-1';
+    mockLearningScreenState.postSnippetsMemoized = [
+      {
+        id: 'snip-1',
+        time: 10,
+        targetLang: '你好',
+        baseLang: 'hello',
+        vocab: [],
+      },
+    ];
+
+    render(<LearningScreenReviewContentOnScreen captionLiftPercent={40} />);
+
+    expect(screen.getByTestId('review-overlay-stage').style.paddingBottom).toBe(
+      '20%',
+    );
+  });
+
+  it('leaves the top review word overlay on its anchor', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.firstElIdInReview = 'word-1';
+    mockLearningScreenState.firstWordDefinitionInReview = 'a greeting';
+
+    render(<LearningScreenReviewContentOnScreen captionLiftPercent={100} />);
+
+    const stage = screen.getByTestId('review-overlay-stage');
+    expect(stage).toHaveClass('justify-start');
+    expect(stage.style.paddingBottom).toBe('');
+    expectCaptionPlate(screen.getByTestId('learning-screen-review-word-text'));
+  });
+
   it('puts the caption plate on a review word line', () => {
     mockLearningScreenState.isInReviewMode = true;
     mockLearningScreenState.firstElIdInReview = 'word-1';

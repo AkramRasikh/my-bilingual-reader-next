@@ -10,6 +10,8 @@ import LearningScreenSnippetCoverageDot from './LearningScreenSnippetCoverageDot
 import useLearningScreen from './useLearningScreen';
 import { LanguageEnum } from '../languages';
 import {
+  ChevronDown,
+  ChevronUp,
   Loader2,
   Maximize2,
   Pause,
@@ -20,6 +22,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
+import { stepCaptionLift } from './captionLift';
 function formatPlaybackTime(seconds: number) {
   if (!Number.isFinite(seconds) || seconds < 0) {
     return '0:00';
@@ -40,6 +43,50 @@ type LearningScreenVideoPlayerProps = {
   languageSelectedState: LanguageEnum;
   isRightPanelOpen: boolean;
 };
+
+function CaptionLiftControl({
+  percent,
+  onChange,
+}: {
+  percent: number;
+  onChange: (percent: number) => void;
+}) {
+  return (
+    <div
+      data-testid='caption-lift-control'
+      className='pointer-events-auto absolute top-1/2 left-1 z-30 flex -translate-y-1/2 flex-col items-center rounded-full bg-black/55 py-0.5'
+    >
+      <Button
+        type='button'
+        size='icon'
+        variant='ghost'
+        className='size-6 text-white hover:bg-white/10'
+        aria-label='Raise transcript'
+        disabled={percent >= 100}
+        onClick={() => onChange(stepCaptionLift(percent, 1))}
+      >
+        <ChevronUp className='size-3.5' />
+      </Button>
+      <span
+        data-testid='caption-lift-percent'
+        className='text-[10px] leading-none text-white tabular-nums drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]'
+      >
+        {percent}
+      </span>
+      <Button
+        type='button'
+        size='icon'
+        variant='ghost'
+        className='size-6 text-white hover:bg-white/10'
+        aria-label='Lower transcript'
+        disabled={percent <= 0}
+        onClick={() => onChange(stepCaptionLift(percent, -1))}
+      >
+        <ChevronDown className='size-3.5' />
+      </Button>
+    </div>
+  );
+}
 
 const LearningScreenVideoPlayer = ({
   url,
@@ -67,6 +114,7 @@ const LearningScreenVideoPlayer = ({
   const [highlightedTextFocusLoopState, setHighlightedTextFocusLoopState] =
     useState('');
   const [muted, setMuted] = useState(false);
+  const [captionLiftPercent, setCaptionLiftPercent] = useState(0);
 
   const masterTextRef = useRef<HTMLParagraphElement | null>(null);
   const videoRef = ref as React.RefObject<HTMLVideoElement | null>;
@@ -255,8 +303,16 @@ const LearningScreenVideoPlayer = ({
             ) : null}
           </div>
         ) : null}
-        <LearningScreenReviewContentOnScreen />
-        <LearningScreenPlaybackCaptions />
+        <CaptionLiftControl
+          percent={captionLiftPercent}
+          onChange={setCaptionLiftPercent}
+        />
+        <LearningScreenReviewContentOnScreen
+          captionLiftPercent={captionLiftPercent}
+        />
+        <LearningScreenPlaybackCaptions
+          captionLiftPercent={captionLiftPercent}
+        />
         <LearningScreenOverlayWordRail
           languageSelectedState={languageSelectedState}
         />

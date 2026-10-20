@@ -19,6 +19,7 @@ import {
   breakdownPieceSaveHandler,
 } from './ReviewSentenceOverlayText';
 import { SentenceBreakdownOverlayBrick } from './SentenceBreakdownOverlayBrick';
+import { playbackCaptionBottom } from './captionLift';
 import useLearningScreen from './useLearningScreen';
 
 export type PlaybackCaptionSentence = {
@@ -343,6 +344,7 @@ export function PlaybackCaptionStack({
   wordsState,
   onSaveWord,
   originalContext,
+  liftPercent = 0,
 }: {
   previous: PlaybackCaptionSentence | null;
   current: PlaybackCaptionSentence | null;
@@ -354,6 +356,7 @@ export function PlaybackCaptionStack({
   wordsState?: BreakdownSavedWord[];
   onSaveWord?: (params: HandleSaveWordCallTypes) => void;
   originalContext?: string;
+  liftPercent?: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const boxesRef = useRef(new Map<string, CaptionBox>());
@@ -405,11 +408,14 @@ export function PlaybackCaptionStack({
     return null;
   }
 
+  const liftedBottom = playbackCaptionBottom(liftPercent);
+
   return (
     <div
       ref={containerRef}
       data-testid='playback-captions'
       className='pointer-events-none absolute inset-x-0 bottom-2 z-20 flex flex-col items-center gap-2 px-3'
+      style={liftedBottom ? { bottom: liftedBottom } : undefined}
     >
       <CaptionLine
         key={current.id ?? 'current'}
@@ -428,7 +434,11 @@ export function PlaybackCaptionStack({
   );
 }
 
-const LearningScreenPlaybackCaptions = () => {
+const LearningScreenPlaybackCaptions = ({
+  captionLiftPercent = 0,
+}: {
+  captionLiftPercent?: number;
+}) => {
   const {
     showPlaybackCaptionsState,
     masterPlayComprehensive,
@@ -469,6 +479,7 @@ const LearningScreenPlaybackCaptions = () => {
       wordsState={wordsState}
       onSaveWord={handleSaveWord}
       originalContext={selectedContentTitleState}
+      liftPercent={captionLiftPercent}
     />
   );
 };

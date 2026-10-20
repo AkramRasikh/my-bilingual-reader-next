@@ -56,6 +56,31 @@ const current = {
 };
 
 describe('PlaybackCaptionStack', () => {
+  it('keeps the caption on the bottom anchor at 0%', () => {
+    render(
+      <PlaybackCaptionStack previous={null} current={current} showEnglish={false} />,
+    );
+
+    const captions = screen.getByTestId('playback-captions');
+    expect(captions).toHaveClass('bottom-2', 'inset-x-0');
+    expect(captions.style.bottom).toBe('');
+  });
+
+  it('moves the caption bottom edge to the video midpoint at 100%', () => {
+    render(
+      <PlaybackCaptionStack
+        previous={null}
+        current={current}
+        showEnglish={false}
+        liftPercent={100}
+      />,
+    );
+
+    expect(screen.getByTestId('playback-captions').style.bottom).toBe(
+      'calc(0.5rem * 0 + 50% * 1)',
+    );
+  });
+
   it('shows only the playing sentence, with English underneath', () => {
     render(
       <PlaybackCaptionStack
@@ -656,5 +681,13 @@ describe('LearningScreenPlaybackCaptions', () => {
       originalContext: 'My video',
       time: 4,
     });
+  });
+
+  it('raises the playing caption with the session lift', () => {
+    render(<LearningScreenPlaybackCaptions captionLiftPercent={40} />);
+
+    expect(screen.getByTestId('playback-captions').style.bottom).toBe(
+      'calc(0.5rem * 0.6 + 50% * 0.4)',
+    );
   });
 });
