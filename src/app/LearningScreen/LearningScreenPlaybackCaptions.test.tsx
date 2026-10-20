@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { pinyin } from 'pinyin-pro';
 import { chinese, french } from '@/app/languages';
 import getColorByIndex from '@/utils/get-color-by-index';
@@ -106,6 +106,144 @@ describe('PlaybackCaptionStack', () => {
     expect(
       screen.queryByTestId('sentence-breakdown-hover-trigger'),
     ).not.toBeInTheDocument();
+  });
+
+  it('shows the sidebar save prompt centered above a plain-caption selection', async () => {
+    const onSaveWord = jest.fn();
+    const rect = {
+      x: 10,
+      y: 80,
+      left: 10,
+      top: 80,
+      width: 40,
+      height: 20,
+      right: 50,
+      bottom: 100,
+      toJSON() {
+        return {};
+      },
+    } as DOMRect;
+    const originalRect = Range.prototype.getBoundingClientRect;
+    Range.prototype.getBoundingClientRect = () => rect;
+
+    try {
+      render(
+        <PlaybackCaptionStack
+          previous={null}
+          current={{
+            id: 'sentence-1',
+            time: 3,
+            targetLang: '你好世界',
+            baseLang: 'hello world',
+          }}
+          showEnglish={false}
+          originalContext='My video'
+          onSaveWord={onSaveWord}
+        />,
+      );
+
+      const target = screen.getByTestId('playback-caption-current-target');
+      const textNode = target.firstChild;
+      expect(textNode).toBeTruthy();
+      const range = document.createRange();
+      range.setStart(textNode as Text, 0);
+      range.setEnd(textNode as Text, 2);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      fireEvent.mouseUp(document);
+
+      const prompt = screen.getByTestId('playback-caption-highlight-prompt');
+      expect(prompt).toHaveClass('-translate-x-1/2', '-translate-y-full', 'pb-2.5');
+      expect(prompt).toHaveStyle({ left: '30px', top: '80px' });
+      expect(screen.getByTestId('highlighted-text-focus')).toHaveTextContent(
+        '你好',
+      );
+      expect(screen.getByTestId('save-word-openai-button')).toHaveClass(
+        'bg-blue-100',
+        'border-0',
+        'size-7',
+      );
+      expect(screen.getByTestId('save-word-google-button')).toHaveClass(
+        'bg-blue-100',
+        'border-0',
+        'size-7',
+      );
+      expect(screen.getByAltText('Openai logo')).toHaveAttribute('width', '20');
+      expect(screen.getByAltText('Google logo')).toHaveAttribute('width', '20');
+
+      fireEvent.click(screen.getByTestId('save-word-google-button'));
+      expect(onSaveWord).toHaveBeenCalledWith({
+        highlightedWord: '你好',
+        highlightedWordSentenceId: 'sentence-1',
+        contextSentence: '你好世界',
+        isGoogle: true,
+        originalContext: 'My video',
+        time: 3,
+      });
+      await waitFor(() => {
+        expect(
+          screen.queryByTestId('playback-caption-highlight-prompt'),
+        ).not.toBeInTheDocument();
+      });
+    } finally {
+      Range.prototype.getBoundingClientRect = originalRect;
+      window.getSelection()?.removeAllRanges();
+    }
+  });
+
+  it('removes the caption save prompt when the click is outside it', () => {
+    const rect = {
+      x: 0,
+      y: 0,
+      left: 0,
+      top: 0,
+      width: 20,
+      height: 10,
+      right: 20,
+      bottom: 10,
+      toJSON() {
+        return {};
+      },
+    } as DOMRect;
+    const originalRect = Range.prototype.getBoundingClientRect;
+    Range.prototype.getBoundingClientRect = () => rect;
+
+    try {
+      render(
+        <PlaybackCaptionStack
+          previous={null}
+          current={{
+            id: 'sentence-1',
+            targetLang: '你好世界',
+            baseLang: 'hello world',
+          }}
+          showEnglish={false}
+          onSaveWord={jest.fn()}
+        />,
+      );
+
+      const target = screen.getByTestId('playback-caption-current-target');
+      const textNode = target.firstChild as Text;
+      const range = document.createRange();
+      range.setStart(textNode, 2);
+      range.setEnd(textNode, 4);
+      window.getSelection()?.removeAllRanges();
+      window.getSelection()?.addRange(range);
+      fireEvent.mouseUp(document);
+
+      expect(screen.getByTestId('highlighted-text-focus')).toHaveTextContent(
+        '世界',
+      );
+
+      fireEvent.mouseDown(document.body);
+      expect(
+        screen.queryByTestId('playback-caption-highlight-prompt'),
+      ).not.toBeInTheDocument();
+    } finally {
+      Range.prototype.getBoundingClientRect = originalRect;
+      window.getSelection()?.removeAllRanges();
+    }
   });
 
   it('omits the previous line when there is no previous sentence', () => {

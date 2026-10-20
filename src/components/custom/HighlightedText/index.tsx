@@ -7,6 +7,12 @@ const HighlightedText = ({
   isLoadingState,
   handleSaveFunc,
   highlightedTextState,
+  focusIcons = false,
+}: {
+  isLoadingState?: boolean;
+  handleSaveFunc: (isGoogle: boolean) => void;
+  highlightedTextState: string;
+  focusIcons?: boolean;
 }) => (
   <AnimationWrapper
     data-testid='highlighted-text-container'
@@ -20,6 +26,7 @@ const HighlightedText = ({
       <HighlightedTextActions
         handleSaveFunc={handleSaveFunc}
         isLoadingState={isLoadingState}
+        focusIcons={focusIcons}
       />
     </div>
   </AnimationWrapper>

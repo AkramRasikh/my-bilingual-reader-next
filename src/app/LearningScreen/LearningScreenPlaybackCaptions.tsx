@@ -1,11 +1,13 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   useFetchData,
   type HandleSaveWordCallTypes,
 } from '@/app/Providers/FetchDataProvider';
 import { TargetLangFormattedChunk } from '@/app/types/content-types';
+import HighlightedText from '@/components/custom/HighlightedText';
 import getColorByIndex from '@/utils/get-color-by-index';
 import {
   PLAYBACK_CAPTION_PLATE_CLASS,
@@ -134,6 +136,98 @@ function CaptionLine({
     originalContext,
     time: sentence.time,
   });
+  const plainCaption = pieces.length === 0;
+  const canSelectPlainCaption =
+    plainCaption && Boolean(onSaveWord) && Boolean(sentence.id);
+  const targetRef = useRef<HTMLParagraphElement>(null);
+  const promptRef = useRef<HTMLDivElement>(null);
+  const [selectionText, setSelectionText] = useState('');
+  const [selectionAnchor, setSelectionAnchor] = useState<{
+    left: number;
+    top: number;
+  } | null>(null);
+  const [selectionSaving, setSelectionSaving] = useState(false);
+
+  useEffect(() => {
+    if (canSelectPlainCaption) return;
+    setSelectionText('');
+    setSelectionAnchor(null);
+  }, [canSelectPlainCaption]);
+
+  useEffect(() => {
+    if (!canSelectPlainCaption) return;
+
+    const handleSelectionEnd = () => {
+      const selection = window.getSelection();
+      const selectedText = selection?.toString().trim() ?? '';
+      const anchorNode = selection?.anchorNode;
+      if (!anchorNode || !targetRef.current?.contains(anchorNode)) return;
+      if (!selectedText || !selection?.rangeCount) {
+        setSelectionText('');
+        setSelectionAnchor(null);
+        return;
+      }
+      const rect = selection.getRangeAt(0).getBoundingClientRect();
+      const box =
+        rect.width || rect.height
+          ? rect
+          : targetRef.current.getBoundingClientRect();
+      setSelectionText(selectedText);
+      setSelectionAnchor({
+        left: box.left + box.width / 2,
+        top: box.top,
+      });
+    };
+
+    document.addEventListener('mouseup', handleSelectionEnd);
+    document.addEventListener('touchend', handleSelectionEnd);
+    return () => {
+      document.removeEventListener('mouseup', handleSelectionEnd);
+      document.removeEventListener('touchend', handleSelectionEnd);
+    };
+  }, [canSelectPlainCaption]);
+
+  useEffect(() => {
+    if (!selectionText) return;
+
+    const handleClickOutside = (event: Event) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (targetRef.current?.contains(target)) return;
+      if (promptRef.current?.contains(target)) return;
+      setSelectionText('');
+      setSelectionAnchor(null);
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside, {
+      passive: true,
+    });
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [selectionText]);
+
+  const handleSaveSelection = async (isGoogle: boolean) => {
+    if (!onSaveWord || !sentence.id || !selectionText) return;
+    setSelectionSaving(true);
+    try {
+      await onSaveWord({
+        highlightedWord: selectionText,
+        highlightedWordSentenceId: sentence.id,
+        contextSentence: sentence.targetLang,
+        isGoogle,
+        originalContext,
+        time: sentence.time,
+      });
+    } finally {
+      setSelectionSaving(false);
+      setSelectionText('');
+      setSelectionAnchor(null);
+      window.getSelection()?.removeAllRanges();
+    }
+  };
 
   return (
     <div
@@ -163,7 +257,12 @@ function CaptionLine({
           sentenceId={sentence.id}
         />
       ) : (
-        <p data-testid={`${testId}-target`} className='leading-tight'>
+        <>
+        <p
+          ref={targetRef}
+          data-testid={`${testId}-target`}
+          className={`leading-tight${canSelectPlainCaption ? ' pointer-events-auto select-text' : ''}`}
+        >
           {sentence.targetLangformatted?.length
             ? sentence.targetLangformatted.map((chunk, index) => {
                 const saved = chunk.savedWords.length > 0;
@@ -183,6 +282,28 @@ function CaptionLine({
               })
             : sentence.targetLang}
         </p>
+        {selectionText && selectionAnchor
+          ? createPortal(
+              <div
+                ref={promptRef}
+                data-testid='playback-caption-highlight-prompt'
+                className='pointer-events-auto fixed z-50 w-fit -translate-x-1/2 -translate-y-full pb-2.5'
+                style={{
+                  left: selectionAnchor.left,
+                  top: selectionAnchor.top,
+                }}
+              >
+                <HighlightedText
+                  isLoadingState={selectionSaving}
+                  handleSaveFunc={handleSaveSelection}
+                  highlightedTextState={selectionText}
+                  focusIcons
+                />
+              </div>,
+              document.body,
+            )
+          : null}
+        </>
       )}
       {wordMeanings.length > 0 ? (
         <p
