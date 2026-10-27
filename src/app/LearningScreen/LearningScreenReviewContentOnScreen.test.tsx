@@ -41,13 +41,19 @@ const mockLearningScreenState = {
   showPlaybackCaptionsState: false,
 };
 
+const mockFetchData = {
+  languageSelectedState: 'Chinese',
+  wordsState: [] as Array<{
+    id: string;
+    surfaceForm?: string;
+    baseForm?: string;
+  }>,
+};
+
 jest.mock('./useLearningScreen', () => () => mockLearningScreenState);
 
 jest.mock('@/app/Providers/FetchDataProvider', () => ({
-  useFetchData: () => ({
-    languageSelectedState: 'Chinese',
-    wordsState: [],
-  }),
+  useFetchData: () => mockFetchData,
 }));
 
 function expectCaptionPlate(element: Element | null) {
@@ -94,6 +100,7 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     mockLearningScreenState.isInReviewMode = false;
     mockLearningScreenState.isSavedLoopPlayingState = null;
     mockLearningScreenState.isBreakingDownSentenceArrState = [];
+    mockFetchData.wordsState = [];
     resetReviewOverlayWait();
   });
 
@@ -222,6 +229,54 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     render(<LearningScreenReviewContentOnScreen />);
 
     expectCaptionPlate(screen.getByTestId('learning-screen-review-word-text'));
+  });
+
+  it('puts a jigsaw inline to the left of a review word that is inside another saved word', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.firstElIdInReview = 'word-1';
+    mockLearningScreenState.firstWordDefinitionInReview = 'to explain in detail';
+    mockLearningScreenState.firstWordInReviewDisplay = {
+      surfaceForm: 'elaborate',
+      baseForm: 'elaborate',
+    };
+    mockFetchData.wordsState = [
+      { id: 'word-1', surfaceForm: 'elaborate', baseForm: 'elaborate' },
+      {
+        id: 'word-2',
+        surfaceForm: 'elaborate on this issue',
+        baseForm: 'elaborate on this issue',
+      },
+    ];
+
+    render(<LearningScreenReviewContentOnScreen />);
+
+    const word = screen.getByTestId('learning-screen-review-word-text');
+    const cue = screen.getByTestId('learning-screen-review-word-containment');
+    expect(word.firstElementChild).toBe(cue);
+    expect(cue).toHaveTextContent('🧩');
+    expect(cue).toHaveClass('inline');
+    expect(cue).not.toHaveClass('block');
+    expect(cue).toHaveAttribute('aria-label', 'Part of another saved word');
+    expect(word).toHaveTextContent('to explain in detail');
+  });
+
+  it('leaves the jigsaw off when no other saved word contains the one being studied', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.firstElIdInReview = 'word-1';
+    mockLearningScreenState.firstWordDefinitionInReview = 'to explain in detail';
+    mockLearningScreenState.firstWordInReviewDisplay = {
+      surfaceForm: 'elaborate',
+      baseForm: 'elaborate',
+    };
+    mockFetchData.wordsState = [
+      { id: 'word-1', surfaceForm: 'elaborate', baseForm: 'elaborate' },
+    ];
+
+    render(<LearningScreenReviewContentOnScreen />);
+
+    expect(
+      screen.queryByTestId('learning-screen-review-word-containment'),
+    ).not.toBeInTheDocument();
   });
 
   it('hides a queued review word after leaving review mode', () => {

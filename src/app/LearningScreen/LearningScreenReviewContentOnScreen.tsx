@@ -23,6 +23,7 @@ import ReviewSentenceOverlayText, {
   ColoredPhraseBreakdown,
 } from './ReviewSentenceOverlayText';
 import { findSavedWordBreakdown, findWordContextSentence, splitSentenceAroundPhrase } from './find-breakdown-pieces-for-phrase';
+import { studiedWordIsInsideAnotherSavedWord } from './saved-word-containment';
 import {
   getReviewOverlayWaitSnapshot,
   subscribeReviewOverlayWait,
@@ -303,6 +304,20 @@ const LearningScreenReviewContentOnScreen = ({
       : '';
 
   const showWordOverlay = Boolean(firstElIdInReview && firstWordDefinitionInReview);
+  const showSavedWordContainment = useMemo(
+    () =>
+      studiedWordIsInsideAnotherSavedWord(
+        firstElIdInReview
+          ? {
+              id: firstElIdInReview,
+              surfaceForm,
+              baseForm,
+            }
+          : null,
+        wordsState,
+      ),
+    [firstElIdInReview, surfaceForm, baseForm, wordsState],
+  );
 
   const wordPhrasePieces = useMemo(() => {
     const surfaceForm = firstWordInReviewDisplay?.surfaceForm;
@@ -556,6 +571,16 @@ const LearningScreenReviewContentOnScreen = ({
         data-testid='learning-screen-review-word-text'
         className={WORD_OVERLAY_LINE_CLASS}
       >
+        {showSavedWordContainment ? (
+          <span
+            role='img'
+            aria-label='Part of another saved word'
+            data-testid='learning-screen-review-word-containment'
+            className='mr-1 inline align-middle'
+          >
+            🧩
+          </span>
+        ) : null}
         {showWordDetailsState
           ? firstWordDefinitionInReview
           : closedWordDefinition(firstWordDefinitionInReview ?? '')}
