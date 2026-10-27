@@ -128,9 +128,12 @@ describe('caption lift stepper', () => {
 
     expect(percent.textContent).toBe('0');
     expect(lower).toBeDisabled();
-    expect(screen.getByTestId('caption-lift-control')).toHaveClass(
-      'left-1',
-      'top-1/2',
+    const control = screen.getByTestId('caption-lift-control');
+    const video = document.querySelector('video');
+    expect(control).not.toHaveClass('absolute');
+    expect(video?.parentElement).not.toContainElement(control);
+    expect(video?.parentElement?.parentElement?.previousElementSibling).toContainElement(
+      control,
     );
 
     fireEvent.click(raise);

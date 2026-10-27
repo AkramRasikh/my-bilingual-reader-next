@@ -70,10 +70,10 @@ export const srsCalculationAndText = ({
 // grade = [1,2,3,4]
 export const srsRetentionKey = {
   vocab: 0.98,
-  sentences: 0.97,
+  sentences: 0.98,
   topic: 0.95,
   media: 0.93,
-  snippet: 0.93,
+  snippet: 0.98,
 } as Record<keyof SRSContentTypeOptions, number>;
 
 export const srsRetentionKeyTypes = {

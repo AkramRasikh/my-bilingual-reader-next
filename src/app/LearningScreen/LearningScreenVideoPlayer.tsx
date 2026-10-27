@@ -54,7 +54,7 @@ function CaptionLiftControl({
   return (
     <div
       data-testid='caption-lift-control'
-      className='pointer-events-auto absolute top-1/2 left-1 z-30 flex -translate-y-1/2 flex-col items-center rounded-full bg-black/55 py-0.5'
+      className='pointer-events-auto flex flex-col items-center rounded-full bg-black/55 py-0.5'
     >
       <Button
         type='button'
@@ -223,7 +223,14 @@ const LearningScreenVideoPlayer = ({
   const scrubberValue = Math.min(currentTime, durationForSlider);
 
   return (
-    <div className='relative flex flex-col overflow-hidden rounded-lg shadow-lg'>
+    <div className='flex items-stretch gap-1.5'>
+      <div className='flex shrink-0 flex-col justify-center pb-[45px]'>
+        <CaptionLiftControl
+          percent={captionLiftPercent}
+          onChange={setCaptionLiftPercent}
+        />
+      </div>
+      <div className='relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg shadow-lg'>
       <div className='relative w-full'>
         <video
           ref={videoRef}
@@ -303,10 +310,6 @@ const LearningScreenVideoPlayer = ({
             ) : null}
           </div>
         ) : null}
-        <CaptionLiftControl
-          percent={captionLiftPercent}
-          onChange={setCaptionLiftPercent}
-        />
         <LearningScreenReviewContentOnScreen
           captionLiftPercent={captionLiftPercent}
         />
@@ -374,6 +377,7 @@ const LearningScreenVideoPlayer = ({
         >
           <Maximize2 className='size-4' />
         </Button>
+      </div>
       </div>
     </div>
   );
