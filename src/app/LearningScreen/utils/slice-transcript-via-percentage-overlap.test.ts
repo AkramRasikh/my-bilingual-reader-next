@@ -178,10 +178,10 @@ describe('sliceTranscriptViaPercentageOverlap', () => {
     // text.substring(8, 16) = "le monde"
     // Second: startIndex = 0, endIndex = floor(18 * 1.00) = 18
     // text.substring(0, 18) = "Comment allez-vous"
-    // Third: startIndex = 0, endIndex = floor(15 * 0.40) = 6
-    // text.substring(0, 6) = "Merci "
-    // Each should have a space appended
-    expect(result.suggestedFocusText).toBe('le monde Comment allez-vous Merci ');
+    // Third: startIndex = 0, endIndex = floor(14 * 0.40) = 5
+    // text.substring(0, 5) = "Merci"
+    // Spaces separate pieces. The last piece has no trailing space.
+    expect(result.suggestedFocusText).toBe('le monde Comment allez-vous Merci');
   });
 
   it('should keep boundary word across non-final overlap entries', () => {

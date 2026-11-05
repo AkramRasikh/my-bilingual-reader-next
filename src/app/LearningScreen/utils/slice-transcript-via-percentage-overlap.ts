@@ -5,7 +5,7 @@ export const sliceTranscriptViaPercentageOverlap = (
   addSentenceSpace = false,
   characterBased = true,
 ) => {
-  let result = '';
+  const segments: string[] = [];
   let suggestedFocusStartIndex = -1;
   let sourceOffset = 0;
 
@@ -51,15 +51,12 @@ export const sliceTranscriptViaPercentageOverlap = (
       }
     }
 
-    if (suggestedFocusStartIndex === -1 && extractedText) {
-      suggestedFocusStartIndex = sourceOffset + safeStart + leftTrimChars;
+    if (extractedText) {
+      segments.push(extractedText);
     }
 
-    result += extractedText;
-
-    // Add space after each sentence for languages that use spaces between words
-    if (addSentenceSpace && extractedText) {
-      result += ' ';
+    if (suggestedFocusStartIndex === -1 && extractedText) {
+      suggestedFocusStartIndex = sourceOffset + safeStart + leftTrimChars;
     }
 
     sourceOffset += text.length;
@@ -69,7 +66,7 @@ export const sliceTranscriptViaPercentageOverlap = (
   }
 
   return {
-    suggestedFocusText: result,
+    suggestedFocusText: addSentenceSpace ? segments.join(' ') : segments.join(''),
     suggestedFocusStartIndex,
   };
 };
