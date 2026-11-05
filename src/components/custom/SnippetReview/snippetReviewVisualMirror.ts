@@ -1,10 +1,12 @@
+import { sameSavingWordSpans, SavingWordSpan } from './savingWordSpans';
+
 export type SnippetReviewVisual = {
   snippetId: string;
   startIndexKey: number;
   lengthAdjustment: number;
   matchStartWord: number | null;
   matchWordsHighlighted: number;
-  wordIsLoading: number | null;
+  savingWordSpans: SavingWordSpan[];
   isLoadingSave: boolean;
 };
 
@@ -22,7 +24,7 @@ function isSameVisual(next: SnippetReviewVisual) {
     snapshot.lengthAdjustment === next.lengthAdjustment &&
     snapshot.matchStartWord === next.matchStartWord &&
     snapshot.matchWordsHighlighted === next.matchWordsHighlighted &&
-    snapshot.wordIsLoading === next.wordIsLoading &&
+    sameSavingWordSpans(snapshot.savingWordSpans, next.savingWordSpans) &&
     snapshot.isLoadingSave === next.isLoadingSave
   );
 }

@@ -7,6 +7,11 @@ import clsx from 'clsx';
 import FormattedSentenceSnippetBreakdownWidget from './SnippetReviewContentBreakdownWidget';
 import { getSnippetBoundaryFillStyle } from './SnippetReviewProgressWidget';
 import LoadingSpinner from '../LoadingSpinner';
+import {
+  middleIndexOfSavingWordSpan,
+  savingWordSpanCoversIndex,
+  SavingWordSpan,
+} from './savingWordSpans';
 
 const BOUNDARY_REST = '#f6f7f8';
 
@@ -27,8 +32,11 @@ const FormattedSentenceSnippet = ({
   isReadyForQuickReview,
   matchStartWordState,
   togglableWordDataArrMemo,
-  wordIsLoadingGamePadState,
+  savingWordSpans = [],
   matchWordsHighlghtedState
+}: {
+  savingWordSpans?: SavingWordSpan[];
+  [key: string]: any;
 }) => {
   const isArabic = languageSelectedState === arabic;
   const isChinese = languageSelectedState === chinese;
@@ -72,11 +80,26 @@ const FormattedSentenceSnippet = ({
       matchingEndIndex !== undefined &&
       indexNested >= low &&
       indexNested <= high;
-    const animateTextIsLoading =
-      wordIsLoadingGamePadState != null &&
-      animateText &&
-      wordIsLoadingGamePadState >= low &&
-      wordIsLoadingGamePadState <= high;
+    const charIsSaving = savingWordSpans.some((span) =>
+      savingWordSpanCoversIndex(span, indexNested),
+    );
+    const savingSpinners = savingWordSpans.filter(
+      (span) => indexNested === middleIndexOfSavingWordSpan(span),
+    );
+    const savingSpinner =
+      savingSpinners.length > 0 ? (
+        <div className='absolute inset-0 z-10 flex items-center justify-center pointer-events-none'>
+          {savingSpinners.map((span, spinnerIndex) => (
+            <div
+              key={`${span.start}-${span.end}-${spinnerIndex}`}
+              className='scale-75'
+              data-testid='snippet-word-save-spinner'
+            >
+              <LoadingSpinner />
+            </div>
+          ))}
+        </div>
+      ) : null;
 
     if (isUnderlined) {
       return (
@@ -88,9 +111,7 @@ const FormattedSentenceSnippet = ({
             animateText
               ? 'italic overline decoration-dashed decoration-2'
               : '',
-            animateTextIsLoading
-              ? 'italic overline decoration-dashed decoration-2 animate-pulse opacity-50'
-              : '',
+            charIsSaving ? 'animate-pulse opacity-50' : '',
           )}
           style={{
             color: getColorByIndex(hasStartIndex),
@@ -99,6 +120,7 @@ const FormattedSentenceSnippet = ({
               : undefined,
           }}
         >
+          {savingSpinner}
           <HoverWordCard
             text={text}
             wordPopUpState={wordPopUpState}
@@ -115,9 +137,6 @@ const FormattedSentenceSnippet = ({
     }
 
     if (!(item?.meaning === 'n/a' && surfaceFormBreakdown)) {
-      const middleIndex = Math.floor((low + high) / 2);
-      const showLoadingSpinner =
-        animateTextIsLoading && indexNested === middleIndex;
       const isLow = indexNested === low;
       const isHigh = indexNested === high;
 
@@ -134,20 +153,12 @@ const FormattedSentenceSnippet = ({
             animateText
               ? 'italic overline decoration-dashed decoration-2'
               : '',
-            animateTextIsLoading
-              ? 'italic overline decoration-dashed decoration-2 animate-pulse opacity-50'
-              : '',
+            charIsSaving ? 'animate-pulse opacity-50' : '',
             isLow && isArabic ? 'mr-0.5' : isLow ? 'ml-0.5' : '',
             isHigh && isArabic ? 'ml-0.5' : isHigh ? 'mr-0.5' : '',
           )}
         >
-          {showLoadingSpinner && (
-            <div className='absolute inset-0 flex items-center justify-center pointer-events-none'>
-              <div className='scale-75'>
-                <LoadingSpinner />
-              </div>
-            </div>
-          )}
+          {savingSpinner}
           <FormattedSentenceSnippetBreakdownWidget
             text={text}
             indexNum={indexNested}
@@ -173,8 +184,10 @@ const FormattedSentenceSnippet = ({
         className={clsx(
           hasHighlightedBackground ? '' : 'opacity-35',
           'relative',
+          charIsSaving ? 'animate-pulse opacity-50' : '',
         )}
       >
+        {savingSpinner}
         {text}
       </span>
     );

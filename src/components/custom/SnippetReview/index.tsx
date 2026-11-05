@@ -41,6 +41,10 @@ import {
   subscribeSnippetReviewVisual,
   subscribeSnippetReviewVisualNoop,
 } from './snippetReviewVisualMirror';
+import {
+  isDuplicateSavingWord,
+  SavingWordSpan,
+} from './savingWordSpans';
 
 interface HandleReviewSnippetsFinalArg {
   isRemoveReview?: boolean;
@@ -108,9 +112,16 @@ const SnippetReview = ({
     null,
   );
   const [matchWordsHighlghtedState, setMatchWordsHighlghtedState] = useState<number>(0);
-  const [wordIsLoadingGamePadState, setWordIsLoadingGamePadState] = useState<
-    null | number
-  >(null);
+  const [savingWordSpans, setSavingWordSpans] = useState<SavingWordSpan[]>([]);
+  const savingWordSpansRef = useRef<SavingWordSpan[]>([]);
+  const wordSaveCountRef = useRef(0);
+  const handleSaveFuncRef = useRef<
+    (
+      isGoogle: boolean,
+      thisWord: string,
+      thisWordMeaning?: string,
+    ) => Promise<void>
+  >(async () => {});
   const mirroredReviewVisual = useSyncExternalStore(
     isOverlay ? subscribeSnippetReviewVisual : subscribeSnippetReviewVisualNoop,
     isOverlay
@@ -130,8 +141,8 @@ const SnippetReview = ({
   const viewMatchStartWord = sharedVisual?.matchStartWord ?? matchStartWordState;
   const viewMatchWordsHighlighted =
     sharedVisual?.matchWordsHighlighted ?? matchWordsHighlghtedState;
-  const viewWordIsLoading =
-    sharedVisual?.wordIsLoading ?? wordIsLoadingGamePadState;
+  const viewSavingWordSpans =
+    sharedVisual?.savingWordSpans ?? savingWordSpans;
   const viewIsLoadingSave =
     sharedVisual?.isLoadingSave ?? isLoadingSaveSnippetState;
   const thisIsPlaying =
@@ -269,9 +280,19 @@ const SnippetReview = ({
     });
   };
 
+  const beginWordSave = () => {
+    wordSaveCountRef.current += 1;
+    setIsLoadingWordState(true);
+  };
+
+  const endWordSave = () => {
+    wordSaveCountRef.current = Math.max(0, wordSaveCountRef.current - 1);
+    setIsLoadingWordState(wordSaveCountRef.current > 0);
+  };
+
   const handleSaveFunc = async (isGoogle, thisWord, thisWordMeaning) => {
+    beginWordSave();
     try {
-      setIsLoadingWordState(true);
       const belongingSentenceId = getSentenceDataOfOverlappingWordsDuringSave(
         snippetData.time,
         highlightedTextState,
@@ -292,9 +313,10 @@ const SnippetReview = ({
     } finally {
       setHighlightedTextState('');
       setWordPopUpState([]);
-      setIsLoadingWordState(false);
+      endWordSave();
     }
   };
+  handleSaveFuncRef.current = handleSaveFunc;
 
   const { textMatch, matchStartKey, matchEndKey } = useMemo(() => {
     return highlightSnippetTextApprox(
@@ -344,7 +366,7 @@ const SnippetReview = ({
       lengthAdjustment: lengthAdjustmentState,
       matchStartWord: matchStartWordState,
       matchWordsHighlighted: matchWordsHighlghtedState,
-      wordIsLoading: wordIsLoadingGamePadState,
+      savingWordSpans,
       isLoadingSave: isLoadingSaveSnippetState,
     });
   }, [
@@ -355,7 +377,7 @@ const SnippetReview = ({
     lengthAdjustmentState,
     matchStartWordState,
     matchWordsHighlghtedState,
-    wordIsLoadingGamePadState,
+    savingWordSpans,
     isLoadingSaveSnippetState,
   ]);
 
@@ -497,41 +519,80 @@ const SnippetReview = ({
     togglableWordDataArrMemo,
   ]);
 
+  const saveSelectionRef = useRef({
+    matchStartWordState,
+    matchWordsHighlghtedState,
+    togglableWordDataArrMemo,
+    selectedWordDataMemo,
+  });
+  saveSelectionRef.current = {
+    matchStartWordState,
+    matchWordsHighlghtedState,
+    togglableWordDataArrMemo,
+    selectedWordDataMemo,
+  };
+
   useEffect(() => {
     if (isOverlay || !isReadyForQuickReview) return;
 
     const handleSaveGamePad = async () => {
-      if (matchStartWordState === null) return;
-      const matchingWordData = togglableWordDataArrMemo?.[matchStartWordState];
-      if (!matchingWordData) {
+      const selection = saveSelectionRef.current;
+      if (selection.matchStartWordState === null) return;
+      const matchingWordData =
+        selection.togglableWordDataArrMemo?.[selection.matchStartWordState];
+      if (!matchingWordData || typeof matchingWordData.index !== 'number') {
         return null;
       }
 
       const surfaceForm = matchingWordData.surfaceForm;
       const meaning = matchingWordData.meaning;
+      const isMultiWordSelection = selection.matchWordsHighlghtedState > 0;
+      const highlightedWord = isMultiWordSelection
+        ? selection.selectedWordDataMemo.concatenatedSurfaceForm
+        : surfaceForm;
+      const rawEndWordIndex =
+        selection.matchStartWordState + (selection.matchWordsHighlghtedState ?? 0);
+      const endWordIndex = Math.max(
+        0,
+        Math.min(
+          rawEndWordIndex,
+          selection.togglableWordDataArrMemo.length - 1,
+        ),
+      );
+      const endWord = selection.togglableWordDataArrMemo[endWordIndex];
+      const endIndex =
+        typeof endWord?.endIndex === 'number'
+          ? endWord.endIndex
+          : matchingWordData.index;
+      const nextSpan: SavingWordSpan = {
+        start: Math.min(matchingWordData.index, endIndex),
+        end: Math.max(matchingWordData.index, endIndex),
+        text: highlightedWord ?? '',
+      };
 
-      if (wordIsLoadingGamePadState === matchingWordData.index) {
-        // blocked save due to loading state
+      if (isDuplicateSavingWord(savingWordSpansRef.current, nextSpan)) {
         return;
       }
-      const isMultiWordSelection = matchWordsHighlghtedState > 0;
+
+      savingWordSpansRef.current = [...savingWordSpansRef.current, nextSpan];
+      setSavingWordSpans(savingWordSpansRef.current);
       try {
-        setWordIsLoadingGamePadState(matchingWordData.index);
         console.log('## handleSaveGamePad args', {
           isGoogle: isMultiWordSelection,
-          highlightedWord: isMultiWordSelection
-            ? selectedWordDataMemo.concatenatedSurfaceForm
-            : surfaceForm,
+          highlightedWord,
           meaning: isMultiWordSelection ? undefined : meaning,
         });
-        await handleSaveFunc(
+        await handleSaveFuncRef.current(
           isMultiWordSelection,
-          isMultiWordSelection ? selectedWordDataMemo.concatenatedSurfaceForm : surfaceForm,
+          nextSpan.text,
           isMultiWordSelection ? undefined : meaning,
         );
       } catch {
       } finally {
-        setWordIsLoadingGamePadState(null);
+        savingWordSpansRef.current = savingWordSpansRef.current.filter(
+          (span) => span !== nextSpan,
+        );
+        setSavingWordSpans(savingWordSpansRef.current);
       }
     };
     const handleMoveWordBackward = () => {
@@ -617,10 +678,7 @@ const SnippetReview = ({
         handleMoveWordBackward();
       }
 
-      if (
-        wordIsLoadingGamePadState === null &&
-        isGamepadButtonHeld(gamepad.buttons, map.L_STICK_CLICK_BTN)
-      ) {
+      if (isGamepadButtonHeld(gamepad.buttons, map.L_STICK_CLICK_BTN)) {
         handleSaveGamePad();
         return;
       }
@@ -643,7 +701,6 @@ const SnippetReview = ({
     };
   }, [
     matchWordsHighlghtedState,
-    wordIsLoadingGamePadState,
     togglableWordDataArrMemo.length,
     matchStartWordState,
     isReadyForQuickReview,
@@ -789,7 +846,7 @@ const SnippetReview = ({
                 matchStartWordState={viewMatchStartWord}
                 setMatchStartWordState={setMatchStartWordState}
                 togglableWordDataArrMemo={togglableWordDataArrMemo}
-                wordIsLoadingGamePadState={viewWordIsLoading}
+                savingWordSpans={viewSavingWordSpans}
                 matchWordsHighlghtedState={viewMatchWordsHighlighted}
               />
             </div>
