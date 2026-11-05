@@ -317,7 +317,7 @@ describe('PlaybackCaptionStack', () => {
     render(
       <PlaybackCaptionStack
         previous={previous}
-        current={current}
+        current={{ ...current, meaning: 'what this sentence means' }}
         showEnglish={false}
       />,
     );
@@ -329,6 +329,56 @@ describe('PlaybackCaptionStack', () => {
     expect(
       screen.queryByTestId('playback-caption-current-base'),
     ).not.toBeInTheDocument();
+    expect(screen.queryByText('what this sentence means')).not.toBeInTheDocument();
+    expect(screen.queryByText('this sentence')).not.toBeInTheDocument();
+  });
+
+  it('keeps the opened breakdown meaning when English is hidden', () => {
+    render(
+      <PlaybackCaptionStack
+        previous={null}
+        current={{
+          id: 'sentence-1',
+          targetLang: '你好世界',
+          baseLang: 'hello world',
+          meaning: 'a greeting',
+          sentenceStructure: 'greeting',
+          vocab: [{ surfaceForm: '你好', meaning: 'hello' }],
+        }}
+        showEnglish={false}
+        showBreakdown
+        languageSelectedState={chinese}
+      />,
+    );
+
+    expect(screen.getByTestId('playback-caption-current-base')).toHaveTextContent(
+      'a greeting',
+    );
+    expect(screen.queryByText('hello world')).not.toBeInTheDocument();
+  });
+
+  it('hides the base language on an opened breakdown when meaning is unavailable and English is hidden', () => {
+    render(
+      <PlaybackCaptionStack
+        previous={null}
+        current={{
+          targetLang: '你好',
+          baseLang: 'hello',
+          meaning: 'n/a',
+          sentenceStructure: 'greeting',
+          vocab: [{ surfaceForm: '你好', meaning: 'hello' }],
+        }}
+        showEnglish={false}
+        showBreakdown
+      />,
+    );
+
+    expect(
+      screen.queryByTestId('playback-caption-current-base'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId('playback-caption-current-word-meanings'),
+    ).toHaveTextContent('hello');
   });
 
   it('puts a brick in the middle of the caption while that sentence is breaking down', () => {

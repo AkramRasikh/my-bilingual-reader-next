@@ -49,10 +49,14 @@ function captionBreakdownPieces(sentence: PlaybackCaptionSentence) {
   });
 }
 
-function captionEnglish(sentence: PlaybackCaptionSentence) {
+function captionSentenceMeaning(sentence: PlaybackCaptionSentence) {
   const meaning = sentence.meaning?.trim() ?? '';
-  if (meaning && meaning !== 'n/a') return meaning;
-  return sentence.baseLang?.trim() ?? '';
+  if (!meaning || meaning === 'n/a') return '';
+  return meaning;
+}
+
+function captionEnglish(sentence: PlaybackCaptionSentence) {
+  return captionSentenceMeaning(sentence) || (sentence.baseLang?.trim() ?? '');
 }
 
 const CAPTION_MOVE_MS = 450;
@@ -127,6 +131,10 @@ function CaptionLine({
   originalContext?: string;
 }) {
   const english = captionEnglish(sentence);
+  const openedBreakdownMeaning = showBreakdown
+    ? captionSentenceMeaning(sentence)
+    : '';
+  const referenceLine = showEnglish ? english : openedBreakdownMeaning;
   const hasBreakdown = Boolean(sentence.sentenceStructure);
   const pieces = showBreakdown ? captionBreakdownPieces(sentence) : [];
   const wordMeanings = pieces.filter((piece) => piece.meaning);
@@ -321,12 +329,12 @@ function CaptionLine({
           ))}
         </p>
       ) : null}
-      {showEnglish && english ? (
+      {referenceLine ? (
         <p
           data-testid={`${testId}-base`}
           className={`mt-0.5 text-xs leading-tight ${PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS}`}
         >
-          {english}
+          {referenceLine}
         </p>
       ) : null}
     </div>
