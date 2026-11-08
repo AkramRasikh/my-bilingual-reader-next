@@ -465,7 +465,6 @@ const LearningScreenReviewContentOnScreen = ({
         liftForCaptions={showPlaybackCaptionsState}
         busy={reviewWaitId === playingReviewedSnippet.id}
         breakingDown={snippetBreakingDown}
-        captionLiftPercent={captionLiftPercent}
       >
         <SnippetReview
           variant='overlay'

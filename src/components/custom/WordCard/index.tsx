@@ -38,6 +38,7 @@ const WordCard = ({
   isReadyForQuickReview,
   adhocSentenceCustomWord,
   getSentenceFromContextId,
+  contextSentences,
   ...rest
 }) => {
   const [openContentState, setOpenContentState] = useState(defaultOpen);
@@ -58,6 +59,12 @@ const WordCard = ({
     : '';
 
   const previewImage = !openContentState && cloudflareImageUrl;
+  const sentencePrevious = contextSentences?.previous || '';
+  const sentenceCurrent = contextSentences?.current || '';
+  const sentenceNext = contextSentences?.next || '';
+  const hasSentenceWindow = Boolean(
+    sentencePrevious || sentenceCurrent || sentenceNext,
+  );
 
   const isDueText = !isWordDue
     ? `Due in ${getTimeDiffSRS({
@@ -176,6 +183,33 @@ const WordCard = ({
         >
           <AnimationWrapper>
             <CardContent className='mt-2 p-0'>
+              {openContentState && hasSentenceWindow && (
+                <details
+                  className='mb-2 px-1 text-sm'
+                  data-testid={`word-card-sentence-${id}`}
+                >
+                  <summary className='cursor-pointer text-muted-foreground'>
+                    Sentence
+                  </summary>
+                  <div className='mt-1 space-y-1'>
+                    {sentencePrevious && (
+                      <p>
+                        <span className='text-muted-foreground'>Previous. </span>
+                        {sentencePrevious}
+                      </p>
+                    )}
+                    {sentenceCurrent && (
+                      <p className='font-medium'>{sentenceCurrent}</p>
+                    )}
+                    {sentenceNext && (
+                      <p>
+                        <span className='text-muted-foreground'>Next. </span>
+                        {sentenceNext}
+                      </p>
+                    )}
+                  </div>
+                </details>
+              )}
               {!previewImage && openContentState! && (
                 <WordCardInformation
                   wordId={id}

@@ -200,6 +200,64 @@ describe('ReviewSentenceOverlayText', () => {
     });
   });
 
+  it('keeps the opened breakdown meaning when English is hidden', () => {
+    render(
+      <ReviewSentenceOverlayText
+        targetLang='好想在现场'
+        baseLang='I really want to see it'
+        meaning='I really want to be there'
+        showEnglish={false}
+        vocab={vocab}
+        sentenceStructure='好想 + 在 + 现场'
+        languageSelectedState={chinese}
+        showBreakdown
+      />,
+    );
+
+    expect(
+      screen.getByTestId('learning-screen-review-sentence-base-lang'),
+    ).toHaveTextContent('I really want to be there');
+    expect(screen.queryByText('I really want to see it')).not.toBeInTheDocument();
+  });
+
+  it('hides the base language on an opened breakdown when meaning is unavailable and English is hidden', () => {
+    render(
+      <ReviewSentenceOverlayText
+        targetLang='好想在现场'
+        baseLang='I really want to see it'
+        meaning='n/a'
+        showEnglish={false}
+        vocab={vocab}
+        sentenceStructure='好想 + 在 + 现场'
+        languageSelectedState={chinese}
+        showBreakdown
+      />,
+    );
+
+    expect(
+      screen.queryByTestId('learning-screen-review-sentence-base-lang'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('I really want to see it')).not.toBeInTheDocument();
+  });
+
+  it('hides the sentence meaning until the breakdown is opened when English is hidden', () => {
+    render(
+      <ReviewSentenceOverlayText
+        targetLang='好想在现场'
+        baseLang='I really want to see it'
+        meaning='I really want to be there'
+        showEnglish={false}
+        vocab={vocab}
+        sentenceStructure='好想 + 在 + 现场'
+        languageSelectedState={chinese}
+      />,
+    );
+
+    expect(
+      screen.queryByTestId('learning-screen-review-sentence-base-lang'),
+    ).not.toBeInTheDocument();
+  });
+
   it('underlines a saved breakdown word and leaves off its add buttons', () => {
     render(
       <ReviewSentenceOverlayText

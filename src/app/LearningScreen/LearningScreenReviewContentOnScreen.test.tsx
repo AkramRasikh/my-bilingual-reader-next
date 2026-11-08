@@ -18,6 +18,7 @@ const mockLearningScreenState = {
     targetLang: string;
     baseLang: string;
     meaning?: string;
+    sentenceStructure?: string;
   }>,
   isSavedLoopPlayingState: null,
   currentTime: 0,
@@ -39,6 +40,7 @@ const mockLearningScreenState = {
   isInReviewMode: false,
   onlyShowEngState: false,
   showPlaybackCaptionsState: false,
+  playbackCaptionBreakdownId: null as string | null,
 };
 
 const mockFetchData = {
@@ -100,6 +102,8 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     mockLearningScreenState.isInReviewMode = false;
     mockLearningScreenState.isSavedLoopPlayingState = null;
     mockLearningScreenState.isBreakingDownSentenceArrState = [];
+    mockLearningScreenState.onlyShowEngState = false;
+    mockLearningScreenState.playbackCaptionBreakdownId = null;
     mockFetchData.wordsState = [];
     resetReviewOverlayWait();
   });
@@ -170,6 +174,52 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     expect(screen.queryByText('hello')).not.toBeInTheDocument();
   });
 
+  it('keeps the opened breakdown meaning when English is hidden', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.onlyShowEngState = true;
+    mockLearningScreenState.playbackCaptionBreakdownId = 'sentence-1';
+    mockLearningScreenState.firstElIdInReview = 'sentence-1';
+    mockLearningScreenState.postSentencesMemoized = [
+      {
+        id: 'sentence-1',
+        targetLang: '你好',
+        baseLang: 'hello',
+        meaning: 'hello there',
+        sentenceStructure: 'greeting',
+      },
+    ];
+
+    render(<LearningScreenReviewContentOnScreen />);
+
+    expect(
+      screen.getByTestId('learning-screen-review-sentence-base-lang'),
+    ).toHaveTextContent('hello there');
+    expect(screen.queryByText('hello')).not.toBeInTheDocument();
+  });
+
+  it('hides the review sentence meaning when English is hidden and the breakdown is closed', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.onlyShowEngState = true;
+    mockLearningScreenState.firstElIdInReview = 'sentence-1';
+    mockLearningScreenState.postSentencesMemoized = [
+      {
+        id: 'sentence-1',
+        targetLang: '你好',
+        baseLang: 'hello',
+        meaning: 'hello there',
+        sentenceStructure: 'greeting',
+      },
+    ];
+
+    render(<LearningScreenReviewContentOnScreen />);
+
+    expect(
+      screen.queryByTestId('learning-screen-review-sentence-base-lang'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('hello there')).not.toBeInTheDocument();
+    expect(screen.queryByText('hello')).not.toBeInTheDocument();
+  });
+
   it('raises a review sentence to the video midpoint', () => {
     mockLearningScreenState.isInReviewMode = true;
     mockLearningScreenState.firstElIdInReview = 'sentence-1';
@@ -188,7 +238,7 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     expect(stage.style.paddingBottom).toBe('50%');
   });
 
-  it('raises a review snippet by the same session lift', () => {
+  it('leaves a review snippet on the bottom when the sentence lift is raised', () => {
     mockLearningScreenState.isInReviewMode = true;
     mockLearningScreenState.isSavedLoopPlayingState = 'snip-1';
     mockLearningScreenState.postSnippetsMemoized = [
@@ -203,9 +253,9 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
 
     render(<LearningScreenReviewContentOnScreen captionLiftPercent={40} />);
 
-    expect(screen.getByTestId('review-overlay-stage').style.paddingBottom).toBe(
-      '20%',
-    );
+    const stage = screen.getByTestId('review-overlay-stage');
+    expect(stage).toHaveClass('justify-end');
+    expect(stage.style.paddingBottom).toBe('');
   });
 
   it('leaves the top review word overlay on its anchor', () => {

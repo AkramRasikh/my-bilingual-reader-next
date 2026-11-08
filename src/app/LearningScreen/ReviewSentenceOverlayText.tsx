@@ -187,10 +187,14 @@ type ReviewSentenceOverlayTextProps = {
   onSaveWord?: (params: HandleSaveWordCallTypes) => void;
 };
 
-function reviewSentenceEnglish(baseLang: string, meaning?: string) {
+function reviewSentenceMeaning(meaning?: string) {
   const trimmedMeaning = meaning?.trim() ?? '';
-  if (trimmedMeaning && trimmedMeaning !== 'n/a') return trimmedMeaning;
-  return baseLang;
+  if (!trimmedMeaning || trimmedMeaning === 'n/a') return '';
+  return trimmedMeaning;
+}
+
+function reviewSentenceEnglish(baseLang: string, meaning?: string) {
+  return reviewSentenceMeaning(meaning) || baseLang;
 }
 
 const ReviewSentenceOverlayText = ({
@@ -209,6 +213,10 @@ const ReviewSentenceOverlayText = ({
   onSaveWord,
 }: ReviewSentenceOverlayTextProps) => {
   const english = reviewSentenceEnglish(baseLang, meaning);
+  const openedBreakdownMeaning = showBreakdown
+    ? reviewSentenceMeaning(meaning)
+    : '';
+  const referenceLine = showEnglish ? english : openedBreakdownMeaning;
   const hasBreakdown = Boolean(sentenceStructure);
   const pieces: Array<PhraseBreakdownPiece & { meaning: string }> = hasBreakdown
     ? (vocab ?? []).flatMap((item, index) => {
@@ -281,12 +289,12 @@ const ReviewSentenceOverlayText = ({
           ))}
         </span>
       ) : null}
-      {showEnglish && english ? (
+      {referenceLine ? (
         <span
           data-testid='learning-screen-review-sentence-base-lang'
           className={`mt-0.5 block text-xs leading-tight ${PLAYBACK_CAPTION_SECONDARY_TEXT_CLASS}`}
         >
-          {english}
+          {referenceLine}
         </span>
       ) : null}
     </>

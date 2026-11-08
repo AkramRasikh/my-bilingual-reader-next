@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import WordCard from '@/components/custom/WordCard';
+import { findSentenceWindow } from '@/app/improv/sentence-window';
 import useLearningScreen from '../useLearningScreen';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import clsx from 'clsx';
@@ -17,6 +18,7 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
     handlePlayFromHere,
     getSentenceFromContextId,
     updateWordDataProvider,
+    formattedTranscriptState,
   } = useLearningScreen();
   const {
     languageSelectedState,
@@ -47,6 +49,15 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
       return overlappedWord?.isContract ? time - 0.75 : time - 1.5;
     }
   }, [word, contentSnippets]);
+
+  const contextId = word?.contexts?.[0];
+  const contextSentences = useMemo(() => {
+    const sentenceWindow = findSentenceWindow(contextId, [
+      { content: formattedTranscriptState ?? [] },
+    ]);
+    if (!sentenceWindow.current) return undefined;
+    return sentenceWindow;
+  }, [contextId, formattedTranscriptState]);
 
   useEffect(() => {
     let timeoutId;
@@ -119,6 +130,7 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
           isReadyForQuickReview={isReadyForQuickReview}
           adhocSentenceCustomWord={adhocSentenceCustomWord}
           getSentenceFromContextId={getSentenceFromContextId}
+          contextSentences={contextSentences}
         />
       </div>
     </li>

@@ -103,6 +103,12 @@ const LearningScreenBreadCrumbHeader = () => {
       dataTestId: 'breadcrumb-content-button',
       className: 'hidden xl:inline-flex',
     },
+    {
+      onClick: () => router.push('/improv'),
+      variant: 'link',
+      text: 'Improv',
+      dataTestId: 'breadcrumb-improv-button',
+    },
   ];
 
   return (
