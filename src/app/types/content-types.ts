@@ -25,6 +25,7 @@ export interface ContentTranscriptTypes {
   sentenceStructure?: string;
   transliteration?: string;
   vocab?: Vocab[];
+  structures?: string[]; // matched breakdown rule keys, e.g. "constructions.subjunctive"
 }
 
 export interface TargetLangFormattedChunk {

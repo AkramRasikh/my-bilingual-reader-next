@@ -109,12 +109,6 @@ const LearningScreenBreadCrumbHeader = () => {
       text: 'Improv',
       dataTestId: 'breadcrumb-improv-button',
     },
-    {
-      onClick: () => router.push('/expressions'),
-      variant: 'link',
-      text: 'Expressions',
-      dataTestId: 'breadcrumb-expressions-button',
-    },
   ];
 
   return (

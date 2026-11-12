@@ -86,7 +86,13 @@ describe('LearningScreen right panel toggle', () => {
 
     expect(toggle).toHaveAttribute('aria-pressed', 'true');
     expect(toggle).toHaveAccessibleName('Hide transcript panel');
-    expect(toggle.previousElementSibling).toHaveTextContent('Total/Min');
+    expect(toggle.previousElementSibling).toHaveAttribute(
+      'data-testid',
+      'breakdown-rules-toggle',
+    );
+    expect(
+      toggle.previousElementSibling?.previousElementSibling,
+    ).toHaveTextContent('Total/Min');
     expect(screen.getByTestId('transcript-tab-trigger')).toBeInTheDocument();
     expect(screen.getByTestId('transcript-item-secondary')).toBeInTheDocument();
     expect(screen.queryByTestId('closed-panel-review-filters')).not.toBeInTheDocument();

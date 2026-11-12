@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import LearningScreenUnifiedAnalytics from './LearningScreenUnifiedAnalytics';
 import LearningScreenActionBarVideoControls from './LearningScreenActionBarVideoControls';
 import LearningScreenClosedPanelReviewFilters from './LearningScreenClosedPanelReviewFilters';
+import LearningScreenBreakdownRulesModal from './LearningScreenBreakdownRulesModal';
 
 type LearningScreenContentChapterNavigationProps = {
   isRightPanelOpen: boolean;
@@ -25,6 +26,7 @@ const LearningScreenContentChapterNavigation = ({
     >
       <LearningScreenActionBarVideoControls />
       <LearningScreenUnifiedAnalytics />
+      <LearningScreenBreakdownRulesModal />
       <Button
         type='button'
         variant='ghost'

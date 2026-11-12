@@ -68,11 +68,6 @@ const LandingUIBreadCrumb = () => {
       variant: 'link',
       text: 'Improv',
     },
-    {
-      href: '/expressions',
-      variant: 'link',
-      text: 'Expressions',
-    },
   ] as NavgationButtonsType[];
 
   return (

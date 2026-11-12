@@ -7,6 +7,7 @@ export async function POST(req: Request) {
     prevSentence?: string;
     nextSentence?: string;
     contentDescription?: string;
+    structureRuleKeys?: string[];
   };
 
   const url = process.env.NEXT_PUBLIC_BREAKDOWN_SENTENCE_URL as string;

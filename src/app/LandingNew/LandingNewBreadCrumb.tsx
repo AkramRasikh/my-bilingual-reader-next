@@ -105,11 +105,6 @@ const LandingNewBreadCrumb = () => {
       variant: 'link',
       text: 'Improv',
     },
-    {
-      href: '/expressions',
-      variant: 'link',
-      text: 'Expressions',
-    },
   ];
 
   return (

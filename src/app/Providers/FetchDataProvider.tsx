@@ -37,6 +37,10 @@ import { WordTypes } from '../types/word-types';
 import { ContentTranscriptTypes, Snippet } from '../types/content-types';
 import { ReviewDataTypes } from '../types/shared-types';
 import { apiRequestWrapper } from '@/lib/api-request-wrapper';
+import {
+  BreakdownRulesContext,
+  useBreakdownRulesState,
+} from './useBreakdownRules';
 
 interface BreakDownSentenceCallTypes {
   indexKey: ContentStateTypes['id'];
@@ -241,6 +245,8 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     setLanguageSelectedState,
   });
 
+  const breakdownRules = useBreakdownRulesState(languageSelectedState);
+
   useFetchInitData({
     hasFetchedDataState,
     languageSelectedState,
@@ -379,6 +385,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
           nextSentence,
           contentDescription,
           language: languageSelectedState,
+          structureRuleKeys: breakdownRules.enabledRuleKeys,
         },
       })) as Partial<ContentTranscriptTypes>;
 
@@ -879,7 +886,9 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         sentenceDataKeyMapped,
       }}
     >
-      {children}
+      <BreakdownRulesContext.Provider value={breakdownRules}>
+        {children}
+      </BreakdownRulesContext.Provider>
     </FetchDataContext.Provider>
   );
 }
