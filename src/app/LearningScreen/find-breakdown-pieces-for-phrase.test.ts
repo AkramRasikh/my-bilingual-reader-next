@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 import {
   findBreakdownPiecesForPhrase,
+  findBrokenDownSentenceMeaning,
   findSavedWordBreakdown,
   findWordContextSentence,
   splitSentenceAroundPhrase,
@@ -224,5 +225,52 @@ describe('findBreakdownPiecesForPhrase', () => {
       { text: '我每天都', highlighted: false },
       { text: '还是硬的起来', highlighted: true },
     ]);
+  });
+});
+
+describe('findBrokenDownSentenceMeaning', () => {
+  const police = {
+    id: 's1',
+    index: 1,
+    sentenceStructure: 'x',
+    targetLang: '警察射击有多不准',
+    meaning: 'How inaccurate are police shootings?',
+    vocab: ['警察', '射击', '有', '多', '不准'].map((surfaceForm) => ({
+      surfaceForm,
+    })),
+  };
+
+  it('uses the context sentence when its breakdown holds the word', () => {
+    expect(findBrokenDownSentenceMeaning('警察', [police], police)).toBe(
+      'How inaccurate are police shootings?',
+    );
+  });
+
+  it('matches a run of several breakdown pieces', () => {
+    expect(findBrokenDownSentenceMeaning('有多不准', [police])).toBe(
+      'How inaccurate are police shootings?',
+    );
+  });
+
+  it('ignores sentences that were not broken down or have no meaning', () => {
+    expect(
+      findBrokenDownSentenceMeaning('警察', [
+        { ...police, sentenceStructure: undefined },
+        { ...police, id: 's2', meaning: 'n/a' },
+      ]),
+    ).toBeNull();
+  });
+
+  it('skips a word that spans the whole broken-down sentence', () => {
+    expect(
+      findBrokenDownSentenceMeaning('警察射击有多不准', [police], police),
+    ).toBeNull();
+    expect(findBrokenDownSentenceMeaning('警察射击有多不准', [police])).toBeNull();
+    const oneWord = { ...police, id: 's3', targetLang: '警察', vocab: [{ surfaceForm: '警察' }] };
+    expect(findBrokenDownSentenceMeaning('警察', [oneWord])).toBeNull();
+  });
+
+  it('needs the word to be one of the breakdown pieces, not just in the text', () => {
+    expect(findBrokenDownSentenceMeaning('察射', [police])).toBeNull();
   });
 });

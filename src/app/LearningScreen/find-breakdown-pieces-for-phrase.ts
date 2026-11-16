@@ -64,6 +64,7 @@ type BreakdownSentence = {
   index?: number;
   sentenceStructure?: string;
   targetLang?: string;
+  meaning?: string;
   vocab?: VocabPiece[];
 };
 
@@ -229,4 +230,79 @@ export function findWordContextSentence(
   }
 
   return best?.text ?? null;
+}
+
+function brokenDownSentenceMeaning(sentence?: BreakdownSentence | null) {
+  if (!sentence?.sentenceStructure) {
+    return '';
+  }
+  const meaning = sentence.meaning?.trim() ?? '';
+  return meaning && meaning !== 'n/a' ? meaning : '';
+}
+
+type PhraseInSentence = 'part' | 'whole' | null;
+
+function phraseInSentenceVocab(
+  sentence: BreakdownSentence,
+  phrase: string,
+): PhraseInSentence {
+  const pieceCount = (sentence.vocab ?? []).filter((item) =>
+    item.surfaceForm?.trim(),
+  ).length;
+  const target = comparable(phrase.replace(/\s/g, ''));
+  const singlePiece = (sentence.vocab ?? []).some(
+    (item) =>
+      comparable((item.surfaceForm ?? '').replace(/\s/g, '')) === target,
+  );
+  if (singlePiece) {
+    return pieceCount === 1 ? 'whole' : 'part';
+  }
+  const span = findBreakdownPiecesForPhrase(phrase, sentence.vocab);
+  if (!span) {
+    return null;
+  }
+  return span.length === pieceCount ? 'whole' : 'part';
+}
+
+export function findBrokenDownSentenceMeaning(
+  phrase: string,
+  sentences: BreakdownSentence[],
+  contextSentence?: BreakdownSentence | null,
+): string | null {
+  const target = phrase?.trim();
+  if (!target) {
+    return null;
+  }
+
+  const contextMeaning = brokenDownSentenceMeaning(contextSentence);
+  if (contextMeaning) {
+    const inContext = phraseInSentenceVocab(contextSentence!, target);
+    if (inContext === 'whole') {
+      return null;
+    }
+    if (inContext === 'part') {
+      return contextMeaning;
+    }
+  }
+
+  const candidates = sentences
+    .filter(
+      (sentence) =>
+        brokenDownSentenceMeaning(sentence) &&
+        phraseInSentenceVocab(sentence, target) === 'part',
+    )
+    .map((sentence) => ({
+      meaning: brokenDownSentenceMeaning(sentence),
+      textMatch: sentenceTextIncludesPhrase(sentence.targetLang, target),
+      distance:
+        typeof contextSentence?.index === 'number' &&
+        typeof sentence.index === 'number'
+          ? Math.abs(sentence.index - contextSentence.index)
+          : Number.MAX_SAFE_INTEGER,
+    }));
+
+  const textMatches = candidates.filter((candidate) => candidate.textMatch);
+  const pool = textMatches.length > 0 ? textMatches : candidates;
+  pool.sort((a, b) => a.distance - b.distance);
+  return pool[0]?.meaning ?? null;
 }

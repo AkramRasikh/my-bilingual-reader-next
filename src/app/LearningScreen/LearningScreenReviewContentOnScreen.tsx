@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'reac
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
 import useLearningScreen from './useLearningScreen';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
-import { chinese } from '@/app/languages';
+import { chinese, isTrimmedLang, type LanguageEnum } from '@/app/languages';
 import SnippetReview from '@/components/custom/SnippetReview';
 import {
   getButtonMap,
@@ -19,14 +19,14 @@ import {
 import { reviewCaptionPaddingBottom } from './captionLift';
 import { PLAYBACK_CAPTION_PLATE_CLASS } from './playbackCaptionSurface';
 import { SentenceBreakdownOverlayBrick } from './SentenceBreakdownOverlayBrick';
-import ReviewSentenceOverlayText, {
-  ColoredPhraseBreakdown,
-} from './ReviewSentenceOverlayText';
-import { findSavedWordBreakdown, findWordContextSentence, splitSentenceAroundPhrase } from './find-breakdown-pieces-for-phrase';
+import ReviewSentenceOverlayText from './ReviewSentenceOverlayText';
+import { findBrokenDownSentenceMeaning, findSavedWordBreakdown, findWordContextSentence, splitSentenceAroundPhrase } from './find-breakdown-pieces-for-phrase';
 import {
   studiedWordContainsAnotherSavedWord,
   studiedWordIsInsideAnotherSavedWord,
 } from './saved-word-containment';
+import ReviewWordClueChips, { revealRandomClue } from './ReviewWordClueChips';
+import { findLooseClueSegments, type ClueSegment } from './clue-segments';
 import {
   getReviewOverlayWaitSnapshot,
   subscribeReviewOverlayWait,
@@ -215,6 +215,9 @@ const LearningScreenReviewContentOnScreen = ({
   const quickReviewToggleFiredRef = useRef(false);
   const wordSentenceHoldStartedAtRef = useRef<number | null>(null);
   const showWordDetailsRef = useRef(false);
+  const [revealedCluesState, setRevealedCluesState] = useState<number[]>([]);
+  const clueCountRef = useRef(0);
+  const clueAPressedRef = useRef(false);
   showWordDetailsRef.current = showWordDetailsState;
 
   const playingReviewedSnippet = useMemo(() => {
@@ -339,6 +342,34 @@ const LearningScreenReviewContentOnScreen = ({
     );
   }, [firstWordInReviewDisplay, sentenceMapMemoized]);
 
+  const clueSegments = useMemo<ClueSegment[] | null>(() => {
+    if (wordPhrasePieces) {
+      return wordPhrasePieces;
+    }
+    const surfaceForm = firstWordInReviewDisplay?.surfaceForm;
+    if (!surfaceForm) {
+      return null;
+    }
+    const contextId = firstWordInReviewDisplay?.contextId;
+    return findLooseClueSegments(
+      surfaceForm,
+      Object.values(sentenceMapMemoized),
+      contextId ? sentenceMapMemoized[contextId] : undefined,
+      isTrimmedLang(languageSelectedState as LanguageEnum),
+    );
+  }, [
+    wordPhrasePieces,
+    firstWordInReviewDisplay,
+    sentenceMapMemoized,
+    languageSelectedState,
+  ]);
+
+  clueCountRef.current = clueSegments?.length ?? 0;
+  const revealClue = () =>
+    setRevealedCluesState((prev) =>
+      revealRandomClue(prev, clueCountRef.current),
+    );
+
   const breakdownShowsReading =
     Boolean(wordPhrasePieces) && languageSelectedState === chinese;
 
@@ -379,11 +410,35 @@ const LearningScreenReviewContentOnScreen = ({
     );
   }, [firstWordInReviewDisplay, sentenceMapMemoized]);
 
+  const wordSentenceMeaning = useMemo(() => {
+    const surface = firstWordInReviewDisplay?.surfaceForm?.trim();
+    if (!surface) {
+      return null;
+    }
+    const contextId = firstWordInReviewDisplay?.contextId;
+    const contextSentence = contextId
+      ? sentenceMapMemoized[contextId]
+      : undefined;
+    const meaning = findBrokenDownSentenceMeaning(
+      surface,
+      Object.values(sentenceMapMemoized),
+      contextSentence,
+    );
+    return meaning && meaning !== firstWordDefinitionInReview?.trim()
+      ? meaning
+      : null;
+  }, [
+    firstWordInReviewDisplay,
+    sentenceMapMemoized,
+    firstWordDefinitionInReview,
+  ]);
+
   useEffect(() => {
     setShowWordDetailsState(false);
     showWordDetailsRef.current = false;
     setShowWordSentenceState(false);
     wordSentenceHoldStartedAtRef.current = null;
+    setRevealedCluesState([]);
   }, [firstElIdInReview]);
 
   useEffect(() => {
@@ -413,6 +468,19 @@ const LearningScreenReviewContentOnScreen = ({
         return;
       }
 
+      const aJustPressed = aPressed && !clueAPressedRef.current;
+      clueAPressedRef.current = aPressed;
+      if (
+        aJustPressed &&
+        !rPressed &&
+        showWordDetailsRef.current &&
+        clueCountRef.current > 0
+      ) {
+        setRevealedCluesState((prev) =>
+          revealRandomClue(prev, clueCountRef.current),
+        );
+      }
+
       if (aPressed && rPressed && !quickReviewToggleFiredRef.current) {
         setShowWordDetailsState((prev) => {
           const next = !prev;
@@ -438,6 +506,11 @@ const LearningScreenReviewContentOnScreen = ({
           WORD_SENTENCE_HOLD_MS
         ) {
           setShowWordSentenceState(true);
+          setRevealedCluesState((prev) =>
+            prev.length === clueCountRef.current
+              ? prev
+              : Array.from({ length: clueCountRef.current }, (_, i) => i),
+          );
         }
       } else if (!aPressed) {
         wordSentenceHoldStartedAtRef.current = null;
@@ -594,19 +667,26 @@ const LearningScreenReviewContentOnScreen = ({
             📦
           </span>
         ) : null}
+        {clueSegments && revealedCluesState.length < clueSegments.length ? (
+          <span
+            data-testid='learning-screen-review-word-clue-count'
+            aria-label='Clues revealed'
+            className='mr-1 inline align-middle text-[10px] text-white/70 tabular-nums'
+          >
+            ({revealedCluesState.length}/{clueSegments.length})
+          </span>
+        ) : null}
         {showWordDetailsState
           ? firstWordDefinitionInReview
           : closedWordDefinition(firstWordDefinitionInReview ?? '')}
       </span>
-      {showWordDetailsState && wordPhrasePieces ? (
-        <ColoredPhraseBreakdown
-          pieces={wordPhrasePieces}
-          languageSelectedState={languageSelectedState}
-          testId='learning-screen-review-word-breakdown'
-          pinyinTestId='learning-screen-review-word-breakdown-pinyin'
-          withTopMargin
-          chip
-        />
+      {showWordDetailsState && wordSentenceMeaning ? (
+        <span
+          data-testid='learning-screen-review-word-sentence-meaning'
+          className={`${WORD_OVERLAY_LINE_CLASS} mt-0.5`}
+        >
+          {wordSentenceMeaning}
+        </span>
       ) : null}
       {showWordDetailsState && compactWordDetailsText ? (
         <span
@@ -626,6 +706,14 @@ const LearningScreenReviewContentOnScreen = ({
         >
           {transliteration}
         </span>
+      ) : null}
+      {showWordDetailsState && clueSegments ? (
+        <ReviewWordClueChips
+          pieces={clueSegments}
+          revealed={revealedCluesState}
+          languageSelectedState={languageSelectedState}
+          onReveal={revealClue}
+        />
       ) : null}
       {showWordDetailsState && showWordSentenceState && wordContextSentenceText ? (
         <span

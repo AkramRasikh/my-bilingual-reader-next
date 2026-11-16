@@ -386,6 +386,202 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     ).toHaveTextContent('📦');
   });
 
+  it('shows the clue count on the front card next to the containment emojis', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.firstElIdInReview = 'word-1';
+    mockLearningScreenState.firstWordDefinitionInReview =
+      'How inaccurate are police shootings?';
+    mockLearningScreenState.firstWordInReviewDisplay = {
+      surfaceForm: '警察射击有多不准',
+      baseForm: '警察射击有多不准',
+      contextId: 's1',
+    } as never;
+    mockLearningScreenState.sentenceMapMemoized = {
+      s1: {
+        id: 's1',
+        targetLang: '警察射击有多不准',
+        sentenceStructure: 'x',
+        vocab: ['警察', '射击', '有', '多', '不准'].map((surfaceForm) => ({
+          surfaceForm,
+        })),
+      },
+    };
+    mockFetchData.wordsState = [
+      { id: 'word-1', surfaceForm: '警察射击有多不准', baseForm: '警察射击有多不准' },
+      { id: 'word-2', surfaceForm: '警察', baseForm: '警察' },
+    ];
+
+    render(<LearningScreenReviewContentOnScreen />);
+
+    const word = screen.getByTestId('learning-screen-review-word-text');
+    const count = screen.getByTestId('learning-screen-review-word-clue-count');
+    expect(word).toContainElement(count);
+    expect(count).toHaveTextContent('(0/5)');
+    expect(count.previousElementSibling).toBe(
+      screen.getByTestId('learning-screen-review-word-container'),
+    );
+    mockLearningScreenState.sentenceMapMemoized = {};
+  });
+
+  describe('opened 🧩 word from a broken-down sentence', () => {
+    let frames: FrameRequestCallback[] = [];
+    let held: number[] = [];
+    const realRaf = window.requestAnimationFrame;
+    const realCancel = window.cancelAnimationFrame;
+    const realGetGamepads = navigator.getGamepads;
+
+    const step = () =>
+      act(() => {
+        const queued = frames;
+        frames = [];
+        queued.forEach((frame) => frame(0));
+      });
+
+    beforeEach(() => {
+      frames = [];
+      held = [];
+      window.requestAnimationFrame = (cb) => {
+        frames.push(cb);
+        return frames.length;
+      };
+      window.cancelAnimationFrame = () => {};
+      Object.defineProperty(navigator, 'getGamepads', {
+        configurable: true,
+        value: () => [
+          {
+            mapping: 'standard',
+            buttons: Array.from({ length: 17 }, (_, index) => ({
+              pressed: held.includes(index),
+              value: held.includes(index) ? 1 : 0,
+            })),
+          },
+        ],
+      });
+
+      mockLearningScreenState.isInReviewMode = true;
+      mockLearningScreenState.firstElIdInReview = 'word-2';
+      mockLearningScreenState.firstWordDefinitionInReview = 'police';
+      mockLearningScreenState.firstWordInReviewDisplay = {
+        surfaceForm: '警察',
+        baseForm: '警察',
+        contextId: 's1',
+      } as never;
+      mockLearningScreenState.sentenceMapMemoized = {
+        s1: {
+          id: 's1',
+          targetLang: '警察射击有多不准',
+          meaning: 'How inaccurate are police shootings?',
+          sentenceStructure: 'x',
+          vocab: ['警察', '射击', '有', '多', '不准'].map((surfaceForm) => ({
+            surfaceForm,
+          })),
+        },
+      };
+      mockFetchData.wordsState = [
+        { id: 'word-1', surfaceForm: '警察射击有多不准', baseForm: '警察射击有多不准' },
+        { id: 'word-2', surfaceForm: '警察', baseForm: '警察' },
+      ];
+    });
+
+    afterEach(() => {
+      window.requestAnimationFrame = realRaf;
+      window.cancelAnimationFrame = realCancel;
+      Object.defineProperty(navigator, 'getGamepads', {
+        configurable: true,
+        value: realGetGamepads,
+      });
+      mockLearningScreenState.sentenceMapMemoized = {};
+    });
+
+    it('puts the sentence meaning on the second line, right under the definition, once opened', () => {
+      render(<LearningScreenReviewContentOnScreen />);
+      expect(
+        screen.queryByTestId('learning-screen-review-word-sentence-meaning'),
+      ).not.toBeInTheDocument();
+
+      held = [0, 5];
+      step();
+      held = [];
+      step();
+
+      const meaning = screen.getByTestId(
+        'learning-screen-review-word-sentence-meaning',
+      );
+      expect(meaning).toHaveTextContent('How inaccurate are police shootings?');
+      expect(meaning.previousElementSibling).toBe(
+        screen.getByTestId('learning-screen-review-word-text'),
+      );
+      expect(screen.getByTestId('learning-screen-review-word-text')).toHaveTextContent(
+        'police',
+      );
+    });
+
+    it('shows the sentence meaning even when the word is not inside another saved word', () => {
+      mockFetchData.wordsState = [{ id: 'word-2', surfaceForm: '警察', baseForm: '警察' }];
+      render(<LearningScreenReviewContentOnScreen />);
+
+      held = [0, 5];
+      step();
+
+      expect(
+        screen.queryByTestId('learning-screen-review-word-containment'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByTestId('learning-screen-review-word-sentence-meaning'),
+      ).toHaveTextContent('How inaccurate are police shootings?');
+    });
+
+    it('falls back to loose clues with a gap chip when the word is not an exact run of pieces', () => {
+      mockLearningScreenState.firstElIdInReview = 'word-3';
+      mockLearningScreenState.firstWordDefinitionInReview =
+        'police shooting is very inaccurate';
+      mockLearningScreenState.firstWordInReviewDisplay = {
+        surfaceForm: '警察射击很不准',
+        baseForm: '警察射击很不准',
+        contextId: 's1',
+      } as never;
+      render(<LearningScreenReviewContentOnScreen />);
+
+      expect(
+        screen.getByTestId('learning-screen-review-word-clue-count'),
+      ).toHaveTextContent('(0/4)');
+
+      held = [0, 5];
+      step();
+
+      const clues = screen.getAllByTestId('learning-screen-review-word-clue');
+      expect(
+        clues.map((clue) => clue.firstElementChild?.textContent),
+      ).toEqual(['警察', '射击', '很', '不准']);
+      expect(clues.map((clue) => clue.getAttribute('data-gap'))).toEqual([
+        'false',
+        'false',
+        'true',
+        'false',
+      ]);
+    });
+
+    it('leaves the sentence meaning off when the word is the whole sentence', () => {
+      mockLearningScreenState.firstElIdInReview = 'word-1';
+      mockLearningScreenState.firstWordDefinitionInReview =
+        'how inaccurate police shootings are';
+      mockLearningScreenState.firstWordInReviewDisplay = {
+        surfaceForm: '警察射击有多不准',
+        baseForm: '警察射击有多不准',
+        contextId: 's1',
+      } as never;
+      render(<LearningScreenReviewContentOnScreen />);
+
+      held = [0, 5];
+      step();
+
+      expect(screen.getByTestId('learning-screen-review-word-clues')).toBeInTheDocument();
+      expect(
+        screen.queryByTestId('learning-screen-review-word-sentence-meaning'),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it('hides a queued review word after leaving review mode', () => {
     mockLearningScreenState.isInReviewMode = false;
     mockLearningScreenState.firstElIdInReview = 'word-1';
