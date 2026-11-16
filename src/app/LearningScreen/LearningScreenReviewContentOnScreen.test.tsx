@@ -329,6 +329,63 @@ describe('LearningScreenReviewContentOnScreen caption contrast', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('shows a box before the definition when the studied word contains another saved word', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.firstElIdInReview = 'word-2';
+    mockLearningScreenState.firstWordDefinitionInReview = 'to discuss this topic';
+    mockLearningScreenState.firstWordInReviewDisplay = {
+      surfaceForm: 'elaborate on this issue',
+      baseForm: 'elaborate on this issue',
+    };
+    mockFetchData.wordsState = [
+      { id: 'word-1', surfaceForm: 'elaborate', baseForm: 'elaborate' },
+      {
+        id: 'word-2',
+        surfaceForm: 'elaborate on this issue',
+        baseForm: 'elaborate on this issue',
+      },
+    ];
+
+    render(<LearningScreenReviewContentOnScreen />);
+
+    const word = screen.getByTestId('learning-screen-review-word-text');
+    const cue = screen.getByTestId('learning-screen-review-word-container');
+    expect(word.firstElementChild).toBe(cue);
+    expect(cue).toHaveTextContent('📦');
+    expect(cue).toHaveAttribute('aria-label', 'Contains another saved word');
+    expect(
+      screen.queryByTestId('learning-screen-review-word-containment'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows both the jigsaw and the box when the studied word is inside one saved word and contains another', () => {
+    mockLearningScreenState.isInReviewMode = true;
+    mockLearningScreenState.firstElIdInReview = 'word-2';
+    mockLearningScreenState.firstWordDefinitionInReview = 'to discuss this topic';
+    mockLearningScreenState.firstWordInReviewDisplay = {
+      surfaceForm: 'elaborate on',
+      baseForm: 'elaborate on',
+    };
+    mockFetchData.wordsState = [
+      { id: 'word-1', surfaceForm: 'elaborate', baseForm: 'elaborate' },
+      { id: 'word-2', surfaceForm: 'elaborate on', baseForm: 'elaborate on' },
+      {
+        id: 'word-3',
+        surfaceForm: 'elaborate on this issue',
+        baseForm: 'elaborate on this issue',
+      },
+    ];
+
+    render(<LearningScreenReviewContentOnScreen />);
+
+    expect(
+      screen.getByTestId('learning-screen-review-word-containment'),
+    ).toHaveTextContent('🧩');
+    expect(
+      screen.getByTestId('learning-screen-review-word-container'),
+    ).toHaveTextContent('📦');
+  });
+
   it('hides a queued review word after leaving review mode', () => {
     mockLearningScreenState.isInReviewMode = false;
     mockLearningScreenState.firstElIdInReview = 'word-1';

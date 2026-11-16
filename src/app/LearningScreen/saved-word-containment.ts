@@ -16,9 +16,10 @@ function uniqueForms(word: SavedWordForms | null | undefined) {
   return [...new Set(forms)];
 }
 
-export function studiedWordIsInsideAnotherSavedWord(
+function someOtherSavedWord(
   studied: SavedWordForms | null | undefined,
   savedWords: SavedWordForms[] | null | undefined,
+  matches: (studiedForm: string, otherForm: string) => boolean,
 ) {
   const studiedForms = uniqueForms(studied);
   if (!studied || studiedForms.length === 0) {
@@ -29,10 +30,30 @@ export function studiedWordIsInsideAnotherSavedWord(
     if (!other || (studied.id != null && other.id === studied.id)) {
       return false;
     }
-    return uniqueForms(other).some((container) =>
-      studiedForms.some(
-        (form) => container.length > form.length && container.includes(form),
-      ),
+    return uniqueForms(other).some((otherForm) =>
+      studiedForms.some((studiedForm) => matches(studiedForm, otherForm)),
     );
   });
+}
+
+function strictlyContains(container: string, inner: string) {
+  return container.length > inner.length && container.includes(inner);
+}
+
+export function studiedWordIsInsideAnotherSavedWord(
+  studied: SavedWordForms | null | undefined,
+  savedWords: SavedWordForms[] | null | undefined,
+) {
+  return someOtherSavedWord(studied, savedWords, (studiedForm, otherForm) =>
+    strictlyContains(otherForm, studiedForm),
+  );
+}
+
+export function studiedWordContainsAnotherSavedWord(
+  studied: SavedWordForms | null | undefined,
+  savedWords: SavedWordForms[] | null | undefined,
+) {
+  return someOtherSavedWord(studied, savedWords, (studiedForm, otherForm) =>
+    strictlyContains(studiedForm, otherForm),
+  );
 }

@@ -23,7 +23,10 @@ import ReviewSentenceOverlayText, {
   ColoredPhraseBreakdown,
 } from './ReviewSentenceOverlayText';
 import { findSavedWordBreakdown, findWordContextSentence, splitSentenceAroundPhrase } from './find-breakdown-pieces-for-phrase';
-import { studiedWordIsInsideAnotherSavedWord } from './saved-word-containment';
+import {
+  studiedWordContainsAnotherSavedWord,
+  studiedWordIsInsideAnotherSavedWord,
+} from './saved-word-containment';
 import {
   getReviewOverlayWaitSnapshot,
   subscribeReviewOverlayWait,
@@ -304,19 +307,20 @@ const LearningScreenReviewContentOnScreen = ({
       : '';
 
   const showWordOverlay = Boolean(firstElIdInReview && firstWordDefinitionInReview);
-  const showSavedWordContainment = useMemo(
+  const studiedWordForms = useMemo(
     () =>
-      studiedWordIsInsideAnotherSavedWord(
-        firstElIdInReview
-          ? {
-              id: firstElIdInReview,
-              surfaceForm,
-              baseForm,
-            }
-          : null,
-        wordsState,
-      ),
-    [firstElIdInReview, surfaceForm, baseForm, wordsState],
+      firstElIdInReview
+        ? { id: firstElIdInReview, surfaceForm, baseForm }
+        : null,
+    [firstElIdInReview, surfaceForm, baseForm],
+  );
+  const showSavedWordContainment = useMemo(
+    () => studiedWordIsInsideAnotherSavedWord(studiedWordForms, wordsState),
+    [studiedWordForms, wordsState],
+  );
+  const showSavedWordContainer = useMemo(
+    () => studiedWordContainsAnotherSavedWord(studiedWordForms, wordsState),
+    [studiedWordForms, wordsState],
   );
 
   const wordPhrasePieces = useMemo(() => {
@@ -578,6 +582,16 @@ const LearningScreenReviewContentOnScreen = ({
             className='mr-1 inline align-middle'
           >
             🧩
+          </span>
+        ) : null}
+        {showSavedWordContainer ? (
+          <span
+            role='img'
+            aria-label='Contains another saved word'
+            data-testid='learning-screen-review-word-container'
+            className='mr-1 inline align-middle'
+          >
+            📦
           </span>
         ) : null}
         {showWordDetailsState
