@@ -35,8 +35,11 @@ export const downloadYoutubeVideo = async ({
         'yt-dlp',
         [
           '-f',
-          `${videoFormatId}+${audioFormatId}`,
+          videoFormatId === audioFormatId ? videoFormatId : `${videoFormatId}+${audioFormatId}`,
+          '--no-playlist',
           '--merge-output-format',
+          'mp4',
+          '--remux-video',
           'mp4',
           '-o',
           outTemplate,
