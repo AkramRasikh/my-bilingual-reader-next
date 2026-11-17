@@ -20,6 +20,7 @@ import {
   ContentStateTypes,
 } from '../reducers/content-reducer';
 import { WordActions, wordsReducer } from '../reducers/words-reducer';
+import {useReaderImportSync} from './useReaderImportSync';
 import useDataSaveToLocalStorage from './useDataSaveToLocalStorage';
 import { makeWordArrayUnique } from '@/utils/make-word-array-unique';
 import { isDueCheck } from '@/utils/is-due-check';
@@ -265,6 +266,9 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     contentState,
     hasFetchedDataState,
   });
+
+  useReaderImportSync({language: languageSelectedState, ready: hasFetchedDataState,
+    content: contentState, dispatch: dispatchContent});
 
   const pureWordsMemoized = useMemo((): string[] => {
     const pureWords: string[] = [];

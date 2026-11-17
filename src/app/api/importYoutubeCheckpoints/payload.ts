@@ -1,4 +1,5 @@
-import {srsCalculationAndText, srsRetentionKeyTypes} from '../../srs-utils/srs-algo';
+import {coveredSentenceIds} from './coverage';
+import {getEmptyCard, getNextScheduledOptions, srsCalculationAndText, srsRetentionKeyTypes} from '../../srs-utils/srs-algo';
 
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const languages = ['arabic', 'japanese', 'chinese', 'french'];
@@ -36,7 +37,14 @@ export function buildImportPayload(value: unknown) {
   if (!Array.isArray(body.snippets) || body.snippets.length > 20000) throw new Error('Invalid snippets');
   const content = body.transcript.map(item).sort((a, b) => a.time - b.time);
   if (new Set(content.map(row => row.id)).size !== content.length) throw new Error('Duplicate transcript IDs');
-  const snippets: Record<string, object> = {};
+  const mediaDuration = body.mediaDuration ?? null;
+  if (mediaDuration !== null && (typeof mediaDuration !== 'number' || !Number.isFinite(mediaDuration) || mediaDuration <= content[content.length - 1].time)) {
+    throw new Error('Media duration must be after the last transcript start');
+  }
+  const snippets: Record<string, ReturnType<typeof item> & {
+    reviewData: {due?: unknown}; isContracted: boolean; isPreSnippet: boolean;
+    suggestedFocusText: string; focusedText?: string;
+  }> = {};
   for (const value of body.snippets) {
     const row = object(value), clean = item(value);
     if (snippets[clean.id]) throw new Error('Duplicate snippet IDs');
@@ -51,12 +59,18 @@ export function buildImportPayload(value: unknown) {
     // Firebase Admin so due/last_review are stored as ISO strings, not objects.
     const reviewData = JSON.parse(JSON.stringify(nextScheduledOptions['1'].card));
     snippets[clean.id] = {...clean, reviewData,
-      isContracted: row.isContracted ?? false, isPreSnippet: row.isPreSnippet ?? true,
+      isContracted: Boolean(row.isContracted), isPreSnippet: row.isPreSnippet === undefined ? true : Boolean(row.isPreSnippet),
       suggestedFocusText: row.suggestedFocusText === undefined ? '' : text(row.suggestedFocusText, 'suggestedFocusText'),
       ...(row.focusedText === undefined ? {} : {focusedText: text(row.focusedText, 'focusedText')})};
   }
+  const eligible = new Set(coveredSentenceIds(content, Object.values(snippets), mediaDuration));
+  // Match handleAddOverlappedSnippetsToReview: initial sentence Hard card.
+  const sentenceReview = eligible.size ? JSON.parse(JSON.stringify(getNextScheduledOptions({
+    card: getEmptyCard(), contentType: srsRetentionKeyTypes.sentences,
+  })['2'].card)) : null;
+  const scheduledContent = content.map(line => eligible.has(line.id) ? {...line, reviewData: {...sentenceReview}} : line);
   return {language, id, content: {
     id, title, origin: 'youtube', url: `https://www.youtube.com/watch?v=${videoId}`,
-    content, snippets, createdAt: new Date().toISOString(),
+    content: scheduledContent, snippets, createdAt: new Date().toISOString(),
   }};
 }

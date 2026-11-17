@@ -47,8 +47,9 @@ export async function POST(req: Request) {
     if (!result.committed) {
       return Response.json({error: 'This content ID already exists. Nothing was overwritten.', contentId: payload.id, path}, {status: 409});
     }
-    return Response.json({contentId: payload.id, path,
+    return Response.json({contentId: payload.id, path, newContentData: payload.content,
       transcriptCount: payload.content.content.length,
+      reviewedSentenceCount: payload.content.content.filter(line => 'reviewData' in line).length,
       snippetCount: Object.keys(payload.content.snippets).length}, {status: 201});
   } catch (error) {
     console.error('Checkpoint database import failed:', error);

@@ -1,3 +1,4 @@
+import {mergeReaderImport} from '../Providers/reader-import-cache';
 import {
   ContentTranscriptTypes,
   ContentTypes,
@@ -9,6 +10,7 @@ export interface ContentStateTypes extends ContentTypes {
 }
 
 export type ContentAction =
+  | {type: 'mergeImportedContent'; items: ContentStateTypes[]}
   | {
       content: ContentStateTypes[];
       type: 'initContent';
@@ -65,6 +67,8 @@ export function contentReducer(
   action: ContentAction,
 ): ContentStateTypes[] {
   switch (action.type) {
+    case 'mergeImportedContent':
+      return action.items.reduce((current, item) => mergeReaderImport(current, item), state);
     case 'initContent':
       return action.content || [];
 

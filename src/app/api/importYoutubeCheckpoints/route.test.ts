@@ -95,3 +95,19 @@ test('writes generated reviewData through the content creation transaction', asy
   });
   expect((await POST(request())).status).toBe(201);
 });
+
+test('automatically schedules qualifying transcript lines with the frontend bulk-review Hard card', () => {
+  jest.useFakeTimers().setSystemTime(new Date('2026-11-17T12:00:00.000Z'));
+  try {
+    const body = {...payload(), mediaDuration: 128,
+      // Contracted snippet at 126.25 covers 1 of these 2 seconds: exactly 50%.
+      transcript: [{id: transcriptId, time: 126, targetLang: '用语', baseLang: 'language'}]};
+    const expected = srsCalculationAndText({contentType: srsRetentionKeyTypes.sentences, timeNow: new Date()})
+      .nextScheduledOptions['2'].card;
+    const result = buildImportPayload(body);
+    expect(result.content.content[0]).toMatchObject({reviewData: JSON.parse(JSON.stringify(expected))});
+    expect(body.transcript[0]).not.toHaveProperty('reviewData');
+    const belowThreshold = buildImportPayload({...body, mediaDuration: 130});
+    expect(belowThreshold.content.content[0]).not.toHaveProperty('reviewData');
+  } finally {jest.useRealTimers();}
+});
