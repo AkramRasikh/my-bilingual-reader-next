@@ -73,9 +73,9 @@ describe('LearningScreen right panel toggle', () => {
     expect(sentencesInReview).toBeDisabled();
     expect(snippetsInReview).toBeDisabled();
     expect(wordsInReview.parentElement?.parentElement).toHaveClass('opacity-40');
-    expect(wordsInReview.nextElementSibling).toHaveTextContent('🔤 (0)');
-    expect(sentencesInReview.nextElementSibling).toHaveTextContent('📝 (0)');
-    expect(snippetsInReview.nextElementSibling).toHaveTextContent('✂️ (0)');
+    expect(wordsInReview.nextElementSibling).toHaveTextContent('🔤 (0/0)');
+    expect(sentencesInReview.nextElementSibling).toHaveTextContent('📝 (0/0)');
+    expect(snippetsInReview.nextElementSibling).toHaveTextContent('✂️ (0/0)');
 
     fireEvent.click(wordsInReview);
     expect(wordsInReview).toBeChecked();

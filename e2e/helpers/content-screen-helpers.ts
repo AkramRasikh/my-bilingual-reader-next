@@ -18,13 +18,32 @@ export async function sentenceToastMessage(page: Page, isLearned: boolean) {
   await expect(firstToastMessage).toBeVisible();
 }
 
-// Helper function to check sentence count
-export async function checkSentenceCount(page: Page, expectedText: string) {
-  const sentencesCount = page.getByTestId('progress-header-text');
-  await expect(sentencesCount).toBeVisible();
-  await expect(sentencesCount).toContainText(
-    expectedText.replace('Sentences: ', ''),
-  );
+type ClosedPanelKind = 'words' | 'sentences' | 'snippets';
+
+// Due totals live on the closed-panel review toggles as `(inWindow/dueTotal)`.
+// Closes the transcript panel to read them, then restores it.
+async function expectClosedPanelDueTotal(
+  page: Page,
+  kind: ClosedPanelKind,
+  dueTotal: number,
+) {
+  const filters = page.getByTestId('closed-panel-review-filters');
+  const panelWasOpen = !(await filters.isVisible());
+  const panelToggle = page.getByTestId('right-panel-toggle');
+  if (panelWasOpen) {
+    await panelToggle.click();
+  }
+  const label = page.locator(`label[for="closed-panel-${kind}-toggle"]`);
+  await expect(label).toBeVisible();
+  await expect(label).toContainText(`/${dueTotal})`);
+  if (panelWasOpen) {
+    await panelToggle.click();
+  }
+}
+
+// Helper function to check sentences due count
+export async function checkSentenceCount(page: Page, dueTotal: number) {
+  await expectClosedPanelDueTotal(page, 'sentences', dueTotal);
 }
 
 // Helper function to check words count
@@ -36,28 +55,13 @@ export async function checkWordsTabCount(page: Page, expectedText: string) {
 }
 
 // Helper function to check words due count
-export async function checkWordsDueMeta(page: Page, expectedText: string) {
-  const dueCount = expectedText.replace('Words Due: ', '');
-  const wordsDue = page.getByTestId('progress-header-text');
-  await expect(wordsDue).toBeVisible();
-  await expect(wordsDue).toContainText(`🔤 ${dueCount}/`);
+export async function checkWordsDueMeta(page: Page, dueTotal: number) {
+  await expectClosedPanelDueTotal(page, 'words', dueTotal);
 }
 
 // Helper function to check snippets due count
-export async function checkSnippetsDueMeta(page: Page, expectedText: string) {
-  const [due, withReview] = expectedText
-    .replace('Snippets Due: ', '')
-    .split('/');
-  const snippetsDue = page.getByTestId('progress-header-text');
-  await expect(snippetsDue).toBeVisible();
-  await expect(snippetsDue).toContainText(`✂️ ${due}/${withReview}`);
-}
-
-// Helper function to check progress header text
-export async function checkProgressHeader(page: Page, expectedText: string) {
-  const progressHeader = page.getByTestId('progress-header-text');
-  await expect(progressHeader).toBeVisible();
-  await expect(progressHeader).toContainText(expectedText);
+export async function checkSnippetsDueMeta(page: Page, dueTotal: number) {
+  await expectClosedPanelDueTotal(page, 'snippets', dueTotal);
 }
 
 // Helper function to check learning screen tab

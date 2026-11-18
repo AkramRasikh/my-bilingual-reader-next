@@ -265,28 +265,28 @@ test('review each variant - words/sentences/snippets - follows a change in revie
   await goFromLandingToLearningScreen(page);
   await checkPrePostReviewToggle(page);
   // check meta data
-  await checkWordsDueMeta(page, 'Words Due: 55');
-  await checkSentenceCount(page, '153/200');
+  await checkWordsDueMeta(page, 55);
+  await checkSentenceCount(page, 153);
 
   await checkReviewVariantCounts(page, 5, 0, 0);
 
   await reviewWord(page, batchDueWord[0]);
-  await checkWordsDueMeta(page, 'Words Due: 54');
+  await checkWordsDueMeta(page, 54);
   await checkReviewVariantCounts(page, 4, 0, 0);
   await reviewWord(page, batchDueWord[1]);
-  await checkWordsDueMeta(page, 'Words Due: 53');
+  await checkWordsDueMeta(page, 53);
   await checkReviewVariantCounts(page, 3, 0, 0);
   await reviewWord(page, batchDueWord[2]);
-  await checkWordsDueMeta(page, 'Words Due: 52');
+  await checkWordsDueMeta(page, 52);
   await checkReviewVariantCounts(page, 2, 0, 0);
   await reviewWord(page, batchDueWord[3]);
-  await checkWordsDueMeta(page, 'Words Due: 51');
+  await checkWordsDueMeta(page, 51);
   await checkReviewVariantCounts(page, 1, 0, 0);
   await reviewWord(page, batchDueWord[4]);
-  await checkWordsDueMeta(page, 'Words Due: 50');
+  await checkWordsDueMeta(page, 50);
   await checkReviewVariantCounts(page, 6, 2, 4);
 
-  await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
+  await checkSnippetsDueMeta(page, 225);
   await mockSaveSnippetAPIE2E(
     page,
     {
@@ -317,7 +317,7 @@ test('review each variant - words/sentences/snippets - follows a change in revie
   );
 
   await checkReviewVariantCounts(page, 6, 2, 3);
-  await checkSnippetsDueMeta(page, 'Snippets Due: 224/292/292');
+  await checkSnippetsDueMeta(page, 224);
 
   await mockSaveSnippetAPIE2E(
     page,
@@ -349,7 +349,7 @@ test('review each variant - words/sentences/snippets - follows a change in revie
     true,
   );
   await checkReviewVariantCounts(page, 6, 2, 2);
-  await checkSnippetsDueMeta(page, 'Snippets Due: 223/292/292');
+  await checkSnippetsDueMeta(page, 223);
 
   await mockSaveSnippetAPIE2E(
     page,
@@ -380,7 +380,7 @@ test('review each variant - words/sentences/snippets - follows a change in revie
     true,
   );
   await checkReviewVariantCounts(page, 6, 2, 1);
-  await checkSnippetsDueMeta(page, 'Snippets Due: 222/292/292');
+  await checkSnippetsDueMeta(page, 222);
 
   await mockSaveSnippetAPIE2E(
     page,
@@ -411,34 +411,34 @@ test('review each variant - words/sentences/snippets - follows a change in revie
     true,
   );
   await checkReviewVariantCounts(page, 6, 2, 0);
-  await checkSnippetsDueMeta(page, 'Snippets Due: 221/292/292');
+  await checkSnippetsDueMeta(page, 221);
 
   // Find the review SRS toggles container
   await reviewSentence(page, firstDueSentenceId);
   await checkReviewVariantCounts(page, 6, 1, 0);
 
-  await checkSentenceCount(page, '1/153/200');
+  await checkSentenceCount(page, 152);
 
   await reviewSentence(page, secondDueSentenceId);
   await checkReviewVariantCounts(page, 6, 0, 0);
-  await checkSentenceCount(page, '2/153/200');
+  await checkSentenceCount(page, 151);
   // second batch of words
   await reviewWord(page, batchDueWord[5]);
   await checkReviewVariantCounts(page, 5, 0, 0);
-  await checkWordsDueMeta(page, 'Words Due: 49');
+  await checkWordsDueMeta(page, 49);
   await reviewWord(page, batchDueWord[6]);
   await checkReviewVariantCounts(page, 4, 0, 0);
-  await checkWordsDueMeta(page, 'Words Due: 48');
+  await checkWordsDueMeta(page, 48);
   await reviewWord(page, batchDueWord[7]);
   await checkReviewVariantCounts(page, 3, 0, 0);
-  await checkWordsDueMeta(page, 'Words Due: 47');
+  await checkWordsDueMeta(page, 47);
   await reviewWord(page, batchDueWord[8]);
   await checkReviewVariantCounts(page, 2, 0, 0);
-  await checkWordsDueMeta(page, 'Words Due: 46');
+  await checkWordsDueMeta(page, 46);
   await reviewWord(page, batchDueWord[9]);
   await checkReviewVariantCounts(page, 1, 0, 0);
-  await checkWordsDueMeta(page, 'Words Due: 45');
+  await checkWordsDueMeta(page, 45);
   await reviewWord(page, batchDueWord[10]);
   await checkReviewVariantCounts(page, 5, 6, 1);
-  await checkWordsDueMeta(page, 'Words Due: 44');
+  await checkWordsDueMeta(page, 44);
 });

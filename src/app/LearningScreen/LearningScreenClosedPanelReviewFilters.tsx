@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import useLearningScreen from './useLearningScreen';
+import { isDueCheck } from '@/utils/is-due-check';
 
 const filters = [
   {
@@ -38,12 +39,23 @@ const LearningScreenClosedPanelReviewFilters = () => {
     postSentencesMemoized,
     postSnippetsMemoized,
     isInReviewMode,
+    sentencesNeedReview,
+    contentMetaWordMemoized,
+    contentSnippets,
   } = useLearningScreen();
 
   const counts = {
     words: postWordsMemoized.length,
     sentences: postSentencesMemoized.length,
     snippets: postSnippetsMemoized.length,
+  };
+
+  const now = new Date();
+  // Total due right now for this content, regardless of the review window.
+  const dueTotals = {
+    words: contentMetaWordMemoized.length,
+    sentences: sentencesNeedReview,
+    snippets: contentSnippets.filter((item) => isDueCheck(item, now)).length,
   };
 
   const checked = {
@@ -98,7 +110,7 @@ const LearningScreenClosedPanelReviewFilters = () => {
                 isInReviewMode ? 'cursor-pointer' : 'cursor-not-allowed',
               )}
             >
-              {filter.emoji} ({counts[filter.countKey]})
+              {filter.emoji} ({counts[filter.countKey]}/{dueTotals[filter.countKey]})
               <span className='sr-only'> {filter.label}</span>
             </Label>
           </div>

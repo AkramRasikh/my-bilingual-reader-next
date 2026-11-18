@@ -41,11 +41,11 @@ test.describe('Keyboard actions', () => {
     await mockUpdateSentenceOneMinuteAPI(page);
     await goFromLandingToLearningScreen(page);
     await triggerTrackSwitch(page);
-    await checkSentenceCount(page, 'Sentences: 153/200');
+    await checkSentenceCount(page, 153);
     await page.waitForTimeout(2000);
     await thirdPlayButtonAndShiftReview(page);
     await sentenceToastMessage(page, false);
-    await checkSentenceCount(page, 'Sentences: 153/201');
+    await checkSentenceCount(page, 153);
     await page.route('**/api/updateSentence', async (route) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       await route.fulfill({
@@ -58,7 +58,7 @@ test.describe('Keyboard actions', () => {
     });
     await thirdPlayButtonAndShiftReview(page);
     await sentenceToastMessage(page, true);
-    await checkSentenceCount(page, 'Sentences: 153/200');
+    await checkSentenceCount(page, 153);
   });
 
   test('breakdown sentence using Shift+B keyboard shortcut', async ({
@@ -67,7 +67,7 @@ test.describe('Keyboard actions', () => {
     await mockSentenceBrekadownAPIE2E(page);
     await goFromLandingToLearningScreen(page);
     await triggerTrackSwitch(page);
-    await checkSentenceCount(page, 'Sentences: 153/200');
+    await checkSentenceCount(page, 153);
     const brickEmoji = page.getByTestId(
       `transcript-breakdown-complete-${firstContentId}`,
     );

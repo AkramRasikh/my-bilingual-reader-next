@@ -49,15 +49,19 @@ afterEach(() => {
 });
 
 describe('LearningScreen - Review Mode', () => {
+  const checkClosedPanelDueTotals = () => {
+    const label = (kind: string) =>
+      screen.getByTestId(`closed-panel-${kind}-toggle`).nextElementSibling;
+    expect(label('words')).toHaveTextContent('🔤 (0/3)');
+    expect(label('sentences')).toHaveTextContent('📝 (0/3)');
+    expect(label('snippets')).toHaveTextContent('✂️ (0/3)');
+  };
+
   const checkForDefaultReviewModeMetaData = () => {
     const wordsBtnLink = screen.getByTestId('breadcrumb-words-button');
     expect(wordsBtnLink).toHaveTextContent('Words (3)');
     const wordsTabTrigger = screen.getByTestId('words-tab-trigger');
     expect(wordsTabTrigger).toHaveTextContent('Words 3/3');
-    const progressHeader = screen.getByTestId('progress-header-text');
-    expect(progressHeader).toHaveTextContent('📝 0/3/3');
-    expect(progressHeader).toHaveTextContent('🔤 3/');
-    expect(progressHeader).toHaveTextContent('✂️ 3/3');
     expect(
       document.querySelectorAll('[data-testid^="timeline-sentence-"]'),
     ).toHaveLength(3);
@@ -235,24 +239,8 @@ describe('LearningScreen - Review Mode', () => {
     checkWordsMetaData(0, '0/3');
   };
 
-  const checkSentenceMetaData = (
-    reviewedCount: number,
-    sessionCount: number,
-    pendingCount: number,
-  ) => {
-    if (reviewedCount === sessionCount) {
-      expect(screen.queryByTestId('progress-header')).not.toBeInTheDocument();
-      return;
-    }
-
-    expect(screen.getByTestId('progress-header-text')).toHaveTextContent(
-      `📝 ${reviewedCount}/${sessionCount}/${pendingCount}`,
-    );
-  };
-
   const reviewSentencesInReviewMode = async () => {
     expect(screen.queryByText('Done!')).not.toBeInTheDocument();
-    checkSentenceMetaData(0, 3, 3);
     mockUpdateSentenceReview(REVIEW_DATA_2_DAYS_AWAY);
     const firstSentenceDueTime = screen.getByTestId('easy-sentence-due-1');
 
@@ -260,7 +248,6 @@ describe('LearningScreen - Review Mode', () => {
     await waitFor(() => {
       expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
     });
-    checkSentenceMetaData(1, 3, 3);
     checkForReviewLabelText(0, 0, 2);
     checkingTimelineMarkers(0, 0, 2);
 
@@ -271,7 +258,6 @@ describe('LearningScreen - Review Mode', () => {
       expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
     });
 
-    checkSentenceMetaData(2, 3, 3);
     checkForReviewLabelText(0, 0, 1);
     checkingTimelineMarkers(0, 0, 1);
 
@@ -282,7 +268,6 @@ describe('LearningScreen - Review Mode', () => {
       expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
     });
 
-    checkSentenceMetaData(3, 3, 3);
     checkForReviewLabelText(0, 0, 0);
     checkingTimelineMarkers(0, 0, 0);
 
@@ -292,6 +277,7 @@ describe('LearningScreen - Review Mode', () => {
   it.only('should allow user to review words/sentences/snippets', async () => {
     await renderWithProvider(mockSelectedContentWithDueData);
     const onLoadTitle = await screen.findByText(mockTitle);
+    checkClosedPanelDueTotals();
     openRightPanel();
     expect(onLoadTitle).toBeDefined();
     checkForDefaultReviewModeMetaData();

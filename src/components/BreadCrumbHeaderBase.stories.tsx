@@ -53,19 +53,6 @@ export const WithNavigationButtons: Story = {
   },
 };
 
-export const WithProgressHeader: Story = {
-  args: {
-    heading: 'Learning',
-    subHeading: 'Lesson 5',
-    onClick: () => console.log('Clicked!'),
-    progressHeaderComponent: () => (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <span>Progress: 3/10</span>
-      </div>
-    ),
-  },
-};
-
 export const Complete: Story = {
   args: {
     heading: 'Content Library',
@@ -80,13 +67,5 @@ export const Complete: Story = {
         Next →
       </Button>,
     ],
-    progressHeaderComponent: () => (
-      <div className="flex items-center gap-2">
-        <div className="h-2 w-32 bg-gray-200 rounded-full overflow-hidden">
-          <div className="h-full bg-primary" style={{ width: '60%' }} />
-        </div>
-        <span className="text-xs text-muted-foreground">6/10</span>
-      </div>
-    ),
   },
 };

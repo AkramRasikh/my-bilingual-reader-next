@@ -14,7 +14,6 @@ import {
   checkSnippetsDueMeta,
   checkWordsDueMeta,
   checkLearningScreenTab,
-  checkProgressHeader,
   checkVideoControl,
   checkEnglishTranscriptToggles,
   checkBulkReviewCount,
@@ -45,10 +44,9 @@ test.describe('General toggles & verify UI elements', () => {
     const heading = page.getByTestId('breadcrumb-heading');
     await expect(heading).toContainText('Home');
     // left side meta data
-    await checkSentenceCount(page, '153/200');
-    await checkWordsDueMeta(page, 'Words Due: 55');
-    await checkSnippetsDueMeta(page, 'Snippets Due: 225/292/292');
-    await checkProgressHeader(page, '0/153');
+    await checkSentenceCount(page, 153);
+    await checkWordsDueMeta(page, 55);
+    await checkSnippetsDueMeta(page, 225);
 
     await checkBulkReviewCount(page, 7);
 
@@ -101,9 +99,8 @@ test.describe('Transcript item menu interactions and review', () => {
     // Wait for the content to load and find the first transcript item
     await page.waitForLoadState('networkidle');
 
-    // Verify initial sentence count and reps
-    const sentencesCount = page.getByTestId('progress-header-text');
-    await expect(sentencesCount).toBeVisible();
+    // Verify initial sentence due count
+    await checkSentenceCount(page, 153);
 
     const firstMenuToggle = page.getByTestId(/transcript-menu-toggle-/).first();
     await expect(firstMenuToggle).toBeVisible();
@@ -131,9 +128,8 @@ test.describe('Transcript item menu interactions and review', () => {
     // Verify review button is no longer visible since menu collapsed
     await expect(reviewButton).not.toBeVisible();
 
-    // Verify sentence count increased by 1 in the denominator
-    const finalSentencesText = await sentencesCount.textContent();
-    expect(finalSentencesText).toContain('/201');
+    // Newly added review is not due yet, so the due count is unchanged
+    await checkSentenceCount(page, 153);
 
     // Click the menu toggle again to reopen the menu
     await firstMenuToggle.click();
@@ -155,9 +151,8 @@ test.describe('Transcript item menu interactions and review', () => {
     // Wait for the loading to complete
     await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
 
-    // Verify sentence count reverted back to original
-    const revertedSentencesText = await sentencesCount.textContent();
-    expect(revertedSentencesText).toContain('/200');
+    // Verify sentence due count is unchanged
+    await checkSentenceCount(page, 153);
   });
 
   test('error handling', async ({ page }) => {
@@ -191,9 +186,7 @@ test.describe('Transcript item menu interactions and review', () => {
     await page.waitForLoadState('networkidle');
 
     // Verify initial sentence count and reps
-    await checkSentenceCount(page, '/200');
-    const sentencesCount = page.getByTestId('progress-header-text');
-    const initialSentencesText = await sentencesCount.textContent();
+    await checkSentenceCount(page, 153);
 
     // Open menu and click review button
     const firstMenuToggle = page.getByTestId(/transcript-menu-toggle-/).first();
@@ -219,9 +212,7 @@ test.describe('Transcript item menu interactions and review', () => {
     await expect(loadingSpinner).not.toBeVisible({ timeout: 5000 });
 
     // Verify sentence count remained unchanged
-    const finalSentencesText = await sentencesCount.textContent();
-    expect(finalSentencesText).toContain('/200');
-    expect(finalSentencesText).toBe(initialSentencesText);
+    await checkSentenceCount(page, 153);
   });
 });
 
@@ -1367,7 +1358,7 @@ test.describe('Bulk sentence review functionality', () => {
 
     const bulkReviewButton = page.getByTestId('bulk-review-button');
     await checkBulkReviewCount(page, 7);
-    await checkSentenceCount(page, '153/200');
+    await checkSentenceCount(page, 153);
 
     // Double-click the 💰 button
     await bulkReviewButton.dblclick();
@@ -1379,7 +1370,7 @@ test.describe('Bulk sentence review functionality', () => {
     const toastMessage = page.getByText('Bulk reviewed 7 sentences ✅');
     await expect(toastMessage).toBeVisible({ timeout: 5000 });
 
-    await checkSentenceCount(page, '153/207');
+    await checkSentenceCount(page, 153);
 
     await checkBulkReviewCount(page, 0);
   });
@@ -1541,7 +1532,7 @@ test.describe('Word tab section', () => {
       });
     });
 
-    await checkWordsDueMeta(page, 'Words Due: 55');
+    await checkWordsDueMeta(page, 55);
     await checkLearningScreenTab(
       page,
       'words-tab-trigger',
@@ -1551,7 +1542,7 @@ test.describe('Word tab section', () => {
 
     // Click the "2 days" button
     await twoDaysButton.click();
-    await checkWordsDueMeta(page, 'Words Due: 54');
+    await checkWordsDueMeta(page, 54);
     await checkLearningScreenTab(
       page,
       'words-tab-trigger',

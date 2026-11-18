@@ -7,22 +7,12 @@ import BreadCrumbHeaderBase from '../../components/BreadCrumbHeaderBase';
 import { useRouter } from 'next/navigation';
 import LanguageSelector from '../../components/custom/LanguageSelector';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
-import ProgressHeader from '../../components/custom/ProgressHeader';
 import { RefreshCwIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { isDueCheck } from '@/utils/is-due-check';
 
 const LearningScreenBreadCrumbHeader = () => {
-  const {
-    selectedContentState,
-    initialSentenceCount,
-    sentencesNeedReview,
-    sentencesPendingOrDue,
-    contentMetaWordMemoized,
-    wordsForSelectedTopic,
-    contentSnippets,
-  } = useLearningScreen();
+  const { selectedContentState } = useLearningScreen();
 
   const {
     languageSelectedState,
@@ -35,24 +25,6 @@ const LearningScreenBreadCrumbHeader = () => {
     useState(false);
 
   const router = useRouter();
-
-  // Session target only grows, so reviewing a sentence does not shrink the middle number.
-  const sentencesNeededThisSession = Math.max(
-    initialSentenceCount ?? 0,
-    sentencesNeedReview,
-  );
-  const sentencesReviewedThisSession =
-    sentencesNeededThisSession - sentencesNeedReview;
-  const progressValue =
-    sentencesNeededThisSession > 0
-      ? (sentencesReviewedThisSession / sentencesNeededThisSession) * 100
-      : 0;
-
-  const snippetsWithReviewDate = contentSnippets.filter((item) => item?.reviewData);
-  const snippetDueCount = snippetsWithReviewDate.filter((item) =>
-    isDueCheck(item, new Date()),
-  ).length;
-  const progressText = `📝 ${sentencesReviewedThisSession}/${sentencesNeededThisSession}/${sentencesPendingOrDue} 🔤 ${contentMetaWordMemoized.length}/${wordsForSelectedTopic.length} ✂️ ${snippetDueCount}/${snippetsWithReviewDate.length}`;
 
   const numberOfSentences = sentencesDueForReviewMemoized.length;
   const title = selectedContentState.title;
@@ -132,17 +104,6 @@ const LearningScreenBreadCrumbHeader = () => {
               </Button>
             );
           })
-        }
-        progressHeaderComponent={
-          sentencesNeedReview
-            ? () => (
-                <ProgressHeader
-                  progressState={progressValue}
-                  progressText={progressText}
-                  small
-                />
-              )
-            : undefined
         }
       />
       <div className='flex items-center gap-2'>

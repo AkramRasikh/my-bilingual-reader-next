@@ -33,6 +33,18 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
+// Due counts live on the closed-panel review toggles, so peek with the panel closed.
+const checkClosedPanelSentencesDue = async (dueCount: number) => {
+  const toggle = screen.getByTestId('right-panel-toggle');
+  fireEvent.click(toggle);
+  await waitFor(() =>
+    expect(
+      screen.getByTestId('closed-panel-sentences-toggle').nextElementSibling,
+    ).toHaveTextContent(new RegExp(`/${dueCount}\\)`)),
+  );
+  fireEvent.click(toggle);
+};
+
 const checkMetaDataOnLoad = () => {
   const bulkReviewButton = screen.getByTestId('bulk-review-button');
   expect(bulkReviewButton).toHaveTextContent('💰 0');
@@ -41,7 +53,6 @@ const checkMetaDataOnLoad = () => {
   // navbar
   expect(screen.getByText('Home')).toBeInTheDocument();
   expect(screen.getByText(mockTitle)).toBeInTheDocument();
-  expect(screen.queryByTestId('progress-header')).not.toBeInTheDocument();
 
   const breadcrumbSentencesButton = screen.getByTestId(
     'breadcrumb-sentences-button',
@@ -162,10 +173,7 @@ const addFirstSentenceToReview = async () => {
   await waitFor(() => {
     expect(screen.getByText('Sentence reviewed ✅')).toBeInTheDocument();
   });
-  expect(await screen.findByTestId('progress-header')).toBeInTheDocument();
-  expect(screen.getByTestId('progress-header-text')).toHaveTextContent(
-    '📝 0/1/1',
-  );
+  await checkClosedPanelSentencesDue(1);
 };
 const addSecondSentenceToReview = async () => {
   const transcriptMenuToggle = screen.getByTestId(
@@ -191,10 +199,7 @@ const addSecondSentenceToReview = async () => {
   await waitFor(() => {
     expect(screen.getAllByText('Sentence reviewed ✅')).toHaveLength(2);
   });
-  expect(await screen.findByTestId('progress-header')).toBeInTheDocument();
-  expect(screen.getByTestId('progress-header-text')).toHaveTextContent(
-    '📝 0/2/2',
-  );
+  await checkClosedPanelSentencesDue(2);
 };
 
 const startReviewMode = () => {
@@ -216,10 +221,7 @@ const reviewFirstSentenceAgain = async () => {
   await waitFor(() => {
     expect(screen.getAllByText('Sentence reviewed ✅')).toHaveLength(3);
   });
-  expect(await screen.findByTestId('progress-header')).toBeInTheDocument();
-  expect(screen.getByTestId('progress-header-text')).toHaveTextContent(
-    '📝 1/2/2',
-  );
+  await checkClosedPanelSentencesDue(1);
 };
 
 const removeSecondSentenceFromReview = async () => {
@@ -237,7 +239,7 @@ const removeSecondSentenceFromReview = async () => {
       screen.getByText('Successful learned sentence ✅'),
     ).toBeInTheDocument();
   });
-  expect(screen.queryByTestId('progress-header')).not.toBeInTheDocument();
+  await checkClosedPanelSentencesDue(0);
 };
 
 const saveWordFirstInTranscript = async () => {

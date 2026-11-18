@@ -16,7 +16,6 @@ interface BreadCrumbHeaderBase {
   heading: string;
   subHeading?: string;
   navigationButtons?: () => JSX.Element[];
-  progressHeaderComponent?: () => JSX.Element;
 }
 
 const BreadCrumbHeaderBase = ({
@@ -25,7 +24,6 @@ const BreadCrumbHeaderBase = ({
   heading,
   subHeading,
   navigationButtons,
-  progressHeaderComponent,
 }: BreadCrumbHeaderBase) => (
   <div className='flex justify-between w-full'>
     <Breadcrumb className='my-auto mx-1'>
@@ -62,9 +60,6 @@ const BreadCrumbHeaderBase = ({
         )}
       </BreadcrumbList>
     </Breadcrumb>
-    {progressHeaderComponent && (
-      <div className='w-md my-auto'>{progressHeaderComponent()}</div>
-    )}
     <div>{navigationButtons?.()}</div>
   </div>
 );
