@@ -1,4 +1,6 @@
 'use client';
+import {useReaderReviewSync} from './useReaderReviewSync';
+import {useReaderWordSync} from './useReaderWordSync';
 import {
   ReactNode,
   createContext,
@@ -269,6 +271,8 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
 
   useReaderImportSync({language: languageSelectedState, ready: hasFetchedDataState,
     content: contentState, dispatch: dispatchContent});
+  useReaderWordSync({language:languageSelectedState,ready:hasFetchedDataState,words:wordsState as WordTypes[],content:contentState,dispatch:dispatchWords});
+  useReaderReviewSync({language:languageSelectedState,ready:hasFetchedDataState,words:wordsState as WordTypes[],content:contentState,dispatchWords,dispatchContent});
 
   const pureWordsMemoized = useMemo((): string[] => {
     const pureWords: string[] = [];

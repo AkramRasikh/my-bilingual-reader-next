@@ -60,6 +60,7 @@ export function useReaderImportSync({language, ready, content, dispatch}: {
       if (event.source !== window || event.origin !== location.origin) return;
       if (event.data?.type === 'll-reader-bridge-ready') window.postMessage({type: 'll-reader-ready'}, location.origin);
       const entry = event.data?.entry;
+      if(entry?.kind==='word' || entry?.kind==='review')return; // Word-only updates have their own cache/state hook.
       if (event.data?.type !== 'll-reader-import' || entry?.origin !== location.origin ||
           typeof entry.key !== 'string' || !['arabic', 'chinese', 'french', 'japanese'].includes(entry.language)) return;
       pending.current.set(entry.key, entry);
