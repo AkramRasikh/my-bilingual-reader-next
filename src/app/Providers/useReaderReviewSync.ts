@@ -7,12 +7,12 @@ import type {Snippet,ContentTranscriptTypes} from '../types/content-types';
 import {isDueCheck} from '@/utils/is-due-check';
 
 type Card=Record<string,unknown> & {id:string};
-type Entry={kind:'review';key:string;origin:string;language:string;contentId:string;cardKind:'snippet'|'word'|'sentence';id:string;before:Card;after:Card|null};
+type Entry={kind:'review';key:string;origin:string;language:string;contentId:string;cardKind:'snippet'|'word'|'sentence';id:string;before:Card|null;after:Card|null};
 const stable=(value:unknown):string=>JSON.stringify(value,(_key,item)=>item && typeof item==='object' && !Array.isArray(item)?Object.fromEntries(Object.keys(item).sort().map(key=>[key,item[key]])):item);
 const signature=(card:Card)=>stable({reviewData:card.reviewData || null,focusedText:card.focusedText || null,isPreSnippet:card.isPreSnippet || false});
 // Apply only changed fields. Other local annotations/progress remain intact.
 export function patchReviewCard(current:Card,entry:Entry):Card|null|undefined {
-  if(signature(current)!==signature(entry.before))return undefined;
+  if(!entry.before || signature(current)!==signature(entry.before))return undefined;
   if(entry.after===null)return null;
   const updated={...current};
   for(const key of new Set([...Object.keys(entry.before),...Object.keys(entry.after)])){
@@ -53,21 +53,22 @@ export function useReaderReviewSync({language,ready,words,content,dispatchWords,
      const owner=base[contentIndex];
      const rows=(entry.cardKind==='snippet'?(Array.isArray(owner.snippets)?owner.snippets:Object.values(owner.snippets || {})):owner.content) as Array<Snippet|ContentTranscriptTypes>;
      const current=rows.find(row=>row.id===entry.id);
-     if(current){
-      const next=patchReviewCard(current as unknown as Card,entry);
-      if(next!==undefined){
-       const updatedRows=rows.flatMap<Card>(row=>row.id===entry.id?(next?[next]:[]):[row as unknown as Card]);
+     const isNewSnippet=entry.cardKind==='snippet' && entry.before===null && !current;
+     const next=isNewSnippet?entry.after:current?patchReviewCard(current as unknown as Card,entry):undefined;
+     if(next!==undefined){
+       const updatedRows=isNewSnippet && next
+        ? [...rows as unknown as Card[],next]
+        : rows.flatMap<Card>(row=>row.id===entry.id?(next?[next]:[]):[row as unknown as Card]);
        const merged=base.map((row,index)=>index===contentIndex?{...row,[entry.cardKind==='snippet'?'snippets':'content']:updatedRows}:row) as ContentStateTypes[];
        localStorage.setItem(cacheKey,JSON.stringify(merged));
        if(active){latest.current.content=merged;
         if(entry.cardKind==='snippet'){
-         if(next)dispatchContent({type:'saveSnippet',contentIndex,snippetData:next as unknown as Snippet,isUpdate:true});else dispatchContent({type:'deleteSnippet',contentIndex,snippetId:entry.id});
+         if(next)dispatchContent({type:'saveSnippet',contentIndex,snippetData:next as unknown as Snippet,isUpdate:!isNewSnippet});else dispatchContent({type:'deleteSnippet',contentIndex,snippetId:entry.id});
         }else if(next){
          // Explicit undefined removes the review field in the existing reducer.
          dispatchContent({type:'updateSentence',contentIndex,sentenceId:entry.id,fields:{...next,reviewData:next.reviewData} as unknown as Partial<ContentTranscriptTypes>});
         }
        }
-      }
      }
     }
     // Replays and conflicts with newer local progress are acknowledged without resetting it.
@@ -80,7 +81,7 @@ export function useReaderReviewSync({language,ready,words,content,dispatchWords,
   const receive=(event:MessageEvent)=>{
    if(event.source!==window || event.origin!==location.origin || event.data?.type!=='ll-reader-import')return;
    const entry=event.data.entry;
-   if(entry?.kind!=='review' || entry.origin!==location.origin || typeof entry.key!=='string' || !['japanese','chinese','arabic','french'].includes(entry.language) || !['snippet','word','sentence'].includes(entry.cardKind) || !/^netflix:\d{1,20}$/.test(entry.contentId) || !entry.before || entry.before.id!==entry.id || (entry.after!==null && entry.after?.id!==entry.id))return;
+   if(entry?.kind!=='review' || entry.origin!==location.origin || typeof entry.key!=='string' || !['japanese','chinese','arabic','french'].includes(entry.language) || !['snippet','word','sentence'].includes(entry.cardKind) || !/^netflix:\d{1,20}$/.test(entry.contentId) || (entry.before===null ? entry.cardKind!=='snippet' || !entry.after : entry.before?.id!==entry.id) || (entry.after!==null && entry.after?.id!==entry.id))return;
    pending.current.set(entry.key,entry);drain.current();
   };
   const retry=()=>drain.current();window.addEventListener('message',receive);window.addEventListener('focus',retry);

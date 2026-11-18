@@ -20,7 +20,7 @@ function mount(ready=true,language='japanese'){
  },{initialProps:{ready,language}});
 }
 function deliver(cardKind='snippet',before:unknown=snippet,after:unknown={...snippet,reviewData:next},language='japanese'){
- const value=before as {id:string};window.dispatchEvent(new MessageEvent('message',{source:window,origin:location.origin,data:{type:'ll-reader-import',entry:{kind:'review',key:'review-'+cardKind,origin:location.origin,language,contentId:'netflix:83028069',cardKind,id:value.id,before,after}}}));
+ const value=(before ?? after) as {id:string};window.dispatchEvent(new MessageEvent('message',{source:window,origin:location.origin,data:{type:'ll-reader-import',entry:{kind:'review',key:'review-'+cardKind,origin:location.origin,language,contentId:'netflix:83028069',cardKind,id:value.id,before,after}}}));
 }
 beforeEach(()=>{localStorage.clear();jest.spyOn(window,'postMessage').mockImplementation(()=>{});global.fetch=jest.fn();});
 afterEach(()=>jest.restoreAllMocks());
@@ -50,4 +50,14 @@ test('browser storage failure keeps React unchanged until persistence can retry'
 test('waits for initialization and never creates a partial inactive language cache',()=>{
  const h=mount(false,'chinese');act(()=>deliver());expect(localStorage.getItem('japanese-contentState')).toBeNull();
  h.rerender({ready:true,language:'japanese'});expect(h.result.current.content[0].snippets![0].reviewData).toEqual(next);
+});
+
+test('adds a confirmed new snippet once and preserves its later review progress',()=>{
+ const h=mount();
+ const captured={...snippet,id:'local-snippet',time:13};
+ act(()=>deliver('snippet',null,captured));
+ act(()=>deliver('snippet',captured,{...captured,reviewData:next}));
+ act(()=>deliver('snippet',null,captured));
+ expect(h.result.current.content[0].snippets).toEqual([snippet,{...captured,reviewData:next}]);
+ expect(h.result.current.content[0].content).toEqual([line]);
 });
