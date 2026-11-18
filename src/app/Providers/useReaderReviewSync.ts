@@ -7,11 +7,20 @@ import type {Snippet,ContentTranscriptTypes} from '../types/content-types';
 import {isDueCheck} from '@/utils/is-due-check';
 
 type Card=Record<string,unknown> & {id:string};
-type Entry={kind:'review';key:string;origin:string;language:string;contentId:string;cardKind:'snippet'|'word'|'sentence';id:string;before:Card|null;after:Card|null};
+type Entry={breakdown?:boolean;kind:'review';key:string;origin:string;language:string;contentId:string;cardKind:'snippet'|'word'|'sentence';id:string;before:Card|null;after:Card|null};
 const stable=(value:unknown):string=>JSON.stringify(value,(_key,item)=>item && typeof item==='object' && !Array.isArray(item)?Object.fromEntries(Object.keys(item).sort().map(key=>[key,item[key]])):item);
 const signature=(card:Card)=>stable({reviewData:card.reviewData || null,focusedText:card.focusedText || null,isPreSnippet:card.isPreSnippet || false});
 // Apply only changed fields. Other local annotations/progress remain intact.
 export function patchReviewCard(current:Card,entry:Entry):Card|null|undefined {
+  if(entry.breakdown && entry.cardKind==='sentence'){
+    if(!entry.before || !entry.after || current.targetLang!==entry.before.targetLang ||
+      current.sentenceStructure || (Array.isArray(current.vocab) && current.vocab.length))return undefined;
+    const updated={...current};
+    for(const field of ['vocab','sentenceStructure','meaning','transliteration','structures']){
+      if(Object.hasOwn(entry.after,field) && stable(current[field])===stable(entry.before[field]))updated[field]=entry.after[field];
+    }
+    return updated;
+  }
   if(!entry.before || signature(current)!==signature(entry.before))return undefined;
   if(entry.after===null)return null;
   const updated={...current};

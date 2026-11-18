@@ -19,8 +19,8 @@ function mount(ready=true,language='japanese'){
   useReaderReviewSync({language,ready,words,content,dispatchWords,dispatchContent});return {content,words};
  },{initialProps:{ready,language}});
 }
-function deliver(cardKind='snippet',before:unknown=snippet,after:unknown={...snippet,reviewData:next},language='japanese'){
- const value=(before ?? after) as {id:string};window.dispatchEvent(new MessageEvent('message',{source:window,origin:location.origin,data:{type:'ll-reader-import',entry:{kind:'review',key:'review-'+cardKind,origin:location.origin,language,contentId:'netflix:83028069',cardKind,id:value.id,before,after}}}));
+function deliver(cardKind='snippet',before:unknown=snippet,after:unknown={...snippet,reviewData:next},language='japanese',breakdown=false){
+ const value=(before ?? after) as {id:string};window.dispatchEvent(new MessageEvent('message',{source:window,origin:location.origin,data:{type:'ll-reader-import',entry:{kind:'review',key:'review-'+cardKind,origin:location.origin,language,contentId:'netflix:83028069',cardKind,id:value.id,before,after,breakdown}}}));
 }
 beforeEach(()=>{localStorage.clear();jest.spyOn(window,'postMessage').mockImplementation(()=>{});global.fetch=jest.fn();});
 afterEach(()=>jest.restoreAllMocks());
@@ -60,4 +60,11 @@ test('adds a confirmed new snippet once and preserves its later review progress'
  act(()=>deliver('snippet',null,captured));
  expect(h.result.current.content[0].snippets).toEqual([snippet,{...captured,reviewData:next}]);
  expect(h.result.current.content[0].content).toEqual([line]);
+});
+
+test('confirmed Netflix breakdown merges annotations while preserving newer review progress',()=>{
+ const h=mount();
+ act(()=>deliver('sentence',line,{...line,reviewData:next}));
+ act(()=>deliver('sentence',line,{...line,sentenceStructure:'noun',meaning:'Japanese'},'japanese',true));
+ expect(h.result.current.content[0].content[0]).toEqual({...line,reviewData:next,sentenceStructure:'noun',meaning:'Japanese'});
 });
