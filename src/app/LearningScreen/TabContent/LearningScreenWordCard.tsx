@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import WordCard from '@/components/custom/WordCard';
-import { findSentenceWindow } from '@/app/improv/sentence-window';
+import { findSentenceWindow } from '@/app/LearningScreen/sentence-window';
 import useLearningScreen from '../useLearningScreen';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import clsx from 'clsx';
