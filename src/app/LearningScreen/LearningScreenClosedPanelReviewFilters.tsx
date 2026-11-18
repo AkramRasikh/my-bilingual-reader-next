@@ -3,6 +3,7 @@
 import clsx from 'clsx';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import useLearningScreen from './useLearningScreen';
 import { isDueCheck } from '@/utils/is-due-check';
 
@@ -39,6 +40,7 @@ const LearningScreenClosedPanelReviewFilters = () => {
     postSentencesMemoized,
     postSnippetsMemoized,
     isInReviewMode,
+    setIsInReviewMode,
     sentencesNeedReview,
     contentMetaWordMemoized,
     contentSnippets,
@@ -75,17 +77,25 @@ const LearningScreenClosedPanelReviewFilters = () => {
       className='flex flex-col items-center gap-2'
       data-testid='closed-panel-review-filters'
     >
-      <p
+      <div
         data-testid='closed-panel-review-mode'
         data-review-mode={isInReviewMode ? 'on' : 'off'}
-        aria-label={isInReviewMode ? 'Review mode on' : 'Review mode off'}
-        className={clsx(
-          'text-xs font-medium leading-none',
-          isInReviewMode ? 'text-foreground' : 'text-muted-foreground',
-        )}
+        className='flex items-center gap-1.5'
       >
-        📚 {isInReviewMode ? 'On' : 'Off'}
-      </p>
+        <Label
+          htmlFor='closed-panel-review-switch'
+          className='cursor-pointer text-xs font-medium leading-none'
+        >
+          📚
+        </Label>
+        <Switch
+          id='closed-panel-review-switch'
+          data-testid='closed-panel-review-switch'
+          aria-label='Review mode'
+          checked={isInReviewMode}
+          onCheckedChange={setIsInReviewMode}
+        />
+      </div>
       <div
         className={clsx(
           'flex flex-col items-start gap-2',

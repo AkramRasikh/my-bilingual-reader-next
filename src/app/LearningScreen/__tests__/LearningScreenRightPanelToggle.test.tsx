@@ -79,6 +79,20 @@ describe('LearningScreen right panel toggle', () => {
 
     fireEvent.click(wordsInReview);
     expect(wordsInReview).toBeChecked();
+
+    const reviewSwitch = screen.getByTestId('closed-panel-review-switch');
+    expect(reviewSwitch).not.toBeChecked();
+    fireEvent.click(reviewSwitch);
+    expect(reviewSwitch).toBeChecked();
+    expect(screen.getByTestId('closed-panel-review-mode')).toHaveAttribute(
+      'data-review-mode',
+      'on',
+    );
+    expect(wordsInReview).toBeEnabled();
+    expect(wordsInReview.parentElement?.parentElement).toHaveClass('opacity-100');
+    fireEvent.click(reviewSwitch);
+    expect(reviewSwitch).not.toBeChecked();
+    expect(wordsInReview).toBeDisabled();
     expect(videoColumn).toHaveClass(closedWidthClass);
     expect(videoColumn).not.toHaveClass(openWidthClass);
 
