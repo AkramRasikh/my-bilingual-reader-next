@@ -34,6 +34,7 @@ export async function POST(req: Request) {
     const {db} = await import('../uploadYoutubeContent/firebase-admin-init');
     const snapshot = await db.ref(`${language}/content/${contentId}`).once('value');
     if (!snapshot.exists()) return Response.json({error: 'Upload the transcript and snippets first.'}, {status: 409});
+    if (snapshot.val()?.origin === 'netflix') return Response.json({error: 'Netflix media downloads are not supported.'}, {status: 400});
     const title = snapshot.val()?.title;
     if (typeof title !== 'string' || !title.trim()) return Response.json({error: 'The content record needs a title.'}, {status: 400});
     return Response.json(await startMediaJob(contentId, language, title), {status: 202});

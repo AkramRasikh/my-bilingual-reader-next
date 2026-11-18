@@ -34,3 +34,9 @@ test('passes the selected formats to the existing job', async () => {
   expect((await POST(req)).status).toBe(202);
   expect(retryMediaJob).toHaveBeenCalledWith(job, '137', '140');
 });
+
+test('never downloads records marked as Netflix, even under a legacy video ID', async () => {
+  once.mockResolvedValue({exists: () => true, val: () => ({title:'Netflix title',origin:'netflix'})});
+  expect((await POST(request())).status).toBe(400);
+  expect(startMediaJob).not.toHaveBeenCalled();
+});

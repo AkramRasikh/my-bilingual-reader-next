@@ -29,8 +29,11 @@ export function buildImportPayload(value: unknown) {
   const title = text(body.title, 'title', 160).trim();
   if (!title) throw new Error('Content title is required');
   const videoId = text(body.videoId, 'videoId', 64);
+  const origin = body.origin === undefined ? 'youtube' : text(body.origin, 'origin', 20);
+  if (!['youtube', 'netflix'].includes(origin)) throw new Error('Unsupported origin');
+  if (origin === 'netflix' && !/^\d{1,20}$/.test(videoId)) throw new Error('Invalid Netflix video ID');
   if (!/^[\w-]{1,64}$/.test(videoId)) throw new Error('Invalid YouTube video ID');
-  if (id !== videoId) throw new Error('Content ID must match the YouTube video ID');
+  if (id !== (origin === 'netflix' ? `netflix:${videoId}` : videoId)) throw new Error('Content ID must match the namespaced video ID');
   if (!Array.isArray(body.transcript) || !body.transcript.length || body.transcript.length > 20000) {
     throw new Error('A cached transcript with 1–20000 lines is required');
   }
@@ -70,7 +73,7 @@ export function buildImportPayload(value: unknown) {
   })['2'].card)) : null;
   const scheduledContent = content.map(line => eligible.has(line.id) ? {...line, reviewData: {...sentenceReview}} : line);
   return {language, id, content: {
-    id, title, origin: 'youtube', url: `https://www.youtube.com/watch?v=${videoId}`,
+    id, title, origin, url: origin === 'netflix' ? `https://www.netflix.com/watch/${videoId}` : `https://www.youtube.com/watch?v=${videoId}`,
     content: scheduledContent, snippets, createdAt: new Date().toISOString(),
   }};
 }

@@ -111,3 +111,18 @@ test('automatically schedules qualifying transcript lines with the frontend bulk
     expect(belowThreshold.content.content[0]).not.toHaveProperty('reviewData');
   } finally {jest.useRealTimers();}
 });
+
+test('imports Netflix with a collision-proof ID, target-only text, and server review cards', async () => {
+  const body = {...payload(), origin:'netflix',videoId:'12345678',contentId:'netflix:12345678',mediaDuration:130,
+    transcript:[{id:transcriptId,time:126,targetLang:'学习',baseLang:''}],
+    snippets:[{...payload().snippets[0],time:127.5,isContracted:false,baseLang:''}]};
+  const built = buildImportPayload(body);
+  expect(built.content).toMatchObject({id:'netflix:12345678',origin:'netflix',url:'https://www.netflix.com/watch/12345678'});
+  expect(built.content.snippets[snippetId].reviewData.due).toBeDefined();
+  expect(built.content.content[0]).toHaveProperty('reviewData');
+  expect(() => buildImportPayload({...body,contentId:'12345678'})).toThrow();
+  expect(() => buildImportPayload({...body,origin:'youtube'})).toThrow();
+  transaction.mockResolvedValue({committed:true});
+  expect((await POST(request(body))).status).toBe(201);
+  expect(ref).toHaveBeenCalledWith('chinese/content/netflix:12345678');
+});
