@@ -3,10 +3,18 @@
 import { isDueCheck } from '@/utils/is-due-check';
 import { ContentStateTypes } from '@/app/reducers/content-reducer';
 import { WordTypes } from '@/app/types/word-types';
+import {
+  ContentOrigin,
+  getContentOrigin,
+  getContentThumbnailUrl,
+  getNetflixWatchUrl,
+} from '../content-thumbnail';
 
 export interface LandingComprehensiveType {
   title: ContentStateTypes['title'];
-  youtubeId: string;
+  origin: ContentOrigin;
+  thumbnailUrl: string | null;
+  netflixWatchUrl: string | null;
   dueSentences: number;
   totalSentencesWithReview: number;
   dueSnippets: number;
@@ -42,7 +50,6 @@ export const getLandingComprehensiveData = ({
     const thisContentTranscripts = contentItem.content || [];
     const thisContentSnippets = contentItem.snippets || [];
     const mappedSentenceIds = thisContentTranscripts.map((transcriptItem) => transcriptItem.id);
-    const youtubeId = contentItem.url?.split('=')[1] || '';
 
     const dueWords = wordsForReview.filter((wordObj) =>
       mappedSentenceIds.includes(wordObj?.contexts?.[0]),
@@ -58,7 +65,9 @@ export const getLandingComprehensiveData = ({
     ).length;
 
     return {
-      youtubeId,
+      origin: getContentOrigin(contentItem.origin),
+      thumbnailUrl: getContentThumbnailUrl(contentItem),
+      netflixWatchUrl: getNetflixWatchUrl(contentItem),
       title: contentItem.title,
       dueSentences: thisContentTranscripts.filter((transcriptItem) =>
         isDueCheck(transcriptItem, timeNow),

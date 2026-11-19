@@ -2,12 +2,12 @@ import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import {
-  Check,
-} from 'lucide-react';
+import { useState } from 'react';
+import { Check, Clapperboard, ExternalLink } from 'lucide-react';
 import { ContentStateTypes } from '../reducers/content-reducer';
 import { LandingUIComprehensiveType } from './Provider/LandingUIProvider';
 import { LanguageEnum } from '../languages';
+import { getFallbackThumbnailGradient } from './content-thumbnail';
 
 interface LandingUIContentSelectionItemProps extends LandingUIComprehensiveType {
   flagEmoji?: string;
@@ -15,19 +15,43 @@ interface LandingUIContentSelectionItemProps extends LandingUIComprehensiveType 
 }
 
 const LandingUIContentSelectionItemImage = ({
-  youtubeId,
-}: {
-  youtubeId: LandingUIComprehensiveType['youtubeId'];
-}) => (
-  <div className='relative h-30 w-8/10 m-auto'>
-    <Image
-      src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
-      alt={youtubeId || 'youtubeId'}
-      className='m-auto pb-1 rounded-lg'
-      fill
-    />
-  </div>
-);
+  title,
+  origin,
+  thumbnailUrl,
+}: Pick<LandingUIComprehensiveType, 'title' | 'origin' | 'thumbnailUrl'>) => {
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const showImage = thumbnailUrl && failedUrl !== thumbnailUrl;
+
+  return (
+    <div className='relative h-30 w-8/10 m-auto'>
+      {showImage ? (
+        <Image
+          src={thumbnailUrl}
+          alt={title}
+          className='m-auto pb-1 rounded-lg'
+          fill
+          onError={() => setFailedUrl(thumbnailUrl)}
+        />
+      ) : (
+        <div
+          data-testid={`content-thumbnail-fallback-${title}`}
+          className={clsx(
+            'absolute inset-0 mb-1 flex flex-col items-center justify-center gap-1 overflow-hidden rounded-lg bg-gradient-to-br px-3 text-center text-white',
+            getFallbackThumbnailGradient(title),
+          )}
+        >
+          <Clapperboard className='h-6 w-6 opacity-90' aria-hidden />
+          <span className='line-clamp-2 text-xs font-semibold drop-shadow-sm'>
+            {title}
+          </span>
+          <span className='text-[10px] uppercase tracking-wide opacity-80'>
+            {origin}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const LandingUIContentSelectionItemTags = ({
   contentHasBeenReviews,
@@ -55,7 +79,9 @@ const LandingUIContentSelectionItemTags = ({
 
 const LandingUIContentSelectionItem = ({
   title,
-  youtubeId,
+  origin,
+  thumbnailUrl,
+  netflixWatchUrl,
   dueSentences,
   totalSentencesWithReview,
   contentHasBeenReviews,
@@ -86,27 +112,52 @@ const LandingUIContentSelectionItem = ({
           {flagEmoji}
         </span>
       )}
-      <LandingUIContentSelectionItemImage youtubeId={youtubeId} />
-      <Button
-        variant={'link'}
-        onClick={() => handleSelectInitialTopic(title)}
-        className={clsx(
-          'pb-1 rounded w-full relative',
-          dueSentences > 0 ? 'bg-amber-300' : '',
-        )}
+      <LandingUIContentSelectionItemImage
         title={title}
-        data-testid={`content-item-${title}`}
-      >
-        <span
-          className='text-ellipsis'
-          style={{
-            overflow: 'hidden',
-            maxWidth: '20ch',
-          }}
+        origin={origin}
+        thumbnailUrl={thumbnailUrl}
+      />
+      <div className='flex items-center gap-1'>
+        <Button
+          variant={'link'}
+          onClick={() => handleSelectInitialTopic(title)}
+          className={clsx(
+            'pb-1 rounded min-w-0 flex-1 relative',
+            dueSentences > 0 ? 'bg-amber-300' : '',
+          )}
+          title={title}
+          data-testid={`content-item-${title}`}
         >
-          {title}
-        </span>
-      </Button>
+          <span
+            className='text-ellipsis'
+            style={{
+              overflow: 'hidden',
+              maxWidth: '20ch',
+            }}
+          >
+            {title}
+          </span>
+        </Button>
+        {netflixWatchUrl && (
+          <Button
+            asChild
+            variant='ghost'
+            size='icon'
+            className='shrink-0'
+          >
+            <a
+              href={netflixWatchUrl}
+              target='_blank'
+              rel='noopener noreferrer'
+              title='Open on Netflix'
+              aria-label={`Open ${title} on Netflix`}
+              data-testid={`netflix-link-${title}`}
+            >
+              <ExternalLink />
+            </a>
+          </Button>
+        )}
+      </div>
       <LandingUIContentSelectionItemTags
         contentHasBeenReviews={contentHasBeenReviews}
       />
