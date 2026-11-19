@@ -1,5 +1,5 @@
 import {coveredSentenceIds} from './coverage';
-import {getEmptyCard, getNextScheduledOptions, srsCalculationAndText, srsRetentionKeyTypes} from '../../srs-utils/srs-algo';
+import {getEmptyCard, getInitialSnippetReview, getNextScheduledOptions, srsRetentionKeyTypes} from '../../srs-utils/srs-algo';
 
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const languages = ['arabic', 'japanese', 'chinese', 'french'];
@@ -54,13 +54,13 @@ export function buildImportPayload(value: unknown) {
     for (const field of ['isContracted', 'isPreSnippet']) {
       if (row[field] !== undefined && typeof row[field] !== 'boolean') throw new Error(`Invalid ${field}`);
     }
-    // Match LearningScreenProvider.handleQuickSaveSnippet: initial Again card.
-    const {nextScheduledOptions} = srsCalculationAndText({
-      contentType: srsRetentionKeyTypes.snippet, timeNow: new Date(),
-    });
+    // Recreate the local Netflix card from its capture time with the reader's scheduler.
+    const now = new Date();
+    const captured = origin === 'netflix' && typeof row.createdAt === 'string' ? Date.parse(row.createdAt) : NaN;
+    const timeNow = Number.isFinite(captured) && captured <= now.getTime() ? new Date(captured) : now;
     // Browser requests stringify these Dates; do the same before writing via
     // Firebase Admin so due/last_review are stored as ISO strings, not objects.
-    const reviewData = JSON.parse(JSON.stringify(nextScheduledOptions['1'].card));
+    const reviewData = JSON.parse(JSON.stringify(getInitialSnippetReview(timeNow)));
     snippets[clean.id] = {...clean, reviewData,
       isContracted: Boolean(row.isContracted), isPreSnippet: row.isPreSnippet === undefined ? true : Boolean(row.isPreSnippet),
       suggestedFocusText: row.suggestedFocusText === undefined ? '' : text(row.suggestedFocusText, 'suggestedFocusText'),

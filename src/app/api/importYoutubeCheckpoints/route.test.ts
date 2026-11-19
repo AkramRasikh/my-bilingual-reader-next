@@ -1,6 +1,6 @@
 /** @jest-environment node */
 import {POST} from './route';
-import {srsCalculationAndText, srsRetentionKeyTypes} from '../../srs-utils/srs-algo';
+import {getInitialSnippetReview, srsCalculationAndText, srsRetentionKeyTypes} from '../../srs-utils/srs-algo';
 import {buildImportPayload} from './payload';
 const transaction = jest.fn();
 const ref = jest.fn((_path: string) => ({transaction}));
@@ -125,4 +125,14 @@ test('imports Netflix with a collision-proof ID, target-only text, and server re
   transaction.mockResolvedValue({committed:true});
   expect((await POST(request(body))).status).toBe(201);
   expect(ref).toHaveBeenCalledWith('chinese/content/netflix:12345678');
+});
+
+test('bulk import uses Netflix capture time for the initial review schedule', () => {
+  const base = payload();
+  const timeNow = new Date('2020-03-04T12:00:00.000Z');
+  const result = buildImportPayload({...base, origin:'netflix', videoId:'83028069', contentId:'netflix:83028069',
+    snippets: [{...base.snippets[0],createdAt:timeNow.toISOString()}]});
+  const expected = getInitialSnippetReview(timeNow);
+  expect(expected.last_review?.toISOString()).toBe(timeNow.toISOString());
+  expect(result.content.snippets[snippetId].reviewData).toEqual(JSON.parse(JSON.stringify(expected)));
 });

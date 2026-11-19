@@ -130,12 +130,14 @@ const initFsrs = ({
 export const getNextScheduledOptions = ({
   card,
   contentType,
+  timeNow = new Date(),
 }: {
   card: ReviewDataTypes;
   contentType: keyof SRSContentTypeOptions;
+  timeNow?: Date;
 }) => {
   const f = initFsrs({ contentType });
-  return f.repeat(card, new Date());
+  return f.repeat(card, timeNow);
 };
 
 // last_review: new Date('2024-10-11T11:09:52.190Z'),
@@ -146,3 +148,6 @@ export const getEmptyCard = () => {
   card.state = State.New; // Set the card state
   return card;
 };
+
+export const getInitialSnippetReview = (timeNow = new Date()) =>
+  getNextScheduledOptions({card: getEmptyCard(), contentType: 'snippet', timeNow})['1'].card;
