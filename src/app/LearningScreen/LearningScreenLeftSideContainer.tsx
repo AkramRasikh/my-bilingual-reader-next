@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { getAudioURL, getCloudflareVideoURL } from '../../utils/get-media-url';
 import KeyListener from './LearningScreenKeyListener';
 import LearningScreenVideoPlayer from './LearningScreenVideoPlayer';
+import NetflixReviewAudio from './NetflixReviewAudio';
+import LearningScreenReviewContentOnScreen from './LearningScreenReviewContentOnScreen';
 import TranscriptItemSecondary from '../../components/custom/TranscriptItem/TranscriptItemSecondary';
 import useLearningScreen from './useLearningScreen';
 import { useFetchData } from '../Providers/FetchDataProvider';
@@ -72,7 +74,14 @@ const LearningScreenLeftSideContainer = ({
           : 'mx-auto max-w-[min(50rem,calc((100dvh-18rem)*16/9))] xl:w-[min(calc(45rem+27rem+1.25rem),50rem,calc((100dvh-18rem)*16/9))]',
       )}
     >
-      {!errorVideoState ? (
+      {isInReviewMode && selectedContentState.origin === 'netflix' ? (
+        <>
+          <div className='relative min-h-48 bg-zinc-950 text-white'>
+            <LearningScreenReviewContentOnScreen />
+          </div>
+          <NetflixReviewAudio key={selectedContentState.id} />
+        </>
+      ) : !errorVideoState ? (
         <LearningScreenVideoPlayer
           url={videoUrl}
           languageSelectedState={languageSelectedState}
