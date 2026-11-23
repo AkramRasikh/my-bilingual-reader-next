@@ -18,8 +18,9 @@ interface Clip {
 }
 
 export type LocalReviewClip = Clip & { file: File };
+export type ReviewClip = LocalReviewClip | (Clip & { url: string });
 export interface NetflixReviewRange {
-  clip: LocalReviewClip;
+  clip: ReviewClip;
   start: number;
   end: number;
 }
@@ -32,7 +33,7 @@ export type NetflixReviewItem =
 function isClip(value: unknown): value is Clip {
   if (!value || typeof value !== 'object') return false;
   const clip = value as Clip;
-  return typeof clip.filename === 'string' && /^\d+-\d+(?:-\d+)?\.webm$/.test(clip.filename) &&
+  return typeof clip.filename === 'string' && /^\d+-\d+(?:-(?:\d+|[a-f0-9]{64}))?\.webm$/.test(clip.filename) &&
     [clip.episodeStartMs, clip.episodeEndMs, clip.durationMs, clip.bytes].every(Number.isSafeInteger) &&
     clip.episodeStartMs >= 0 && clip.episodeEndMs > clip.episodeStartMs &&
     clip.durationMs > 0 && clip.bytes > 0 &&
@@ -62,10 +63,36 @@ export async function loadNetflixReviewAudio(files: File[], episodeId: string): 
   throw new Error('Choose the exported folder for this Netflix episode.');
 }
 
+export async function loadCloudflareReviewAudio(
+  language: string,
+  episodeId: string,
+  assets: string,
+  signal?: AbortSignal,
+): Promise<ReviewClip[]> {
+  const id = /^netflix:(\d{1,20})$/.exec(episodeId)?.[1];
+  if (!id || !['japanese', 'chinese', 'arabic', 'french'].includes(language)) return [];
+  const query = new URLSearchParams({language, episodeId});
+  const response = await fetch(`/api/netflixReviewAudioManifest?${query}`, {cache: 'no-store', signal});
+  if (response.status === 404) return [];
+  if (!response.ok) throw new Error('Cloudflare review audio is temporarily unavailable.');
+  const manifest = await response.json();
+  if (manifest?.version !== 1 || manifest.episodeId !== episodeId ||
+      !Array.isArray(manifest.clips) || !manifest.clips.every(isClip)) {
+    throw new Error('This episode has an unsupported Cloudflare audio manifest.');
+  }
+  const prefix = `${language}-audio/netflix-${id}/`;
+  return manifest.clips.map((clip: Clip & {objectKey?: string}) => {
+    if (clip.objectKey !== prefix + clip.filename) {
+      throw new Error('The Cloudflare manifest contains a clip outside this episode.');
+    }
+    return {...clip, url: new URL(clip.objectKey, assets.replace(/\/?$/, '/')).href};
+  });
+}
+
 export function resolveNetflixReviewAudio(
   target: NetflixReviewItem,
   transcript: ContentTranscriptTypes[],
-  clips: LocalReviewClip[],
+  clips: ReviewClip[],
 ): NetflixReviewRange | undefined {
   function sentenceAudio(sentence: ContentTranscriptTypes) {
     for (const clip of clips) {

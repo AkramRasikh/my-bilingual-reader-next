@@ -1,4 +1,4 @@
-import {loadNetflixReviewAudio, resolveNetflixReviewAudio, type LocalReviewClip} from './netflix-review-audio';
+import {loadCloudflareReviewAudio, loadNetflixReviewAudio, resolveNetflixReviewAudio, type LocalReviewClip} from './netflix-review-audio';
 import type {ContentTranscriptTypes} from '@/app/types/content-types';
 import type {WordTypes} from '@/app/types/word-types';
 
@@ -64,4 +64,31 @@ test('uses the exact recorded cue end even when the next transcript timestamp ro
   const legacy = clip(167877, 172296);
   expect(resolveNetflixReviewAudio({kind: 'word', item: word}, rows, [legacy])).toBeUndefined();
   expect(resolveNetflixReviewAudio({kind: 'sentence', item: rows[0]}, rows, [legacy])).toBeUndefined();
+});
+
+
+test('loads uploaded cue ranges and restricts clip URLs to the episode prefix', async () => {
+  const {file: _, ...metadata} = clip(128045, 130713);
+  const filename = '000128045-000130713-' + 'a'.repeat(64) + '.webm';
+  const objectKey = 'japanese-audio/netflix-81779683/' + filename;
+  const uploaded = {...metadata, filename, objectKey, cueRanges: [{time: 128, startMs: 150, endMs: 2410}]};
+  const original = globalThis.fetch;
+  const fetchMock = jest.fn().mockResolvedValue({
+    ok: true, json: async () => ({version: 1, episodeId: 'netflix:81779683', clips: [uploaded]}),
+  });
+  globalThis.fetch = fetchMock;
+  try {
+    const clips = await loadCloudflareReviewAudio('japanese', 'netflix:81779683', 'https://assets.example.org/');
+    expect(fetchMock).toHaveBeenCalledWith('/api/netflixReviewAudioManifest?language=japanese&episodeId=netflix%3A81779683', expect.anything());
+    expect(resolveNetflixReviewAudio({kind: 'sentence', item: transcript[0]}, transcript, clips))
+      .toEqual({clip: {...uploaded, url: 'https://assets.example.org/' + objectKey}, start: .15, end: 2.41});
+    uploaded.objectKey = 'french-audio/netflix-81779683/' + filename;
+    await expect(loadCloudflareReviewAudio('japanese', 'netflix:81779683', 'https://assets.example.org/'))
+      .rejects.toThrow('outside this episode');
+    fetchMock.mockResolvedValue({status: 404});
+    await expect(loadCloudflareReviewAudio('japanese', 'netflix:81779683', 'https://assets.example.org/'))
+      .resolves.toEqual([]);
+  } finally {
+    globalThis.fetch = original;
+  }
 });

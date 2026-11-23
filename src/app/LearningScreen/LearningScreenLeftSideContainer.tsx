@@ -79,7 +79,7 @@ const LearningScreenLeftSideContainer = ({
           <div className='relative min-h-48 bg-zinc-950 text-white'>
             <LearningScreenReviewContentOnScreen />
           </div>
-          <NetflixReviewAudio key={selectedContentState.id} />
+          <NetflixReviewAudio key={JSON.stringify([languageSelectedState, selectedContentState.id])} />
         </>
       ) : !errorVideoState ? (
         <LearningScreenVideoPlayer
