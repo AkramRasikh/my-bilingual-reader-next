@@ -176,6 +176,7 @@ const buildMockFetchContextBase = (
   wordsToReviewGivenOriginalContextId: {},
   deleteContent: () => {},
   deleteVideo: async () => false,
+  deleteNetflixMedia: async () => false,
   handleSaveSnippetFetchProvider: async () => false,
   handleDeleteSnippetFetchProvider: async () => {},
 });

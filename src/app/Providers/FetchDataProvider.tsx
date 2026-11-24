@@ -180,6 +180,7 @@ export interface FetchDataContextTypes {
   wordsToReviewGivenOriginalContextId: Record<WordTypes['id'], WordTypes[]>;
   deleteContent: (params: DeleteContentCallTypes) => void;
   deleteVideo: (filePath: string) => Promise<boolean>;
+  deleteNetflixMedia: (episodeId: string) => Promise<boolean>;
   adhocSentenceCustomWord: (
     params: AdhocSentenceCustomWordCallTypes,
   ) => Promise<void>;
@@ -198,6 +199,7 @@ export const FetchDataContext = createContext<FetchDataContextTypes>({
   updateSentenceData: () => { },
   deleteContent: () => { },
   deleteVideo: async () => false,
+  deleteNetflixMedia: async () => false,
   setLanguageSelectedState: () => { },
   dispatchSentences: () => { },
   dispatchContent: () => { },
@@ -837,6 +839,30 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
     }
   };
 
+  // Removes the episode's review audio and tab-recording videos from R2 (not the content itself).
+  const deleteNetflixMedia = async (episodeId: string): Promise<boolean> => {
+    try {
+      const res = await fetch('/api/deleteNetflixMedia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          episodeId,
+          language: languageSelectedState.toLowerCase(),
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to delete Netflix media');
+      const { deleted } = (await res.json()) as { deleted: number };
+      setToastMessageState(
+        deleted ? `Deleted ${deleted} Netflix media files` : 'No Netflix media to delete',
+      );
+      return true;
+    } catch (error) {
+      console.log('## deleteNetflixMedia error', error);
+      setToastMessageState('Failed to delete Netflix media ❌');
+      return false;
+    }
+  };
+
   const deleteVideo = async (filePath: string): Promise<boolean> => {
     try {
       const res = await fetch('/api/deleteVideo', {
@@ -888,6 +914,7 @@ export function FetchDataProvider({ children }: FetchDataProviderProps) {
         wordsToReviewGivenOriginalContextId,
         deleteContent,
         deleteVideo,
+        deleteNetflixMedia,
         handleSaveSnippetFetchProvider,
         handleDeleteSnippetFetchProvider,
         adhocSentenceCustomWord,

@@ -4,6 +4,7 @@ import LearningScreenUnifiedAnalytics from './LearningScreenUnifiedAnalytics';
 import LearningScreenActionBarVideoControls from './LearningScreenActionBarVideoControls';
 import LearningScreenClosedPanelReviewFilters from './LearningScreenClosedPanelReviewFilters';
 import LearningScreenBreakdownRulesModal from './LearningScreenBreakdownRulesModal';
+import LearningScreenMetaModal from './LearningScreenMetaModal';
 
 type LearningScreenContentChapterNavigationProps = {
   isRightPanelOpen: boolean;
@@ -27,6 +28,7 @@ const LearningScreenContentChapterNavigation = ({
       <LearningScreenActionBarVideoControls />
       <LearningScreenUnifiedAnalytics />
       <LearningScreenBreakdownRulesModal />
+      <LearningScreenMetaModal />
       <Button
         type='button'
         variant='ghost'
