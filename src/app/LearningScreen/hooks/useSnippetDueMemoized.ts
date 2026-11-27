@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { isDueCheck } from '@/utils/is-due-check';
 import { Snippet } from '@/app/types/content-types';
+import { isSentenceSnippet } from '../sentence-snippets/sentence-snippet-utils';
 
 type UseSnippetDueMemoizedArgs = {
   snippetsWithVocab: Snippet[] | undefined | null;
@@ -31,7 +32,8 @@ export const useSnippetDueMemoized = ({
 
     const snippetsWithDueStatusMemoized = [] as Snippet[];
     snippetsWithVocab.forEach((item) => {
-      if (isDueCheck(item, now)) {
+      // Custom sentence snippets are never due.
+      if (!isSentenceSnippet(item) && isDueCheck(item, now)) {
         snippetsWithDueStatusMemoized.push(item);
       }
     });

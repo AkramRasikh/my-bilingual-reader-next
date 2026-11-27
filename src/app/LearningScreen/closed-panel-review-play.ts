@@ -1,6 +1,10 @@
 import { FormattedTranscriptTypes, Snippet } from '@/app/types/content-types';
 import { WordTypes } from '@/app/types/word-types';
 import { isDueCheck } from '@/utils/is-due-check';
+import {
+  findSentenceSnippetForWord,
+  isSentenceSnippet,
+} from './sentence-snippets/sentence-snippet-utils';
 
 type ReviewPlayHandlers = {
   handlePause: () => void;
@@ -21,18 +25,31 @@ type PlayFirstReviewItemArgs = ReviewPlayHandlers & {
   contentSnippets: Snippet[];
   isVideoPlaying: boolean;
   masterPlay: FormattedTranscriptTypes['id'] | null;
+  /** Custom sentence snippets of this content (origin: 'sentence'). */
+  sentenceSnippets?: Snippet[];
+  /** Loops a word's custom snippet (B on a word inside one). */
+  loopWordSnippet?: (
+    wordId: string,
+    clip: { start: number; end: number; snippetId: string },
+  ) => void;
 };
 
-function wordOverlapPlayTime(word: WordTypes, contentSnippets: Snippet[]) {
+export function wordOverlapPlayTime(
+  word: WordTypes,
+  contentSnippets: Snippet[],
+) {
   const matchesWord = (item: Snippet) =>
     item?.focusedText?.includes(word.surfaceForm) ||
     item?.focusedText?.includes(word.baseForm) ||
     item?.suggestedFocusText?.includes(word.surfaceForm) ||
     item?.suggestedFocusText?.includes(word.baseForm);
 
+  const regularSnippets = contentSnippets.filter(
+    (item) => !isSentenceSnippet(item),
+  );
   const overlappedWord =
-    contentSnippets.find((item) => matchesWord(item) && !item?.isPreSnippet) ??
-    contentSnippets.find(matchesWord);
+    regularSnippets.find((item) => matchesWord(item) && !item?.isPreSnippet) ??
+    regularSnippets.find(matchesWord);
 
   if (!overlappedWord) {
     return null;
@@ -42,6 +59,30 @@ function wordOverlapPlayTime(word: WordTypes, contentSnippets: Snippet[]) {
     (overlappedWord as Snippet & { isContract?: boolean }).isContract,
   );
   return contracted ? overlappedWord.time - 0.75 : overlappedWord.time - 1.5;
+}
+
+export type WordReplayTarget =
+  | { kind: 'range'; start: number; end: number; snippetId: string }
+  | { kind: 'from'; time: number }
+  | null;
+
+/**
+ * What B / replay on a word card plays, in order: a sentence snippet whose
+ * focusedText contains the word (preferring the word's own sentence), played
+ * start..end once; else the existing snippet match; else nothing (the caller
+ * falls back to the sentence).
+ */
+export function getWordReplayTarget(
+  word: WordTypes,
+  contentSnippets: Snippet[],
+  sentenceSnippets: Snippet[] = [],
+): WordReplayTarget {
+  const clip = findSentenceSnippetForWord(word, sentenceSnippets);
+  if (clip) {
+    return { kind: 'range', start: clip.start, end: clip.end, snippetId: clip.id };
+  }
+  const time = wordOverlapPlayTime(word, contentSnippets);
+  return time != null ? { kind: 'from', time } : null;
 }
 
 export type ClosedPanelGradeTarget =
@@ -92,6 +133,8 @@ export function playFirstReviewItem({
   handlePlayFromHere,
   playFromThisContext,
   handleLoopReviewMode,
+  sentenceSnippets = [],
+  loopWordSnippet,
 }: PlayFirstReviewItemArgs) {
   const snippet = snippets[0];
   if (snippet) {
@@ -111,9 +154,13 @@ export function playFirstReviewItem({
       return;
     }
 
-    const overlapTime = wordOverlapPlayTime(word, contentSnippets);
-    if (overlapTime != null) {
-      handlePlayFromHere(overlapTime);
+    const replay = getWordReplayTarget(word, contentSnippets, sentenceSnippets);
+    if (replay?.kind === 'range' && loopWordSnippet) {
+      loopWordSnippet(word.id, replay);
+      return;
+    }
+    if (replay?.kind === 'from') {
+      handlePlayFromHere(replay.time);
       return;
     }
 

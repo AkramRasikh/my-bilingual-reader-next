@@ -10,7 +10,9 @@ import LearningScreenComprehensiveReview from '../LearningScreenComprehensiveRev
 import useAutoScrollToCurrentItem from './useAutoScrollToCurrentItem';
 import { useTranscriptPlayheadWindow } from './useTranscriptPlayheadWindow';
 import ReviewTypeToggles from '../components/ReviewTypeToggles';
-import useComprehensiveReviewModeData from '../hooks/useComprehensiveReviewModeData';
+import useComprehensiveReviewModeData, {
+  filterWordsForCustomSnippetReview,
+} from '../hooks/useComprehensiveReviewModeData';
 
 const LearningScreenTabTranscript = () => {
   const {
@@ -59,6 +61,9 @@ const LearningScreenTabTranscript = () => {
     contentMetaWordMemoized,
     snippetsWithDueStatusMemoized,
     formattedTranscriptState,
+    onlyCustomSnippetWordsState,
+    setOnlyCustomSnippetWordsState,
+    sentenceSnippetRecords,
   } = useLearningScreen();
   const { languageSelectedState, wordsState } = useFetchData();
   const transcriptScrollContainerRef = useRef<HTMLDivElement>(null);
@@ -81,8 +86,12 @@ const LearningScreenTabTranscript = () => {
     return overlappingSnippetDataState[0].id;
   }, [overlappingSnippetDataState]);
 
-  const { postWordsMemoized, postSnippetsMemoized, postSentencesMemoized } =
-    useComprehensiveReviewModeData({
+  const {
+    postWordsMemoized,
+    postWordsUnfilteredCount,
+    postSnippetsMemoized,
+    postSentencesMemoized,
+  } = useComprehensiveReviewModeData({
       enableWordReviewState,
       enableSnippetReviewState,
       enableTranscriptReviewState,
@@ -93,6 +102,8 @@ const LearningScreenTabTranscript = () => {
       contentMetaWordMemoized,
       snippetsWithDueStatusMemoized,
       formattedTranscriptState,
+      onlyWordsInCustomSnippets: onlyCustomSnippetWordsState,
+      sentenceSnippets: sentenceSnippetRecords,
     });
 
   useAutoScrollToCurrentItem({
@@ -120,13 +131,27 @@ const LearningScreenTabTranscript = () => {
         setEnableTranscriptReviewState={setEnableTranscriptReviewState}
         enableSnippetReviewState={enableSnippetReviewState}
         setEnableSnippetReviewState={setEnableSnippetReviewState}
-        wordsCount={postWordsMemoized?.length || 0}
+        wordsCount={postWordsUnfilteredCount}
         sentencesCount={postSentencesMemoized.length || 0}
         snippetsCount={postSnippetsMemoized?.length || 0}
         reviewIntervalState={reviewIntervalState}
         setReviewIntervalState={setReviewIntervalState}
         isInReviewMode={isInReviewMode}
         setIsInReviewMode={setIsInReviewMode}
+        onlyCustomSnippetWordsState={onlyCustomSnippetWordsState}
+        setOnlyCustomSnippetWordsState={setOnlyCustomSnippetWordsState}
+        customSnippetWordCounts={{
+          inWindow: filterWordsForCustomSnippetReview(
+            postWordsMemoized,
+            sentenceSnippetRecords,
+            true,
+          ).length,
+          due: filterWordsForCustomSnippetReview(
+            contentMetaWordMemoized,
+            sentenceSnippetRecords,
+            true,
+          ).length,
+        }}
       />
       <TabsContent value='transcript' className='min-h-0'>
         <div

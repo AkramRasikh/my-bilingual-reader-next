@@ -5,6 +5,7 @@ import {
 import { OverlappingSnippetData } from '@/app/types/shared-types';
 import { getSnippetTimeRange } from '../learning-screen-review-time-range';
 import { getSecondsLoopedTranscriptData } from './get-seconds-looped-transcript-data';
+import { isSentenceSnippet } from '../sentence-snippets/sentence-snippet-utils';
 
 export const SNIPPET_COVERAGE_THRESHOLD = 50;
 
@@ -39,7 +40,8 @@ const collectSentenceIntervals = ({
   const allSentenceIntervals: OverlappingSnippetData[] = [];
 
   snippets.forEach((snippetEl) => {
-    if (!snippetEl?.reviewData?.due) {
+    // Custom sentence snippets never count toward coverage.
+    if (isSentenceSnippet(snippetEl) || !snippetEl?.reviewData?.due) {
       return;
     }
 

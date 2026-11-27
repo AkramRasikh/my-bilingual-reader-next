@@ -3,6 +3,7 @@ import {
   getButtonMap,
   isGamepadButtonHeld,
 } from '@/app/LearningScreen/experimental/gamepadButtonMap';
+import { sentenceSnippetGamepadBridge } from '@/app/LearningScreen/sentence-snippets/sentence-snippet-gamepad-bridge';
 
 interface UseGamePadSRSShortcutProps {
   isReadyForQuickReview: boolean;
@@ -98,7 +99,12 @@ export const useGamePadSRSShortcut = ({
             laComboFiredRef.current = true;
             armedRef.current = false;
           } else if (l2 && r2 && !l2r2ComboFiredRef.current) {
-            handleRemoveReview();
+            // While a sentence-snippet clip is focused, L2+R2 deletes the
+            // clip instead. The fired/armed refs keep a held press from going
+            // on to remove the sentence once the clip is gone.
+            if (!sentenceSnippetGamepadBridge.deleteFocusedClip()) {
+              handleRemoveReview();
+            }
             l2r2ComboFiredRef.current = true;
             armedRef.current = false;
           }

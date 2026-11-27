@@ -1,5 +1,6 @@
 import {
   closedPanelGradeTarget,
+  getWordReplayTarget,
   playFirstReviewItem,
 } from './closed-panel-review-play';
 import { FormattedTranscriptTypes, Snippet } from '@/app/types/content-types';
@@ -204,3 +205,71 @@ describe('playFirstReviewItem', () => {
     expect(playing.handleFromHere).not.toHaveBeenCalled();
   });
 });
+
+describe('word replay with custom sentence snippets', () => {
+  const regular = {
+    id: 'regular',
+    time: 20,
+    focusedText: '天気',
+    isPreSnippet: false,
+  } as Snippet;
+  const clipElsewhere = {
+    id: 'clip-elsewhere',
+    origin: 'sentence',
+    sentenceId: 'sentence-9',
+    start: 30,
+    end: 31.5,
+    time: 30.75,
+    focusedText: '今日の天気',
+  } as Snippet;
+  const clipOwnSentence = {
+    ...clipElsewhere,
+    id: 'clip-own',
+    sentenceId: 'sentence-2',
+    start: 10,
+    end: 12.5,
+  } as Snippet;
+  const suggestedOnlyClip = {
+    ...clipOwnSentence,
+    id: 'clip-suggested',
+    focusedText: undefined,
+    suggestedFocusText: '天気',
+  } as Snippet;
+
+  it("prefers the clip in the word's own sentence and loops it start..end", () => {
+    expect(
+      getWordReplayTarget(word, [regular], [clipElsewhere, clipOwnSentence]),
+    ).toEqual({ kind: 'range', start: 10, end: 12.5, snippetId: 'clip-own' });
+
+    const h = handlers();
+    const loopWordSnippet = jest.fn();
+    playFirstReviewItem({
+      ...h,
+      snippets: [],
+      words: [word],
+      sentences: [],
+      contentSnippets: [regular],
+      sentenceSnippets: [clipElsewhere, clipOwnSentence],
+      loopWordSnippet,
+      isVideoPlaying: false,
+      masterPlay: null,
+    });
+    expect(loopWordSnippet).toHaveBeenCalledWith(
+      word.id,
+      expect.objectContaining({ start: 10, end: 12.5, snippetId: 'clip-own' }),
+    );
+    expect(h.handlePlayFromHere).not.toHaveBeenCalled();
+  });
+
+  it('falls back to the regular snippet match, ignoring suggested-only clips', () => {
+    expect(getWordReplayTarget(word, [regular], [suggestedOnlyClip])).toEqual({
+      kind: 'from',
+      time: 18.5,
+    });
+  });
+
+  it('never uses a sentence snippet through the regular snippet match', () => {
+    expect(getWordReplayTarget(word, [suggestedOnlyClip], [])).toBeNull();
+  });
+});
+

@@ -13,6 +13,7 @@ import WordCardConditionalContentWrapper from './WordCardConditionalContentWrapp
 import WordCardHeader from './WordCardHeader';
 import WordCardWrapper from './WordCardWrapper';
 import { getButtonMap } from '@/app/LearningScreen/experimental/gamepadButtonMap';
+import { sentenceSnippetGamepadBridge } from '@/app/LearningScreen/sentence-snippets/sentence-snippet-gamepad-bridge';
 
 const WordCard = ({
   id,
@@ -138,8 +139,13 @@ const WordCard = ({
         quickReviewToggleFiredRef.current = false;
       }
 
-      // B without R1 — avoids A+R1 toggle combo also firing play
-      if (bPressed && !rPressed) {
+      // B without R1 — avoids A+R1 toggle combo also firing play.
+      // In a sentence-snippet clip loop, B only ends the loop.
+      if (
+        bPressed &&
+        !rPressed &&
+        !sentenceSnippetGamepadBridge.shouldIgnoreB()
+      ) {
         handlePlayThisContext();
       }
     };

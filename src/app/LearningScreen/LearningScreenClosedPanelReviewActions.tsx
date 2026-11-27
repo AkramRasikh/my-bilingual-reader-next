@@ -13,6 +13,7 @@ import {
   closedPanelGradeTarget,
   playFirstReviewItem,
 } from './closed-panel-review-play';
+import { sentenceSnippetGamepadBridge } from './sentence-snippets/sentence-snippet-gamepad-bridge';
 
 const LearningScreenClosedPanelReviewActions = ({
   isRightPanelOpen,
@@ -48,7 +49,12 @@ const LearningScreenClosedPanelReviewActions = ({
         !isGamepadButtonHeld(gamepad.buttons, map.L2_BTN) &&
         !isGamepadButtonHeld(gamepad.buttons, map.R1_BTN);
 
-      if (bDown && !bWasDownRef.current) {
+      // In a sentence-snippet clip loop, B only ends the loop.
+      if (
+        bDown &&
+        !bWasDownRef.current &&
+        !sentenceSnippetGamepadBridge.shouldIgnoreB()
+      ) {
         const current = learningScreenRef.current;
         const quickReviewSnippetId = current.postSnippetsMemoized[0]?.id;
         const snippetControlsAreMounted =
@@ -61,6 +67,8 @@ const LearningScreenClosedPanelReviewActions = ({
             words: current.postWordsMemoized,
             sentences: current.postSentencesMemoized,
             contentSnippets: current.contentSnippets,
+            sentenceSnippets: current.sentenceSnippetRecords,
+            loopWordSnippet: current.sentenceSnippets.loopWordSnippet,
             isVideoPlaying: current.isVideoPlaying,
             masterPlay: current.masterPlay,
             handlePause: current.handlePause,

@@ -166,4 +166,16 @@ describe('getUniqueSegmentOfArray', () => {
 
     expect(result).toEqual(['sentence-1']);
   });
+
+  it('still finds the last sentence when the range ends at or past the array end', () => {
+    const secondsArray = ['sentence-1', 'sentence-1', 'sentence-2', 'sentence-2'];
+
+    expect(getUniqueSegmentOfArray(secondsArray, 1.5, 4)).toEqual([
+      'sentence-1',
+      'sentence-2',
+    ]);
+    expect(getUniqueSegmentOfArray(secondsArray, 2.25, 3.6)).toEqual([
+      'sentence-2',
+    ]);
+  });
 });

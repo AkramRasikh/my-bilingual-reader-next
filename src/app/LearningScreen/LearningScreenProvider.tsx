@@ -53,6 +53,16 @@ import { useInputActions } from './experimental/useInputActions';
 import { useCountUpTimer } from '@/components/custom/CountUpTimer/useCountUpTimer';
 import { getSnippetTimeRange } from './learning-screen-review-time-range';
 import { getAutoBreakdownSentenceIds } from './utils/get-sentence-snippet-coverage';
+import {
+  isSentenceSnippet,
+  withoutSentenceSnippets,
+} from './sentence-snippets/sentence-snippet-utils';
+import {
+  RangeLoopState,
+  SentenceSnippetsApi,
+  useSentenceSnippets,
+} from './sentence-snippets/useSentenceSnippets';
+import { filterWordsForCustomSnippetReview } from './hooks/useComprehensiveReviewModeData';
 
 type LearningScreenProviderProps = React.PropsWithChildren<{
   selectedContentStateMemoized: ContentTypes & { contentIndex: number };
@@ -247,6 +257,17 @@ export interface LearningScreenContextTypes {
     params: UpdateWordDataProviderCallTypes,
   ) => Promise<unknown>;
   languageSelectedState: LanguageEnum;
+  /** Custom sentence snippets (YouTube): clips, focus and handlers. */
+  sentenceSnippets: SentenceSnippetsApi;
+  /** This content's sentence snippet records (origin: 'sentence'). */
+  sentenceSnippetRecords: Snippet[];
+  /** The clip range loop; separate from threeSecondLoopState. */
+  rangeLoopState: RangeLoopState | null;
+  onlyCustomSnippetWordsState: boolean;
+  /** Sets the filter and restarts the review window (as the extension does). */
+  setOnlyCustomSnippetWordsState: (value: boolean) => void;
+  /** Words due in the review window before the custom-snippet filter. */
+  postWordsUnfilteredCount: number;
 }
 
 export const LearningScreenContext =
@@ -316,6 +337,12 @@ export const LearningScreenProvider = ({
   const [reviewIntervalState, setReviewIntervalState] = useState(60);
   const [mediaDuration, setMediaDuration] = useState<number | null>(null);
   const [firstTimeState, setFirstTimeState] = useState<number | null>(null);
+  const [rangeLoopState, setRangeLoopState] = useState<RangeLoopState | null>(
+    null,
+  );
+  // "only words in custom snippets": off by default, not persisted.
+  const [onlyCustomSnippetWordsState, setOnlyCustomSnippetWordsState] =
+    useState(false);
 
   const {
     wordsState,
@@ -329,6 +356,7 @@ export const LearningScreenProvider = ({
     handleSaveSnippetFetchProvider,
     handleDeleteSnippetFetchProvider,
     sentenceDataKeyMapped,
+    setToastMessageState,
   } = useFetchData();
 
   const handleSaveWord = async (params: HandleSaveWordCallTypes) => {
@@ -372,6 +400,17 @@ export const LearningScreenProvider = ({
   const content = selectedContentStateMemoized.content;
   const contentIndex = selectedContentStateMemoized.contentIndex;
   const contentId = selectedContentStateMemoized.id;
+  const allContentSnippets = selectedContentStateMemoized?.snippets;
+  // Custom sentence snippets live in content.snippets but stay out of the
+  // existing snippet machinery (due, 3 s drawing, coverage, browse lists).
+  const regularSnippets = useMemo(
+    () => withoutSentenceSnippets(allContentSnippets),
+    [allContentSnippets],
+  );
+  const sentenceSnippetRecords = useMemo(
+    () => (allContentSnippets ?? []).filter(isSentenceSnippet),
+    [allContentSnippets],
+  );
 
   const {
     firstDueIndexMemoized,
@@ -415,7 +454,7 @@ export const LearningScreenProvider = ({
   };
 
   const handleQuickSaveSnippet = async (isContracted = false) => {
-    const contentSnippets = selectedContentStateMemoized?.snippets || [];
+    const contentSnippets = regularSnippets;
     const hasThisSnippet =
       contentSnippets?.length === 0
         ? false
@@ -497,7 +536,7 @@ export const LearningScreenProvider = ({
 
   const handleSaveSnippet = async (snippetArgs: OverlappingTextTypes) => {
     console.log('## snippetArgs handleSaveSnippet', snippetArgs);
-    const contentSnippets = selectedContentStateMemoized?.snippets || [];
+    const contentSnippets = regularSnippets;
     if (!threeSecondLoopState) {
       return null;
     }
@@ -572,7 +611,9 @@ export const LearningScreenProvider = ({
 
     setSnippetLoadingState((prev) => [...prev, snippetData.id]);
     try {
-      if (hasWordsInSentence) {
+      // Sentence snippets have no reviewData: never "re-save without
+      // reviewData", just delete.
+      if (hasWordsInSentence && !isSentenceSnippet(snippetData)) {
         await handleSaveSnippetFetchProvider({
           snippetData: { ...snippetData, reviewData: undefined },
           contentId,
@@ -704,6 +745,7 @@ export const LearningScreenProvider = ({
     loopTranscriptState,
     setContractThreeSecondLoopState,
     masterPlay,
+    rangeLoopState,
   });
 
   useLoopSecondsHook({
@@ -991,7 +1033,7 @@ export const LearningScreenProvider = ({
       return;
     }
 
-    const existingSnippets = selectedContentStateMemoized?.snippets ?? [];
+    const existingSnippets = regularSnippets;
     const snippets = existingSnippets.some((item) => item.id === newSnippet.id)
       ? existingSnippets
       : [...existingSnippets, newSnippet];
@@ -1035,13 +1077,38 @@ export const LearningScreenProvider = ({
       enableSnippetReviewState,
     });
 
+  // With "only words in custom snippets" on, the review window must start on
+  // an eligible word, not on the earliest due word overall.
+  const firstReviewableWordDueTime = useMemo(() => {
+    if (!onlyCustomSnippetWordsState) {
+      return firstWordDueTime;
+    }
+    if (!enableWordReviewState) {
+      return null;
+    }
+    const times = filterWordsForCustomSnippetReview(
+      contentMetaWordMemoized,
+      sentenceSnippetRecords,
+      true,
+    )
+      .map((word) => word.time)
+      .filter((time): time is number => isNumber(time));
+    return times.length > 0 ? Math.min(...times) : null;
+  }, [
+    onlyCustomSnippetWordsState,
+    firstWordDueTime,
+    enableWordReviewState,
+    contentMetaWordMemoized,
+    sentenceSnippetRecords,
+  ]);
+
   const firstTime = useMemo(() => {
     if (!isInReviewMode) {
       return null;
     }
     const timeArrays = [
       earliestSnippetDueTime,
-      firstWordDueTime,
+      firstReviewableWordDueTime,
       firstSentenceDueTime,
     ];
 
@@ -1050,12 +1117,20 @@ export const LearningScreenProvider = ({
   }, [
     isInReviewMode,
     earliestSnippetDueTime,
-    firstWordDueTime,
+    firstReviewableWordDueTime,
     firstSentenceDueTime,
   ]);
 
+  // Flipping "only words in custom snippets" restarts the review window so it
+  // re-anchors on the earliest item that is now eligible.
+  const handleSetOnlyCustomSnippetWords = (value: boolean) => {
+    setOnlyCustomSnippetWordsState(value);
+    setFirstTimeState(null);
+  };
+
   const {
     postWordsMemoized,
+    postWordsUnfilteredCount,
     postSnippetsMemoized,
     slicedTranscriptArray,
     postSentencesMemoized,
@@ -1070,6 +1145,8 @@ export const LearningScreenProvider = ({
     contentMetaWordMemoized,
     snippetsWithDueStatusMemoized,
     formattedTranscriptState: formattedTranscriptMemoized,
+    onlyWordsInCustomSnippets: onlyCustomSnippetWordsState,
+    sentenceSnippets: sentenceSnippetRecords,
   });
 
   const firstElIdInReview = [
@@ -1077,6 +1154,49 @@ export const LearningScreenProvider = ({
     ...postWordsMemoized,
     ...postSentencesMemoized,
   ]?.[0]?.id;
+
+  const reviewSentenceId =
+    isInReviewMode &&
+    firstElIdInReview &&
+    postSentencesMemoized.some((sentence) => sentence.id === firstElIdInReview)
+      ? firstElIdInReview
+      : null;
+  const reviewWordId =
+    isInReviewMode &&
+    firstElIdInReview &&
+    postWordsMemoized.some((word) => word.id === firstElIdInReview)
+      ? firstElIdInReview
+      : null;
+
+  const sentenceSnippets = useSentenceSnippets({
+    ref,
+    contentId,
+    contentOrigin: selectedContentStateMemoized.origin,
+    isInReviewMode,
+    reviewSentenceId,
+    reviewWordId,
+    contentSnippets: sentenceSnippetRecords,
+    sentenceMap: sentenceMapMemoized,
+    secondsState: secondsStateMemoized,
+    mediaDuration,
+    isTrimmed: isTrimmedLang(languageSelectedState),
+    rangeLoopState,
+    setRangeLoopState,
+    threeSecondLoopState,
+    setThreeSecondLoopState,
+    loopTranscriptState,
+    setLoopTranscriptState,
+    saveSnippet: (snippetData, isUpdate) =>
+      handleSaveSnippetFetchProvider({
+        snippetData,
+        contentId,
+        contentIndex,
+        isUpdate,
+      }),
+    deleteSnippet: (snippetId) =>
+      handleDeleteSnippetFetchProvider({ contentIndex, contentId, snippetId }),
+    notify: setToastMessageState,
+  });
 
   const onScreenBreakdownSentenceId =
     isInReviewMode &&
@@ -1185,8 +1305,13 @@ export const LearningScreenProvider = ({
     handleToggleSlowAudio,
     handleHoldSlowerAudio,
     handleReleaseSlowerAudio,
+    sentenceSnippets,
   });
-  useGamepad(dispatch, threeSecondLoopState, isVideoPlaying, isSlowAudioState);
+  useGamepad(dispatch, threeSecondLoopState, isVideoPlaying, isSlowAudioState, {
+    canCreate: sentenceSnippets.canCreate,
+    hasClips: sentenceSnippets.clips.length > 0,
+    isClipFocused: Boolean(sentenceSnippets.focused),
+  });
 
   const getSentenceFromContextId = (
     contextId: ContextIdType,
@@ -1292,7 +1417,7 @@ export const LearningScreenProvider = ({
         overlappingTextMemoized,
         savedSnippetsMemoized: overlappingSnippetElements,
         handleUpdateSnippet,
-        contentSnippets: selectedContentStateMemoized?.snippets || [],
+        contentSnippets: regularSnippets,
         sentenceMapMemoized,
         getSentenceDataOfOverlappingWordsDuringSave,
         setScrollToElState,
@@ -1324,6 +1449,12 @@ export const LearningScreenProvider = ({
         setSnippetRepsState,
         snippetRepsState,
         languageSelectedState,
+        sentenceSnippets,
+        sentenceSnippetRecords,
+        rangeLoopState,
+        onlyCustomSnippetWordsState,
+        setOnlyCustomSnippetWordsState: handleSetOnlyCustomSnippetWords,
+        postWordsUnfilteredCount,
       }}
     >
       {children}

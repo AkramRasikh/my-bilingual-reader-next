@@ -9,6 +9,7 @@ import TranscriptItemContent from './TranscriptItemContent';
 import TranscriptItemLoopingSentence from './TranscriptItemLoopingSentence';
 import TranscriptItemTimeOverlappingIndicatorMulti from './TranscriptItemTimeOverlappingIndicatorMulti';
 import { arabic } from '@/app/languages';
+import SentenceSnippetClips from '@/app/LearningScreen/sentence-snippets/SentenceSnippetClips';
 
 const TranscriptItem = () => {
   const {
@@ -25,6 +26,7 @@ const TranscriptItem = () => {
     overlappingTextMemoized,
     snippetLoadingState,
     languageSelectedState,
+    isReadyForQuickReview,
   } = useTranscriptItem();
 
   const thisIsOverlapping = biggestOverlappedSnippet === contentItem.id;
@@ -44,6 +46,9 @@ const TranscriptItem = () => {
         />
       )}
 
+      {isReadyForQuickReview ? (
+        <SentenceSnippetClips sentenceId={contentItem.id} variant='row' />
+      ) : null}
       <div className='flex gap-1'>
         <TranscriptItemActionBar />
         <div className='flex w-full gap-1 justify-between'>

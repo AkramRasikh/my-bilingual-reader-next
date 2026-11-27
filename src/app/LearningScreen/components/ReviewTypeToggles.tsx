@@ -18,6 +18,10 @@ interface ReviewTypeTogglesProps {
   setReviewIntervalState?: (value: number) => void;
   isInReviewMode?: boolean;
   setIsInReviewMode?: (value: boolean) => void;
+  onlyCustomSnippetWordsState?: boolean;
+  setOnlyCustomSnippetWordsState?: (value: boolean) => void;
+  /** Words inside a custom snippet: in this review window / due overall. */
+  customSnippetWordCounts?: { inWindow: number; due: number };
 }
 
 const ReviewTypeToggles = ({
@@ -34,6 +38,9 @@ const ReviewTypeToggles = ({
   setReviewIntervalState = () => { },
   isInReviewMode = false,
   setIsInReviewMode = () => { },
+  onlyCustomSnippetWordsState = false,
+  setOnlyCustomSnippetWordsState = () => { },
+  customSnippetWordCounts,
 }: ReviewTypeTogglesProps) => {
   const handleDecrement = () => {
     if (reviewIntervalState > 30) {
@@ -68,21 +75,44 @@ const ReviewTypeToggles = ({
         </div>
       </div>
       <div className='my-auto flex min-w-0 flex-wrap items-center justify-center gap-3'>
-        <div className='flex items-center gap-2'>
-          <Checkbox
-            id='words-toggle'
-            data-testid='words-toggle'
-            checked={checkboxesDisabled ? false : enableWordReviewState}
-            onCheckedChange={setEnableWordReviewState}
-            disabled={checkboxesDisabled}
-          />
-          <Label
-            htmlFor='words-toggle'
-            data-testid='words-toggle-label'
-            className='text-xs font-medium cursor-pointer'
-          >
-            🔤 ({displayWordsCount})
-          </Label>
+        <div className='flex flex-col items-start gap-1'>
+          <div className='flex items-center gap-2'>
+            <Checkbox
+              id='words-toggle'
+              data-testid='words-toggle'
+              checked={checkboxesDisabled ? false : enableWordReviewState}
+              onCheckedChange={setEnableWordReviewState}
+              disabled={checkboxesDisabled}
+            />
+            <Label
+              htmlFor='words-toggle'
+              data-testid='words-toggle-label'
+              className='text-xs font-medium cursor-pointer'
+            >
+              🔤 ({displayWordsCount})
+            </Label>
+          </div>
+          {!checkboxesDisabled && enableWordReviewState ? (
+            <div className='flex items-center gap-2 pl-1'>
+              <Checkbox
+                id='custom-snippet-words-toggle'
+                data-testid='custom-snippet-words-toggle'
+                checked={onlyCustomSnippetWordsState}
+                onCheckedChange={(value) =>
+                  setOnlyCustomSnippetWordsState(value === true)
+                }
+              />
+              <Label
+                htmlFor='custom-snippet-words-toggle'
+                className='text-[10px] font-medium cursor-pointer'
+              >
+                from ✂️
+                {customSnippetWordCounts
+                  ? ` (${customSnippetWordCounts.inWindow}/${customSnippetWordCounts.due})`
+                  : null}
+              </Label>
+            </div>
+          ) : null}
         </div>
         <div className='flex items-center gap-2'>
           <Checkbox

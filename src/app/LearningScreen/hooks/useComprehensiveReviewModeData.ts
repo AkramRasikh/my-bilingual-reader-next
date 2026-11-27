@@ -2,6 +2,22 @@ import { useEffect, useMemo } from 'react';
 import { isWithinInterval } from '@/utils/is-within-interval';
 import { FormattedTranscriptTypes, Snippet } from '@/app/types/content-types';
 import { WordTypes } from '@/app/types/word-types';
+import { isWordInCustomSnippetFocus } from '../sentence-snippets/sentence-snippet-utils';
+
+/**
+ * "Only words in custom snippets": keep a due word only when a sentence
+ * snippet's focusedText contains its surface or base form.
+ */
+export const filterWordsForCustomSnippetReview = <
+  T extends Pick<WordTypes, 'surfaceForm' | 'baseForm'>,
+>(
+  words: T[],
+  sentenceSnippets: Snippet[],
+  onlyWordsInCustomSnippets: boolean,
+): T[] =>
+  onlyWordsInCustomSnippets
+    ? words.filter((word) => isWordInCustomSnippetFocus(word, sentenceSnippets))
+    : words;
 
 type Params = {
   enableWordReviewState: boolean;
@@ -14,6 +30,8 @@ type Params = {
   contentMetaWordMemoized: WordTypes[];
   snippetsWithDueStatusMemoized: Snippet[];
   formattedTranscriptState: FormattedTranscriptTypes[];
+  onlyWordsInCustomSnippets?: boolean;
+  sentenceSnippets?: Snippet[];
 };
 
 export default function useComprehensiveReviewModeData({
@@ -27,8 +45,10 @@ export default function useComprehensiveReviewModeData({
   contentMetaWordMemoized,
   snippetsWithDueStatusMemoized,
   formattedTranscriptState,
+  onlyWordsInCustomSnippets = false,
+  sentenceSnippets = [],
 }: Params) {
-  const postWordsMemoized = useMemo(() => {
+  const postWordsUnfilteredMemoized = useMemo(() => {
     if (!enableWordReviewState) {
       return [];
     } else if (firstTimeState !== null) {
@@ -43,6 +63,16 @@ export default function useComprehensiveReviewModeData({
     reviewIntervalState,
     contentMetaWordMemoized,
   ]);
+
+  const postWordsMemoized = useMemo(
+    () =>
+      filterWordsForCustomSnippetReview(
+        postWordsUnfilteredMemoized,
+        sentenceSnippets,
+        onlyWordsInCustomSnippets,
+      ),
+    [postWordsUnfilteredMemoized, sentenceSnippets, onlyWordsInCustomSnippets],
+  );
 
   const postSnippetsMemoized = useMemo(() => {
     if (!enableSnippetReviewState) {
@@ -125,6 +155,7 @@ export default function useComprehensiveReviewModeData({
 
   return {
     postWordsMemoized,
+    postWordsUnfilteredCount: postWordsUnfilteredMemoized.length,
     postSnippetsMemoized,
     slicedTranscriptArray,
     transcriptDueNumber,

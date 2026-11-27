@@ -8,6 +8,15 @@ const useManageLoopInit = ({
   loopTranscriptState,
   setContractThreeSecondLoopState,
   masterPlay,
+  rangeLoopState = null,
+}: {
+  ref: React.RefObject<HTMLVideoElement | HTMLAudioElement | null>;
+  threeSecondLoopState: number | null;
+  contractThreeSecondLoopState: boolean;
+  loopTranscriptState: { id: string; time: number }[];
+  setContractThreeSecondLoopState: (value: boolean) => void;
+  masterPlay: string;
+  rangeLoopState?: { start: number; end: number } | null;
 }) => {
   // Handle three-second loop boundary checking
   useEffect(() => {
@@ -33,6 +42,28 @@ const useManageLoopInit = ({
     video.addEventListener('timeupdate', handleTimeUpdate);
     return () => video.removeEventListener('timeupdate', handleTimeUpdate);
   }, [threeSecondLoopState, contractThreeSecondLoopState]);
+
+  // Handle the clip range loop (custom sentence snippets): loop start..end
+  // exactly, enforced the same way as the 3 s loop.
+  useEffect(() => {
+    if (!ref.current || !rangeLoopState) return;
+
+    const video = ref.current;
+    const { start, end } = rangeLoopState;
+
+    const handleTimeUpdate = () => {
+      const currentTime = video.currentTime;
+      if (currentTime < start || currentTime > end) {
+        video.currentTime = start;
+        video.play();
+      }
+    };
+
+    handleTimeUpdate();
+
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    return () => video.removeEventListener('timeupdate', handleTimeUpdate);
+  }, [rangeLoopState?.start, rangeLoopState?.end]);
 
   // Handle transcript loop
   useEffect(() => {

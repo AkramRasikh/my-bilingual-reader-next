@@ -20,6 +20,7 @@ import { reviewCaptionPaddingBottom } from './captionLift';
 import { PLAYBACK_CAPTION_PLATE_CLASS } from './playbackCaptionSurface';
 import { SentenceBreakdownOverlayBrick } from './SentenceBreakdownOverlayBrick';
 import ReviewSentenceOverlayText from './ReviewSentenceOverlayText';
+import SentenceSnippetClips from './sentence-snippets/SentenceSnippetClips';
 import { findBrokenDownSentenceMeaning, findSavedWordBreakdown, findWordContextSentence, splitSentenceAroundPhrase } from './find-breakdown-pieces-for-phrase';
 import {
   studiedWordContainsAnotherSavedWord,
@@ -171,8 +172,11 @@ function ReviewOverlayPanel({
 
 const LearningScreenReviewContentOnScreen = ({
   captionLiftPercent = 0,
+  isRightPanelOpen = false,
 }: {
   captionLiftPercent?: number;
+  /** With the panel open the transcript row drives review; clips show there. */
+  isRightPanelOpen?: boolean;
 }) => {
   const {
     firstElIdInReview,
@@ -611,6 +615,12 @@ const LearningScreenReviewContentOnScreen = ({
         }
         captionLiftPercent={captionLiftPercent}
       >
+        {!isRightPanelOpen && firstSentenceInReview?.id ? (
+          <SentenceSnippetClips
+            sentenceId={firstSentenceInReview.id}
+            variant='overlay'
+          />
+        ) : null}
         <ReviewSentenceOverlayText
           targetLang={sentenceTargetLang}
           baseLang={sentenceBaseLang}

@@ -64,4 +64,11 @@ export interface Snippet {
   isPreSnippet?: boolean;
   suggestedFocusText?: string;
   vocab?: Vocab[];
+  /** Custom sentence snippets only: absolute media seconds. */
+  start?: number;
+  end?: number;
+  /** 'sentence' marks a custom clip made while reviewing a sentence. */
+  origin?: 'sentence';
+  /** The sentence that was playing when the clip was created. Never changes. */
+  sentenceId?: string;
 }

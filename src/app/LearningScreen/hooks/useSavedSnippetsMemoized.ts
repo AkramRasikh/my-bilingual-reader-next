@@ -7,6 +7,7 @@ import {
   Snippet,
 } from '@/app/types/content-types';
 import { OverlappingSnippetData } from '@/app/types/shared-types';
+import { isSentenceSnippet } from '../sentence-snippets/sentence-snippet-utils';
 
 export interface SavedSnippetsMemoizedProps extends OverlappingSnippetData {
   snippetId: Snippet['id'];
@@ -33,6 +34,10 @@ export const useSavedSnippetsMemoized = (
     }
 
     snippets.forEach((snippetData) => {
+      // Custom sentence snippets are not drawn as 3 s snippets.
+      if (isSentenceSnippet(snippetData)) {
+        return;
+      }
       const startTime =
         snippetData.time - (snippetData?.isContracted ? 0.75 : 1.5);
       const endTime =

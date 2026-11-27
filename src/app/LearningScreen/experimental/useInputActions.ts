@@ -21,7 +21,33 @@ export type InputAction =
   | 'TIMER_PRESS'
   | 'TOGGLE_SLOW_AUDIO'
   | 'HOLD_SLOWER_AUDIO'
-  | 'RELEASE_SLOWER_AUDIO';
+  | 'RELEASE_SLOWER_AUDIO'
+  | 'SENTENCE_SNIPPET_HOLD_START'
+  | 'SENTENCE_SNIPPET_HOLD_END'
+  | 'SENTENCE_SNIPPET_SELECT_LAST'
+  | 'SENTENCE_SNIPPET_PREV'
+  | 'SENTENCE_SNIPPET_NEXT'
+  | 'SENTENCE_SNIPPET_START_EARLIER'
+  | 'SENTENCE_SNIPPET_START_LATER'
+  | 'SENTENCE_SNIPPET_END_EARLIER'
+  | 'SENTENCE_SNIPPET_END_LATER'
+  | 'SENTENCE_SNIPPET_FOCUS_LEFT'
+  | 'SENTENCE_SNIPPET_FOCUS_RIGHT'
+  | 'SENTENCE_SNIPPET_FOCUS_SHRINK'
+  | 'SENTENCE_SNIPPET_FOCUS_GROW'
+  | 'SENTENCE_SNIPPET_SAVE'
+  | 'SENTENCE_SNIPPET_END_LOOP';
+
+export interface SentenceSnippetInputHandlers {
+  holdStart: () => void;
+  holdEnd: () => void;
+  selectLast: () => void;
+  step: (direction: -1 | 1) => void;
+  nudge: (edge: 'start' | 'end', direction: -1 | 1) => void;
+  moveFocus: (move: 'left' | 'right' | 'shrink' | 'grow') => void;
+  save: () => Promise<void>;
+  endLoop: () => void;
+}
 
 interface InputHandlers {
   handleRewind: () => void;
@@ -44,6 +70,7 @@ interface InputHandlers {
   handleToggleSlowAudio: () => void;
   handleHoldSlowerAudio: () => void;
   handleReleaseSlowerAudio: () => void;
+  sentenceSnippets?: SentenceSnippetInputHandlers;
 }
 
 export const useInputActions = (handlers: InputHandlers) => {
@@ -116,6 +143,51 @@ export const useInputActions = (handlers: InputHandlers) => {
         break;
       case 'RELEASE_SLOWER_AUDIO':
         currentHandlers.handleReleaseSlowerAudio();
+        break;
+      case 'SENTENCE_SNIPPET_HOLD_START':
+        currentHandlers.sentenceSnippets?.holdStart();
+        break;
+      case 'SENTENCE_SNIPPET_HOLD_END':
+        currentHandlers.sentenceSnippets?.holdEnd();
+        break;
+      case 'SENTENCE_SNIPPET_SELECT_LAST':
+        currentHandlers.sentenceSnippets?.selectLast();
+        break;
+      case 'SENTENCE_SNIPPET_PREV':
+        currentHandlers.sentenceSnippets?.step(-1);
+        break;
+      case 'SENTENCE_SNIPPET_NEXT':
+        currentHandlers.sentenceSnippets?.step(1);
+        break;
+      case 'SENTENCE_SNIPPET_START_EARLIER':
+        currentHandlers.sentenceSnippets?.nudge('start', -1);
+        break;
+      case 'SENTENCE_SNIPPET_START_LATER':
+        currentHandlers.sentenceSnippets?.nudge('start', 1);
+        break;
+      case 'SENTENCE_SNIPPET_END_EARLIER':
+        currentHandlers.sentenceSnippets?.nudge('end', -1);
+        break;
+      case 'SENTENCE_SNIPPET_END_LATER':
+        currentHandlers.sentenceSnippets?.nudge('end', 1);
+        break;
+      case 'SENTENCE_SNIPPET_FOCUS_LEFT':
+        currentHandlers.sentenceSnippets?.moveFocus('left');
+        break;
+      case 'SENTENCE_SNIPPET_FOCUS_RIGHT':
+        currentHandlers.sentenceSnippets?.moveFocus('right');
+        break;
+      case 'SENTENCE_SNIPPET_FOCUS_SHRINK':
+        currentHandlers.sentenceSnippets?.moveFocus('shrink');
+        break;
+      case 'SENTENCE_SNIPPET_FOCUS_GROW':
+        currentHandlers.sentenceSnippets?.moveFocus('grow');
+        break;
+      case 'SENTENCE_SNIPPET_SAVE':
+        void currentHandlers.sentenceSnippets?.save();
+        break;
+      case 'SENTENCE_SNIPPET_END_LOOP':
+        currentHandlers.sentenceSnippets?.endLoop();
         break;
     }
   }, []);

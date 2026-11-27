@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import useLearningScreen from './useLearningScreen';
 import { isDueCheck } from '@/utils/is-due-check';
+import { filterWordsForCustomSnippetReview } from './hooks/useComprehensiveReviewModeData';
 
 const filters = [
   {
@@ -44,7 +45,25 @@ const LearningScreenClosedPanelReviewFilters = () => {
     sentencesNeedReview,
     contentMetaWordMemoized,
     contentSnippets,
+    onlyCustomSnippetWordsState,
+    setOnlyCustomSnippetWordsState,
+    sentenceSnippetRecords,
   } = useLearningScreen();
+
+  // Words inside a custom snippet: in this review window / due overall.
+  // Filtering is idempotent, so this holds whether the toggle is on or off.
+  const customSnippetWordCounts = {
+    inWindow: filterWordsForCustomSnippetReview(
+      postWordsMemoized,
+      sentenceSnippetRecords,
+      true,
+    ).length,
+    due: filterWordsForCustomSnippetReview(
+      contentMetaWordMemoized,
+      sentenceSnippetRecords,
+      true,
+    ).length,
+  };
 
   const counts = {
     words: postWordsMemoized.length,
@@ -103,26 +122,50 @@ const LearningScreenClosedPanelReviewFilters = () => {
         )}
       >
         {filters.map((filter) => (
-          <div key={filter.id} className='flex items-center gap-2'>
-            <Checkbox
-              id={filter.id}
-              data-testid={filter.id}
-              checked={checked[filter.countKey]}
-              disabled={!isInReviewMode}
-              onCheckedChange={(value) =>
-                setChecked[filter.countKey](value === true)
-              }
-            />
-            <Label
-              htmlFor={filter.id}
-              className={clsx(
-                'text-xs font-medium',
-                isInReviewMode ? 'cursor-pointer' : 'cursor-not-allowed',
-              )}
-            >
-              {filter.emoji} ({counts[filter.countKey]}/{dueTotals[filter.countKey]})
-              <span className='sr-only'> {filter.label}</span>
-            </Label>
+          <div key={filter.id} className='flex flex-col items-start gap-2'>
+            <div className='flex items-center gap-2'>
+              <Checkbox
+                id={filter.id}
+                data-testid={filter.id}
+                checked={checked[filter.countKey]}
+                disabled={!isInReviewMode}
+                onCheckedChange={(value) =>
+                  setChecked[filter.countKey](value === true)
+                }
+              />
+              <Label
+                htmlFor={filter.id}
+                className={clsx(
+                  'text-xs font-medium',
+                  isInReviewMode ? 'cursor-pointer' : 'cursor-not-allowed',
+                )}
+              >
+                {filter.emoji} ({counts[filter.countKey]}/{dueTotals[filter.countKey]})
+                <span className='sr-only'> {filter.label}</span>
+              </Label>
+            </div>
+            {filter.countKey === 'words' && enableWordReviewState ? (
+              <div className='flex items-center gap-2 pl-4'>
+                <Checkbox
+                  id='closed-panel-custom-snippet-words-toggle'
+                  data-testid='closed-panel-custom-snippet-words-toggle'
+                  checked={onlyCustomSnippetWordsState}
+                  disabled={!isInReviewMode}
+                  onCheckedChange={(value) =>
+                    setOnlyCustomSnippetWordsState(value === true)
+                  }
+                />
+                <Label
+                  htmlFor='closed-panel-custom-snippet-words-toggle'
+                  className={clsx(
+                    'text-[10px] font-medium',
+                    isInReviewMode ? 'cursor-pointer' : 'cursor-not-allowed',
+                  )}
+                >
+                  {`↳ from ✂️ (${customSnippetWordCounts.inWindow}/${customSnippetWordCounts.due})`}
+                </Label>
+              </div>
+            ) : null}
           </div>
         ))}
       </div>

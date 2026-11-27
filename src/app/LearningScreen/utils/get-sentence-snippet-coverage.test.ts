@@ -106,6 +106,26 @@ describe('getSentenceSnippetCoverage', () => {
     expect(overHalf.sentenceIdsAboveThreshold).toEqual(['s1']);
   });
 
+  it('never counts custom sentence snippets, even ones carrying reviewData', () => {
+    const firstSnippet = dueSnippet('a', 1.5);
+    const sentenceClip = {
+      ...dueSnippet('clip', 4.5),
+      origin: 'sentence',
+      sentenceId: 's1',
+      start: 3,
+      end: 6,
+    } as Snippet;
+
+    const result = getSentenceSnippetCoverage({
+      snippets: [firstSnippet, sentenceClip],
+      sentenceMap,
+      mediaDuration,
+      getLoopTranscriptSegment,
+    });
+
+    expect(result.sentenceIdsAboveThreshold).toEqual([]);
+  });
+
   it('ignores snippets that are not up for review', () => {
     const withoutReview = {
       ...dueSnippet('a', 1.5),

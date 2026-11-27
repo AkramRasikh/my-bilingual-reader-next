@@ -1,6 +1,12 @@
 import { isTrimmedLang, LanguageEnum } from '@/app/languages';
 import { useMemo, useState } from 'react';
 import { highlightSnippetTextApprox } from './highlight-snippet-text-approx';
+import {
+  contractFocusRange,
+  expandFocusRange,
+  moveFocusRangeLeft,
+  moveFocusRangeRight,
+} from './snippet-focus-steps';
 
 export const useSnippetHandleActionsHook = ({
   targetLang,
@@ -31,89 +37,31 @@ export const useSnippetHandleActionsHook = ({
       targetLang,
     ]);
 
+  const isTrimmed = isTrimmedLang(languageSelectedState as LanguageEnum);
+  const currentRange = { start: matchStartKey, end: matchEndKey };
+
   const onContractLength = () => {
-    if (!(matchEndKey > matchStartKey + 1)) return;
-
-    if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
-      let cursor = matchEndKey - 1;
-
-      while (cursor >= matchStartKey && /\s/.test(targetLang[cursor])) {
-        cursor -= 1;
-      }
-      while (cursor >= matchStartKey && !/\s/.test(targetLang[cursor])) {
-        cursor -= 1;
-      }
-
-      const previousWordStart = Math.max(matchStartKey + 1, cursor + 1);
-      const delta = previousWordStart - matchEndKey;
-      setLengthAdjustmentState(lengthAdjustmentState + delta);
-      return;
-    }
-
-    setLengthAdjustmentState(lengthAdjustmentState - 1);
+    const next = contractFocusRange(targetLang, currentRange, isTrimmed);
+    if (!next) return;
+    setLengthAdjustmentState(lengthAdjustmentState + (next.end - matchEndKey));
   };
 
   const onExpandLength = () => {
-    if (!(matchEndKey < targetLang.length)) return;
-
-    if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
-      let cursor = matchEndKey;
-
-      while (cursor < targetLang.length && /\s/.test(targetLang[cursor])) {
-        cursor += 1;
-      }
-      while (cursor < targetLang.length && !/\s/.test(targetLang[cursor])) {
-        cursor += 1;
-      }
-
-      const delta = cursor - matchEndKey;
-      setLengthAdjustmentState(lengthAdjustmentState + delta);
-      return;
-    }
-
-    setLengthAdjustmentState(lengthAdjustmentState + 1);
+    const next = expandFocusRange(targetLang, currentRange, isTrimmed);
+    if (!next) return;
+    setLengthAdjustmentState(lengthAdjustmentState + (next.end - matchEndKey));
   };
 
   const onMoveLeft = () => {
-    if (matchStartKey <= 0) return;
-
-    if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
-      let cursor = matchStartKey - 1;
-
-      while (cursor >= 0 && /\s/.test(targetLang[cursor])) {
-        cursor -= 1;
-      }
-      while (cursor >= 0 && !/\s/.test(targetLang[cursor])) {
-        cursor -= 1;
-      }
-
-      const previousWordStart = Math.max(0, cursor + 1);
-      setStartIndexKeyState(previousWordStart - suggestedTextStartIndex);
-      return;
-    }
-
-    setStartIndexKeyState(startIndexKeyState - 1);
+    const next = moveFocusRangeLeft(targetLang, currentRange, isTrimmed);
+    if (!next) return;
+    setStartIndexKeyState(startIndexKeyState + (next.start - matchStartKey));
   };
 
   const onMoveRight = () => {
-    if (matchEndKey >= targetLang.length) return;
-
-    if (!isTrimmedLang(languageSelectedState as LanguageEnum)) {
-      let cursor = matchStartKey + 1;
-
-      while (cursor < targetLang.length && !/\s/.test(targetLang[cursor])) {
-        cursor += 1;
-      }
-      while (cursor < targetLang.length && /\s/.test(targetLang[cursor])) {
-        cursor += 1;
-      }
-
-      const nextWordStart = Math.min(cursor, targetLang.length - 1);
-      setStartIndexKeyState(nextWordStart - suggestedTextStartIndex);
-      return;
-    }
-
-    setStartIndexKeyState(startIndexKeyState + 1);
+    const next = moveFocusRangeRight(targetLang, currentRange, isTrimmed);
+    if (!next) return;
+    setStartIndexKeyState(startIndexKeyState + (next.start - matchStartKey));
   };
 
   return {

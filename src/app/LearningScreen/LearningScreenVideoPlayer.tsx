@@ -312,6 +312,7 @@ const LearningScreenVideoPlayer = ({
         ) : null}
         <LearningScreenReviewContentOnScreen
           captionLiftPercent={captionLiftPercent}
+          isRightPanelOpen={isRightPanelOpen}
         />
         <LearningScreenPlaybackCaptions
           captionLiftPercent={captionLiftPercent}

@@ -11,6 +11,23 @@ import {
   stepHatAxis9,
 } from './readGamepadFrame';
 import { InputAction } from './useInputActions';
+import { sentenceSnippetGamepadBridge } from '../sentence-snippets/sentence-snippet-gamepad-bridge';
+
+/** What the custom sentence snippet controls need to know each frame. */
+export type SentenceSnippetGamepadState = {
+  /** A YouTube sentence is the review item: L1+R2 can make a clip. */
+  canCreate: boolean;
+  /** The review sentence has at least one clip (L1+D-pad Right selects one). */
+  hasClips: boolean;
+  /** A clip is the running range loop: clip controls take over. */
+  isClipFocused: boolean;
+};
+
+const NO_SENTENCE_SNIPPETS: SentenceSnippetGamepadState = {
+  canCreate: false,
+  hasClips: false,
+  isClipFocused: false,
+};
 
 const dispatchSnippetLoopEvent = (
   name:
@@ -27,6 +44,7 @@ export function useGamepad(
   threeSecondLoopState: number | null,
   isVideoPlaying: boolean,
   isSlowAudioState: boolean,
+  sentenceSnippetState: SentenceSnippetGamepadState = NO_SENTENCE_SNIPPETS,
 ) {
   const axesPressedRef = useRef<{ [key: string]: boolean }>({});
   const menuFacePrevRef = useRef({
@@ -56,6 +74,10 @@ export function useGamepad(
   const r3PrevRef = useRef(false);
   const xPrevRef = useRef(false);
   const xHoldSlowerRef = useRef(false);
+  const clipHoldActiveRef = useRef(false);
+  const bPrevRef = useRef(false);
+  const sentenceSnippetStateRef = useRef(sentenceSnippetState);
+  sentenceSnippetStateRef.current = sentenceSnippetState;
   const dispatchRef = useRef(dispatch);
   const threeSecondLoopStateRef = useRef(threeSecondLoopState);
   const isVideoPlayingRef = useRef(isVideoPlaying);
@@ -99,6 +121,8 @@ export function useGamepad(
       const threeSecondLoopState = threeSecondLoopStateRef.current;
       const isVideoPlaying = isVideoPlayingRef.current;
       const isSlowAudioState = isSlowAudioStateRef.current;
+      const clipState = sentenceSnippetStateRef.current;
+      const isClipFocused = clipState.isClipFocused;
       const gamepads = navigator.getGamepads();
       const gp = Array.from(gamepads).find((gamepad) => gamepad !== null);
 
@@ -121,18 +145,45 @@ export function useGamepad(
         const dpadLeft = dpadAxes.left;
 
         const hatPrev = hatPrevFrameRef.current;
+        const hatLeftPressed = rising(hat.left, hatPrev.left);
+        const hatRightPressed = rising(hat.right, hatPrev.right);
 
-        if (rising(hat.left, hatPrev.left)) {
+        if (hatLeftPressed) {
           window.dispatchEvent(new CustomEvent('dpad-hat-left-pressed'));
         }
 
-        if (rising(hat.right, hatPrev.right)) {
+        if (hatRightPressed) {
           window.dispatchEvent(new CustomEvent('dpad-hat-right-pressed'));
         }
 
         hatPrevFrameRef.current = { ...hat };
 
-        const { l1, l2 } = physical.shoulders;
+        const { l1, l2, r1 } = physical.shoulders;
+
+        // Custom sentence snippets are driven by the physical D-pad (`hat`:
+        // axis 9 on the 8BitDo desktop layout, D-pad buttons on standard
+        // mapping), never by the stick axes below.
+        if (hatRightPressed) {
+          if (isClipFocused && r1) {
+            dispatch('SENTENCE_SNIPPET_START_LATER');
+          } else if (isClipFocused && l2) {
+            dispatch('SENTENCE_SNIPPET_END_LATER');
+          } else if (isClipFocused) {
+            dispatch('SENTENCE_SNIPPET_NEXT');
+          } else if (l1 && clipState.canCreate && clipState.hasClips) {
+            dispatch('SENTENCE_SNIPPET_SELECT_LAST');
+          }
+        }
+
+        if (hatLeftPressed) {
+          if (isClipFocused && r1) {
+            dispatch('SENTENCE_SNIPPET_START_EARLIER');
+          } else if (isClipFocused && l2) {
+            dispatch('SENTENCE_SNIPPET_END_EARLIER');
+          } else if (isClipFocused) {
+            dispatch('SENTENCE_SNIPPET_PREV');
+          }
+        }
 
         if (rising(dpadUp, axesPressedRef.current['dpad-up'])) {
           axesPressedRef.current['dpad-up'] = true;
@@ -167,7 +218,10 @@ export function useGamepad(
         if (rising(dpadRight, axesPressedRef.current['dpad-right'])) {
           axesPressedRef.current['dpad-right'] = true;
 
-          if (l1) {
+          // A focused clip owns left/right (via the D-pad above).
+          if (isClipFocused) {
+            // no-op
+          } else if (l1) {
             dispatch('SLICE_LOOP');
           } else if (threeSecondLoopState) {
             dispatch('SHIFT_SNIPPET_RIGHT');
@@ -183,7 +237,9 @@ export function useGamepad(
         if (rising(dpadLeft, axesPressedRef.current['dpad-left'])) {
           axesPressedRef.current['dpad-left'] = true;
 
-          if (threeSecondLoopState) {
+          if (isClipFocused) {
+            // no-op: a focused clip owns left/right (via the D-pad above).
+          } else if (threeSecondLoopState) {
             dispatch('SHIFT_SNIPPET_LEFT');
           } else {
             dispatch('JUMP_PREV');
@@ -198,6 +254,21 @@ export function useGamepad(
           physical.shoulders;
         const { x: xHeld, y: yHeld, b: bHeld, a: aHeld } = physical.face;
 
+        // L1+R2 hold: make a custom sentence snippet from press to release.
+        const clipHoldCombo = l1Held && r2Held && !l2Held;
+        if (
+          clipHoldCombo &&
+          clipState.canCreate &&
+          !clipHoldActiveRef.current
+        ) {
+          dispatch('SENTENCE_SNIPPET_HOLD_START');
+          clipHoldActiveRef.current = true;
+        } else if (clipHoldActiveRef.current && !(l1Held && r2Held)) {
+          dispatch('SENTENCE_SNIPPET_HOLD_END');
+          clipHoldActiveRef.current = false;
+        }
+        const clipHoldActive = clipHoldActiveRef.current;
+
         if (l1Held && r1Held && !lrComboFiredRef.current) {
           dispatch('THREE_SECOND_LOOP');
           lrComboFiredRef.current = true;
@@ -206,7 +277,10 @@ export function useGamepad(
           lrComboFiredRef.current = false;
         }
 
-        if (
+        if (isClipFocused && l1Held && xHeld && !lxComboFiredRef.current) {
+          dispatch('SENTENCE_SNIPPET_SAVE');
+          lxComboFiredRef.current = true;
+        } else if (
           threeSecondLoopState &&
           l1Held &&
           xHeld &&
@@ -227,7 +301,10 @@ export function useGamepad(
           lxComboFiredRef.current = false;
         }
 
-        if (
+        if (isClipFocused && l1Held && yHeld && !lyComboFiredRef.current) {
+          dispatch('SENTENCE_SNIPPET_FOCUS_SHRINK');
+          lyComboFiredRef.current = true;
+        } else if (
           !threeSecondLoopState &&
           l1Held &&
           yHeld &&
@@ -245,6 +322,7 @@ export function useGamepad(
           xHeld &&
           !l1Held &&
           !l2Held &&
+          !clipHoldActive &&
           !rxComboFiredRef.current
         ) {
           dispatch('TOGGLE_SLOW_AUDIO');
@@ -286,7 +364,10 @@ export function useGamepad(
           lbComboFiredRef.current = false;
         }
 
-        if (
+        if (isClipFocused && l1Held && aHeld && !laComboFiredRef.current) {
+          dispatch('SENTENCE_SNIPPET_FOCUS_GROW');
+          laComboFiredRef.current = true;
+        } else if (
           !threeSecondLoopState &&
           l1Held &&
           aHeld &&
@@ -295,14 +376,31 @@ export function useGamepad(
           dispatch('ADD_MASTER_TO_REVIEW');
           laComboFiredRef.current = true;
         }
+
+        // B in a clip loop only ends the loop. Other B pollers check the
+        // bridge so they don't also replay the sentence.
+        if (rising(bHeld, bPrevRef.current)) {
+          if (isClipFocused && !l1Held && !l2Held) {
+            sentenceSnippetGamepadBridge.consumeB();
+            dispatch('SENTENCE_SNIPPET_END_LOOP');
+          }
+        }
+        if (!bHeld) {
+          sentenceSnippetGamepadBridge.releaseB();
+        }
+        bPrevRef.current = bHeld;
         if ((!l1Held || !aHeld) && laComboFiredRef.current) {
           laComboFiredRef.current = false;
         }
 
         const mfPrev = menuFacePrevRef.current;
 
+        const clipFaceFocus = isClipFocused && !l2Held && !r1Held;
+
         if (rising(physical.face.y, mfPrev.y)) {
-          if (threeSecondLoopState) {
+          if (clipFaceFocus) {
+            if (!l1Held) dispatch('SENTENCE_SNIPPET_FOCUS_LEFT');
+          } else if (threeSecondLoopState) {
             if (l1Held) {
               dispatchSnippetLoopEvent('snippet-loop-adjust-length', {
                 delta: -1,
@@ -316,7 +414,9 @@ export function useGamepad(
         }
 
         if (rising(physical.face.a, mfPrev.a)) {
-          if (threeSecondLoopState) {
+          if (clipFaceFocus) {
+            if (!l1Held) dispatch('SENTENCE_SNIPPET_FOCUS_RIGHT');
+          } else if (threeSecondLoopState) {
             if (l1Held) {
               dispatchSnippetLoopEvent('snippet-loop-adjust-length', {
                 delta: 1,

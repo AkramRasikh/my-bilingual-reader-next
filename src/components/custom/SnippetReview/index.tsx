@@ -671,8 +671,10 @@ const SnippetReview = ({
         handleMoveWordForward();
       }
 
+      // R2 with L1 is the sentence-snippet hold, not "previous word".
       if (
         isGamepadButtonHeld(gamepad.buttons, map.R2_BTN) &&
+        !gamepad.buttons[map.L1_BTN]?.pressed &&
         matchStartWordState !== null
       ) {
         handleMoveWordBackward();

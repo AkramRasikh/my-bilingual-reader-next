@@ -13,6 +13,7 @@ import {
   getButtonMap,
   isGamepadButtonHeld,
 } from '@/app/LearningScreen/experimental/gamepadButtonMap';
+import { sentenceSnippetGamepadBridge } from '@/app/LearningScreen/sentence-snippets/sentence-snippet-gamepad-bridge';
 
 const TranscriptItemActionBar = () => {
   const {
@@ -65,7 +66,9 @@ const TranscriptItemActionBar = () => {
       // B without L2 — avoids overlapping combo behavior with other handlers
       if (
         gamepad.buttons[map.B_BTN]?.pressed &&
-        !isGamepadButtonHeld(gamepad.buttons, map.L2_BTN)
+        !isGamepadButtonHeld(gamepad.buttons, map.L2_BTN) &&
+        // In a sentence-snippet clip loop, B only ends the loop.
+        !sentenceSnippetGamepadBridge.shouldIgnoreB()
       ) {
         handlePlayActionBar();
       }

@@ -5,6 +5,7 @@ import useLearningScreen from '../useLearningScreen';
 import { useFetchData } from '@/app/Providers/FetchDataProvider';
 import clsx from 'clsx';
 import LoadingSpinner from '@/components/custom/LoadingSpinner';
+import { findSentenceSnippetForWord } from '../sentence-snippets/sentence-snippet-utils';
 
 const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
   const [collapseState, setCollapseState] = useState(false);
@@ -15,6 +16,8 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
     handlePause,
     masterPlay,
     contentSnippets,
+    sentenceSnippetRecords,
+    sentenceSnippets,
     handlePlayFromHere,
     getSentenceFromContextId,
     updateWordDataProvider,
@@ -49,6 +52,13 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
       return overlappedWord?.isContract ? time - 0.75 : time - 1.5;
     }
   }, [word, contentSnippets]);
+
+  // A sentence snippet whose human-set focus contains this word wins over the
+  // 3 s snippet match: B loops its exact start..end.
+  const wordSentenceSnippet = useMemo(
+    () => findSentenceSnippetForWord(word, sentenceSnippetRecords),
+    [word, sentenceSnippetRecords],
+  );
 
   const contextId = word?.contexts?.[0];
   const contextSentences = useMemo(() => {
@@ -88,6 +98,14 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
   };
 
   const handlePlayFromContextFinal = (args) => {
+    if (wordSentenceSnippet) {
+      sentenceSnippets.loopWordSnippet(word.id, {
+        start: wordSentenceSnippet.start,
+        end: wordSentenceSnippet.end,
+        snippetId: wordSentenceSnippet.id,
+      });
+      return;
+    }
     if (wordHasOverlappingSnippetTime) {
       handlePlayFromHere(wordHasOverlappingSnippetTime);
       return;
@@ -126,7 +144,9 @@ const LearningScreenWordCard = ({ word, indexNum, isReadyForQuickReview }) => {
           languageSelectedState={languageSelectedState}
           wordContextIsPlaying={wordContextIsPlaying}
           handlePause={handlePause}
-          wordHasOverlappingSnippetTime={wordHasOverlappingSnippetTime}
+          wordHasOverlappingSnippetTime={
+            wordSentenceSnippet?.start ?? wordHasOverlappingSnippetTime
+          }
           isReadyForQuickReview={isReadyForQuickReview}
           adhocSentenceCustomWord={adhocSentenceCustomWord}
           getSentenceFromContextId={getSentenceFromContextId}
